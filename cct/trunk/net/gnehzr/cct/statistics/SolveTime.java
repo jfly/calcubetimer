@@ -1,15 +1,13 @@
 package net.gnehzr.cct.statistics;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
+import net.gnehzr.cct.miscUtils.Utils;
 
 public class SolveTime implements Comparable {
-	private static final DecimalFormat DF = new DecimalFormat("0.00");
-	
 	private boolean isPop = false;
 	private boolean isPlusTwo = false;
 	private boolean isDNF = false;
@@ -86,7 +84,9 @@ public class SolveTime implements Comparable {
 	
 	public String toString() {
 		if(isDNF) return "DNF";
-		return (hundredths == Integer.MAX_VALUE ? "N/A" : (isPop ? "POP" : (Configuration.isClockFormat() ? clockString(secondsValue()) : DF.format(secondsValue())) + ((isPlusTwo) ? "+" : "")));
+		else if(isPop) return "POP";
+		else if(hundredths == Integer.MAX_VALUE) return "N/A";
+		else return (Configuration.isClockFormat() ? Utils.clockFormat(secondsValue()) : Utils.format(secondsValue())) + (isPlusTwo ? "+" : "");
 	}
 	
 	public String toSplitsString() {
@@ -100,25 +100,6 @@ public class SolveTime implements Comparable {
 			temp += iter.next() + (iter.hasNext() ? ", " : "");
 		}
 		return temp;
-	}
-	
-	private static String clockString(double secondsValue) {
-		int hoursDigit = (int) (secondsValue / 3600.);
-		secondsValue %= 3600;
-		int minutesDigit = (int) (secondsValue / 60.); 
-		secondsValue %= 60;
-		if(secondsValue >= 59.995){
-			secondsValue = 0;
-			minutesDigit++;
-		}
-		if(minutesDigit >= 60){
-			minutesDigit -= 60;
-			hoursDigit++;
-		}
-		return (hoursDigit == 0 ? 
-				(minutesDigit == 0 ?  "" : minutesDigit + ":" + (secondsValue < 10 ? "0" : "")) :
-				hoursDigit + ":" + (minutesDigit < 10 ? "0" : "") + minutesDigit + ":" + (secondsValue < 10 ? "0" : "" ))
-			+ DF.format(secondsValue);
 	}
 	
 	public double secondsValue() {

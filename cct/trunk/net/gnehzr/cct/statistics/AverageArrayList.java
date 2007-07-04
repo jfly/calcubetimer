@@ -18,6 +18,7 @@ import javax.swing.event.ListDataListener;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.main.CALCubeTimer;
+import net.gnehzr.cct.miscUtils.Utils;
 import net.gnehzr.cct.stackmatInterpreter.StackmatState;
 
 public class AverageArrayList extends ArrayList<SolveTime> implements ListModel, ActionListener, ConfigurationChangeListener {
@@ -26,14 +27,13 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 	//So, an average with more than one pop/dnf is invalid
 	//A session average ignores pops and dnfs completely
 	public enum averageType { CURRENT, RA, SESSION }
-	private static final DecimalFormat DF = new DecimalFormat("0.00");
 	private int RASize;
 
 	private int indexOfCurrentAverage;
 	private int indexOfBestRA;
 	
 	private int numberOfPops;
-	private int numberofDNFs;
+	private int numberOfDNFs;
 	private int numberOfPlusTwos;
 
 	public AverageArrayList() {
@@ -49,7 +49,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 		contentsChanged(null);
 	}
 	private void initialize() {
-		numberOfPops = numberOfPlusTwos = numberofDNFs = 0;
+		numberOfPops = numberOfPlusTwos = numberOfDNFs = 0;
 		indexOfBestRA = indexOfCurrentAverage = -RASize;
 	}
 	
@@ -67,7 +67,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 			indexOfBestRA = indexOfCurrentAverage;
 		if(newTime.isPop()) numberOfPops++;
 		if(newTime.isPlusTwo()) numberOfPlusTwos++;
-		if(newTime.isDNF()) numberofDNFs++;
+		if(newTime.isDNF()) numberOfDNFs++;
 	}
 	
 	public boolean remove(Object o) {
@@ -91,7 +91,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 
 	public String average(averageType type) {
 		double ave = ave(type);
-		return ((ave == -2) ? "N/A" : ((ave == -1) ? "Invalid Average!" : new SolveTime(ave, null).toString()));
+		return ((ave == -2) ? "N/A" : ((ave == -1) ? "Invalid Average!" : new SolveTime(ave, null).toString())); //if clock format, use it
 	}
 	public boolean isValid(averageType type) {
 		return ave(type) >= 0;
@@ -137,7 +137,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 	
 	public String standardDeviation(averageType type) {
 		double sd = stdDev(type);
-		return ((sd == Double.MAX_VALUE) ? "N/A" : DF.format(sd));
+		return ((sd == Double.MAX_VALUE) ? "N/A" : Utils.format(sd));
 	}
 	private double stdDev(averageType type) {
 		boolean sessionAverage = type == averageType.SESSION;
@@ -177,7 +177,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 		return numberOfPlusTwos;
 	}
 	public int getNumberOfSolves() {
-		return size() - numberOfPops - numberofDNFs;
+		return size() - numberOfPops - numberOfDNFs;
 	}
 
 	private ArrayList<ListDataListener> listeners = new ArrayList<ListDataListener>(2);

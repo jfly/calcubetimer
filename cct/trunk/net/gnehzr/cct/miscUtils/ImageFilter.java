@@ -5,32 +5,38 @@ import javax.swing.filechooser.*;
 
 /* ImageFilter.java is a 1.4 example used by FileChooserDemo2.java. */
 public class ImageFilter extends FileFilter {
+	public static final String[] IMG_EXTS = { "png", "jpg", "jpeg", "gif", "tif", "tiff" };
 
-    //Accept all directories and all gif, jpg, tiff, or png files.
-    public boolean accept(File f) {
-        if (f.isDirectory()) {
-            return true;
-        }
+	/* Accept all directories and all gif, jpg, tiff, or png files. */
+	public boolean accept(File f) {
+		if (f.isDirectory()) {
+			return true;
+		}
 
-        String extension = Utils.getExtension(f);
-        if (extension != null) {
-            if (extension.equals(Utils.tiff) ||
-                extension.equals(Utils.tif) ||
-                extension.equals(Utils.gif) ||
-                extension.equals(Utils.jpeg) ||
-                extension.equals(Utils.jpg) ||
-                extension.equals(Utils.png)) {
-                    return true;
-            } else {
-                return false;
-            }
-        }
+		String extension = getExtension(f);
+		if (extension != null) {
+			for(int i = 0; i < IMG_EXTS.length; i++){
+				if(extension.equals(IMG_EXTS[i])) return true;
+			}
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    //The description of this filter
-    public String getDescription() {
-        return "Image Files";
-    }
+	/* The description of this filter */
+	public String getDescription() {
+		return "Image Files";
+	}
+
+	/* Get the extension of a file. */
+	public static String getExtension(File f) {
+		String ext = null;
+		String s = f.getName();
+		int i = s.lastIndexOf('.');
+
+		if (i > 0 &&  i < s.length() - 1) {
+			ext = s.substring(i+1).toLowerCase();
+		}
+		return ext;
+	}
 }
