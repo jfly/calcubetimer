@@ -89,7 +89,7 @@ public class SolveTime implements Comparable {
 		if(isDNF) return "DNF";
 		else if(isPop) return "POP";
 		else if(hundredths == Integer.MAX_VALUE) return "N/A";
-		else return (Configuration.isClockFormat() ? Utils.clockFormat(secondsValue()) : Utils.format(secondsValue())) + (isPlusTwo ? "+" : "");
+		else return Utils.clockFormat(secondsValue(), Configuration.isClockFormat()) + (isPlusTwo ? "+" : "");
 	}
 
 	public String toSplitsString() {

@@ -347,7 +347,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 
 		if(average == Integer.MAX_VALUE) return "Invalid Average!";
 
-		return Configuration.isClockFormat() ? Utils.clockFormat(average) : Utils.format(average);
+		return Utils.clockFormat(average, Configuration.isClockFormat());
 	}
 
 	public boolean isValid(averageType type) {
@@ -462,6 +462,10 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 
 	public int getNumSolves(){
 		return times.size() - numDnfs - numPops;
+	}
+
+	public int getNumAttempts(){
+		return times.size();
 	}
 
 	public double getTime(int n){

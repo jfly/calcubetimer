@@ -29,4 +29,8 @@ public class Utils{
 				hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "" ))
 			+ format(seconds);
 	}
+
+	public static String clockFormat(double seconds, boolean isClock){
+		return isClock ? clockFormat(seconds) : format(seconds);
+	}
 }

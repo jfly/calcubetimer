@@ -31,6 +31,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationDialog;
 import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.help.FunScrollPane;
+import net.gnehzr.cct.miscUtils.DynamicLabel;
 import net.gnehzr.cct.miscUtils.MyCellRenderer;
 import net.gnehzr.cct.scrambles.CubeScramble;
 import net.gnehzr.cct.scrambles.ScrambleList;
@@ -210,7 +211,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		sessionAverageButton= new JButton();
 		sessionAverageButton.addActionListener(this);
 
-		numberOfSolvesLabel = new JLabel();
+		numberOfSolvesLabel = new DynamicLabel("$$solves$$/$$attempts$$ (solves/attempts)", stats);
 
 		repaintTimes();
 
@@ -461,7 +462,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		bestRAButton.setEnabled(stats.isValid(Statistics.averageType.RA));
 		sessionAverageButton.setText("Session Average: " + stats.average(Statistics.averageType.SESSION));
 		sessionAverageButton.setEnabled(stats.isValid(Statistics.averageType.SESSION));
-		numberOfSolvesLabel.setText(stats.getNumSolves() + "/" + stats.getSize() + " (solves/attempts)");
 		timesList.ensureIndexIsVisible(stats.getSize() - 1);
 	}
 
