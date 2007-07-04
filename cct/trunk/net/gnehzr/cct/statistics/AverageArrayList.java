@@ -158,8 +158,8 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 	}
 	
 	public SolveTime[] getBestAndWorstTimes(averageType type) {
-		SolveTime best = new SolveTime((StackmatState) null, null);
-		SolveTime worst = new SolveTime(0, null);
+		SolveTime best = SolveTime.WORST;
+		SolveTime worst = SolveTime.BEST;
 		boolean ignoreInfinite = type == averageType.SESSION;
 		ListIterator<SolveTime> iter = getSublist(type);
 		while(iter.hasNext()){
