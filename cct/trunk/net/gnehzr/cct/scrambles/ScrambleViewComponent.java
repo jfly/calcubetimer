@@ -25,13 +25,13 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	private static final int DEFAULT_CUBIE_SIZE = Configuration.getDefaultCubieSize();
 	private static final int DEFAULT_MINX_RAD = Configuration.getDefaultMinxRad();
 	private static final int GAP = Configuration.getScrambleGap();
-	
+
 	private int cubieSize = DEFAULT_CUBIE_SIZE;
 	private int minxRad = DEFAULT_MINX_RAD;
-	
+
 	private Color[] cubeColors = null;
 	private Color[] megaminxColors = null;
-	
+
 	BufferedImage buffer = null;
 	public ScrambleViewComponent() {
 		addComponentListener(this);
@@ -39,13 +39,13 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		megaminxColors = Configuration.getMegaminxColors();
 		setScramble(new CubeScramble(3, 0, true));
 	}
-	
+
 	public void resetSize() {
 		cubieSize = DEFAULT_CUBIE_SIZE;
 		minxRad = DEFAULT_MINX_RAD;
 		setScramble(currentScram);
 	}
-	
+
 	private Scramble currentScram = null;
 	public void setScramble(Scramble scramble) {
 		currentScram = scramble;
@@ -73,7 +73,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		}
 		repaint();
 	}
-	
+
 	private int getCubeViewWidth(int size, int cubieSize) {
 		return (size*cubieSize + GAP)*4 + GAP;
 	}
@@ -91,7 +91,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		cubeColors = newColors;
 		setScramble(currentScram);
 	}
-	
+
 	public void setMegaminxColors(Color[] newColors) {
 		megaminxColors = newColors;
 		setScramble(currentScram);
@@ -100,7 +100,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	public Dimension getPreferredSize() {
 		return new Dimension(buffer.getWidth(), buffer.getHeight());
 	}
-	
+
 	public Dimension getMinimumSize() {
 		if(currentScram instanceof CubeScramble){
 			int size = ((CubeScramble) currentScram).getSize();
@@ -111,7 +111,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		}
 		else return null;
 	}
-	
+
 	protected void paintComponent(Graphics g) {
 		int width = getWidth();
 		int height = getHeight();
@@ -251,7 +251,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		Configuration.init();
 		tester.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ScrambleViewComponent view = new ScrambleViewComponent();
-		
+
 		tester.add(view);
 
 		Scramble m = null;
@@ -259,7 +259,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		m = new MegaminxScramble();
 		view.setScramble(m); 
 		System.out.println(m);
-		
+
 		tester.pack();
 		tester.setVisible(true);
 	}
@@ -281,11 +281,11 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		}
 		if(shouldRepaint) redo();
 	}
-	
+
 	public void redo() {
 		setScramble(currentScram);
 	}
-	
+
 	private int getMegaminxRad() { //This appears to be always 1 less than before, even if it hasn't resized
 		return 1 + (int) (Math.min((getWidth() - 3*GAP) / 9.9596,
 				(getHeight() - 2*GAP) / 4.736));
@@ -327,7 +327,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 			double d = xx*Math.sin(.1*Math.PI);
 			double ee = xx*Math.sin(.3*Math.PI);
 			int shift = GAP+(int)Math.round(2*a+2*b), face;
-			
+
 			if(isInPentagon(GAP+(int)Math.round(a+b), GAP+(int)Math.round(xx)+minxRad, x, y, false))
 				face = 0;
 			else if(isInPentagon(GAP+(int)Math.round(a+b), GAP+minxRad, x, y, true))
@@ -357,7 +357,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 			listener.colorClicked(this, face, megaminxColors);
 		}
 	}
-	
+
 	private boolean isInPentagon(int x, int y, int mousex, int mousey, boolean up) {
 		Polygon p = pentagon(up);
 		p.translate(x, y);
@@ -372,7 +372,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	public void mouseExited(MouseEvent e) {}
 	public void mousePressed(MouseEvent e) {}
 	public void mouseReleased(MouseEvent e) {}
-	
+
 	public interface ColorListener {
 		public void colorClicked(ScrambleViewComponent source, int index, Color[] colorScheme);
 	}

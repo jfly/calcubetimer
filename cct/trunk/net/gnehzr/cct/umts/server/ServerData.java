@@ -7,7 +7,7 @@ import net.gnehzr.cct.umts.Protocol;
 public class ServerData{
 	private ConcurrentHashMap<String,Client> clients;
 	private CCTServer server;
-	
+
 	public ServerData(CCTServer server){
 		clients = new ConcurrentHashMap<String,Client>();
 		this.server = server;

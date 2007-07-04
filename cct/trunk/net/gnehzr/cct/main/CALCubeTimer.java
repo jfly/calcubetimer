@@ -83,7 +83,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 	public CALCubeTimer() throws Exception {
 		this.setUndecorated(true);
-		
+
 		Configuration.init();
 		stackmatTimer = new StackmatInterpreter();
 		stackmatTimer.execute();
@@ -125,17 +125,17 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		ab.setSize(600, 300);
 		ab.setResizable(false);
 		ab.setLocationRelativeTo(null);
-	
+
 		configurationDialog = new ConfigurationDialog(this, true, stackmatTimer);
 
 		keyboardCheckBox = new JCheckBox("Use keyboard timer", Configuration.isKeyboardTimer());
 		keyboardCheckBox.setMnemonic(KeyEvent.VK_K);
 		keyboardCheckBox.addActionListener(this);
 		keyboardCheckBox.setToolTipText("NOTE: will disable Stackmat!");
-		
+
 		cubeChoice = new ScrambleType(Configuration.getScrambleType(), Configuration.getScrambleLength(), Configuration.isMultiSlice());
 		scrambles = new ScrambleList(cubeChoice);
-		
+
 		scrambleChooser = new JComboBox(Configuration.getPuzzles());
 		scrambleChooser.setSelectedItem(cubeChoice.getType());
 		scrambleChooser.addActionListener(this);
@@ -148,7 +148,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		scrambleNumber.setToolTipText("Select nth scramble");
 		((JSpinner.DefaultEditor) scrambleNumber.getEditor()).getTextField().setColumns(3);
 		scrambleNumber.addChangeListener(this);
-		
+
 		model = new SpinnerNumberModel(cubeChoice.getLength(), //initial value
 				1,					//min
 				null,				//max
@@ -157,15 +157,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		scrambleLength.setToolTipText("Set length of scramble");
 		((JSpinner.DefaultEditor) scrambleLength.getEditor()).getTextField().setColumns(3);
 		scrambleLength.addChangeListener(this);
-		
+
 		multiSlice = new JCheckBox("Multi-slice", Configuration.isMultiSlice());
 		multiSlice.setEnabled(cubeChoice.getPuzzleType() == ScrambleType.types.CUBE);
 		multiSlice.addActionListener(this);
-		
+
 		serverScrambles = new JCheckBox("Server Scrambles", false);
 		serverScrambles.addActionListener(this);
 		serverScrambles.setEnabled(false);
-		
+
 		scramblePopup = new ScrambleFrame(this, "Scramble View");
 		scramblePopup.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		scramblePopup.setIconImage(cube.getImage());
@@ -180,7 +180,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 		onLabel = new JLabel("Timer is OFF");
 		onLabel.setFont(onLabel.getFont().deriveFont(AffineTransform.getScaleInstance(2, 2)));
-		
+
 		addButton = new JButton("Add time");
 		addButton.setMnemonic(KeyEvent.VK_A);
 		addButton.addActionListener(this);
@@ -226,11 +226,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		timeLabel.setOpaque(Configuration.isAnnoyingDisplay());
 		timeLabel.setEnabledTiming(Configuration.isIntegratedTimerDisplay());
 		timeLabel.setKeyboard(keyboardCheckBox.isSelected());
-		
+
 		startStopPanel = new TimerPanel(timeListener, scrambleText, timeLabel);
 		startStopPanel.setKeyboard(true);
 		startStopPanel.setEnabled(keyboardCheckBox.isSelected());
-		
+
 		timeLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 		timeLabel.setMinimumSize(new Dimension(0, 150));
 		timeLabel.setPreferredSize(new Dimension(00, 150));
@@ -240,7 +240,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		center.add(scrambleText);
 		JPanel southWest = new JPanel();
 		southWest.setLayout(new BoxLayout(southWest, BoxLayout.PAGE_AXIS));
-		
+
 		JPanel sideBySide = new JPanel();
 		sideBySide.add(onLabel);
 		sideBySide.add(scrambleChooser);
@@ -254,9 +254,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 		numberOfSolvesLabel.setAlignmentX(.5f);
 		southWest.add(numberOfSolvesLabel);
-		
+
 		leftPanel.add(southWest, BorderLayout.PAGE_END);
-		
+
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(leftPanel, BorderLayout.CENTER);
 		timesScroller.setMinimumSize(new Dimension(100, 0));
@@ -276,8 +276,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		bigTimersDisplay = new TimerLabel(timeListener, LCD_FONT, null);
 		bigTimersDisplay.setEnabledTiming(true);
 		bigTimersDisplay.setKeyboard(keyboardCheckBox.isSelected());
-		
-		
+
+
 		panel.add(bigTimersDisplay, BorderLayout.CENTER);
 		fullScreenButton = new JButton("+");
 		fullScreenButton.addActionListener(this);
@@ -286,7 +286,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		fullscreenFrame.setResizable(false);
 		fullscreenFrame.setSize(screenSize.width, screenSize.height);
 		fullscreenFrame.validate();
-		
+
 		Configuration.addConfigurationChangeListener(this);
 
 
@@ -305,15 +305,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			this.setLocation(location);
 		this.setVisible(true);
 		updateScramble();
-		
+
 		if(keyboardCheckBox.isSelected()) { //This is to ensure that the keyboard is focused
 			timeLabel.requestFocusInWindow();
 			startStopPanel.requestFocusInWindow();
 		} else
 			scrambleText.requestFocusInWindow();
-			
+
 	}
-	
+
 	private JPanel buttons;
 	private JPanel createButtonsPanel() {
 		if(buttons == null) {
@@ -363,7 +363,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		menu.add(exportScrambles);
 
 		menu.addSeparator();
-		
+
 		connectToServer = new JMenuItem("Connect to server");
 		connectToServer.setMnemonic(KeyEvent.VK_N);
 		connectToServer.setAccelerator(KeyStroke.getKeyStroke(
@@ -388,7 +388,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				KeyEvent.VK_F4, ActionEvent.ALT_MASK));
 		exit.addActionListener(this);
 		menu.add(exit);
-		
+
 		menu = new JMenu("View");
 		menu.setMnemonic(KeyEvent.VK_V);
 		menuBar.add(menu);
@@ -402,19 +402,19 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		newLayout.setSelected(Configuration.isIntegratedTimerDisplay());
 		newLayout.setMnemonic(KeyEvent.VK_I);
 		submenu.add(newLayout);
-		
+
 		annoyingDisplay = new JCheckBoxMenuItem("Use annoying status light");
 		annoyingDisplay.addActionListener(this);
 		annoyingDisplay.setSelected(Configuration.isAnnoyingDisplay());
 		annoyingDisplay.setMnemonic(KeyEvent.VK_A);
 		submenu.add(annoyingDisplay);
-		
+
 		lessAnnoyingDisplay = new JCheckBoxMenuItem("Use less-annoying status light");
 		lessAnnoyingDisplay.addActionListener(this);
 		lessAnnoyingDisplay.setSelected(Configuration.isLessAnnoyingDisplay());
 		lessAnnoyingDisplay.setMnemonic(KeyEvent.VK_L);
 		submenu.add(lessAnnoyingDisplay);
-		
+
 		hideScrambles = new JCheckBoxMenuItem("Hide scrambles when timer not focused");
 		hideScrambles.addActionListener(this);
 		hideScrambles.setSelected(Configuration.isHideScrambles());
@@ -426,9 +426,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		spacebarOnly.setSelected(Configuration.isSpacebarOnly());
 		spacebarOnly.setMnemonic(KeyEvent.VK_S);
 		submenu.add(spacebarOnly);
-		
+
 		menuBar.add(Box.createHorizontalGlue());
-		
+
 		menu = new JMenu("Help");
 		menu.setMnemonic(KeyEvent.VK_H);
 		menuBar.add(menu);
@@ -436,11 +436,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		documentation = new JMenuItem("View Documentation");
 		documentation.addActionListener(this);
 		menu.add(documentation);
-		
+
 		about = new JMenuItem("About");
 		about.addActionListener(this);
 		menu.add(about);
-		
+
 		maximize = new JButton("+");
 		maximize.addActionListener(this);
 		maximize.setToolTipText("Click this button to enter fullscreen mode");
@@ -479,9 +479,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	public static void main(String[] args) throws Exception {
 		JDialog.setDefaultLookAndFeelDecorated(true);
 		JFrame.setDefaultLookAndFeelDecorated(true);
-		
+
 		UIManager.setLookAndFeel(new SubstanceLookAndFeel());
-		
+
 //		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 //		UIManager.setLookAndFeel(new SubstanceModerateLookAndFeel()); 
 		UIManager.put(LafWidget.ANIMATION_KIND, LafConstants.AnimationKind.NONE); 
@@ -495,7 +495,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 //		 this entire class is only for Windows/Substance.  Yes, this is a very 
 //		 ugly hack and it makes me unhappy, but we have no alternative to get 
 //		 aa text on Java 6.
-		
+
 		if (System.getProperty("java.version").startsWith("1.6")) {
 			final boolean lafCond = sun.swing.SwingUtilities2.isLocalDisplay(); 
 			Object aaTextInfo = sun.swing.SwingUtilities2.AATextInfo.getAATextInfo(lafCond);
@@ -528,7 +528,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		}
 		return newTime;
 	}
-	
+
 	private static String[] okCancel = new String[] {"OK", "Cancel"};
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
@@ -696,7 +696,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		if(choice == JOptionPane.YES_OPTION)
 			statsHandler.promptToSaveStats();
 	}
-	
+
 	private void exportScrambles(URL outputFile, int numberOfScrambles, ScrambleType cubeChoice) {
 		try {
 			PrintWriter out = new PrintWriter(new FileWriter(new File(outputFile.toURI())));
@@ -742,7 +742,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	private void showErrorMessage(String errorMessage, String title){
 			JOptionPane.showMessageDialog(this, errorMessage, title, JOptionPane.ERROR_MESSAGE);
 	}
-	
+
 	private boolean ignore = false;
 	private void updateScramble() {
 		if(ignore) return;
@@ -868,7 +868,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 	public void keyReleased(KeyEvent e) {}
 	public void keyTyped(KeyEvent e) {}
-	
+
 	public void contentsChanged(ListDataEvent e) {
 		if(e != null && e.getType() == ListDataEvent.INTERVAL_ADDED) {
 			if(serverScrambles.isSelected()) {
@@ -909,7 +909,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			client.sendAverage(s, times);
 		}
 	}
-	
+
 	public void setScramble(String s) { //this is only called by cctclient
 		try {
 			scrambles = new ScrambleList(cubeChoice, cubeChoice.generateScramble(s));

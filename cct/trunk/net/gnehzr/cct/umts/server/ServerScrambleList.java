@@ -33,7 +33,7 @@ public class ServerScrambleList extends ArrayList<Scramble[]>{
 		160, //10
 		180, //11
 		60}; //megaminx
-	
+
 	public ServerScrambleList(){
 		types = new ScrambleType[puzzles.length];
 		for(int i = 0; i < types.length; i++){

@@ -34,7 +34,7 @@ public class User {
 	public ArrayList<SolveTime> getSolves(){
 		return solves;
 	}
-	
+
 	public SolveTime getLastTime() {
 		return lastTime;
 	}

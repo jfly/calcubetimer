@@ -13,7 +13,7 @@ public class ScrambleType {
 //		"10x10x10",
 //		"11x11x11",
 //		"Megaminx"};
-//	
+//
 //	public final static int LENGTHS[] = {
 //		25,  //2
 //		25,  //3
@@ -37,7 +37,7 @@ public class ScrambleType {
 				return null;
 		}
 	}
-	
+
 	public Scramble generateScramble(String scramble) throws Exception {
 		switch(puzzletype) {
 		case CUBE:

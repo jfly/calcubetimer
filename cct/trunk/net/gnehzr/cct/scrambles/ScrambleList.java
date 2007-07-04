@@ -25,7 +25,7 @@ public class ScrambleList extends ArrayList<Scramble>{
 		}
 		return temp;
 	}
-	
+
 	public void setType(ScrambleType newType) {
 		type = newType;
 	}

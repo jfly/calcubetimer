@@ -42,7 +42,7 @@ public class UserTable extends AbstractTableModel {
 	}
 	public User getUser(int row) {
 		return users.get(row);
-	}	
+	}
 	public Object getValueAt(int row, int col) {
 		User rowUser = getUser(row);
 		switch(col) {

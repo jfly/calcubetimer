@@ -67,11 +67,11 @@ public class SendMailUsingAuthentication {
 
 		// Set the host smtp address
 		Properties props = new Properties();
-		
+
 		props.setProperty("mail.smtp.host", Configuration.getSMTPHost());
 		props.setProperty("mail.smtp.port", Configuration.getPort());
 		props.setProperty("mail.smtp.auth", Boolean.toString(Configuration.isSMTPauth()));
-		
+
 		Session session = null;
 		if(Configuration.isSMTPauth()) {
 			Authenticator auth = new SMTPAuthenticator();
@@ -102,7 +102,7 @@ public class SendMailUsingAuthentication {
 	public static boolean isNotSetup() {
 		return Configuration.getSMTPHost().equals("") || Configuration.getUsername().equals("") || Configuration.getUserEmail().equals("") || Configuration.getPort().equals("");
 	}
-	
+
 	/**
 	 * SimpleAuthenticator is used to do simple authentication when the SMTP
 	 * server requires it.

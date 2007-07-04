@@ -26,7 +26,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		this.thingToListenTo = thingy;
 		this.scrambles = scrambles;
 		keyboardTimer = new KeyboardTimer(90, timeListener);
-		
+
 		JComponent thingToListenTo = (JComponent) thingy;
 		thingToListenTo.setFocusable(true);
 		thingy.setUnfocusedState();
@@ -35,12 +35,12 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		thingToListenTo.addMouseListener(this);
 		thingToListenTo.setFocusTraversalKeysEnabled(false);
 	}
-	
+
 	private boolean enabled = true;
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
-	
+
 	private boolean keyboard;
 	public void setKeyboard(boolean isKey) {
 		keyboard = isKey;
@@ -56,7 +56,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		if(!keyboard)
 			thingToListenTo.setKeysDownState();
 	}
-	
+
 	public void focusGained(FocusEvent e) {
 		if(!enabled) return;
 		if(keyboard && enabled)
@@ -75,7 +75,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 	public void mouseExited(MouseEvent e) {}
 	public void mousePressed(MouseEvent e) {}
 	public void mouseReleased(MouseEvent e) {}
-	
+
 	private Hashtable<Integer, Long> timeup = new Hashtable<Integer, Long>(KeyEvent.KEY_LAST);
 	private long getTime(int keycode) {
 		Long temp = timeup.get(keycode);
@@ -107,10 +107,10 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		//TODO ok, this is horribly ugly, all I want to do is pass an int into the
 		//actionListener, is there some way of adding my own method?
 		checkForKeyPress.equals(code);
-		
+
 		new Timer(10, checkForKeyPress).start();
 	}
-	
+
 	public void keyPressed(final KeyEvent e) {
 		if(!keyboard || !enabled) return;
 		int code = e.getKeyCode();
@@ -129,7 +129,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 			if(keys.nextElement()) return false;
 		return true;
 	}
-	
+
 	//called when a key is physically pressed
 	private void keyReallyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
@@ -151,7 +151,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 			if(!keyboardTimer.isRunning()) {
 				if(!keyboardTimer.isReset()) {
 					keyboardTimer.fireStop();
-					thingToListenTo.setStateText("Start Timer");			
+					thingToListenTo.setStateText("Start Timer");
 				} else if(!ignoreKey(e)) {
 					if(keyboardTimer.startTimer()) {
 						thingToListenTo.setStateText("Stop Timer");
@@ -160,7 +160,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 			}
 		}
 	}
-	
+
 	public static boolean ignoreKey(KeyEvent e) {
 		int key = e.getKeyCode();
 		if(Configuration.isSpacebarOnly())
@@ -171,18 +171,18 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 	public void reset() {
 		keyboardTimer.reset();
 	}
-	
+
 	public class KeyboardTimer extends Timer {
 		private static final long serialVersionUID = 1L;
 		public KeyboardTimer(int period, ActionListener listener) {
 			super(period, listener);
 		}
-		
+
 		public void reset() {
 			reset = true;
 			this.stop();
 		}
-		
+
 		private long start;
 		//returns true if it actually starts
 		public boolean startTimer() {
@@ -192,29 +192,29 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 			super.start();
 			return true;
 		}
-		
+
 		private long current;
 		protected void fireActionPerformed(ActionEvent e) {
 			current = System.currentTimeMillis();
 			super.fireActionPerformed(new ActionEvent(getTimerState(), 0, "New Time"));
 		}
-		
+
 		private TimerState getTimerState() {
 			return new TimerState((int) (100*getElapsedTimeSeconds() + .5));
 		}
-		
+
 		private double getElapsedTimeSeconds() {
 			if(isReset()) {
 				return 0;
 			}
 			return (current - start) / 1000.;
 		}
-		
+
 		private boolean reset = true;
 		public boolean isReset(){
 			return reset;
 		}
-		
+
 		public void split() {
 			super.fireActionPerformed(new ActionEvent(getTimerState(), 0, "Split"));
 		}
@@ -229,8 +229,8 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 			reset = true;
 		}
 	}
-	
-	public interface KeyboardTimerComponent {	
+
+	public interface KeyboardTimerComponent {
 		public void setUnfocusedState();
 		public void setFocusedState();
 		public void setKeysDownState();

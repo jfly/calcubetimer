@@ -31,10 +31,10 @@ public class CCTClient {
 	private int scrambleIndex = 0;
 
 	private CALCubeTimer cct;
-	
+
 	private UserTable users;
 	private CCTClientGUI gui;
-	
+
 	public static void main(String[] args) throws UnsupportedLookAndFeelException{
 		UIManager.setLookAndFeel(new SubstanceLookAndFeel());
 		JDialog.setDefaultLookAndFeelDecorated(true);
@@ -45,7 +45,7 @@ public class CCTClient {
 		this.cct = cct;
 		users = new UserTable();
 		gui = new CCTClientGUI(this, icon.getImage(), "CCTClient v" + VERSION + ": not connected");
-		
+
 		if(login()){
 			new GetMessageWorker(this, in).execute();
 		}
@@ -53,7 +53,7 @@ public class CCTClient {
 			gui.getFrame().dispose();
 		}
 	}
-	
+
 	private Component disableEnable = null;
 	private Component enableDisable = null;
 	public void enableAndDisable(Component enableAndDisableMe) {
@@ -74,11 +74,11 @@ public class CCTClient {
 	public void setScrambleIndex(int i){
 		scrambleIndex = i;
 	}
-	
+
 	public UserTable getUsers() {
 		return users;
 	}
-	
+
 	public void cleanup(){
 		if(enableDisable != null)
 			enableDisable.setEnabled(true);
@@ -132,9 +132,9 @@ public class CCTClient {
 			login.setVisible(true);
 			char loginStatus = Protocol.ERROR;
 			InetAddress address = null;
-			
+
 			if(login.isCancelled()) break;
-			
+
 			serverName = login.getServerName();
 			port = login.getPort();
 			userName = login.getUserName().trim();
@@ -186,7 +186,7 @@ public class CCTClient {
 				p += "Unknown error.";
 				break;
 		}
-		
+
 		errorMessage(p);
 	}
 
@@ -225,7 +225,7 @@ public class CCTClient {
 		if(s.length() > 0) write(Protocol.MESSAGE_NORMAL, s);
 		if(s.toLowerCase().startsWith("/exit")) cleanup();
 	}
-	
+
 	public void sendCurrentTime(String s){
 		writeTime(Protocol.DATA_CURRENT_TIME, s);
 	}
@@ -360,12 +360,12 @@ public class CCTClient {
 			users.addUser(new User(name[0], name[1]));
 		}
 	}
-	
+
 	private void processName(String s){
 		String[] name = s.split(Protocol.DELIMITER, 2);
 		users.getUser(name[0]).setDisplayName(name[1]);
 	}
-	
+
 	private void processTime(char type, String s){
 		String[] strs = s.split("" + Protocol.DELIMITER);
 		String name = strs[0];
@@ -430,7 +430,7 @@ public class CCTClient {
 	private void processSystemMessage(String s){
 		printToLog("<span class='system'>" + s + "</span>");
 	}
-	
+
 	public void printToLog(String s) {
 		gui.printToLog(s);
 	}

@@ -15,9 +15,9 @@ import javax.swing.text.JTextComponent;
 
 public class JSpinnerWithText extends JPanel implements AncestorListener, ChangeListener {
 	private static final long serialVersionUID = 1L;
-	
+
 	private JSpinner integerSpinner = null;
-	
+
 	public JSpinnerWithText(int initial, int min, String text) {
 		super();
 
@@ -41,7 +41,7 @@ public class JSpinnerWithText extends JPanel implements AncestorListener, Change
 					}
 				});
 		integerSpinner.addChangeListener(this);
-		
+
 		JPanel subPanel = new JPanel();
 		subPanel.add(new JLabel(text));
         subPanel.add(integerSpinner);
@@ -49,7 +49,7 @@ public class JSpinnerWithText extends JPanel implements AncestorListener, Change
         add(subPanel);
         addAncestorListener(this);
 	}
-	
+
 	public int getSpinnerValue() {
 		return ((Integer) integerSpinner.getValue()).intValue();
 	}

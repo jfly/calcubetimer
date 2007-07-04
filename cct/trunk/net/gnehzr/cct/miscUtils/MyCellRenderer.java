@@ -21,7 +21,7 @@ public class MyCellRenderer extends JLabel implements ListCellRenderer {
 			int index,
 			boolean isSelected,
 			boolean cellHasFocus) {
-		
+
 		setEnabled(list.isEnabled());
 		setFont(list.getFont());
 		setText("  " + value.toString() + "  ");
@@ -36,27 +36,27 @@ public class MyCellRenderer extends JLabel implements ListCellRenderer {
 		} else if(bestAndWorst[1] == value) {
 			foreground = Configuration.getWorstTimeColor();
 		}
-		
+
 		boolean memberOfBestRA = times.containsTime((SolveTime) value, AverageArrayList.averageType.RA);
 		boolean memberOfCurrentAverage = times.containsTime((SolveTime) value, AverageArrayList.averageType.CURRENT);
-		
+
 		if(memberOfBestRA && memberOfCurrentAverage)
 			background = Configuration.getBestAndCurrentColor();
 		else if(memberOfCurrentAverage)
 			background = Configuration.getCurrentAverageColor();
 		else if(memberOfBestRA)
 			background = Configuration.getBestRAColor();
-		
+
 		if(isSelected) {
 			if(background == null)
 				background = Color.GRAY;
 			else
 				background = background.darker();
 		}
-		
+
 		setForeground(foreground);
 		setBackground(background);
-		
+
 		return this;
 	}
 }

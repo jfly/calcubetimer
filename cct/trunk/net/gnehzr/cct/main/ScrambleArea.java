@@ -68,7 +68,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener {
 		hid = hidden;
 		setBackground(hid && Configuration.isHideScrambles() ? Color.BLACK: Color.WHITE);
 	}
-	
+
 	private void setProperSize() {
 		try {
 			Rectangle r = scramble.modelToView(scramble.getDocument().getLength());

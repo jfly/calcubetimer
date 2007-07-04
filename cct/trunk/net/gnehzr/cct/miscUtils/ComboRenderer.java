@@ -23,7 +23,7 @@ public class ComboRenderer extends JLabel implements ListCellRenderer {
 		else{
 			setBackground(list.getBackground());
 			setForeground(list.getForeground());
-		}	
+		}
 
 		if(!((ComboItem)value).isEnabled()) {
 			setBackground(list.getBackground());

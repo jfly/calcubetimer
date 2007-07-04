@@ -59,8 +59,8 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 		}
 
 		add(subPanel);
-	}	
-	
+	}
+
 	public URL getURL() {
 		try {
 			return new URI(urlField.getText()).toURL();
@@ -68,7 +68,7 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 			JOptionPane.showMessageDialog(this, 
 					e.getMessage() + "\nBad filename.",
 					"Error!",
-					JOptionPane.ERROR_MESSAGE);		
+					JOptionPane.ERROR_MESSAGE);
 		}
 		return null;
 	}
@@ -98,7 +98,7 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 	public int getNumberOfScrambles() {
 		return numberOfScrambles.getSpinnerValue();
 	}
-	
+
 	public ScrambleType getType() {
 		return new ScrambleType((String) scrambleChooser.getSelectedItem(),
 				scrambleLength == null ? 1 : scrambleLength.getSpinnerValue());

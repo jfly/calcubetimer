@@ -5,9 +5,9 @@ import net.gnehzr.cct.statistics.SolveTime;
 
 public class TimerState implements Comparable {
 	private int hundredthsValue;
-	
+
 	public TimerState() {}
-	
+
 	public TimerState(int hundredths) {
 		hundredthsValue = hundredths;
 	}

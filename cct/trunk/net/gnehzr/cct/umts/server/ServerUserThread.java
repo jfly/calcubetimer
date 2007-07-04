@@ -66,7 +66,7 @@ public class ServerUserThread extends Thread{
 			server.processExit(client, s);
 		}
 	}
-	
+
 	private void processInput(char type, String s) throws IOException{
 		switch(type){
 			case Protocol.DATA_CURRENT_TIME:

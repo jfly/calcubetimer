@@ -14,9 +14,9 @@ public class StackmatState extends TimerState {
 	private int hundredths = 0;
 	private boolean isValid = false;
 	private boolean greenLight = false;
-	
+
 	public StackmatState() {}
-	
+
 	public StackmatState(StackmatState previous, ArrayList periodData) {
 		if(periodData.size() == 89) { //all data present
 			isValid = true;
@@ -37,7 +37,7 @@ public class StackmatState extends TimerState {
 			super.setValue(previous.value());
 		}
 	}
-	
+
 	private int parseTime(ArrayList periodData){
 		parseHeader(periodData);
 		minutes = parseDigit(periodData, 1, Configuration.isInvertedMinutes());

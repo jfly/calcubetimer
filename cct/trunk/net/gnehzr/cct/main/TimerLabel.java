@@ -21,10 +21,9 @@ import javax.swing.border.TitledBorder;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.main.KeyboardTimerPanel.KeyboardTimerComponent;
 
-
 public class TimerLabel extends JLabel implements ComponentListener, KeyboardTimerComponent {
 	private static final long serialVersionUID = 1L;
-	
+
 	private Font font;
 	private KeyboardTimerPanel timer;
 	private ScrambleArea scrambles;
@@ -43,7 +42,7 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 			setFocusedState();
 		else
 			setUnfocusedState();
-			
+
 		timer.setEnabled(enabled);
 	}
 	private boolean keyboard;
@@ -68,10 +67,10 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 		componentResized(null);
 	}
 	public void componentHidden(ComponentEvent arg0) {
-		
+
 	}
 	public void componentMoved(ComponentEvent arg0) {
-		
+
 	}
 	public void componentResized(ComponentEvent e) {
 		if(font != null) {
@@ -85,7 +84,7 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 		}
 	}
 	public void componentShown(ComponentEvent arg0) {
-		
+
 	}
 	public void setFocusedState() {
 		if(keyboard && scrambles != null)
@@ -121,7 +120,7 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 		if(bord instanceof TitledBorder)
 			((TitledBorder) bord).setTitle(string);
 	}
-	
+
 	private static BufferedImage curr = null;
 	private static BufferedImage red;
 	public void setRedButton() {

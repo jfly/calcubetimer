@@ -31,7 +31,7 @@ public abstract class Configuration {
 	public interface ConfigurationChangeListener {
 		public void configurationChanged();
 	}
-	
+
 	public static class SortedProperties extends Properties {
 		private static final long serialVersionUID = 1L;
 		public SortedProperties(SortedProperties defaults) {
@@ -48,7 +48,7 @@ public abstract class Configuration {
 			return keyList.elements();
 		}
 	}
-	
+
 	public static final String newLine = System.getProperty("line.separator");
 	public static void init() {
 		try {
@@ -61,7 +61,7 @@ public abstract class Configuration {
 		listeners.add(listener);
 		apply();
 	}
-	
+
 	private static SortedProperties defaults, props;
 	private static File currentFile;
 	public static void loadConfiguration(File f) throws IOException {
@@ -94,7 +94,7 @@ public abstract class Configuration {
 		props.store(out, "CCT " + CALCubeTimer.CCT_VERSION + " Properties File");
 		out.close();
 	}
-	
+
 	private static void updateBackground() {
 		if(isBackground()) {
 			SubstanceLookAndFeel.setImageWatermarkKind(SubstanceConstants.ImageWatermarkKind.APP_CENTER);
@@ -106,7 +106,7 @@ public abstract class Configuration {
 			SubstanceLookAndFeel.setCurrentWatermark(new SubstanceImageWatermark(in));
 		} else
 			SubstanceLookAndFeel.setCurrentWatermark(new org.jvnet.substance.watermark.SubstanceNullWatermark());
-		
+
 		Window[] frames = JFrame.getWindows();
 		for(int ch = 0; ch < frames.length; ch++) {
 			frames[ch].repaint();
@@ -321,7 +321,7 @@ public abstract class Configuration {
 		return isPromptForNewTime(props);
 	}
 	public static boolean isPromptForNewTimeDefault() {
-		return isPromptForNewTime(defaults);		
+		return isPromptForNewTime(defaults);
 	}
 	private static boolean isPromptForNewTime(Properties props) {
 		return Boolean.parseBoolean(
@@ -334,7 +334,7 @@ public abstract class Configuration {
 		return getRASize(props);
 	}
 	public static int getRASizeDefault() {
-		return getRASize(defaults);		
+		return getRASize(defaults);
 	}
 	private static int getRASize(Properties props) {
 		return Integer.parseInt(
@@ -474,7 +474,7 @@ public abstract class Configuration {
 			props.setProperty("puzzle_color_MegaminxFace" + MegaminxScramble.FACES.charAt(ch), padWith0s(Integer.toHexString(megaminxColors[ch].getRGB() & 0xffffff)));
 		}
 	}
-	
+
 	public static void setScramblePopup(boolean popup) {
 		props.setProperty("scramble_Popup", "" + popup);
 	}
@@ -605,35 +605,35 @@ public abstract class Configuration {
 	public static String getDefaultScrambleURL() {
 		return props.getProperty("misc_DefaultScrambleURL");
 	}
-	
+
 	public static boolean isIntegratedTimerDisplay() {
 		return Boolean.parseBoolean(props.getProperty("gui_timer_IntegratedTimerDisplay"));
 	}
 	public static void setIntegratedTimerDisplay(boolean integrated) {
 		props.setProperty("gui_timer_IntegratedTimerDisplay", "" + integrated);
 	}
-	
+
 	public static boolean isHideScrambles() {
 		return Boolean.parseBoolean(props.getProperty("gui_timer_HideScrambles"));
 	}
 	public static void setHideScrambles(boolean hideScrambles) {
 		props.setProperty("gui_timer_HideScrambles", "" + hideScrambles);
 	}
-	
+
 	public static boolean isSpacebarOnly() {
 		return Boolean.parseBoolean(props.getProperty("gui_timer_SpacebarOnly"));
 	}
 	public static void setSpacebarOnly(boolean spacebar) {
 		props.setProperty("gui_timer_SpacebarOnly", "" + spacebar);
 	}
-	
+
 	public static boolean isAnnoyingDisplay() {
 		return Boolean.parseBoolean(props.getProperty("gui_timer_AnnoyingDisplay"));
 	}
 	public static void setAnnoyingDisplay(boolean annoy) {
 		props.setProperty("gui_timer_AnnoyingDisplay", "" + annoy);
 	}
-	
+
 	public static boolean isLessAnnoyingDisplay() {
 		return Boolean.parseBoolean(props.getProperty("gui_timer_LessAnnoyingDisplay"));
 	}
@@ -660,17 +660,17 @@ public abstract class Configuration {
 			}
 			Collections.sort(temp);
 			puzzles = temp.toArray(new String[temp.size()]);
-			
+
 			for(int ch = 0; ch < puzzles.length; ch++) { //remove leading 0's
 				String t = puzzles[ch];
 				if(t.startsWith("0"))
 					puzzles[ch] = t.substring(1);
 			}
-				
+
 		}
 		return puzzles;
 	}
-	
+
 	public static int getDefaultCubieSize() {
 		return Integer.parseInt(props.getProperty("scramble_Popup_cubieSize"));
 	}
@@ -678,7 +678,7 @@ public abstract class Configuration {
 	public static int getDefaultMinxRad() {
 		return Integer.parseInt(props.getProperty("scramble_Popup_megaminxRadius"));
 	}
-	
+
 	public static int getScrambleGap() {
 		return Integer.parseInt(props.getProperty("scramble_Popup_gap"));
 	}

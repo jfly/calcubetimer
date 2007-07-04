@@ -14,11 +14,11 @@ public class Scramble{
 	protected static int random(int choices){
 		return (int)(choices * Math.random());
 	}
-	
+
 	public boolean revalidateScramble() {
 		return false;
 	}
-	
+
 	public int getLength() {
 		return scramble.split(" ").length;
 	}
@@ -32,7 +32,7 @@ public class Scramble{
 	public String toString() {
 		return scramble;
 	}
-	
+
 	public boolean isImported() {
 		return imported;
 	}

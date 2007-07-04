@@ -16,26 +16,26 @@ import net.gnehzr.cct.miscUtils.SubstanceTextField;
 
 public class LoginDialog extends JDialog implements ActionListener, KeyListener {
 	private static final long serialVersionUID = 1L;
-	
+
 	public LoginDialog(JFrame parent, boolean modal) {
 		super(parent, "Choose server to connect to", modal);
-		
+
 		createGUI();
 		setLocationRelativeTo(parent);
 	}
-	
+
 	private SubstanceTextField server, port, userName = null;
 	private JButton connectButton, cancelButton = null;
 	private boolean isCancelled = false;
 	public void createGUI() {
 		JPanel pane = new JPanel(new GridBagLayout());
 		setContentPane(pane);
-		
+
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.ipadx = 5;
 		c.ipady = 3;
-		
+
 		server = new SubstanceTextField(10);
 		port = new SubstanceTextField("" + CCTClient.DEFAULT_PORT);
 		userName = new SubstanceTextField();
@@ -47,43 +47,43 @@ public class LoginDialog extends JDialog implements ActionListener, KeyListener 
 		connectButton.addActionListener(this);
 		cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(this);
-		
+
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 0;
 		pane.add(new JLabel("Server:"), c);
-		
+
 		c.weightx = 1;
 		c.gridwidth = 2;
 		c.gridx = 1;
 		c.gridy = 0;
 		pane.add(server, c);
-		
+
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 3;
 		c.gridy = 0;
 		pane.add(new JLabel(" :"), c);
-		
+
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 4;
 		c.gridy = 0;
 		pane.add(port, c);
-		
+
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 1;
 		pane.add(new JLabel("Username:"), c);
-		
+
 		c.weightx = 1;
 		c.gridwidth = 4;
 		c.gridx = 1;
 		c.gridy = 1;
 		pane.add(userName, c);
-		
+
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 1;
@@ -95,7 +95,7 @@ public class LoginDialog extends JDialog implements ActionListener, KeyListener 
 		c.gridx = 2;
 		c.gridy = 2;
 		pane.add(cancelButton, c);
-		
+
 		setResizable(false);
 		pack();
 	}
@@ -120,19 +120,19 @@ public class LoginDialog extends JDialog implements ActionListener, KeyListener 
 	public void reset() {
 		buttonPressed = false;
 	}
-	
+
 	public boolean isCancelled() {
 		return isCancelled || !buttonPressed;
 	}
-	
+
 	public String getServerName() {
 		return server.getText();
 	}
-	
+
 	public int getPort() {
 		return new Integer(port.getText()).intValue();
 	}
-	
+
 	public String getUserName() {
 		return userName.getText();
 	}
@@ -140,4 +140,3 @@ public class LoginDialog extends JDialog implements ActionListener, KeyListener 
 	public void keyReleased(KeyEvent e) {}
 	public void keyTyped(KeyEvent e) {}
 }
-

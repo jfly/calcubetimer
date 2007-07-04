@@ -78,7 +78,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		JPanel tab = makeStandardOptionsPanel1();
 		tabbedPane.addTab("Options", tab);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_O);
-		
+
 		tab = makeStandardOptionsPanel2();
 		tabbedPane.addTab("Options (cont.)", tab);
 
@@ -98,7 +98,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 		tab = makeCubeColorsPanel();
 		tabbedPane.addTab("Color Scheme", tab);
-		
+
 		applyButton = new JButton("Apply");
 		applyButton.addActionListener(this);
 
@@ -160,7 +160,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 		scramblePopup = new JCheckBox("Display scramble in a popup.");
 		rightPanel.add(scramblePopup);
-		
+
 		JPanel sideBySide = new JPanel();
 		SpinnerNumberModel model = new SpinnerNumberModel(Configuration.getRASizeDefault(),
 				3,		//min
@@ -192,15 +192,15 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		worstTime.setOpaque(true);
 		worstTime.addMouseListener(this);
 		colorPanel.add(worstTime);
-		
+
 		currentAverage = new JLabel("Current average", JLabel.CENTER);
 		currentAverage.setOpaque(true);
 		currentAverage.addMouseListener(this);
 		colorPanel.add(currentAverage);
-		
+
 		return options;
 	}
-	
+
 	private void syncGUIwithConfig() {
 		//makeStandardOptionsPanel1
 		clockFormat.setSelected(Configuration.isClockFormat());
@@ -212,7 +212,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		worstTime.setBackground(Configuration.getWorstTimeColor());
 		currentAverage.setBackground(Configuration.getCurrentAverageColor());
 		RASize.setValue(Configuration.getRASize());
-		
+
 		//makeStandardOptionsPanel2
 		minSplitTime.setValue(Configuration.getMinSplitDifference());
 		splits.setSelected(Configuration.isSplits());
@@ -228,13 +228,13 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		opacity.setEnabled(isBackground.isSelected());
 		currentFont.setFont(Configuration.getScrambleFont());
 		minSplitTime.setEnabled(splits.isSelected());
-		
+
 		//makeStackmatOptionsPanel
 		stackmatValue.setValue(Configuration.getSwitchThreshold());
 		invertedMinutes.setSelected(Configuration.isInvertedMinutes());
 		invertedSeconds.setSelected(Configuration.isInvertedSeconds());
 		invertedHundredths.setSelected(Configuration.isInvertedHundredths());
-		
+
 		//makeSundaySetupPanel
 		name.setText(Configuration.getName());
 		country.setText(Configuration.getCountry());
@@ -246,14 +246,14 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		SMTPauth.setSelected(Configuration.isSMTPauth());
 		password.setText(new String(Configuration.getPassword()));
 		password.setEnabled(SMTPauth.isSelected());
-		
+
 		//makeSessionSetupPanel
 		sessionStats.setText(Configuration.getSessionString());
-		
+
 		//makeAverageSetupPanel
 		averageStats.setText(Configuration.getAverageString());
 	}
-	
+
 	private JTextArea keySelector = null;
 	private int splitkey;
 	private JCheckBox flashyWindow = null;
@@ -275,27 +275,27 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		JSpinner.NumberEditor doubleModel = new JSpinner.NumberEditor(minSplitTime, "0.00");
 		minSplitTime.setEditor(doubleModel);
 		((JSpinner.DefaultEditor) minSplitTime.getEditor()).getTextField().setColumns(4);
-		
+
 		splits = new JCheckBox("Detect splits.");
 		splits.addActionListener(this);
-				
+
 		keySelector = new JTextArea();
 		keySelector.setColumns(10);
 		keySelector.setEditable(false);
 		keySelector.setToolTipText("Click here to set key");
 		keySelector.addKeyListener(this);
-		
+
 		sideBySide.add(splits);
 		sideBySide.add(new JLabel("Minimum time between splits:"));
 		sideBySide.add(minSplitTime);
 		sideBySide.add(new JLabel("Split key:"));
 		sideBySide.add(keySelector);
 		panel.add(sideBySide);
-		
+
 		flashyWindow = new JCheckBox("Flash chat window when message recieved");
 		flashyWindow.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel.add(flashyWindow);
-		
+
 		sideBySide = new JPanel();
 		isBackground = new JCheckBox("Enable watermark");
 		isBackground.addActionListener(this);
@@ -308,25 +308,25 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		sideBySide.add(backgroundFile);
 		sideBySide.add(browse);
 		panel.add(sideBySide);
-		
+
 		sideBySide = new JPanel();
 		opacity = new JSlider(JSlider.HORIZONTAL, 0, 10, (int) (10*Configuration.getOpacityDefault()));
 		sideBySide.add(new JLabel("Opacity:"));
 		sideBySide.add(opacity);
 		panel.add(sideBySide);
-		
+
 		sideBySide = new JPanel();
 		currentFont = new JLabel("Scramble Font");
 		sideBySide.add(currentFont);
-		
+
 		fontSelectorButton = new JButton("Choose font");
 		fontSelectorButton.addActionListener(this);
 		sideBySide.add(fontSelectorButton);
-		
+
 		panel.add(sideBySide);
 		return panel;
 	}
-	
+
 	private JSpinner stackmatValue = null;
 	private JCheckBox invertedHundredths = null;
 	private JCheckBox invertedSeconds = null;
@@ -367,7 +367,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		sideBySide.add(invertedHundredths);
 
 		mixerPanel = new JPanel();
-				
+
 		if(stackmat != null) { //TODO - is this ok here?
 			items = stackmat.getMixerChoices();
 			int selected = stackmat.getSelectedMixerIndex();
@@ -384,7 +384,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		mixerPanel.add(stackmatRefresh);
 
 		options.add(mixerPanel);
-		
+
 		return options;
 	}
 
@@ -498,7 +498,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridx = 1;
 		c.gridy = 5;
 		options.add(new JLabel("Password: "), c);
-		
+
 		c.gridx = 2;
 		c.gridwidth = 4;
 		password = new JPasswordField();
@@ -564,7 +564,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		options.add(solvedMegaminx);
 		return options;
 	}
-	
+
 	public void mouseClicked(MouseEvent e) {
 		Object source = e.getSource();
 		if(source instanceof JLabel) {
@@ -668,7 +668,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 			Font selected = font.getSelectedFont();
 			if(selected.getSize() > 40) {
-				selected = selected.deriveFont(40f);			
+				selected = selected.deriveFont(40f);
 			}
 			currentFont.setFont(selected);
 			pack();
@@ -715,16 +715,16 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		splitkey = Configuration.getSplitkeyDefault();
 		keySelector.setText(KeyEvent.getKeyText(splitkey));
 		keySelector.setEnabled(splits.isEnabled());
-		
+
 		isBackground.setSelected(Configuration.isBackgroundDefault());
 		backgroundFile.setText(Configuration.getBackgroundDefault());
 		opacity.setValue((int) (10*Configuration.getOpacityDefault()));
 		backgroundFile.setEnabled(isBackground.isSelected());
 		browse.setEnabled(isBackground.isSelected());
 		opacity.setEnabled(isBackground.isSelected());
-		
+
 		currentFont.setFont(Configuration.getScrambleFontDefault());
-		
+
 		sundayQuote.setText(Configuration.getSundayQuoteDefault());
 	}
 
@@ -744,7 +744,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 	private void applyConfiguration() {
 		setTitle("CalCubeTimer Options File: " + Configuration.getFileName());
-		
+
 		Configuration.setBestAndCurrentColor(currentAndRA.getBackground());
 		Configuration.setCurrentAverageColor(currentAverage.getBackground());
 		Configuration.setBestRAColor(bestRA.getBackground());
@@ -775,21 +775,21 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setAverageString(averageStats.getText());
 
 		Configuration.setCubeColors(solvedCube.getCubeColors());
-		
+
 		Configuration.setMegaminxColors(solvedMegaminx.getMegaminxColors());
-		
+
 		Configuration.setSplits(splits.isSelected());
 		Configuration.setMinSplitDifference((Double) minSplitTime.getValue());
 		Configuration.setSplitkey(splitkey);
-		
+
 		Configuration.setFlashWindow(flashyWindow.isSelected());
-		
+
 		Configuration.setBackground(isBackground.isSelected());
 		Configuration.setBackground(backgroundFile.getText());
 		Configuration.setOpacity((float) (opacity.getValue() / 10.));
-		
+
 		Configuration.setScrambleFont(currentFont.getFont());
-		
+
 		Configuration.apply();
 
 		for(int i = 0; i < items.length; i++){

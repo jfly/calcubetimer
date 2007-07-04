@@ -86,7 +86,7 @@ public class CubeScramble extends Scramble {
 						slice = slices - 1 - slice;
 						direction = 2 - direction;
 					}
-					
+
 					int n = ((slice * 6 + face) * 4 + direction);
 					scramble += moveString(n) + " ";
 					do{
@@ -107,7 +107,7 @@ public class CubeScramble extends Scramble {
 		String move = "";
 		int face = n >> 2;
 		int direction = n & 3;
-		
+
 		if(size <= 5){
 			move += FACES.charAt(face);
 		}
@@ -116,7 +116,7 @@ public class CubeScramble extends Scramble {
 			if(face / 6 != 0) move += "(" + (face / 6 + 1) + ")";
 		}
 		if(direction != 0) move += " 2'".charAt(direction);
-		
+
 		return move;
 	}
 	public boolean revalidateScramble() {
@@ -169,7 +169,7 @@ public class CubeScramble extends Scramble {
 
 				dir = " 2'".indexOf(cstrs[i].charAt(cstrs[i].length() - 1) + "");
 				if(dir < 0) dir = 0;
-				
+
 				do{
 					slice(face, slice, dir);
 					slice--;

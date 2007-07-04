@@ -113,7 +113,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 		messageBox = new SubstanceTextField(50);
 		messageBox.addActionListener(this);
 		messageBox.addKeyListener(this);
-		
+
 //		try { //This is so that ctrl-backspace will work fine, since it doesn't in substance
 //			LookAndFeel current = UIManager.getLookAndFeel();
 //			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -133,7 +133,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 				textScrollPane, userScrollPane);
 		splitPane.setResizeWeight(.7); 
-		
+
 		fullScreenButton = new JButton("+");
 		fullScreenButton.addActionListener(this);
 
@@ -153,7 +153,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 		frame.setIconImage(icon);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setResizable(true);
-		
+
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				flasher.stop();

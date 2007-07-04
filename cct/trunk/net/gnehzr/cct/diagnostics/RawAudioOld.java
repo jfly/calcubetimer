@@ -82,13 +82,13 @@ public class RawAudioOld implements Runnable{
             if (line != null) line.close( );
             if (ain != null) ain.close( );
         }
-		
-		
-		
+
+
+
 //		int currentSample = 0;
 //		byte[] buffer = new byte[quality];
 //
-//		
+//
 //		while(true) {
 //			if(ain.read(buffer, 0, buffer.length) > 0){
 //				currentSample = buffer[0];

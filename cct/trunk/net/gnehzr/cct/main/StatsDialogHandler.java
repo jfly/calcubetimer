@@ -44,7 +44,7 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 	private Calendar cal = Calendar.getInstance(TimeZone.getDefault());
-	
+
 	private JButton copyButton = null;
 	private JButton emailButton = null;
 	private JTextArea textArea = null;
@@ -60,18 +60,18 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 		this.times = times;
 		this.type = type;
 		clipBoard = getToolkit().getSystemClipboard();
-		
+
 		textArea = new JTextArea();
 		textArea.setEditable(!toEmailButton);
 		textArea.setRows(20);
 		textArea.setColumns(70);
-		
+
 		JScrollPane textScroller = new JScrollPane(textArea);
-		
+
 		copyButton = new JButton("Copy");
 		copyButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		copyButton.addActionListener(this);
-		
+
 		emailButton = new JButton("Email");
 		emailButton.addActionListener(this);
 
@@ -120,7 +120,7 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 
 		updateStats();
 	}
-	
+
 	private void updateStats() {
 		String stats = "";
 		boolean contest = false;
@@ -225,7 +225,7 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 							"Warning!",
 							JOptionPane.WARNING_MESSAGE);
 			}
-			
+
 			StatsDialogHandler emailIt = new StatsDialogHandler(configurationDialog, times, type, false);
 			int choice = JOptionPane.showOptionDialog(this, 
 					emailIt, 
@@ -282,7 +282,7 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 	}
 
 	public void lostOwnership(Clipboard arg0, Transferable arg1) {}
-	
+
 	private class PasswordPrompt extends JDialog implements ActionListener {
 		private static final long serialVersionUID = 1L;
 		private boolean canceled = true;
@@ -291,7 +291,7 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 		public PasswordPrompt(Frame parent) {
 			super(parent, "Enter Password", true);
 			Container pane = getContentPane();
-			
+
 			pass = new JPasswordField(20);
 			ok = new JButton("Ok");
 			ok.addActionListener(this);
@@ -301,7 +301,7 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 			JPanel okCancel = new JPanel();
 			okCancel.add(ok);
 			okCancel.add(cancel);
-			
+
 			pane.add(pass, BorderLayout.CENTER);
 			pane.add(okCancel, BorderLayout.PAGE_END);
 			pack();
@@ -326,4 +326,3 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 		}
 	}
 }
-

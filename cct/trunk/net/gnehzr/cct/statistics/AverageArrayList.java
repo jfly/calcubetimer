@@ -23,7 +23,7 @@ import net.gnehzr.cct.stackmatInterpreter.StackmatState;
 
 public class AverageArrayList extends ArrayList<SolveTime> implements ListModel, ActionListener, ConfigurationChangeListener {
 	private static final long serialVersionUID = 1L;
-	
+
 	//So, an average with more than one pop/dnf is invalid
 	//A session average ignores pops and dnfs completely
 	public enum averageType { CURRENT, RA, SESSION }
@@ -31,7 +31,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 
 	private int indexOfCurrentAverage;
 	private int indexOfBestRA;
-	
+
 	private int numberOfPops;
 	private int numberOfDNFs;
 	private int numberOfPlusTwos;
@@ -42,7 +42,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 		RASize = Configuration.getRASize();
 		initialize();
 	}
-	
+
 	public void clear() {
 		super.clear();
 		initialize();
@@ -52,7 +52,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 		numberOfPops = numberOfPlusTwos = numberOfDNFs = 0;
 		indexOfBestRA = indexOfCurrentAverage = -RASize;
 	}
-	
+
 	public boolean add(SolveTime newTime) {
 		super.add(newTime);
 		updateStatsWithNewTime(newTime);
@@ -69,18 +69,18 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 		if(newTime.isPlusTwo()) numberOfPlusTwos++;
 		if(newTime.isDNF()) numberOfDNFs++;
 	}
-	
+
 	public boolean remove(Object o) {
 		super.remove(o);
 		redoStats();
 		contentsChanged(null);
 		return true;
 	}
-	
+
 	public int getRASize() {
 		return RASize;
 	}
-	
+
 	private void redoStats() {
 		initialize();
 		for(SolveTime newTime : this) {
@@ -118,7 +118,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 		}
 		return tempSum / denominator;
 	}
-	
+
 	private ListIterator<SolveTime> getSublist(averageType type) {
 		int[] bounds = getBounds(type);
 		return subList(bounds[0], bounds[1]).listIterator();
@@ -134,7 +134,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 		int bounds[] = getBounds(type);
 		return (indexOfSolve >= bounds[0] && indexOfSolve < bounds[1]);
 	}
-	
+
 	public String standardDeviation(averageType type) {
 		double sd = stdDev(type);
 		return ((sd == Double.MAX_VALUE) ? "N/A" : Utils.format(sd));
@@ -142,7 +142,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 	private double stdDev(averageType type) {
 		boolean sessionAverage = type == averageType.SESSION;
 		double ave = ave(type);
-		if(ave < 0 || (sessionAverage && getNumberOfSolves() <= 1)) return Double.MAX_VALUE;		
+		if(ave < 0 || (sessionAverage && getNumberOfSolves() <= 1)) return Double.MAX_VALUE;
 		SolveTime[] bestAndWorst = (sessionAverage ? new SolveTime[]{null, null} : getBestAndWorstTimes(type));
 		double variance = 0;
 		int denominator = -1;
@@ -156,7 +156,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 		}
 		return Math.sqrt(variance / denominator);
 	}
-	
+
 	public SolveTime[] getBestAndWorstTimes(averageType type) {
 		SolveTime best = SolveTime.WORST;
 		SolveTime worst = SolveTime.BEST;
@@ -204,7 +204,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 			listers.next().contentsChanged(e);
 		}
 	}
-	
+
 	private JList timesList = null;
 	private JRadioButtonMenuItem none, plusTwo, pop, dnf;
 	public void showPopup(MouseEvent e, JList timesList) {
@@ -246,7 +246,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 			    plusTwo.addActionListener(this);
 			    jpopup.add(plusTwo);
 			    plusTwo.setEnabled(!selectedSolve.isTrueWorstTime());
-		
+
 			    pop = new JRadioButtonMenuItem("POP", selectedSolve.isPop());
 			    group.add(pop);
 			    pop.addActionListener(this);
@@ -279,7 +279,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 		String command = e.getActionCommand();
 		Object source = e.getSource();
     	SolveTime selectedSolve = (SolveTime) timesList.getSelectedValue();
-    	
+    
     	if(source == plusTwo || source == dnf || source == pop || source == none) {
 	    	selectedSolve.setPlusTwo(plusTwo.isSelected());
 	    	selectedSolve.setDNF(dnf.isSelected());
@@ -303,7 +303,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 		RASize = Configuration.getRASize();
 		redoStats();
 	}
-	
+
 	public String toStatsStringHelper(averageType type, boolean showSplits) {
 		SolveTime[] bestAndWorst = ((type == averageType.SESSION) ? new SolveTime[]{null, null} : getBestAndWorstTimes(type));
 		return toStatsStringHelper(getSublist(type), bestAndWorst[0], bestAndWorst[1], showSplits);
@@ -317,7 +317,7 @@ public class AverageArrayList extends ArrayList<SolveTime> implements ListModel,
 			parens = true;
 		return "\r\n" + times.nextIndex() + ".\t" + (parens ? "(" : "") + next.toString() + (parens ? ")" : "") + "\t" + next.getScramble() + (showSplits ? next.toSplitsString() : "") + toStatsStringHelper(times, best, worst, showSplits);
 	}
-	
+
 	public String toTerseTimes(averageType type) {
 		SolveTime[] bestAndWorst = getBestAndWorstTimes(type);
 		return toStringHelper(getSublist(type), bestAndWorst[0], bestAndWorst[1]);

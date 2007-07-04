@@ -14,7 +14,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 	private static final int NOISESPIKETHRESHOLD = SAMPLINGRATE * 25 / 44100; //less than signalLengthPerBit
 	private static final int NEWPERIOD = SAMPLINGRATE / 44;
 	private static final double SIGNALLENGTHPERBIT = SAMPLINGRATE * 38 / 44100.;
-	
+
 	private static final AudioFormat FORMAT = new AudioFormat(SAMPLINGRATE, QUALITY * 8, 1, true, false);
 	public static final DataLine.Info INFO = new DataLine.Info(TargetDataLine.class, FORMAT);
 
@@ -25,10 +25,10 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 	private boolean enabled = true;
 
 	private static Mixer.Info[] aInfos = AudioSystem.getMixerInfo();
-	
+
 	public StackmatInterpreter(){
 		super();
-		
+
 		if(Configuration.getMixerNumber() >= 0){
 			changeLine(Configuration.getMixerNumber());
 		}
@@ -150,7 +150,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 						timeSinceLastFlip++;
 						firePropertyChange("Off", null, null);
 					}
-					
+
 					if(Math.abs(lastSample - currentSample) > (Configuration.getSwitchThreshold() << (QUALITY * 4)) && timeSinceLastFlip > NOISESPIKETHRESHOLD) {
 //						System.out.println(counter);
 						if(timeSinceLastFlip > NEWPERIOD) {
@@ -166,13 +166,13 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 							//This is to be able to identify new times when they are "equal"
 							//to the last time
 							if(state.isReset() || state.isRunning()) old = new StackmatState();
-							
+
 							boolean thisIsSplit = state.isRunning() && state.oneHand();
 							if(thisIsSplit && !previousWasSplit) {
 								firePropertyChange("Split", null, state);
 							}
 							previousWasSplit = thisIsSplit;
-							
+
 							if(state.isReset())
 								firePropertyChange("Reset", null, state);
 							else if(state.isRunning())
