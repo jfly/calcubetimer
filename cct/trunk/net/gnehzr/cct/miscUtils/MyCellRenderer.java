@@ -6,7 +6,7 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 import net.gnehzr.cct.configuration.Configuration;
-import net.gnehzr.cct.statistics.AverageArrayList;
+import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
 
 public class MyCellRenderer extends JLabel implements ListCellRenderer {
@@ -29,16 +29,16 @@ public class MyCellRenderer extends JLabel implements ListCellRenderer {
 		Color foreground = null;
 		Color background = null;
 
-		AverageArrayList times = (AverageArrayList) list.getModel();
-		SolveTime[] bestAndWorst = times.getBestAndWorstTimes(AverageArrayList.averageType.SESSION);
+		Statistics times = (Statistics) list.getModel();
+		SolveTime[] bestAndWorst = times.getBestAndWorstTimes(Statistics.averageType.SESSION);
 		if(bestAndWorst[0] == value) {
 			foreground = Configuration.getBestTimeColor();
 		} else if(bestAndWorst[1] == value) {
 			foreground = Configuration.getWorstTimeColor();
 		}
 
-		boolean memberOfBestRA = times.containsTime((SolveTime) value, AverageArrayList.averageType.RA);
-		boolean memberOfCurrentAverage = times.containsTime((SolveTime) value, AverageArrayList.averageType.CURRENT);
+		boolean memberOfBestRA = times.containsTime((SolveTime) value, Statistics.averageType.RA);
+		boolean memberOfCurrentAverage = times.containsTime((SolveTime) value, Statistics.averageType.CURRENT);
 
 		if(memberOfBestRA && memberOfCurrentAverage)
 			background = Configuration.getBestAndCurrentColor();

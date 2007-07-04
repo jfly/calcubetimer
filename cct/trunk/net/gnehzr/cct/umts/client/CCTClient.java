@@ -5,7 +5,7 @@ import javax.swing.*;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.scrambles.ScrambleType;
-import net.gnehzr.cct.statistics.AverageArrayList;
+import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
 import net.gnehzr.cct.umts.Protocol;
 
@@ -234,11 +234,11 @@ public class CCTClient {
 		writeTime(Protocol.DATA_TIME, s.toString());
 	}
 
-	public void sendAverage(String s, AverageArrayList list){
-		int num = Math.min(list.getRASize(), list.size());
+	public void sendAverage(String s, Statistics stats){
+		int num = Math.min(stats.getRASize(), stats.getSize());
 		s = Protocol.DATA_AVERAGE + s;
-		for(int i = list.size() - num; i < list.size(); i++){
-			s += Protocol.DELIMITER + list.get(i).toString();
+		for(int i = stats.getSize() - num; i < stats.getSize(); i++){
+			s += Protocol.DELIMITER + stats.get(i).toString();
 		}
 
 		try{

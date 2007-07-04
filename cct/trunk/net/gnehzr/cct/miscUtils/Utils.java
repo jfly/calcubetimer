@@ -25,7 +25,7 @@ public class Utils{
 			hours++;
 		}
 		return (hours == 0 ? 
-				(minutes == 0 ?  "" : minutes + ":" + (seconds < 10 ? "0" : "")) :
+				(minutes == 0 ? "" : minutes + ":" + (seconds < 10 ? "0" : "")) :
 				hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "" ))
 			+ format(seconds);
 	}

@@ -35,7 +35,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationDialog;
 import net.gnehzr.cct.miscUtils.SendMailUsingAuthentication;
 import net.gnehzr.cct.miscUtils.SubstanceTextField;
-import net.gnehzr.cct.statistics.AverageArrayList;
+import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
 
 public class StatsDialogHandler extends JPanel implements ActionListener, ClipboardOwner {
@@ -50,11 +50,11 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 	private JTextArea textArea = null;
 	private SubstanceTextField toAddress, subject = null;
 	private JCheckBox sundayContest = null;
-	private AverageArrayList times = null;
-	private AverageArrayList.averageType type;
+	private Statistics times = null;
+	private Statistics.averageType type;
 	private ConfigurationDialog configurationDialog;
 
-	public StatsDialogHandler(ConfigurationDialog cd, AverageArrayList times, AverageArrayList.averageType type, boolean toEmailButton) {
+	public StatsDialogHandler(ConfigurationDialog cd, Statistics times, Statistics.averageType type, boolean toEmailButton) {
 		super(new BorderLayout());
 		this.configurationDialog = cd;
 		this.times = times;
@@ -129,20 +129,20 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 		} catch(Exception e) {}
 
 		if(contest) {
-			stats = Configuration.getSundayString(times.average(type), times.toTerseTimes(type));
+			stats = Configuration.getSundayString(times.average(type), times.toTerseString(type));
 		} else {
 			SolveTime[] bestAndWorst = times.getBestAndWorstTimes(type);
-			stats = ((type == AverageArrayList.averageType.SESSION) ? Configuration.getSessionString() : Configuration.getAverageString());
+			stats = ((type == Statistics.averageType.SESSION) ? Configuration.getSessionString() : Configuration.getAverageString());
 			stats = stats.replaceAll("\\$D", SDF.format(cal.getTime()));
-			stats = stats.replaceAll("\\$C", "" + times.getNumberOfSolves());
-			stats = stats.replaceAll("\\$P", "" + times.getNumberOfPops());
+			stats = stats.replaceAll("\\$C", "" + times.getNumSolves());
+			stats = stats.replaceAll("\\$P", "" + times.getNumPops());
 			stats = stats.replaceAll("\\$A", times.average(type));
 			stats = stats.replaceAll("\\$S", times.standardDeviation(type));
 			stats = stats.replaceAll("\\$B", bestAndWorst[0].toString());
 			stats = stats.replaceAll("\\$W", bestAndWorst[1].toString());
-			stats = stats.replaceAll("\\$T", times.toTerseTimes(type));
-			stats = stats.replaceAll("\\$I", times.toStatsStringHelper(type, false));
-			stats = stats.replaceAll("\\$i", times.toStatsStringHelper(type, Configuration.isSplits()));
+			stats = stats.replaceAll("\\$T", times.toTerseString(type));
+			stats = stats.replaceAll("\\$I", times.toStatsString(type, false));
+			stats = stats.replaceAll("\\$i", times.toStatsString(type, Configuration.isSplits()));
 		}
 
 		textArea.setText(stats);

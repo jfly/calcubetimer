@@ -38,7 +38,7 @@ import net.gnehzr.cct.scrambles.ScrambleType;
 import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
 import net.gnehzr.cct.stackmatInterpreter.StackmatState;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
-import net.gnehzr.cct.statistics.AverageArrayList;
+import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
 import net.gnehzr.cct.umts.client.CCTClient;
 
@@ -72,7 +72,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	private JCheckBox serverScrambles, multiSlice = null;
 	private JSpinner scrambleNumber, scrambleLength = null;
 	private ScrambleList scrambles = null;
-	private AverageArrayList times = null;
+	private Statistics stats = null;
 	private StackmatInterpreter stackmatTimer = null;
 	private TimerHandler timeListener = null;
 	private CCTClient client;
@@ -189,10 +189,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		resetButton.setMnemonic(KeyEvent.VK_R);
 		resetButton.addActionListener(this);
 
-		times = new AverageArrayList();
-		times.addListDataListener(this);
+		stats = new Statistics();
+		stats.addListDataListener(this);
 
-		timesList = new JList(times);
+		timesList = new JList(stats);
 		timesList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		timesList.setLayoutOrientation(JList.VERTICAL);
 		timesList.addMouseListener(this);
@@ -452,17 +452,17 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 	public void repaintTimes() {
 		currentAverageButton.setForeground(Configuration.getCurrentAverageColor());
-		String temp = times.average(AverageArrayList.averageType.CURRENT);
+		String temp = stats.average(Statistics.averageType.CURRENT);
 		currentAverageButton.setText("Current Average: " + temp);
 		sendAverage(temp);
-		currentAverageButton.setEnabled(times.isValid(AverageArrayList.averageType.CURRENT));
+		currentAverageButton.setEnabled(stats.isValid(Statistics.averageType.CURRENT));
 		bestRAButton.setForeground(Configuration.getBestRAColor());
-		bestRAButton.setText("Best Rolling Average: " + times.average(AverageArrayList.averageType.RA));
-		bestRAButton.setEnabled(times.isValid(AverageArrayList.averageType.RA));
-		sessionAverageButton.setText("Session Average: " + times.average(AverageArrayList.averageType.SESSION));
-		sessionAverageButton.setEnabled(times.isValid(AverageArrayList.averageType.SESSION));
-		numberOfSolvesLabel.setText(times.getNumberOfSolves() + "/" + times.getSize() + " (solves/attempts)");
-		timesList.ensureIndexIsVisible(times.getSize() - 1);
+		bestRAButton.setText("Best Rolling Average: " + stats.average(Statistics.averageType.RA));
+		bestRAButton.setEnabled(stats.isValid(Statistics.averageType.RA));
+		sessionAverageButton.setText("Session Average: " + stats.average(Statistics.averageType.SESSION));
+		sessionAverageButton.setEnabled(stats.isValid(Statistics.averageType.SESSION));
+		numberOfSolvesLabel.setText(stats.getNumSolves() + "/" + stats.getSize() + " (solves/attempts)");
+		timesList.ensureIndexIsVisible(stats.getSize() - 1);
 	}
 
 	/** Returns an ImageIcon, or null if the path was invalid. */
@@ -535,7 +535,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		if(source == addButton) {
 			SolveTime newTime = promptForTime(this, scrambles.getCurrent().toString());
 			if(newTime != null) {
-				times.add(newTime);
+				stats.add(newTime);
 				repaintTimes();
 			}
 		} else if(source == resetButton) {
@@ -554,14 +554,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				updateScramble();
 				scrambleNumber.setValue(scrambles.getScrambleNumber());
 				((SpinnerNumberModel) scrambleNumber.getModel()).setMaximum(scrambles.size());
-				times.clear();
+				stats.clear();
 			}
 		} else if(source == currentAverageButton) {
-			handleStats(AverageArrayList.averageType.CURRENT);
+			handleStats(Statistics.averageType.CURRENT);
 		} else if(source == bestRAButton) {
-			handleStats(AverageArrayList.averageType.RA);
+			handleStats(Statistics.averageType.RA);
 		} else if(source == sessionAverageButton) {
-			handleStats(AverageArrayList.averageType.SESSION);
+			handleStats(Statistics.averageType.SESSION);
 		} else if(source == importScrambles) {
 			int choice = JOptionPane.YES_OPTION;
 			if(serverScrambles.isSelected())
@@ -679,12 +679,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 
 	private static String[] statsChoices = new String[] {"Save Statistics", "Back"};
-	private void handleStats(AverageArrayList.averageType type){
+	private void handleStats(Statistics.averageType type){
 		String s = null;
-		if(type == AverageArrayList.averageType.RA) s = "Rolling Average";
-		else if(type == AverageArrayList.averageType.CURRENT) s = "Current Average";
-		else if(type == AverageArrayList.averageType.SESSION) s = "Entire Session";
-		StatsDialogHandler statsHandler = new StatsDialogHandler(configurationDialog, times, type, true);
+		if(type == Statistics.averageType.RA) s = "Rolling Average";
+		else if(type == Statistics.averageType.CURRENT) s = "Current Average";
+		else if(type == Statistics.averageType.SESSION) s = "Entire Session";
+		StatsDialogHandler statsHandler = new StatsDialogHandler(configurationDialog, stats, type, true);
 		int choice = JOptionPane.showOptionDialog(this,
 				statsHandler,
 				"Detailed Statistics for " + s,
@@ -832,7 +832,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		if(e.isPopupTrigger()) {
 			if(timesList.getSelectedIndices().length < 2)
 				timesList.setSelectedIndex(timesList.locationToIndex(e.getPoint()));
-			times.showPopup(e, timesList);
+			stats.showPopup(e, timesList);
 		}
 	}
 	public void keyPressed(KeyEvent e) {
@@ -856,12 +856,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 					JOptionPane.YES_NO_OPTION);
 			if(choice == JOptionPane.YES_OPTION) {
 				for(int ch = 0; ch < selected.length; ch++) {
-					times.remove(selected[ch]);
+					stats.remove(selected[ch]);
 				}
 				if(selected.length > 1)
 					timesList.clearSelection();
-				else if(timesList.getSelectedIndex() >= times.getSize()){
-					timesList.setSelectedIndex(times.getSize() - 1);
+				else if(timesList.getSelectedIndex() >= stats.getSize()){
+					timesList.setSelectedIndex(stats.getSize() - 1);
 				}
 			}
 		}
@@ -885,8 +885,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				updateScramble();
 			}
 		}
-		if(times != null && times.size() >= 1)
-			sendTime(times.get(times.size() - 1));
+		if(stats != null && stats.getSize() >= 1)
+			sendTime(stats.get(-1));
 		repaintTimes();
 	}
 	public void intervalAdded(ListDataEvent e) {}
@@ -906,7 +906,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 	public void sendAverage(String s){
 		if(client != null && client.isConnected()){
-			client.sendAverage(s, times);
+			client.sendAverage(s, stats);
 		}
 	}
 
@@ -1042,13 +1042,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 						options[0]);
 			}
 			if(choice == JOptionPane.YES_OPTION) {
-				times.add(protect);
+				stats.add(protect);
 			} else if(choice == JOptionPane.NO_OPTION) {
 				protect.setPlusTwo(true);
-				times.add(protect);
+				stats.add(protect);
 			} else if(choice == JOptionPane.CANCEL_OPTION) {
 				protect.setPop(true);
-				times.add(protect);
+				stats.add(protect);
 			} else {
 				return false;
 			}
