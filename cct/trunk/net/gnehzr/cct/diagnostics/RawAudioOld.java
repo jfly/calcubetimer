@@ -25,7 +25,7 @@ public class RawAudioOld implements Runnable{
 
             // Open the line through which we'll play the streaming audio.
             line = (SourceDataLine) AudioSystem.getLine(info);
-            line.open(format);  
+            line.open(format);
 
             // Allocate a buffer for reading from the input stream and writing
             // to the line.  Make it large enough to hold 4k audio frames.
@@ -35,8 +35,7 @@ public class RawAudioOld implements Runnable{
 //            int numbytes = 0;                               // how many bytes
             int currentSample = 0;
             line.start();
-            
-            
+
             while(true) {
 				if(ain.read(buffer, 0, buffer.length) > 0){
 					for(int j = 0; j < frames; j++){
@@ -47,17 +46,17 @@ public class RawAudioOld implements Runnable{
 					line.write(buffer, 0, buffer.length);
 				}
             }
-            
+
 //            for(;;) {  // We'll exit the loop when we reach the end of stream
 //                // First, read some bytes from the input stream.
 //                int bytesread=ain.read(buffer,0,buffer.length);
 //                // If there were no more bytes to read, we're done.
 //                if (bytesread == -1) break;
-//                
+//
 //                // We must write bytes to the line in an integer multiple of
 //                // the framesize.  So figure out how many bytes we'll write.
 ////                int bytestowrite = (numbytes/framesize)*framesize;
-//                
+//
 //                System.out.println(buffer[0]);
 //                currentSample = buffer[0];
 //				for(int i = 1; i < quality; i++) currentSample += buffer[i] << (8 * i);
@@ -65,7 +64,7 @@ public class RawAudioOld implements Runnable{
 //                // Now write the bytes. The line will buffer them and play
 //                // them. This call will block until all bytes are written.
 //                line.write(buffer, 0, buffer.length);
-////                // If we didn't have an integer multiple of the frame size, 
+////                // If we didn't have an integer multiple of the frame size,
 ////                // then copy the remaining bytes to the start of the buffer.
 ////                int remaining = numbytes - bytestowrite;
 ////                if (remaining > 0)

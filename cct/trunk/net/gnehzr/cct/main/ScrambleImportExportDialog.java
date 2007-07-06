@@ -65,7 +65,7 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 		try {
 			return new URI(urlField.getText()).toURL();
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(this, 
+			JOptionPane.showMessageDialog(this,
 					e.getMessage() + "\nBad filename.",
 					"Error!",
 					JOptionPane.ERROR_MESSAGE);
@@ -81,7 +81,7 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 				File selectedFile = fc.getSelectedFile();
 				urlField.setText(selectedFile.toURI().toString());
 				if(!selectedFile.exists() && importing) {
-					JOptionPane.showMessageDialog(this, 
+					JOptionPane.showMessageDialog(this,
 							selectedFile.getName() + " does not exist!",
 							"File Not Found!",
 							JOptionPane.ERROR_MESSAGE);

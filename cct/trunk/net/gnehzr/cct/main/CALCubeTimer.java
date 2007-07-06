@@ -50,7 +50,7 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 public class CALCubeTimer extends JFrame implements ActionListener, MouseListener, KeyListener, ListDataListener, ChangeListener, ConfigurationChangeListener {
 	private static final long serialVersionUID = 1L;
 	public static final String CCT_VERSION = "0.2";
-	private Frame ab = null;
+	private JFrame ab = null;
 	private JScrollPane timesScroller = null;
 	private TimerLabel timeLabel = null;
 	private JButton fullScreenButton = null;
@@ -484,7 +484,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 //		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 //		UIManager.setLookAndFeel(new SubstanceModerateLookAndFeel()); 
-		UIManager.put(LafWidget.ANIMATION_KIND, LafConstants.AnimationKind.NONE); 
+		UIManager.put(LafWidget.ANIMATION_KIND, LafConstants.AnimationKind.NONE);
 //		UIManager.put(SubstanceLookAndFeel.WATERMARK_TO_BLEED, Boolean.TRUE);
 
 //		 This code was suggested by Kirill Grouchnikov as a workaround to 
@@ -497,9 +497,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 //		 aa text on Java 6.
 
 		if (System.getProperty("java.version").startsWith("1.6")) {
-			final boolean lafCond = sun.swing.SwingUtilities2.isLocalDisplay(); 
+			final boolean lafCond = sun.swing.SwingUtilities2.isLocalDisplay();
 			Object aaTextInfo = sun.swing.SwingUtilities2.AATextInfo.getAATextInfo(lafCond);
-			UIManager.getDefaults().put(sun.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, aaTextInfo); 
+			UIManager.getDefaults().put(sun.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, aaTextInfo);
 		}
 		System.setProperty("swing.aatext", "true");
 
@@ -536,7 +536,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			SolveTime newTime = promptForTime(this, scrambles.getCurrent().toString());
 			if(newTime != null) {
 				stats.add(newTime);
-				repaintTimes();
+				repaintTimes(); //needed for some strange reason although contentschanged calls it
 			}
 		} else if(source == resetButton) {
 			int choice = JOptionPane.showConfirmDialog(
@@ -573,8 +573,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			if(choice == JOptionPane.YES_OPTION) {
 				serverScrambles.setSelected(false);
 				ScrambleImportExportDialog ScrambleImporter = new ScrambleImportExportDialog(true, cubeChoice);
-				choice = JOptionPane.showOptionDialog(this, 
-						ScrambleImporter, 
+				choice = JOptionPane.showOptionDialog(this,
+						ScrambleImporter,
 						"Import Scrambles",
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.QUESTION_MESSAGE,
@@ -589,8 +589,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			}
 		} else if(source == exportScrambles) {
 			ScrambleImportExportDialog ScrambleExporter = new ScrambleImportExportDialog(false, cubeChoice);
-			int choice = JOptionPane.showOptionDialog(this, 
-					ScrambleExporter, 
+			int choice = JOptionPane.showOptionDialog(this,
+					ScrambleExporter,
 					"Export Scrambles",
 					JOptionPane.YES_NO_OPTION,
 					JOptionPane.QUESTION_MESSAGE,
@@ -705,7 +705,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				out.println(generatedScrambles.getCurrent().toString());
 			}
 			out.close();
-			JOptionPane.showMessageDialog(this, 
+			JOptionPane.showMessageDialog(this,
 					 "Scrambles successfully saved!",
 					 outputFile.getPath(),
 					JOptionPane.INFORMATION_MESSAGE);
@@ -720,7 +720,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			in = new BufferedReader(new InputStreamReader(inputFile.openStream()));
 			scrambles = ScrambleList.importScrambles(type, in);
 			in.close();
-			JOptionPane.showMessageDialog(this, 
+			JOptionPane.showMessageDialog(this,
 					 "Scrambles successfully loaded!",
 					 inputFile.getPath(),
 					JOptionPane.INFORMATION_MESSAGE);
@@ -877,7 +877,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				boolean outOfScrambles = scrambles.getCurrent().isImported(); //This is tricky, think before you change it
 				outOfScrambles = !scrambles.getNext().isImported() && outOfScrambles;
 				if(outOfScrambles)
-					JOptionPane.showMessageDialog(this, 
+					JOptionPane.showMessageDialog(this,
 							"All imported scrambles have been used.\n" +
 							"Generated scrambles will be used from now on.",
 							"All Out of Scrambles!",
@@ -1052,7 +1052,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			} else {
 				return false;
 			}
-			repaintTimes();
+			repaintTimes(); //needed here too
 			return true;
 		}
 	}

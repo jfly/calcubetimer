@@ -14,7 +14,7 @@ public class Utils{
 	public static String clockFormat(double seconds){
 		int hours = (int) (seconds / 3600.);
 		seconds %= 3600;
-		int minutes = (int) (seconds / 60.); 
+		int minutes = (int) (seconds / 60.);
 		seconds %= 60;
 		if(seconds >= 59.995){
 			seconds = 0;
@@ -24,7 +24,7 @@ public class Utils{
 			minutes -= 60;
 			hours++;
 		}
-		return (hours == 0 ? 
+		return (hours == 0 ?
 				(minutes == 0 ? "" : minutes + ":" + (seconds < 10 ? "0" : "")) :
 				hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "" ))
 			+ format(seconds);

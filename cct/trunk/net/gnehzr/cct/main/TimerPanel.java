@@ -28,7 +28,7 @@ public class TimerPanel extends JLabel implements KeyboardTimerComponent {
 	public void setKeyboard(boolean isKey) {
 		keyboard = isKey;
 		timer.setKeyboard(isKey);
-//		if(!keyboard) 
+//		if(!keyboard)
 //			timerDisplay.clearButton();
 	}
 	public void setEnabled(boolean enabled) {

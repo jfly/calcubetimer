@@ -11,7 +11,7 @@ import javax.swing.Timer;
 
 public class FunScrollPane extends JScrollPane implements ActionListener, WindowListener {
 	private static final long serialVersionUID = 1L;
-	private Timer autoscroll; 
+	private Timer autoscroll;
 	public FunScrollPane(Component arg) {
 		super(arg);
 		autoscroll = new Timer(100, this);

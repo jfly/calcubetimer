@@ -588,8 +588,8 @@ public abstract class Configuration {
 	}
 
 	public static void setScrambleFont(Font scrambleFont) {
-		props.setProperty("scramble_Font", scrambleFont.getFontName() + "-" + 
-				(scrambleFont.isBold() ? "bold" : "") + (scrambleFont.isItalic() ? "italic" : "") + (scrambleFont.isPlain() ? "plain" : "") + "-" + 
+		props.setProperty("scramble_Font", scrambleFont.getFontName() + "-" +
+				(scrambleFont.isBold() ? "bold" : "") + (scrambleFont.isItalic() ? "italic" : "") + (scrambleFont.isPlain() ? "plain" : "") + "-" +
 				scrambleFont.getSize());
 	}
 
@@ -662,9 +662,8 @@ public abstract class Configuration {
 			puzzles = temp.toArray(new String[temp.size()]);
 
 			for(int ch = 0; ch < puzzles.length; ch++) { //remove leading 0's
-				String t = puzzles[ch];
-				if(t.startsWith("0"))
-					puzzles[ch] = t.substring(1);
+				if(puzzles[ch].startsWith("0"))
+					puzzles[ch] = puzzles[ch].substring(1);
 			}
 
 		}

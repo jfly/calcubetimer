@@ -51,7 +51,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		curRASize = Configuration.getRASize();
 		initialize();
 	}
-	
+
 	private void initialize(){
 		times = new ArrayList<SolveTime>();
 		averages = new ArrayList<Double>();
@@ -86,7 +86,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		contentsChanged(new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, times.size() - 1, times.size() - 1));
 		notifyLabels();
 	}
-	
+
 	private void addHelper(SolveTime s){
 		times.add(s);
 
@@ -193,7 +193,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		}
 		refresh();
 	}
-	
+
 	public SolveTime get(int n){
 		if(n < 0) n = times.size() + n;
 
@@ -345,7 +345,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 
 		if(average == 0) return "N/A";
 
-		if(average == Integer.MAX_VALUE) return "Invalid Average!";
+		if(average == Integer.MAX_VALUE) return "Invalid";
 
 		return Utils.clockFormat(average, Configuration.isClockFormat());
 	}
@@ -420,7 +420,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 			parens = true;
 		return "\r\n" + times.nextIndex() + ".\t" + (parens ? "(" : "") + next.toString() + (parens ? ")" : "") + "\t" + next.getScramble() + (showSplits ? next.toSplitsString() : "") + toStatsStringHelper(times, best, worst, showSplits);
 	}
-	
+
 	public String toTerseString(averageType type) {
 		SolveTime[] bestAndWorst = getBestAndWorstTimes(type);
 		return toTerseStringHelper(getSublist(type), bestAndWorst[0], bestAndWorst[1]);

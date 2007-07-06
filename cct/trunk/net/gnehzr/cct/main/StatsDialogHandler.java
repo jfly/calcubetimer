@@ -227,8 +227,8 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 			}
 
 			StatsDialogHandler emailIt = new StatsDialogHandler(configurationDialog, times, type, false);
-			int choice = JOptionPane.showOptionDialog(this, 
-					emailIt, 
+			int choice = JOptionPane.showOptionDialog(this,
+					emailIt,
 					"Submit times",
 					JOptionPane.YES_NO_OPTION,
 					JOptionPane.PLAIN_MESSAGE,
@@ -249,12 +249,12 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 					}
 					String[] recievers = emailIt.getToAddresses();
 					smtpMailSender.postMail(recievers, emailIt.getSubject(), emailIt.getText());
-					JOptionPane.showMessageDialog(this, 
+					JOptionPane.showMessageDialog(this,
 							"Email successfully sent to " + toPrettyString(recievers) + "!",
 							"Great success!",
 							JOptionPane.INFORMATION_MESSAGE);
 				} catch(MessagingException e1) {
-					JOptionPane.showMessageDialog(this, 
+					JOptionPane.showMessageDialog(this,
 							"Failed to send email.\nError:" + e1.toString(),
 							"Error!",
 							JOptionPane.INFORMATION_MESSAGE);

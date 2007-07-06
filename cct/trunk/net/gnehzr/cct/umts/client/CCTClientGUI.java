@@ -132,7 +132,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 				textScrollPane, userScrollPane);
-		splitPane.setResizeWeight(.7); 
+		splitPane.setResizeWeight(.7);
 
 		fullScreenButton = new JButton("+");
 		fullScreenButton.addActionListener(this);
@@ -231,7 +231,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 		try {
 			kit.insertHTML(doc, doc.getLength(), "<span class='timestamp'>" + getDate() + "</span> " + s + "<br>", 0, 0, null);
 //			if( !end && scrFlag ) messageLog.setCaretPosition( tempPos );
-//			else 
+//			else
 			messageLog.setCaretPosition(doc.getLength());
 		}
 		catch(Exception e) {
@@ -274,7 +274,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 //		}
 //		});
 //		}
-//		else 
+//		else
 		if(e.getSource() == sendButton || e.getSource() == messageBox){
 			String text = messageBox.getText();
 			if(text != null && text.length() > 0){
@@ -319,7 +319,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 	private String toStringHelper(ListIterator<SolveTime> printMe, SolveTime best, SolveTime worst) {
 		SolveTime next = printMe.next();
 		if (next == best || next == worst)
-			return "(" + next.toString() + ")" + (printMe.hasNext() ? ", " + toStringHelper(printMe, best, worst) : ""); 
+			return "(" + next.toString() + ")" + (printMe.hasNext() ? ", " + toStringHelper(printMe, best, worst) : "");
 		else
 			return next.toString() + (printMe.hasNext() ? ", " + toStringHelper(printMe, best, worst) : "");
 	}

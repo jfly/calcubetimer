@@ -68,7 +68,7 @@ public class CubeScramble extends Scramble {
 				} while(slicesMoved[slice] != 0);
 				int direction = random(3);
 
-				if(multislice || slices != size || (directionsMoved[direction] + 1) * 2 < slices || 
+				if(multislice || slices != size || (directionsMoved[direction] + 1) * 2 < slices ||
 					(directionsMoved[direction] + 1) * 2 == slices && directionsMoved[0] + directionsMoved[1] + directionsMoved[2] == directionsMoved[direction]){
 					directionsMoved[direction]++;
 					moved++;

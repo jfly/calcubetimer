@@ -257,7 +257,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		Scramble m = null;
 		m = new CubeScramble(3, 25, true);
 		m = new MegaminxScramble();
-		view.setScramble(m); 
+		view.setScramble(m);
 		System.out.println(m);
 
 		tester.pack();

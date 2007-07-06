@@ -173,7 +173,7 @@ public class CCTClient {
 		String p = "Login: ";
 		switch(loginStatus){
 			case Protocol.LOGIN_INVALID_NAME:
-				p += "Invalid name.\n" + 
+				p += "Invalid name.\n" +
 				"Username must be less than 10 characters long and may only contain [0-9A-Za-z_]";
 				break;
 			case Protocol.LOGIN_DUPLICATE_NAME:
