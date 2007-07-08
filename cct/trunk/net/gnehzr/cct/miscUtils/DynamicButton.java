@@ -1,17 +1,17 @@
 package net.gnehzr.cct.miscUtils;
 
-import javax.swing.JLabel;
+import javax.swing.JButton;
 
 import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
-public class DynamicLabel extends JLabel implements StatisticsUpdateListener, DynamicStringSettable{
+public class DynamicButton extends JButton implements StatisticsUpdateListener, DynamicStringSettable{
 	private DynamicString s;
 
-	public DynamicLabel(){
+	public DynamicButton(){
 		s = null;
 	}
 
-	public DynamicLabel(DynamicString s){
+	public DynamicButton(DynamicString s){
 		setDynamicString(s);
 	}
 
@@ -25,7 +25,7 @@ public class DynamicLabel extends JLabel implements StatisticsUpdateListener, Dy
 			update();
 		}
 	}
-
+	
 	public void update(){
 		if(s != null) setText(s.toString());
 	}

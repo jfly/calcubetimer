@@ -31,7 +31,9 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationDialog;
 import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.help.FunScrollPane;
+import net.gnehzr.cct.miscUtils.DynamicButton;
 import net.gnehzr.cct.miscUtils.DynamicLabel;
+import net.gnehzr.cct.miscUtils.DynamicString;
 import net.gnehzr.cct.miscUtils.MyCellRenderer;
 import net.gnehzr.cct.scrambles.CubeScramble;
 import net.gnehzr.cct.scrambles.ScrambleList;
@@ -202,16 +204,16 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 		timesScroller = new JScrollPane(timesList);
 
-		currentAverageButton = new JButton();
+		currentAverageButton = new DynamicButton(new DynamicString("Current Average: $$lastaverage", stats));
 		currentAverageButton.addActionListener(this);
 
-		bestRAButton = new JButton();
+		bestRAButton = new DynamicButton(new DynamicString("Best Rolling Average: $$bestaverage", stats));
 		bestRAButton.addActionListener(this);
 
-		sessionAverageButton= new JButton();
+		sessionAverageButton= new DynamicButton(new DynamicString("Session Average: $$sessionaverage", stats));
 		sessionAverageButton.addActionListener(this);
 
-		numberOfSolvesLabel = new DynamicLabel("$$solves$$/$$attempts$$ (solves/attempts)", stats);
+		numberOfSolvesLabel = new DynamicLabel(new DynamicString("$$solves$$/$$attempts$$ (solves/attempts)", stats));
 
 		repaintTimes();
 
@@ -454,13 +456,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	public void repaintTimes() {
 		currentAverageButton.setForeground(Configuration.getCurrentAverageColor());
 		String temp = stats.average(Statistics.averageType.CURRENT);
-		currentAverageButton.setText("Current Average: " + temp);
 		sendAverage(temp);
 		currentAverageButton.setEnabled(stats.isValid(Statistics.averageType.CURRENT));
 		bestRAButton.setForeground(Configuration.getBestRAColor());
-		bestRAButton.setText("Best Rolling Average: " + stats.average(Statistics.averageType.RA));
 		bestRAButton.setEnabled(stats.isValid(Statistics.averageType.RA));
-		sessionAverageButton.setText("Session Average: " + stats.average(Statistics.averageType.SESSION));
 		sessionAverageButton.setEnabled(stats.isValid(Statistics.averageType.SESSION));
 		timesList.ensureIndexIsVisible(stats.getSize() - 1);
 	}

@@ -7,11 +7,15 @@ public class Utils{
 	private static final DecimalFormat DF = new DecimalFormat("0.00");
 
 	public static String format(double seconds){
+		if(seconds == Double.MIN_VALUE) return "N/A";
+
 		DF.setRoundingMode(RoundingMode.HALF_UP);
 		return DF.format(seconds);
 	}
 
 	public static String clockFormat(double seconds){
+		if(seconds == Double.MIN_VALUE) return "N/A";
+
 		int hours = (int) (seconds / 3600.);
 		seconds %= 3600;
 		int minutes = (int) (seconds / 60.);

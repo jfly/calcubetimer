@@ -19,7 +19,6 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.stackmatInterpreter.StackmatState;
-import net.gnehzr.cct.miscUtils.DynamicLabel;
 import net.gnehzr.cct.miscUtils.Utils;
 
 public class Statistics implements ListModel, ActionListener, ConfigurationChangeListener{
@@ -59,7 +58,8 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		sorttimes = new ArrayList<SolveTime>();
 		sortaverages = new ArrayList<Double>();
 		sortsds = new ArrayList<Double>();
-		runningTotal = curSessionAvg = runningSquareTotal = 0;
+		runningTotal = runningSquareTotal = 0;
+		curSessionAvg = Double.MIN_VALUE;
 		curSessionSD = Double.MIN_VALUE;
 		numPops = numPlus2s = numDnfs = 0;
 		indexOfBestRA = -1;
@@ -70,13 +70,16 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		contentsChanged(null);
 	}
 
-	private ArrayList<DynamicLabel> labels = new ArrayList<DynamicLabel>();
-	public void manageLabel(DynamicLabel label){
-		labels.add(label);
+	private ArrayList<StatisticsUpdateListener> strlisten = new ArrayList<StatisticsUpdateListener>();
+	public void addStatisticsUpdateListener(StatisticsUpdateListener listener){
+		strlisten.add(listener);
 	}
-	public void notifyLabels(){
-		for(int i = 0; i < labels.size(); i++){
-			labels.get(i).update();
+	public void removeStatisticsUpdateListener(StatisticsUpdateListener listener){
+		strlisten.remove(listener);
+	}
+	public void notifyStrings(){
+		for(int i = 0; i < strlisten.size(); i++){
+			strlisten.get(i).update();
 		}
 	}
 
@@ -84,7 +87,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		addHelper(s);
 
 		contentsChanged(new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, times.size() - 1, times.size() - 1));
-		notifyLabels();
+		notifyStrings();
 	}
 
 	private void addHelper(SolveTime s){
@@ -122,10 +125,10 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 			sortaverages.add(i, av);
 			if(i == 0) indexOfBestRA = averages.size() - 1;
 
-			if(avg < 0){
+			if(avg == Integer.MAX_VALUE){
 				Double s = new Double(Integer.MAX_VALUE);
 				sds.add(s);
-				//want to be sorted also?
+				sortsds.add(s);
 			}
 			else{
 				double sd = calculateRSD(times.size() - curRASize, times.size());
@@ -178,7 +181,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 				addHelper(t);
 			}
 			contentsChanged(null);
-			notifyLabels();
+			notifyStrings();
 		}
 	}
 
@@ -361,7 +364,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 			return false;
 		}
 
-		if(average == 0 || average == Integer.MAX_VALUE) return false;
+		if(average == 0 || average == Double.MIN_VALUE || average == Integer.MAX_VALUE) return false;
 
 		return true;
 	}
@@ -504,6 +507,12 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		if(sortsds.size() == 0 || n < 0 || n >= sortsds.size()) return Double.MIN_VALUE;
 		else return sortsds.get(n).doubleValue();
 	}
+	public double getSortAverageSD(int n){
+		if(n < 0) n = sortaverages.size() + n;
+
+		if(sortaverages.size() == 0 || n < 0 || n >= sortaverages.size()) return Double.MIN_VALUE;
+		else return sds.get(averages.indexOf(sortaverages.get(n))).doubleValue();
+	}
 
 	public double getProgressTime(){
 		if(times.size() < 2) return Double.MIN_VALUE;
@@ -535,6 +544,10 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 	public double getBestSD(){
 		return getSortSD(0);
 	}
+	public double getBestAverageSD(){
+		return getSortAverageSD(0);
+	}
+
 	public double getWorstTime(){
 		return getSortTime(-1);
 	}
@@ -543,6 +556,9 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 	}
 	public double getWorstSD(){
 		return getSortSD(-1);
+	}
+	public double getWorstAverageSD(){
+		return getSortAverageSD(-1);
 	}
 
 	public double getLastTime(){
