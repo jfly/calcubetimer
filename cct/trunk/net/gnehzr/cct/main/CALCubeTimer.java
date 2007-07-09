@@ -49,6 +49,15 @@ import org.jvnet.lafwidget.LafWidget;
 import org.jvnet.lafwidget.utils.LafConstants;
 import org.jvnet.substance.SubstanceLookAndFeel;
 
+import net.gnehzr.cct.miscUtils.DynamicStringSettable;
+
+import org.xml.sax.*;
+import org.xml.sax.helpers.DefaultHandler;
+
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+
 public class CALCubeTimer extends JFrame implements ActionListener, MouseListener, KeyListener, ListDataListener, ChangeListener, ConfigurationChangeListener {
 	private static final long serialVersionUID = 1L;
 	public static final String CCT_VERSION = "0.2";
@@ -292,6 +301,31 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 		Configuration.addConfigurationChangeListener(this);
 
+		JPanel parsedPanel = new JPanel(new BorderLayout());
+		this.setContentPane(parsedPanel);
+
+		DefaultHandler handler = new GUIParser(parsedPanel);
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		try {
+			SAXParser saxParser = factory.newSAXParser();
+			saxParser.parse("default.xml", handler);
+		} catch(SAXParseException spe) {
+			System.out.println(spe.getSystemId() + ":" + spe.getLineNumber() + ": parse error: " + spe.getMessage());
+
+			Exception x = spe;
+			if(spe.getException() != null)
+				x = spe.getException();
+			x.printStackTrace();
+		} catch(SAXException se) {
+			Exception x = se;
+			if(se.getException() != null)
+				x = se.getException();
+			x.printStackTrace();
+		} catch(ParserConfigurationException pce) {
+			pce.printStackTrace();
+		} catch(IOException ioe) {
+			ioe.printStackTrace();
+		}
 
 		this.setTitle("CCT " + CCT_VERSION);
 		this.setIconImage(cube.getImage());
@@ -314,24 +348,195 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			startStopPanel.requestFocusInWindow();
 		} else
 			scrambleText.requestFocusInWindow();
+	}
 
+	private class GUIParser extends DefaultHandler {
+		private int level = 0;
+		private String location;
+		private ArrayList<String> strs;
+		private ArrayList<JComponent> componentTree;
+		private ArrayList<Boolean> needText;
+		private ArrayList<String> elementNames;
+
+		public GUIParser(JPanel panel){
+			componentTree = new ArrayList<JComponent>();
+			componentTree.add(panel);
+
+			strs = new ArrayList<String>();
+			strs.add("");
+			needText = new ArrayList<Boolean>();
+			needText.add(new Boolean(false));
+			elementNames = new ArrayList<String>();
+			elementNames.add("");
+		}
+
+		public void setDocumentLocator(Locator l) {
+			location = l.getSystemId();
+		}
+
+		public void startElement(String namespaceURI, String lName, String qName, Attributes attrs) throws SAXException {
+			JComponent com = null;
+
+			level++;
+			String elementName = qName.toLowerCase();
+			elementNames.add(elementName);
+
+			needText.add(new Boolean(elementName.equals("label") || elementName.equals("button")));
+			strs.add("");
+
+			if(elementName.equals("label")){
+				com = new DynamicLabel();
+			}
+			else if(elementName.equals("button")){
+				com = new DynamicButton();
+			}
+			else if(elementName.equals("panel")){
+				com = new JPanel();
+				int hgap = 0;
+				int vgap = 0;
+				int align = FlowLayout.CENTER;
+				int rows = 0;
+				int cols = 0;
+				int orientation = BoxLayout.Y_AXIS;
+
+				LayoutManager layout;
+				if(attrs == null) layout = new FlowLayout();
+				else{
+					String temp;
+
+					try{
+						if((temp = attrs.getValue("hgap")) != null) hgap = Integer.parseInt(temp);
+						if((temp = attrs.getValue("vgap")) != null) vgap = Integer.parseInt(temp);
+						if((temp = attrs.getValue("rows")) != null) rows = Integer.parseInt(temp);
+						if((temp = attrs.getValue("cols")) != null) cols = Integer.parseInt(temp);
+					} catch(Exception e){
+						throw new SAXException("integer parse error", e);
+					}
+
+					if((temp = attrs.getValue("align")) != null){
+						if(temp.equalsIgnoreCase("left")) align = FlowLayout.LEFT;
+						else if(temp.equalsIgnoreCase("right")) align = FlowLayout.RIGHT;
+						else if(temp.equalsIgnoreCase("center")) align = FlowLayout.CENTER;
+						else if(temp.equalsIgnoreCase("leading")) align = FlowLayout.LEADING;
+						else if(temp.equalsIgnoreCase("trailing")) align = FlowLayout.TRAILING;
+						else throw new SAXException("parse error in align");
+					}
+
+					if((temp = attrs.getValue("orientation")) != null){
+						if(temp.equalsIgnoreCase("horizontal")) orientation = BoxLayout.X_AXIS;
+						else if(temp.equalsIgnoreCase("vertical")) orientation = BoxLayout.Y_AXIS;
+						else if(temp.equalsIgnoreCase("page")) orientation = BoxLayout.PAGE_AXIS;
+						else if(temp.equalsIgnoreCase("line")) orientation = BoxLayout.LINE_AXIS;
+						else throw new SAXException("parse error in orientation");
+					}
+
+					if((temp = attrs.getValue("layout")) != null){
+						if(temp.equalsIgnoreCase("border")) layout = new BorderLayout(hgap, vgap);
+						else if(temp.equalsIgnoreCase("box")) layout = new BoxLayout(com, orientation);
+						else if(temp.equalsIgnoreCase("grid")) layout = new GridLayout(rows, cols, hgap, vgap);
+						else if(temp.equalsIgnoreCase("flow")) layout = new FlowLayout(align, hgap, vgap);
+						else throw new SAXException("parse error in layout");
+					}
+					else layout = new FlowLayout(align, hgap, vgap);
+				}
+
+				com.setLayout(layout);
+			}
+			else if(elementName.equals("component")){
+				String temp;
+				if(attrs == null || (temp = attrs.getValue("type")) == null) com = null;
+				else if(temp.equalsIgnoreCase("keyboardcheckbox")) com = keyboardCheckBox;
+				else if(temp.equalsIgnoreCase("scramblechooser")) com = scrambleChooser;
+				else if(temp.equalsIgnoreCase("scramblenumber")) com = scrambleNumber;
+				else if(temp.equalsIgnoreCase("scramblelength")) com = scrambleLength;
+				else if(temp.equalsIgnoreCase("multislice")) com = multiSlice;
+				else if(temp.equalsIgnoreCase("serverscrambles")) com = serverScrambles;
+				else if(temp.equalsIgnoreCase("stackmatstatuslabel")) com = onLabel;
+				else if(temp.equalsIgnoreCase("addtimebutton")) com = addButton;
+				else if(temp.equalsIgnoreCase("resetbutton")) com = resetButton;
+				else if(temp.equalsIgnoreCase("currentaveragebutton")) com = currentAverageButton;
+				else if(temp.equalsIgnoreCase("bestaveragebutton")) com = bestRAButton;
+				else if(temp.equalsIgnoreCase("sessionaveragebutton")) com = sessionAverageButton;
+				else if(temp.equalsIgnoreCase("solveslabel")) com = numberOfSolvesLabel;
+				else if(temp.equalsIgnoreCase("scrambletext")) com = scrambleText;
+				else if(temp.equalsIgnoreCase("timerdisplay")) com = timeLabel;
+				else if(temp.equalsIgnoreCase("timeslist")) com = timesScroller;
+
+
+			}
+			else if(elementName.equals("center") || elementName.equals("east") || elementName.equals("west") || elementName.equals("south") || elementName.equals("north") || elementName.equals("page_start") || elementName.equals("page_end") || elementName.equals("line_start") || elementName.equals("line_end")){
+				com = null;
+			}
+			else throw new SAXException("invalid tag");
+
+			componentTree.add(com);
+
+			if(com != null){
+				String temp = null;
+				for(int i = level - 1; i >= 0; i--){
+					if(componentTree.get(i) != null){
+						if(temp == null) componentTree.get(i).add(com);
+						else{
+							String loc = null;
+							if(temp.equalsIgnoreCase("center")) loc = BorderLayout.CENTER;
+							else if(temp.equalsIgnoreCase("east")) loc = BorderLayout.EAST;
+							else if(temp.equalsIgnoreCase("west")) loc = BorderLayout.WEST;
+							else if(temp.equalsIgnoreCase("south")) loc = BorderLayout.SOUTH;
+							else if(temp.equalsIgnoreCase("north")) loc = BorderLayout.NORTH;
+							else if(temp.equalsIgnoreCase("page_start")) loc = BorderLayout.PAGE_START;
+							else if(temp.equalsIgnoreCase("page_end")) loc = BorderLayout.PAGE_END;
+							else if(temp.equalsIgnoreCase("line_start")) loc = BorderLayout.LINE_START;
+							else if(temp.equalsIgnoreCase("line_end")) loc = BorderLayout.LINE_END;
+							componentTree.get(i).add(com, loc);
+						}
+						break;
+					}
+					else temp = elementNames.get(i);
+				}
+			}
+		}
+
+		public void endElement(String namespaceURI, String sName, String qName) throws SAXException {
+			if(needText.get(level)) ((DynamicStringSettable)componentTree.get(level)).setDynamicString(new DynamicString(strs.get(level), stats));
+
+			componentTree.remove(level);
+			elementNames.remove(level);
+			strs.remove(level);
+			needText.remove(level);
+			level--;
+		}
+
+		public void characters(char buf[], int offset, int len) throws SAXException {
+			if(needText.get(level)){
+				String s = new String(buf, offset, len);
+				if(!s.trim().equals("")) strs.set(level, strs.get(level) + s);
+			}
+		}
+
+		public void error(SAXParseException e) throws SAXParseException {
+			throw e;
+		}
+
+		public void warning(SAXParseException e) throws SAXParseException {
+			System.out.println(e.getSystemId() + ":" + e.getLineNumber() + ": warning: " + e.getMessage());
+		}
 	}
 
 	private JPanel buttons;
 	private JPanel createButtonsPanel() {
-		if(buttons == null) {
-			buttons = new JPanel();
-		} else
-			buttons.removeAll();
-		JPanel sideBySide = null;
-		if(!Configuration.isIntegratedTimerDisplay()) {
-			sideBySide = new JPanel(new GridLayout(3, 3));
-			sideBySide.add(new JPanel());
-			sideBySide.add(startStopPanel);
-			sideBySide.add(new JPanel());
-		} else {
-			sideBySide = new JPanel(new GridLayout(2, 3));
-		}
+		/* TODO what is the purpose of having sideBySide? also, it's not side by side
+		   if(buttons == null) {
+		   buttons = new JPanel();
+		   } else
+		   buttons.removeAll();
+		   JPanel sideBySide = new JPanel(new GridLayout(0, 3));
+
+		//		if(!Configuration.isIntegratedTimerDisplay()) {
+		//			sideBySide.add(new JPanel());
+		//			sideBySide.add(startStopPanel);
+		//			sideBySide.add(new JPanel());
+		//		}
+
 		sideBySide.add(addButton);
 		sideBySide.add(keyboardCheckBox);
 		sideBySide.add(resetButton);
@@ -339,6 +544,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		sideBySide.add(bestRAButton);
 		sideBySide.add(sessionAverageButton);
 		buttons.add(sideBySide);
+		*/
+		buttons = new JPanel(new GridLayout(0, 3));
+		buttons.add(addButton);
+		buttons.add(keyboardCheckBox);
+		buttons.add(resetButton);
+		buttons.add(currentAverageButton);
+		buttons.add(bestRAButton);
+		buttons.add(sessionAverageButton);
+
 		return buttons;
 	}
 

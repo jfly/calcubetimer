@@ -1,0 +1,37 @@
+<panel layout="border">
+	<center>
+		<panel layout="border">
+			<center>
+				<panel layout="box" orientation="page">
+					<component type="timerdisplay"/>
+					<component type="scrambletext"/>
+				</panel>
+			</center>
+			<page_end>
+				<panel layout="box" orientation="page">
+					<panel layout="flow">
+						<component type="stackmatstatuslabel"/>
+						<component type="scramblechooser"/>
+						<component type="scramblelength"/>
+						<component type="scramblenumber"/>
+						<component type="multislice"/>
+						<component type="serverscrambles"/>
+					</panel>
+					<panel layout="grid" cols="3">
+						<component type="addtimebutton"/>
+						<component type="keyboardcheckbox"/>
+						<panel/>
+						<!--<component type="resetbutton"/>-->
+						<component type="currentaveragebutton"/>
+						<component type="bestaveragebutton"/>
+						<component type="sessionaveragebutton"/>
+					</panel>
+					<component type="solveslabel"/>
+				</panel>
+			</page_end>
+		</panel>
+	</center>
+	<line_end>
+		<component type="timeslist"/>
+	</line_end>
+</panel>
