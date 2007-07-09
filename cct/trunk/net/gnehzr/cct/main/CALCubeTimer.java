@@ -236,7 +236,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 		timeLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 		timeLabel.setMinimumSize(new Dimension(0, 150));
-		timeLabel.setPreferredSize(new Dimension(00, 150));
+		timeLabel.setPreferredSize(new Dimension(0, 150));
 		timeLabel.setAlignmentX(.5f);
 		center.add(timeLabel);
 
