@@ -223,16 +223,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		sessionAverageButton.addActionListener(this);
 
 		numberOfSolvesLabel = new DynamicLabel(new DynamicString("$$solves$$/$$attempts$$ (solves/attempts)", stats));
+		numberOfSolvesLabel.setAlignmentX(.5f);
 
 		repaintTimes();
 
-		JPanel leftPanel = new JPanel(new BorderLayout());
-
-		JPanel center = new JPanel();
-		center.setLayout(new BoxLayout(center, BoxLayout.PAGE_AXIS));
-		leftPanel.add(center, BorderLayout.CENTER);
-
-		scrambleText = new ScrambleArea(center);
+		scrambleText = new ScrambleArea();
 		scrambleText.setAlignmentX(.5f);
 		timeLabel = new TimerLabel(timeListener, LCD_FONT, scrambleText);
 		timeLabel.setOpaque(Configuration.isAnnoyingDisplay());
@@ -247,48 +242,20 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		timeLabel.setMinimumSize(new Dimension(0, 150));
 		timeLabel.setPreferredSize(new Dimension(0, 150));
 		timeLabel.setAlignmentX(.5f);
-		center.add(timeLabel);
 
-		center.add(scrambleText);
-		JPanel southWest = new JPanel();
-		southWest.setLayout(new BoxLayout(southWest, BoxLayout.PAGE_AXIS));
-
-		JPanel sideBySide = new JPanel();
-		sideBySide.add(onLabel);
-		sideBySide.add(scrambleChooser);
-		sideBySide.add(scrambleLength);
-		sideBySide.add(scrambleNumber);
-		sideBySide.add(multiSlice);
-		sideBySide.add(serverScrambles);
-		southWest.add(sideBySide);
-
-		southWest.add(createButtonsPanel());
-
-		numberOfSolvesLabel.setAlignmentX(.5f);
-		southWest.add(numberOfSolvesLabel);
-
-		leftPanel.add(southWest, BorderLayout.PAGE_END);
-
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(leftPanel, BorderLayout.CENTER);
 		timesScroller.setMinimumSize(new Dimension(100, 0));
 		timesScroller.setPreferredSize(new Dimension(100, 0));
-		panel.add(timesScroller, BorderLayout.LINE_END);
-
-		this.setContentPane(panel);
-		this.setJMenuBar(createMenuBar());
 
 		JFrame.setDefaultLookAndFeelDecorated(false);
 		fullscreenFrame = new JFrame();
 		fullscreenFrame.setUndecorated(true);
 		fullscreenFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
-		panel = new JPanel(new BorderLayout());
+		JPanel panel = new JPanel(new BorderLayout());
 		fullscreenFrame.setContentPane(panel);
 		bigTimersDisplay = new TimerLabel(timeListener, LCD_FONT, null);
 		bigTimersDisplay.setEnabledTiming(true);
 		bigTimersDisplay.setKeyboard(keyboardCheckBox.isSelected());
-
 
 		panel.add(bigTimersDisplay, BorderLayout.CENTER);
 		fullScreenButton = new JButton("+");
@@ -299,10 +266,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		fullscreenFrame.setSize(screenSize.width, screenSize.height);
 		fullscreenFrame.validate();
 
-		Configuration.addConfigurationChangeListener(this);
-
 		JPanel parsedPanel = new JPanel(new BorderLayout());
 		this.setContentPane(parsedPanel);
+		this.setJMenuBar(createMenuBar());
 
 		DefaultHandler handler = new GUIParser(parsedPanel);
 		SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -348,6 +314,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			startStopPanel.requestFocusInWindow();
 		} else
 			scrambleText.requestFocusInWindow();
+
+		Configuration.addConfigurationChangeListener(this); //TODO is this okay here?
 	}
 
 	private class GUIParser extends DefaultHandler {

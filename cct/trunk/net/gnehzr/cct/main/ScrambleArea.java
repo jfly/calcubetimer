@@ -1,6 +1,7 @@
 package net.gnehzr.cct.main;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
@@ -18,10 +19,9 @@ import net.gnehzr.cct.scrambles.Scramble;
 public class ScrambleArea extends JScrollPane implements ComponentListener {
 	private static final long serialVersionUID = 1L;
 	private JEditorPane scramble = null;
-	private JPanel container;
-	public ScrambleArea(JPanel container) {
+
+	public ScrambleArea() {
 		super(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		this.container = container;
 		scramble = new JEditorPane("text/html", null);
 		scramble.setEditable(false);
 		scramble.setBorder(null);
@@ -35,29 +35,31 @@ public class ScrambleArea extends JScrollPane implements ComponentListener {
 	}
 	public void setText(String string) {
 		Font temp = Configuration.getScrambleFont();
-		string = string.replaceAll("INSERT_SIZE", "" + temp.getSize());
-		string = string.replaceAll("INSERT_SUBSIZE", "" + (temp.getSize() / 2 + 1));
-		string = string.replaceAll("INSERT_FAMILY", temp.getFamily());
-		string = string.replaceAll("INSERT_STYLE", (temp.isItalic() ? "; font-style: italic" : "") +
-		(temp.isBold() ? "; font-weight: bold" : ""));
+		string = doReplacement(string);
 		scramble.setText("<span style = \"font-family: " + temp.getFamily() + "; font-size: " + temp.getSize() + (temp.isItalic() ? "; font-style: italic" : "") + "\">" + string + "</span>");
 
 		scramble.setCaretPosition(0);
 		setProperSize();
-		container.validate();
+		((Container)getParent()).validate(); //TODO is this safe?
 	}
 	public void setText(Scramble newScramble) {
-		Font temp = Configuration.getScrambleFont();
 		String temps = newScramble.toFormattedString();
-		temps = temps.replaceAll("INSERT_SIZE", "" + temp.getSize());
-		temps = temps.replaceAll("INSERT_SUBSIZE", "" + (temp.getSize() / 2 + 1));
-		temps = temps.replaceAll("INSERT_FAMILY", temp.getFamily());
-		temps = temps.replaceAll("INSERT_STYLE", (temp.isItalic() ? "; font-style: italic" : "") +
-		(temp.isBold() ? "; font-weight: bold" : ""));
+		temps = doReplacement(temps);
 		scramble.setText(temps);
+
 		scramble.setCaretPosition(0);
 		setProperSize();
-		container.validate();
+		((Container)getParent()).validate();
+	}
+
+	private String doReplacement(String s){
+		Font temp = Configuration.getScrambleFont();
+		s = s.replaceAll("INSERT_SIZE", "" + temp.getSize());
+		s = s.replaceAll("INSERT_SUBSIZE", "" + (temp.getSize() / 2 + 1));
+		s = s.replaceAll("INSERT_FAMILY", temp.getFamily());
+		s = s.replaceAll("INSERT_STYLE", (temp.isItalic() ? "; font-style: italic" : "") +
+			(temp.isBold() ? "; font-weight: bold" : ""));
+		return s;
 	}
 
 	private boolean hid;
