@@ -9,7 +9,7 @@
 			</center>
 			<page_end>
 				<panel layout="box" orientation="page"><!--southwest-->
-					<panel layout="flow">
+					<panel layout="flow" hgap="5" vgap="5">
 						<component type="stackmatstatuslabel"/>
 						<component type="scramblechooser"/>
 						<component type="scramblelength"/>
@@ -17,13 +17,15 @@
 						<component type="multislice"/>
 						<component type="serverscrambles"/>
 					</panel>
-					<panel layout="grid" cols="3"><!--buttonspanel-->
-						<component type="addtimebutton"/>
-						<component type="keyboardcheckbox"/>
-						<component type="resetbutton"/>
-						<component type="currentaveragebutton"/>
-						<component type="bestaveragebutton"/>
-						<component type="sessionaveragebutton"/>
+					<panel layout="flow" hgap="5" vgap="5">
+						<panel layout="grid" cols="3"><!--buttonspanel-->
+							<component type="addtimebutton"/>
+							<component type="keyboardcheckbox"/>
+							<component type="resetbutton"/>
+							<component type="currentaveragebutton"/>
+							<component type="bestaveragebutton"/>
+							<component type="sessionaveragebutton"/>
+						</panel>
 					</panel>
 					<component type="solveslabel"/>
 					<!--<label><![CDATA[<html><center>$$solves$$/$$attempts$$ (solves/attempts)</center>]]></label>-->

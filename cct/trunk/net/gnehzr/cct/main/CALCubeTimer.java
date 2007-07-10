@@ -219,7 +219,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		bestRAButton = new DynamicButton(new DynamicString("Best Rolling Average: $$bestaverage", stats));
 		bestRAButton.addActionListener(this);
 
-		sessionAverageButton= new DynamicButton(new DynamicString("Session Average: $$sessionaverage", stats));
+		sessionAverageButton = new DynamicButton(new DynamicString("Session Average: $$sessionaverage", stats));
 		sessionAverageButton.addActionListener(this);
 
 		numberOfSolvesLabel = new DynamicLabel(new DynamicString("$$solves$$/$$attempts$$ (solves/attempts)", stats));
@@ -492,7 +492,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 	private JPanel buttons;
 	private JPanel createButtonsPanel() {
-		/* TODO what is the purpose of having sideBySide? also, it's not side by side
+		/* what is the purpose of having sideBySide? also, it's not side by side
+		 * nevermind, it's to keep it small.
 		   if(buttons == null) {
 		   buttons = new JPanel();
 		   } else
@@ -513,13 +514,16 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		sideBySide.add(sessionAverageButton);
 		buttons.add(sideBySide);
 		*/
-		buttons = new JPanel(new GridLayout(0, 3));
-		buttons.add(addButton);
-		buttons.add(keyboardCheckBox);
-		buttons.add(resetButton);
-		buttons.add(currentAverageButton);
-		buttons.add(bestRAButton);
-		buttons.add(sessionAverageButton);
+		JPanel temp = new JPanel(new GridLayout(0, 3));
+		temp.add(addButton);
+		temp.add(keyboardCheckBox);
+		temp.add(resetButton);
+		temp.add(currentAverageButton);
+		temp.add(bestRAButton);
+		temp.add(sessionAverageButton);
+
+		buttons = new JPanel();
+		buttons.add(temp);
 
 		return buttons;
 	}
@@ -843,7 +847,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		} else if(source == hideScrambles) {
 			Configuration.setHideScrambles(hideScrambles.isSelected());
 			scrambleText.refresh();
-		} else if(source == newLayout) {
+		} else if(source == newLayout) { //TODO this is broken
 			Configuration.setIntegratedTimerDisplay(newLayout.isSelected());
 			timeLabel.setEnabledTiming(Configuration.isIntegratedTimerDisplay());
 			createButtonsPanel();
