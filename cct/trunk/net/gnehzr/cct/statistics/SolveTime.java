@@ -110,7 +110,7 @@ public class SolveTime implements Comparable {
 	}
 
 	public int value() {
-		if(isWorstTime()) return Integer.MAX_VALUE - 1;
+		if(isInfiniteTime()) return Integer.MAX_VALUE - 1;
 		return hundredths;
 	}
 
@@ -122,7 +122,7 @@ public class SolveTime implements Comparable {
 		return isPop;
 	}
 
-	public boolean isWorstTime() {
+	public boolean isInfiniteTime() {
 		return isPop || isDNF;
 	}
 

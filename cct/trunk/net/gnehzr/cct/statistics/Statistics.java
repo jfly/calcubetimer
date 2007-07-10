@@ -59,8 +59,8 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		sortaverages = new ArrayList<Double>();
 		sortsds = new ArrayList<Double>();
 		runningTotal = runningSquareTotal = 0;
-		curSessionAvg = Double.MIN_VALUE;
-		curSessionSD = Double.MIN_VALUE;
+		curSessionAvg = Double.MAX_VALUE;
+		curSessionSD = Double.MAX_VALUE;
 		numPops = numPlus2s = numDnfs = 0;
 		indexOfBestRA = -1;
 	}
@@ -105,7 +105,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		if(s.isPlusTwo()) numPlus2s++;
 		if(s.isDNF()) numDnfs++;
 
-		if(!s.isWorstTime()){ //valid time... questionable method naming
+		if(!s.isInfiniteTime()){
 			double t = s.secondsValue();
 			runningTotal += t;
 			curSessionAvg = runningTotal / (times.size() - numPops - numDnfs);
@@ -125,8 +125,8 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 			sortaverages.add(i, av);
 			if(i == 0) indexOfBestRA = averages.size() - 1;
 
-			if(avg == Integer.MAX_VALUE){
-				Double s = new Double(Integer.MAX_VALUE);
+			if(avg == Double.MAX_VALUE){
+				Double s = new Double(Double.MAX_VALUE);
 				sds.add(s);
 				sortsds.add(s);
 			}
@@ -146,9 +146,9 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		int invalid = 0;
 		double lo, hi, rt;
 		lo = hi = rt = times.get(a).secondsValue();
-		if(times.get(a).isWorstTime()) invalid++;
+		if(times.get(a).isInfiniteTime()) invalid++;
 		for(int i = a+1; i < b; i++){
-			if(times.get(i).isWorstTime() && ++invalid >= 2) return Integer.MAX_VALUE;
+			if(times.get(i).isInfiniteTime() && ++invalid >= 2) return Double.MAX_VALUE;
 			double temp = times.get(i).secondsValue();
 			rt += temp;
 			if(lo > temp) lo = temp;
@@ -348,7 +348,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 
 		if(average == 0) return "N/A";
 
-		if(average == Integer.MAX_VALUE) return "Invalid";
+		if(average == Double.MAX_VALUE) return "Invalid";
 
 		return Utils.clockFormat(average, Configuration.isClockFormat());
 	}
@@ -364,7 +364,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 			return false;
 		}
 
-		if(average == 0 || average == Double.MIN_VALUE || average == Integer.MAX_VALUE) return false;
+		if(average == 0 || average == Double.MAX_VALUE) return false;
 
 		return true;
 	}
@@ -404,7 +404,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		while(iter.hasNext()){
 			SolveTime time = iter.next();
 			if(best.compareTo(time) >= 0) best = time;
-			if(worst.compareTo(time) < 0 && !(ignoreInfinite && time.isWorstTime())) worst = time;
+			if(worst.compareTo(time) < 0 && !(ignoreInfinite && time.isInfiniteTime())) worst = time;
 		}
 		return new SolveTime[]{best, worst};
 	}
@@ -439,7 +439,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		if(type == averageType.SESSION) sd = curSessionSD;
 		else if(type == averageType.RA) sd = sds.get(indexOfBestRA).doubleValue();
 		else if(type == averageType.CURRENT) sd = sds.get(sds.size() - 1).doubleValue();
-		return (sd == Double.MAX_VALUE) ? "N/A" : Utils.format(sd);
+		return Utils.format(sd);
 	}
 
 	//access methods
@@ -474,63 +474,63 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 	public double getTime(int n){
 		if(n < 0) n = times.size() + n;
 
-		if(times.size() == 0 || n < 0 || n >= times.size()) return Double.MIN_VALUE;
+		if(times.size() == 0 || n < 0 || n >= times.size()) return Double.MAX_VALUE;
 		else return times.get(n).secondsValue();
 	}
 	public double getAverage(int n){
 		if(n < 0) n = averages.size() + n;
 
-		if(averages.size() == 0 || n < 0 || n >= averages.size()) return Double.MIN_VALUE;
+		if(averages.size() == 0 || n < 0 || n >= averages.size()) return Double.MAX_VALUE;
 		else return averages.get(n).doubleValue();
 	}
 	public double getSD(int n){
 		if(n < 0) n = sds.size() + n;
 
-		if(sds.size() == 0 || n < 0 || n >= sds.size()) return Double.MIN_VALUE;
+		if(sds.size() == 0 || n < 0 || n >= sds.size()) return Double.MAX_VALUE;
 		else return sds.get(n).doubleValue();
 	}
 	public double getSortTime(int n){
 		if(n < 0) n = sorttimes.size() + n;
 
-		if(sorttimes.size() == 0 || n < 0 || n >= sorttimes.size()) return Double.MIN_VALUE;
+		if(sorttimes.size() == 0 || n < 0 || n >= sorttimes.size()) return Double.MAX_VALUE;
 		else return sorttimes.get(n).secondsValue();
 	}
 	public double getSortAverage(int n){
 		if(n < 0) n = sortaverages.size() + n;
 
-		if(sortaverages.size() == 0 || n < 0 || n >= sortaverages.size()) return Double.MIN_VALUE;
+		if(sortaverages.size() == 0 || n < 0 || n >= sortaverages.size()) return Double.MAX_VALUE;
 		else return sortaverages.get(n).doubleValue();
 	}
 	public double getSortSD(int n){
 		if(n < 0) n = sortsds.size() + n;
 
-		if(sortsds.size() == 0 || n < 0 || n >= sortsds.size()) return Double.MIN_VALUE;
+		if(sortsds.size() == 0 || n < 0 || n >= sortsds.size()) return Double.MAX_VALUE;
 		else return sortsds.get(n).doubleValue();
 	}
 	public double getSortAverageSD(int n){
 		if(n < 0) n = sortaverages.size() + n;
 
-		if(sortaverages.size() == 0 || n < 0 || n >= sortaverages.size()) return Double.MIN_VALUE;
+		if(sortaverages.size() == 0 || n < 0 || n >= sortaverages.size()) return Double.MAX_VALUE;
 		else return sds.get(averages.indexOf(sortaverages.get(n))).doubleValue();
 	}
 
 	public double getProgressTime(){
-		if(times.size() < 2) return Double.MIN_VALUE;
+		if(times.size() < 2) return Double.MAX_VALUE;
 		else{
 			double t1 = getTime(-1);
-			if(t1 == Double.MIN_VALUE) return Double.MIN_VALUE;
+			if(t1 == Double.MAX_VALUE) return Double.MAX_VALUE;
 			double t2 = getTime(-2);
-			if(t2 == Double.MIN_VALUE) return Double.MIN_VALUE;
+			if(t2 == Double.MAX_VALUE) return Double.MAX_VALUE;
 			return t1 - t2;
 		}
 	}
 	public double getProgressAverage(){
-		if(averages.size() < 2) return Double.MIN_VALUE;
+		if(averages.size() < 2) return Double.MAX_VALUE;
 		else{
 			double t1 = getAverage(-1);
-			if(t1 == Double.MIN_VALUE) return Double.MIN_VALUE;
+			if(t1 == Double.MAX_VALUE) return Double.MAX_VALUE;
 			double t2 = getAverage(-2);
-			if(t2 == Double.MIN_VALUE) return Double.MIN_VALUE;
+			if(t2 == Double.MAX_VALUE) return Double.MAX_VALUE;
 			return t1 - t2;
 		}
 	}
