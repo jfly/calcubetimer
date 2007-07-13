@@ -2,13 +2,16 @@ package net.gnehzr.cct.miscUtils;
 
 import javax.swing.JLabel;
 
+import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
-public class DynamicLabel extends JLabel implements StatisticsUpdateListener, DynamicStringSettable{
+public class DynamicLabel extends JLabel implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener{
 	private DynamicString s;
 
 	public DynamicLabel(){
 		s = null;
+		Configuration.addConfigurationChangeListener(this);
 	}
 
 	public DynamicLabel(DynamicString s){
@@ -25,8 +28,12 @@ public class DynamicLabel extends JLabel implements StatisticsUpdateListener, Dy
 			update();
 		}
 	}
-
+	
 	public void update(){
 		if(s != null) setText(s.toString());
+	}
+
+	public void configurationChanged(){
+		update();
 	}
 }
