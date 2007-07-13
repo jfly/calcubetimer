@@ -28,7 +28,9 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants;
 import org.jvnet.substance.watermark.SubstanceImageWatermark;
 
-public abstract class Configuration {
+public class Configuration {
+	private Configuration(){}
+
 	public interface ConfigurationChangeListener {
 		public void configurationChanged();
 	}
