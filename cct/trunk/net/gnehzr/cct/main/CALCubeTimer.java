@@ -7,6 +7,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -58,7 +60,7 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 
-public class CALCubeTimer extends JFrame implements ActionListener, MouseListener, KeyListener, ListDataListener, ChangeListener, ConfigurationChangeListener {
+public class CALCubeTimer extends JFrame implements ActionListener, MouseListener, KeyListener, ListDataListener, ChangeListener, ConfigurationChangeListener, WindowFocusListener{
 	private static final long serialVersionUID = 1L;
 	public static final String CCT_VERSION = "0.2";
 	private JFrame ab = null;
@@ -111,6 +113,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	StatisticsAction rollingAverageAction;
 	StatisticsAction sessionAverageAction;
 	public void createAndShowGUI() {
+		addWindowFocusListener(this);
+
 		ab = new JFrame("About CCT " + CCT_VERSION);
 		ab.setIconImage(cube.getImage());
 		ab.setAlwaysOnTop(true);
@@ -1054,6 +1058,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 	public void intervalAdded(ListDataEvent e) {}
 	public void intervalRemoved(ListDataEvent e) {}
+
+	public void windowGainedFocus(WindowEvent e){
+		timeLabel.refreshFocus();
+	}
+	public void windowLostFocus(WindowEvent e){
+		timeLabel.refreshFocus();
+	}
 
 	public void sendCurrentTime(String s){
 		if(client != null && client.isConnected()){

@@ -38,13 +38,17 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 	public void setEnabledTiming(boolean enabled) {
 		if(!enabled)
 			setBorder(BorderFactory.createEmptyBorder());
-		else if(isFocusOwner())
+		else refreshFocus();
+		timer.setEnabled(enabled);
+	}
+
+	public void refreshFocus(){
+		if(isFocusOwner())
 			setFocusedState();
 		else
 			setUnfocusedState();
-
-		timer.setEnabled(enabled);
 	}
+
 	private boolean keyboard;
 	public void setKeyboard(boolean isKey) {
 		keyboard = isKey;
