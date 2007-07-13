@@ -23,9 +23,9 @@
 							<component type="keyboardcheckbox"/>
 							<panel/>
 							<!--<component type="resetbutton"/>-->
-							<component type="currentaveragebutton"/>
-							<component type="bestaveragebutton"/>
-							<component type="sessionaveragebutton"/>
+							<button action="currentaverage"><![CDATA[<html><font color="$$color_currentaverage$$">Current Average: $$lastaverage$$</font></html>]]></button>
+							<button action="bestaverage"><![CDATA[<html><font color="$$color_bestaverage$$">Best Rolling Average: $$bestaverage$$</font></html>]]></button>
+							<button action="sessionaverage">Session Average: $$sessionaverage</button>
 						</panel>
 					</panel>
 					<component type="solveslabel"/>

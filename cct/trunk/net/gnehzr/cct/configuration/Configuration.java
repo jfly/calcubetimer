@@ -20,6 +20,7 @@ import java.util.Vector;
 import javax.swing.JFrame;
 
 import net.gnehzr.cct.main.CALCubeTimer;
+import net.gnehzr.cct.miscUtils.Utils;
 import net.gnehzr.cct.scrambles.CubeScramble;
 import net.gnehzr.cct.scrambles.MegaminxScramble;
 
@@ -206,10 +207,10 @@ public abstract class Configuration {
 		return getBestAndCurrentColor(defaults);
 	}
 	private static Color getBestAndCurrentColor(Properties props) {
-		return new Color(Integer.parseInt(props.getProperty("statistics_color_BestAndCurrentAverage"), 16));
+		return Utils.stringToColor(props.getProperty("statistics_color_BestAndCurrentAverage"));
 	}
 	public static void setBestAndCurrentColor(Color bestAndCurrentColor) {
-		props.setProperty("statistics_color_BestAndCurrentAverage", padWith0s(Integer.toHexString(bestAndCurrentColor.getRGB() & 0xffffff)));
+		props.setProperty("statistics_color_BestAndCurrentAverage", Utils.colorToString(bestAndCurrentColor));
 	}
 	public static Color getBestRAColor() {
 		return getBestRAColor(props);
@@ -218,10 +219,10 @@ public abstract class Configuration {
 		return getBestRAColor(defaults);
 	}
 	private static Color getBestRAColor(Properties props) {
-		return new Color(Integer.parseInt(props.getProperty("statistics_color_BestRA"), 16));
+		return Utils.stringToColor(props.getProperty("statistics_color_BestRA"));
 	}
 	public static void setBestRAColor(Color bestRAColor) {
-		props.setProperty("statistics_color_BestRA", padWith0s(Integer.toHexString(bestRAColor.getRGB() & 0xffffff)));
+		props.setProperty("statistics_color_BestRA", Utils.colorToString(bestRAColor));
 	}
 	public static Color getBestTimeColor() {
 		return getBestTimeColor(props);
@@ -230,10 +231,10 @@ public abstract class Configuration {
 		return getBestTimeColor(defaults);
 	}
 	private static Color getBestTimeColor(Properties props) {
-		return new Color(Integer.parseInt(props.getProperty("statistics_color_BestTime"), 16));
+		return Utils.stringToColor(props.getProperty("statistics_color_BestTime"));
 	}
 	public static void setBestTimeColor(Color bestTimeColor) {
-		props.setProperty("statistics_color_BestTime", padWith0s(Integer.toHexString(bestTimeColor.getRGB() & 0xffffff)));
+		props.setProperty("statistics_color_BestTime", Utils.colorToString(bestTimeColor));
 	}
 	public static boolean isClockFormat() {
 		return isClockFormat(props);
@@ -255,10 +256,10 @@ public abstract class Configuration {
 		return getCurrentAverageColor(defaults);
 	}
 	private static Color getCurrentAverageColor(Properties props) {
-		return new Color(Integer.parseInt(props.getProperty("statistics_color_CurrentAverage"), 16));
+		return Utils.stringToColor(props.getProperty("statistics_color_CurrentAverage"));
 	}
 	public static void setCurrentAverageColor(Color currentAverageColor) {
-		props.setProperty("statistics_color_CurrentAverage", padWith0s(Integer.toHexString(currentAverageColor.getRGB() & 0xffffff)));
+		props.setProperty("statistics_color_CurrentAverage", Utils.colorToString(currentAverageColor));
 	}
 	public static boolean isInvertedHundredths() {
 		return isInvertedHundredths(props);
@@ -382,10 +383,10 @@ public abstract class Configuration {
 		return getWorstTimeColor(defaults);
 	}
 	private static Color getWorstTimeColor(Properties props) {
-		return new Color(Integer.parseInt(props.getProperty("statistics_color_WorstTime"), 16));
+		return Utils.stringToColor(props.getProperty("statistics_color_WorstTime"));
 	}
 	public static void setWorstTimeColor(Color worstTimeColor) {
-		props.setProperty("statistics_color_WorstTime", padWith0s(Integer.toHexString(worstTimeColor.getRGB() & 0xffffff)));
+		props.setProperty("statistics_color_WorstTime", Utils.colorToString(worstTimeColor));
 	}
 	public static int getMixerNumber() {
 		return Integer.parseInt(
@@ -445,13 +446,13 @@ public abstract class Configuration {
 	private static Color[] getCubeColors(Properties props) {
 		Color[] temp = new Color[CubeScramble.FACE_NAMES.length];
 		for(int ch = 0; ch < CubeScramble.FACE_NAMES.length; ch++) {
-			temp[ch] = new Color(Integer.parseInt(props.getProperty("puzzle_color_CubeFace" + CubeScramble.FACE_NAMES[ch]), 16));
+			temp[ch] = Utils.stringToColor(props.getProperty("puzzle_color_CubeFace" + CubeScramble.FACE_NAMES[ch]));
 		}
 		return temp;
 	}
 	public static void setCubeColors(Color[] cubeColors) {
 		for(int ch = 0; ch < CubeScramble.FACE_NAMES.length; ch++) {
-			props.setProperty("puzzle_color_CubeFace" + CubeScramble.FACE_NAMES[ch], padWith0s(Integer.toHexString(cubeColors[ch].getRGB() & 0xffffff)));
+			props.setProperty("puzzle_color_CubeFace" + CubeScramble.FACE_NAMES[ch], Utils.colorToString(cubeColors[ch]));
 		}
 	}
 
@@ -464,14 +465,14 @@ public abstract class Configuration {
 	private static Color[] getMegaminxColors(Properties props) {
 		Color[] temp = new Color[MegaminxScramble.FACES.length()];
 		for(int ch = 0; ch < temp.length; ch++) {
-			temp[ch] = new Color(Integer.parseInt(props.getProperty("puzzle_color_MegaminxFace" + MegaminxScramble.FACES.charAt(ch)), 16));
+			temp[ch] = Utils.stringToColor(props.getProperty("puzzle_color_MegaminxFace" + MegaminxScramble.FACES.charAt(ch)));
 		}
 		return temp;
 	}
 
 	public static void setMegaminxColors(Color[] megaminxColors) {
 		for(int ch = 0; ch < megaminxColors.length; ch++) {
-			props.setProperty("puzzle_color_MegaminxFace" + MegaminxScramble.FACES.charAt(ch), padWith0s(Integer.toHexString(megaminxColors[ch].getRGB() & 0xffffff)));
+			props.setProperty("puzzle_color_MegaminxFace" + MegaminxScramble.FACES.charAt(ch), Utils.colorToString(megaminxColors[ch]));
 		}
 	}
 
@@ -688,12 +689,5 @@ public abstract class Configuration {
 				break;
 		}
 		return ch;
-	}
-	private static String padWith0s(String s){
-		int pad = 6 - s.length();
-		if(pad > 0){
-			for(int i = 0; i < pad; i++) s = "0" + s;
-		}
-		return s;
 	}
 }

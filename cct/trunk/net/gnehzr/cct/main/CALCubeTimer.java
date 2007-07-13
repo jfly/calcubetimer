@@ -67,9 +67,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	private JButton fullScreenButton = null;
 	private JLabel onLabel = null;
 	private JList timesList = null;
-	private JButton currentAverageButton = null;
-	private JButton sessionAverageButton = null;
-	private JButton bestRAButton = null;
 	private JLabel numberOfSolvesLabel = null;
 	private JButton resetButton = null;
 	private JButton addButton = null;
@@ -110,6 +107,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		});
 	}
 
+	StatisticsAction currentAverageAction;
+	StatisticsAction rollingAverageAction;
+	StatisticsAction sessionAverageAction;
 	public void createAndShowGUI() {
 		ab = new JFrame("About CCT " + CCT_VERSION);
 		ab.setIconImage(cube.getImage());
@@ -213,14 +213,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 		timesScroller = new JScrollPane(timesList);
 
-		currentAverageButton = new DynamicButton(new DynamicString("Current Average: $$lastaverage", stats));
-		currentAverageButton.addActionListener(this);
-
-		bestRAButton = new DynamicButton(new DynamicString("Best Rolling Average: $$bestaverage", stats));
-		bestRAButton.addActionListener(this);
-
-		sessionAverageButton = new DynamicButton(new DynamicString("Session Average: $$sessionaverage", stats));
-		sessionAverageButton.addActionListener(this);
+		currentAverageAction = new StatisticsAction(this, Statistics.averageType.CURRENT);
+		rollingAverageAction = new StatisticsAction(this, Statistics.averageType.RA);
+		sessionAverageAction = new StatisticsAction(this, Statistics.averageType.SESSION);
 
 		numberOfSolvesLabel = new DynamicLabel(new DynamicString("$$solves$$/$$attempts$$ (solves/attempts)", stats));
 		numberOfSolvesLabel.setAlignmentX(.5f);
@@ -343,6 +338,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		}
 
 		public void startElement(String namespaceURI, String lName, String qName, Attributes attrs) throws SAXException {
+			String temp;
 			JComponent com = null;
 
 			level++;
@@ -356,7 +352,16 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				com = new DynamicLabel();
 			}
 			else if(elementName.equals("button")){
-				com = new DynamicButton();
+				DynamicButton b = new DynamicButton();
+				if(attrs != null){
+					if((temp = attrs.getValue("action")) != null){
+						if(temp.equalsIgnoreCase("currentAverage")) b.setAction(currentAverageAction);
+						else if(temp.equalsIgnoreCase("bestAverage")) b.setAction(rollingAverageAction);
+						else if(temp.equalsIgnoreCase("sessionAverage")) b.setAction(sessionAverageAction);
+						else throw new SAXException("parse error in action");
+					}
+				}
+				com = b;
 			}
 			else if(elementName.equals("panel")){
 				com = new JPanel();
@@ -370,8 +375,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				LayoutManager layout;
 				if(attrs == null) layout = new FlowLayout();
 				else{
-					String temp;
-
 					try{
 						if((temp = attrs.getValue("hgap")) != null) hgap = Integer.parseInt(temp);
 						if((temp = attrs.getValue("vgap")) != null) vgap = Integer.parseInt(temp);
@@ -411,7 +414,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				com.setLayout(layout);
 			}
 			else if(elementName.equals("component")){
-				String temp;
 				if(attrs == null || (temp = attrs.getValue("type")) == null) com = null;
 				else if(temp.equalsIgnoreCase("keyboardcheckbox")) com = keyboardCheckBox;
 				else if(temp.equalsIgnoreCase("scramblechooser")) com = scrambleChooser;
@@ -422,15 +424,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				else if(temp.equalsIgnoreCase("stackmatstatuslabel")) com = onLabel;
 				else if(temp.equalsIgnoreCase("addtimebutton")) com = addButton;
 				else if(temp.equalsIgnoreCase("resetbutton")) com = resetButton;
-				else if(temp.equalsIgnoreCase("currentaveragebutton")) com = currentAverageButton;
-				else if(temp.equalsIgnoreCase("bestaveragebutton")) com = bestRAButton;
-				else if(temp.equalsIgnoreCase("sessionaveragebutton")) com = sessionAverageButton;
 				else if(temp.equalsIgnoreCase("solveslabel")) com = numberOfSolvesLabel;
 				else if(temp.equalsIgnoreCase("scrambletext")) com = scrambleText;
 				else if(temp.equalsIgnoreCase("timerdisplay")) com = timeLabel;
 				else if(temp.equalsIgnoreCase("timeslist")) com = timesScroller;
-
-
 			}
 			else if(elementName.equals("center") || elementName.equals("east") || elementName.equals("west") || elementName.equals("south") || elementName.equals("north") || elementName.equals("page_start") || elementName.equals("page_end") || elementName.equals("line_start") || elementName.equals("line_end")){
 				com = null;
@@ -440,7 +437,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			componentTree.add(com);
 
 			if(com != null){
-				String temp = null;
+				temp = null;
 				for(int i = level - 1; i >= 0; i--){
 					if(componentTree.get(i) != null){
 						if(temp == null) componentTree.get(i).add(com);
@@ -465,7 +462,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		}
 
 		public void endElement(String namespaceURI, String sName, String qName) throws SAXException {
-			if(needText.get(level)) ((DynamicStringSettable)componentTree.get(level)).setDynamicString(new DynamicString(strs.get(level), stats));
+			if(needText.get(level))
+				if(componentTree.get(level) instanceof DynamicStringSettable)
+					((DynamicStringSettable)componentTree.get(level)).setDynamicString(new DynamicString(strs.get(level), stats));
 
 			componentTree.remove(level);
 			elementNames.remove(level);
@@ -490,8 +489,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		}
 	}
 
-	private JPanel buttons;
-	private JPanel createButtonsPanel() {
+	//private JPanel buttons;
+	//private JPanel createButtonsPanel() {
 		/* what is the purpose of having sideBySide? also, it's not side by side
 		 * nevermind, it's to keep it small.
 		   if(buttons == null) {
@@ -514,6 +513,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		sideBySide.add(sessionAverageButton);
 		buttons.add(sideBySide);
 		*/
+	/*
 		JPanel temp = new JPanel(new GridLayout(0, 3));
 		temp.add(addButton);
 		temp.add(keyboardCheckBox);
@@ -527,6 +527,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 		return buttons;
 	}
+	*/
 
 	private JMenuItem connectToServer, importScrambles, exportScrambles, configuration, exit, documentation, about;
 	private JCheckBoxMenuItem hideScrambles, newLayout, spacebarOnly, annoyingDisplay, lessAnnoyingDisplay;
@@ -640,13 +641,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 
 	public void repaintTimes() {
-		currentAverageButton.setForeground(Configuration.getCurrentAverageColor());
+		//currentAverageButton.setForeground(Configuration.getCurrentAverageColor());
 		String temp = stats.average(Statistics.averageType.CURRENT);
 		sendAverage(temp);
-		currentAverageButton.setEnabled(stats.isValid(Statistics.averageType.CURRENT));
-		bestRAButton.setForeground(Configuration.getBestRAColor());
-		bestRAButton.setEnabled(stats.isValid(Statistics.averageType.RA));
-		sessionAverageButton.setEnabled(stats.isValid(Statistics.averageType.SESSION));
+		currentAverageAction.setEnabled(stats.isValid(Statistics.averageType.CURRENT));
+		//bestRAButton.setForeground(Configuration.getBestRAColor());
+		rollingAverageAction.setEnabled(stats.isValid(Statistics.averageType.RA));
+		sessionAverageAction.setEnabled(stats.isValid(Statistics.averageType.SESSION));
 		timesList.ensureIndexIsVisible(stats.getSize() - 1);
 	}
 
@@ -741,12 +742,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				((SpinnerNumberModel) scrambleNumber.getModel()).setMaximum(scrambles.size());
 				stats.clear();
 			}
-		} else if(source == currentAverageButton) {
-			handleStats(Statistics.averageType.CURRENT);
-		} else if(source == bestRAButton) {
-			handleStats(Statistics.averageType.RA);
-		} else if(source == sessionAverageButton) {
-			handleStats(Statistics.averageType.SESSION);
 		} else if(source == importScrambles) {
 			int choice = JOptionPane.YES_OPTION;
 			if(serverScrambles.isSelected())
@@ -848,11 +843,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			Configuration.setHideScrambles(hideScrambles.isSelected());
 			scrambleText.refresh();
 		} else if(source == newLayout) { //TODO this is broken
+			/*
 			Configuration.setIntegratedTimerDisplay(newLayout.isSelected());
 			timeLabel.setEnabledTiming(Configuration.isIntegratedTimerDisplay());
 			createButtonsPanel();
 			validate();
 			startStopPanel.requestFocusInWindow();
+			*/
 		} else if(source == annoyingDisplay) {
 			timeLabel.setOpaque(annoyingDisplay.isSelected());
 			Configuration.setAnnoyingDisplay(annoyingDisplay.isSelected());
@@ -861,25 +858,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			Configuration.setLessAnnoyingDisplay(lessAnnoyingDisplay.isSelected());
 			timeLabel.repaint();
 		}
-	}
-
-	private static String[] statsChoices = new String[] {"Save Statistics", "Back"};
-	private void handleStats(Statistics.averageType type){
-		String s = null;
-		if(type == Statistics.averageType.RA) s = "Rolling Average";
-		else if(type == Statistics.averageType.CURRENT) s = "Current Average";
-		else if(type == Statistics.averageType.SESSION) s = "Entire Session";
-		StatsDialogHandler statsHandler = new StatsDialogHandler(configurationDialog, stats, type, true);
-		int choice = JOptionPane.showOptionDialog(this,
-				statsHandler,
-				"Detailed Statistics for " + s,
-				JOptionPane.YES_NO_OPTION,
-				JOptionPane.PLAIN_MESSAGE,
-				null,
-				statsChoices,
-				statsChoices[1]);
-		if(choice == JOptionPane.YES_OPTION)
-			statsHandler.promptToSaveStats();
 	}
 
 	private void exportScrambles(URL outputFile, int numberOfScrambles, ScrambleType cubeChoice) {
@@ -1240,5 +1218,42 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			repaintTimes(); //needed here too
 			return true;
 		}
+	}
+
+	public ConfigurationDialog getConfigurationDialog(){
+		return configurationDialog;
+	}
+	public Statistics getStatistics(){
+		return stats;
+	}
+}
+
+class StatisticsAction extends AbstractAction{
+	private static String[] statsChoices = new String[] {"Save Statistics", "Back"};
+	private CALCubeTimer cct;
+	private Statistics.averageType type;
+	private String s = null;
+
+	public StatisticsAction(CALCubeTimer cct, Statistics.averageType type){
+		super();
+		this.cct = cct;
+		this.type = type;
+		if(type == Statistics.averageType.RA) s = "Rolling Average";
+		else if(type == Statistics.averageType.CURRENT) s = "Current Average";
+		else if(type == Statistics.averageType.SESSION) s = "Entire Session";
+	}
+
+	public void actionPerformed(ActionEvent e){
+		StatsDialogHandler statsHandler = new StatsDialogHandler(cct.getConfigurationDialog(), cct.getStatistics(), type, true);
+		int choice = JOptionPane.showOptionDialog(cct,
+				statsHandler,
+				"Detailed Statistics for " + s,
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.PLAIN_MESSAGE,
+				null,
+				statsChoices,
+				statsChoices[1]);
+		if(choice == JOptionPane.YES_OPTION)
+			statsHandler.promptToSaveStats();
 	}
 }

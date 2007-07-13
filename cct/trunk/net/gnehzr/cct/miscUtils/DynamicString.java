@@ -33,6 +33,8 @@ public class DynamicString{
 	private String getReplacement(String s){
 		String r = "";
 		if(s.equalsIgnoreCase("")) ;
+
+		//Statistics section
 		else if(s.equalsIgnoreCase("sessionAverage")) r = Utils.clockFormat(stats.getSessionAvg(), Configuration.isClockFormat());
 		else if(s.equalsIgnoreCase("sessionSD")) r = Utils.format(stats.getSessionSD());
 		else if(s.equalsIgnoreCase("pops")) r = "" + stats.getNumPops();
@@ -53,6 +55,13 @@ public class DynamicString{
 		else if(s.equalsIgnoreCase("lastTime")) r = Utils.clockFormat(stats.getLastTime(), Configuration.isClockFormat());
 		else if(s.equalsIgnoreCase("lastAverage")) r = Utils.clockFormat(stats.getLastAverage(), Configuration.isClockFormat());
 		else if(s.equalsIgnoreCase("lastSD")) r = Utils.format(stats.getLastSD());
+
+		//Configuration section
+		else if(s.equalsIgnoreCase("color_bestAverage")) r = Utils.colorToString(Configuration.getBestRAColor());
+		else if(s.equalsIgnoreCase("color_bestAndCurrentAverage")) r = Utils.colorToString(Configuration.getBestAndCurrentColor());
+		else if(s.equalsIgnoreCase("color_currentAverage")) r = Utils.colorToString(Configuration.getCurrentAverageColor());
+		else if(s.equalsIgnoreCase("color_bestTime")) r = Utils.colorToString(Configuration.getBestTimeColor());
+		else if(s.equalsIgnoreCase("color_worstTime")) r = Utils.colorToString(Configuration.getWorstTimeColor());
 
 		if(r.equalsIgnoreCase("" + Double.MAX_VALUE)) return "N/A";
 		else return r;
