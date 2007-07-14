@@ -27,8 +27,7 @@
 							<button action="sessionaverage">Session Average: $$sessionaverage</button>
 						</panel>
 					</panel>
-					<component type="solveslabel"/>
-					<!--<label><![CDATA[<html><center>$$solves$$/$$attempts$$ (solves/attempts)</center>]]></label>-->
+					<label alignmentX=".5">$$solves$$/$$attempts$$ (solves/attempts)</label>
 				</panel>
 			</page_end>
 		</panel>

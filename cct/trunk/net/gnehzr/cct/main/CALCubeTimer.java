@@ -69,7 +69,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	private JButton fullScreenButton = null;
 	private JLabel onLabel = null;
 	private JList timesList = null;
-	private JLabel numberOfSolvesLabel = null;
 	private JButton resetButton = null;
 	private JButton addButton = null;
 	private JCheckBox keyboardCheckBox = null;
@@ -99,7 +98,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		stackmatTimer = new StackmatInterpreter();
 		stackmatTimer.execute();
 		Configuration.addConfigurationChangeListener(stackmatTimer);
-
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				timeListener = new TimerHandler();
@@ -220,9 +218,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		currentAverageAction = new StatisticsAction(this, Statistics.averageType.CURRENT);
 		rollingAverageAction = new StatisticsAction(this, Statistics.averageType.RA);
 		sessionAverageAction = new StatisticsAction(this, Statistics.averageType.SESSION);
-
-		numberOfSolvesLabel = new DynamicLabel(new DynamicString("$$solves$$/$$attempts$$ (solves/attempts)", stats));
-		numberOfSolvesLabel.setAlignmentX(.5f);
 
 		repaintTimes();
 
@@ -352,7 +347,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 			needText.add(new Boolean(elementName.equals("label") || elementName.equals("button")));
 			strs.add("");
-
+			
 			if(elementName.equals("label")){
 				com = new DynamicLabel();
 			}
@@ -429,7 +424,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				else if(temp.equalsIgnoreCase("stackmatstatuslabel")) com = onLabel;
 				else if(temp.equalsIgnoreCase("addtimebutton")) com = addButton;
 				else if(temp.equalsIgnoreCase("resetbutton")) com = resetButton;
-				else if(temp.equalsIgnoreCase("solveslabel")) com = numberOfSolvesLabel;
 				else if(temp.equalsIgnoreCase("scrambletext")) com = scrambleText;
 				else if(temp.equalsIgnoreCase("timerdisplay")) com = timeLabel;
 				else if(temp.equalsIgnoreCase("timeslist")) com = timesScroller;
@@ -439,6 +433,20 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			}
 			else throw new SAXException("invalid tag");
 
+			if(attrs != null && (temp = attrs.getValue("alignmentX")) != null) {
+				try {
+					com.setAlignmentX(Float.parseFloat(temp));
+				} catch(NumberFormatException e) {
+					throw new SAXException(e);
+				}
+			} else if(attrs != null && (temp = attrs.getValue("alignmentY")) != null) {
+				try {
+					com.setAlignmentY(Float.parseFloat(temp));
+				} catch(NumberFormatException e) {
+					throw new SAXException(e);
+				}
+			}
+			
 			componentTree.add(com);
 
 			if(com != null){
