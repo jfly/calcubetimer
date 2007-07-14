@@ -433,20 +433,17 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			}
 			else throw new SAXException("invalid tag");
 
-			if(attrs != null && (temp = attrs.getValue("alignmentX")) != null) {
-				try {
-					com.setAlignmentX(Float.parseFloat(temp));
-				} catch(NumberFormatException e) {
-					throw new SAXException(e);
-				}
-			} else if(attrs != null && (temp = attrs.getValue("alignmentY")) != null) {
-				try {
-					com.setAlignmentY(Float.parseFloat(temp));
+			if(com != null && attrs != null){
+				try{
+					if((temp = attrs.getValue("alignmentX")) != null)
+						com.setAlignmentX(Float.parseFloat(temp));
+					if((temp = attrs.getValue("alignmentY")) != null)
+						com.setAlignmentY(Float.parseFloat(temp));
 				} catch(NumberFormatException e) {
 					throw new SAXException(e);
 				}
 			}
-			
+
 			componentTree.add(com);
 
 			if(com != null){
