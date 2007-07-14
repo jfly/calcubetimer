@@ -78,9 +78,8 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		strlisten.remove(listener);
 	}
 	public void notifyStrings(){
-		for(int i = 0; i < strlisten.size(); i++){
-			strlisten.get(i).update();
-		}
+		for(StatisticsUpdateListener listener : strlisten)
+			listener.update();
 	}
 
 	public void add(SolveTime s){
