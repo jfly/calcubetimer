@@ -311,6 +311,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 		Configuration.addConfigurationChangeListener(this); //TODO is this okay here?
 		Configuration.updateBackground();
+
+		scramblePopup.setVisible(Configuration.isScramblePopup());
 	}
 
 	private class GUIParser extends DefaultHandler {
