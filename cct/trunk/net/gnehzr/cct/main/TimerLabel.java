@@ -110,11 +110,10 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 		if(keyboard && scrambles != null)
 			scrambles.setHidden(true);
 //		thingToListenTo.setBorder(BorderFactory.createEmptyBorder());
-		title = keyboard ? "Start Timer" : "Keyboard disabled";
 		if(Configuration.isIntegratedTimerDisplay())
 			setBorder(BorderFactory.createTitledBorder(
 					BorderFactory.createRaisedBevelBorder(),
-					"Click to focus"));
+					keyboard ? "Click to focus" : "Keyboard disabled"));
 		setBackground(Color.GRAY);
 		setRedButton();
 	}
