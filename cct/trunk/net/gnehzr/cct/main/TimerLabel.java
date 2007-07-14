@@ -91,18 +91,14 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 
 	}
 	public void setFocusedState() {
-		if(!keyboard)
-			setStateText("Keyboard disabled");
-		else {
-			if(keyboard && scrambles != null)
-				scrambles.setHidden(false);
-			title = "Start Timer";
-			setBorder(BorderFactory.createTitledBorder(
-					BorderFactory.createRaisedBevelBorder(),
-					title));
-			setBackground(Color.RED);
-			setGreenButton();
-		}
+		if(keyboard && scrambles != null)
+			scrambles.setHidden(false);
+		title = keyboard ? "Start Timer" : "Keyboard disabled";
+		setBorder(BorderFactory.createTitledBorder(
+				BorderFactory.createRaisedBevelBorder(),
+				title));
+		setBackground(Color.RED);
+		setGreenButton();
 	}
 	public void setKeysDownState() {
 		setBackground(Color.GREEN);
@@ -111,19 +107,16 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 				title));
 	}
 	public void setUnfocusedState() {
-		if(!keyboard)
-			setStateText("Keyboard disabled");
-		else {
-			if(keyboard && scrambles != null)
-				scrambles.setHidden(true);
-	//		thingToListenTo.setBorder(BorderFactory.createEmptyBorder());
-			if(Configuration.isIntegratedTimerDisplay())
-				setBorder(BorderFactory.createTitledBorder(
-						BorderFactory.createRaisedBevelBorder(),
-						"Click to focus"));
-			setBackground(Color.GRAY);
-			setRedButton();
-		}
+		if(keyboard && scrambles != null)
+			scrambles.setHidden(true);
+//		thingToListenTo.setBorder(BorderFactory.createEmptyBorder());
+		title = keyboard ? "Start Timer" : "Keyboard disabled";
+		if(Configuration.isIntegratedTimerDisplay())
+			setBorder(BorderFactory.createTitledBorder(
+					BorderFactory.createRaisedBevelBorder(),
+					"Click to focus"));
+		setBackground(Color.GRAY);
+		setRedButton();
 	}
 	private String title = "";
 	public void setStateText(String string) {
