@@ -62,7 +62,6 @@ public class Configuration {
 	private static ArrayList<ConfigurationChangeListener> listeners = new ArrayList<ConfigurationChangeListener>();
 	public static void addConfigurationChangeListener(ConfigurationChangeListener listener) {
 		listeners.add(listener);
-		apply();
 	}
 
 	private static SortedProperties defaults, props;
@@ -98,7 +97,7 @@ public class Configuration {
 		out.close();
 	}
 
-	private static void updateBackground() {
+	public static void updateBackground() {
 		if(isBackground()) {
 			SubstanceLookAndFeel.setImageWatermarkKind(SubstanceConstants.ImageWatermarkKind.APP_CENTER);
 			SubstanceLookAndFeel.setImageWatermarkOpacity(getOpacity());

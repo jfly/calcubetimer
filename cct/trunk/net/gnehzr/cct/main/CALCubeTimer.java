@@ -315,6 +315,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			scrambleText.requestFocusInWindow();
 
 		Configuration.addConfigurationChangeListener(this); //TODO is this okay here?
+		Configuration.updateBackground();
 	}
 
 	private class GUIParser extends DefaultHandler {

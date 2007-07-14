@@ -331,8 +331,10 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 	}
 
 	public void configurationChanged(){
-		curRASize = Configuration.getRASize();
-		refresh();
+		if(Configuration.getRASize() != curRASize){
+			curRASize = Configuration.getRASize();
+			refresh();
+		}
 	}
 
 	public String average(averageType type){

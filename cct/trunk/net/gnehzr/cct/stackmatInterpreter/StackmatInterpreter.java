@@ -204,6 +204,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 	}
 
 	public void configurationChanged() {
-		changeLine(Configuration.getMixerNumber());
+		if(Configuration.getMixerNumber() != getSelectedMixerIndex())
+			changeLine(Configuration.getMixerNumber());
 	}
 }
