@@ -68,6 +68,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 	public void clear(){
 		initialize();
 		contentsChanged(null);
+		notifyStrings();
 	}
 
 	private ArrayList<StatisticsUpdateListener> strlisten = new ArrayList<StatisticsUpdateListener>();
