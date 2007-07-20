@@ -131,7 +131,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		sideBySide.add(cancelButton);
 		pane.add(sideBySide, BorderLayout.PAGE_END);
 
-		setTitle("CALCubeTimer Options File: " + Configuration.getFileName());
+		refreshTitle();
 		syncGUIwithConfig();
 		setResizable(false);
 		pack();
@@ -588,10 +588,12 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		if(source == applyButton) {
 			applyConfiguration();
 			Configuration.saveConfigurationToFile();
+			refreshTitle();
 		}
 		else if(source == saveButton) {
 			applyConfiguration();
 			Configuration.saveConfigurationToFile();
+			refreshTitle();
 			setVisible(false);
 		} else if(source == cancelButton) {
 			setVisible(false);
@@ -629,6 +631,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 							"Hmmm...",
 							JOptionPane.WARNING_MESSAGE);
 				}
+				refreshTitle();
 				this.setVisible(false);
 			}
 		} else if(source == loadButton) {
@@ -646,6 +649,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 							"Hmmm...",
 							JOptionPane.WARNING_MESSAGE);
 				}
+				refreshTitle();
 			}
 		} else if(source == splits) {
 			minSplitTime.setEnabled(splits.isSelected());
@@ -743,8 +747,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	}
 
 	private void applyConfiguration() {
-		setTitle("CalCubeTimer Options File: " + Configuration.getFileName());
-
 		Configuration.setBestAndCurrentColor(currentAndRA.getBackground());
 		Configuration.setCurrentAverageColor(currentAverage.getBackground());
 		Configuration.setBestRAColor(bestRA.getBackground());
@@ -796,6 +798,10 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			items[i].setInUse(false);
 		}
 		items[Configuration.getMixerNumber()].setInUse(true);
+	}
+
+	private void refreshTitle(){
+		setTitle("CALCubeTimer Options File: " + Configuration.getFileName());
 	}
 
 	public void keyPressed(KeyEvent e) {
