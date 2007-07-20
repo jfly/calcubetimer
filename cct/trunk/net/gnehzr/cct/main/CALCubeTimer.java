@@ -184,7 +184,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		scramblePopup.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		scramblePopup.setIconImage(cube.getImage());
 		scramblePopup.setFocusableWindowState(false);
-		scramblePopup.setScramble(scrambles.getCurrent());
 		Dimension size = Configuration.getScrambleViewDimensions();
 		if(size != null)
 			scramblePopup.setSize(size);
@@ -750,8 +749,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 					scrambles = new ScrambleList(cubeChoice);
 				}
 				updateScramble();
-				scrambleNumber.setValue(scrambles.getScrambleNumber());
-				((SpinnerNumberModel) scrambleNumber.getModel()).setMaximum(scrambles.size());
 				stats.clear();
 			}
 		} else if(source == importScrambles) {
@@ -900,11 +897,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 					 inputFile.getPath(),
 					JOptionPane.INFORMATION_MESSAGE);
 			cubeChoice.setType(type.getType(), scrambles.getCurrent().getLength());
-			ignore = true;
 			scrambleChooser.setSelectedItem(cubeChoice.getType());
+
+			//this triggers an event that calls updateScramble, so commenting is probably okay
 			scrambleLength.setValue(cubeChoice.getLength());
-			ignore = false;
-			updateScramble();
+			//updateScramble();
 		} catch(ConnectException e) {
 			showErrorMessage("Connection refused!", "Error!");
 		} catch(FileNotFoundException e) {
@@ -918,10 +915,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			JOptionPane.showMessageDialog(this, errorMessage, title, JOptionPane.ERROR_MESSAGE);
 	}
 
-	private boolean ignore = false;
 	private void updateScramble() {
-		if(ignore) return;
-		ignore = true;
 		ScrambleType newType = new ScrambleType((String) scrambleChooser.getSelectedItem(), (Integer) scrambleLength.getValue());
 		if(!cubeChoice.equals(newType)) {
 			int choice = JOptionPane.YES_OPTION;
@@ -955,16 +949,19 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 					scrambles = new ScrambleList(cubeChoice);
 			} else {
 				scrambleChooser.setSelectedItem(cubeChoice.getType());
-				scrambleLength.setValue(cubeChoice.getLength());
+				if((Integer)scrambleLength.getValue() != scrambles.getScrambleNumber())
+					scrambleLength.setValue(cubeChoice.getLength());
 			}
 		}
-		scrambleNumber.setValue(scrambles.getScrambleNumber());
-		((SpinnerNumberModel) scrambleNumber.getModel()).setMaximum(scrambles.size());
-		if(serverScrambles.isSelected()) scrambleText.setText("Server scramble " + client.getScrambleIndex() + ": " + scrambles.getCurrent().toFormattedString());
+		if((Integer)scrambleNumber.getValue() != scrambles.getScrambleNumber())
+			scrambleNumber.setValue(scrambles.getScrambleNumber());
+		if((Integer)((SpinnerNumberModel)scrambleNumber.getModel()).getMaximum() != scrambles.size())
+			((SpinnerNumberModel) scrambleNumber.getModel()).setMaximum(scrambles.size());
+		if(serverScrambles.isSelected())
+			scrambleText.setText("Server scramble " + client.getScrambleIndex() + ": " + scrambles.getCurrent().toFormattedString());
 		else scrambleText.setText(scrambles.getCurrent());
 		scramblePopup.setScramble(scrambles.getCurrent());
 		scramblePopup.pack();
-		ignore = false;
 	}
 
 	public void dispose() {
@@ -1117,7 +1114,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 	public void configurationChanged() {
 		scramblePopup.setVisible(Configuration.isScramblePopup());
-		updateScramble();
+		scramblePopup.pack();
 	}
 
 	private static String[] options = {"Accept", "+2", "POP"};
