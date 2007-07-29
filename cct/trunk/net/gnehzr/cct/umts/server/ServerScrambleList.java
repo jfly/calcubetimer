@@ -37,7 +37,7 @@ public class ServerScrambleList extends ArrayList<Scramble[]>{
 	public ServerScrambleList(){
 		types = new ScrambleType[puzzles.length];
 		for(int i = 0; i < types.length; i++){
-			types[i] = new ScrambleType(puzzles[i], LENGTHS[i]);
+//			types[i] = new ScrambleType(puzzles[i], LENGTHS[i]); TODO fix server scrambles!!!
 		}
 	}
 

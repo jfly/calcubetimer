@@ -1,40 +1,35 @@
-package net.gnehzr.cct.scrambles;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+
+import net.gnehzr.cct.scrambles.Scramble;
 
 public class CubeScramble extends Scramble {
 	private static final String FACES = "LDBRUFldbruf";
-	public static final String[] FACE_NAMES = {
-		"Left", "Down", "Back", "Right", "Up", "Front"};
+	public static final String[] FACE_NAMES = {"Left", "Down", "Back", "Right",
+		"Up", "Front"};
+	public static final String PUZZLE_NAME = "Cube";
+	public static final String[] VARIATIONS = {"2x2x2", "3x3x3", "4x4x4", "5x5x5",
+		"6x6x6", "7x7x7", "8x8x8", "9x9x9", "10x10x10", "11x11x11"};
 	private int size;
 	private int length;
 	private boolean multislice = true;
 	private int[][][] image;
-//	private final static int LENGTHS[] = {0, 0, 25, 25, 40, 60, 100};
 
-//	public CubeScramble(int size) throws Exception {
-//		this.size = size;
-//		length = Configuration.getScrambleLength(size + "x" + size + "x" + size);
-//		if(length == 0)
-//			throw new Exception(size + ": Unsupported cube size!");
-////		else length = ScrambleType.LENGTHS[size-2];
-//		initializeImage();
-//		generateScramble();
-//	}
-
-	public CubeScramble(int size, String s) throws Exception {
+	public CubeScramble(String variation, int length) {
+		this(variation.equals("") ? 3 : Integer.parseInt(variation.split("x")[0]), length, true);
+	}
+	
+	public CubeScramble(String variation, String s) throws Exception {
 		super(s);
-		this.size = size;
+		this.size = Integer.parseInt(variation.split("x")[0]);
 		initializeImage();
 		if(!validateScramble()) throw new Exception("Invalid scramble!");
 	}
 
-//	public CubeScramble(int size, int length){
-//		this.size = size;
-//		this.length = length;
-//		initializeImage();
-//		generateScramble();
-//	}
-
-	public CubeScramble(int size, int length, boolean multislice){
+	public CubeScramble(int size, int length, boolean multislice) {
 		this.size = size;
 		this.length = length;
 		this.multislice = multislice;
@@ -51,7 +46,7 @@ public class CubeScramble extends Scramble {
 		int[] slicesMoved = new int[slices];
 		int[] directionsMoved = new int[3];
 		int moved = 0;
-
+		
 		for(int i = 0; i < length; i += moved){
 			moved = 0;
 			do{
@@ -181,11 +176,6 @@ public class CubeScramble extends Scramble {
 
 		return true;
 	}
-
-	public int[][][] getImage(){
-		return image;
-	}
-
 	private void initializeImage(){
 		image = new int[6][size][size];
 
@@ -247,5 +237,71 @@ public class CubeScramble extends Scramble {
 				}
 			}
 		}
+	}
+	
+	public int getNewUnitSize(int width, int height, int gap) {
+		System.out.println("updateSize in CubeScramble");
+		return (int) (Math.min((width - 5*gap) / 4. / size,
+				(height - 4*gap) / 3. / size));
+	}
+
+	public BufferedImage getScrambleImage(int width, int height, int gap, int cubieSize, HashMap<String, Color> colorScheme) {
+		System.out.println("New:" + cubieSize);
+		BufferedImage buffer = new BufferedImage(getCubeViewWidth(cubieSize, gap), getCubeViewHeight(cubieSize, gap), BufferedImage.TYPE_INT_ARGB);
+		drawCube(buffer.createGraphics(), image, gap, cubieSize, colorScheme);
+		return buffer;
+	}
+	
+	public Dimension getMinimumSize(int gap, int defaultCubieSize) {
+		return new Dimension(getCubeViewWidth(defaultCubieSize, gap), getCubeViewHeight(defaultCubieSize, gap));
+	}
+
+	private void drawCube(Graphics2D g, int[][][] state, int gap, int cubieSize, HashMap<String, Color> colorScheme){
+		int size = state[0].length;
+		paintCubeFace(g, gap, 2*gap+size*cubieSize, size, cubieSize, state[0], colorScheme);
+		paintCubeFace(g, 2*gap+size*cubieSize, 3*gap+2*size*cubieSize, size, cubieSize, state[1], colorScheme);
+		paintCubeFace(g, 4*gap+3*size*cubieSize, 2*gap+size*cubieSize, size, cubieSize, state[2], colorScheme);
+		paintCubeFace(g, 3*gap+2*size*cubieSize, 2*gap+size*cubieSize, size, cubieSize, state[3], colorScheme);
+		paintCubeFace(g, 2*gap+size*cubieSize, gap, size, cubieSize, state[4], colorScheme);
+		paintCubeFace(g, 2*gap+size*cubieSize, 2*gap+size*cubieSize, size, cubieSize, state[5], colorScheme);
+	}
+
+	private void paintCubeFace(Graphics2D g, int x, int y, int size, int cubieSize, int[][] faceColors, HashMap<String, Color> colorScheme) {
+		for(int row = 0; row < size; row++) {
+			for(int col = 0; col < size; col++) {
+				g.setColor(Color.BLACK);
+				int tempx = x + col*cubieSize;
+				int tempy = y + row*cubieSize;
+				g.drawRect(tempx, tempy, cubieSize, cubieSize);
+				g.setColor(colorScheme.get(FACE_NAMES[faceColors[row][col]]));
+				g.fillRect(tempx + 1, tempy + 1, cubieSize - 1, cubieSize - 1);
+			}
+		}
+	}
+	private int getCubeViewWidth(int cubie, int gap) {
+		return (size*cubie + gap)*4 + gap;
+	}
+	private int getCubeViewHeight(int cubie, int gap) {
+		return (size*cubie + gap)*3 + gap;
+	}
+
+	public String getFaceClicked(int x, int y, int gap, int cubieSize) {
+		if(isInFace(gap, 2*gap+size*cubieSize, x, y, size, cubieSize))
+			return FACE_NAMES[0];
+		else if(isInFace(2*gap+size*cubieSize, 3*gap+2*size*cubieSize, x, y, size, cubieSize))
+			return FACE_NAMES[1];
+		else if(isInFace(4*gap+3*size*cubieSize, 2*gap+size*cubieSize, x, y, size, cubieSize))
+			return FACE_NAMES[2];
+		else if(isInFace(3*gap+2*size*cubieSize, 2*gap+size*cubieSize, x, y, size, cubieSize))
+			return FACE_NAMES[3];
+		else if(isInFace(2*gap+size*cubieSize, gap, x, y, size, cubieSize))
+			return FACE_NAMES[4];
+		else if(isInFace(2*gap+size*cubieSize, 2*gap+size*cubieSize, x, y, size, cubieSize))
+			return FACE_NAMES[5];
+		else
+			return null;
+	}
+	private boolean isInFace(int leftBound, int topBound, int x, int y, int size, int cubieSize) {
+		return x >= leftBound && x <= leftBound + size*cubieSize && y >= topBound && y <= topBound + size*cubieSize;
 	}
 }

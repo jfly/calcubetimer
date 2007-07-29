@@ -2,7 +2,6 @@ package net.gnehzr.cct.umts.client;
 
 import javax.swing.*;
 
-import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.scrambles.ScrambleType;
 import net.gnehzr.cct.statistics.Statistics;
@@ -204,7 +203,7 @@ public class CCTClient {
 
 	public void requestSameScramble(ScrambleType t){
 		try{
-			write(Protocol.DATA_SCRAMBLE + "" + scrambleIndex + Protocol.DELIMITER + Configuration.getPuzzleIndex(t.getType()));
+			write(Protocol.DATA_SCRAMBLE + "" + scrambleIndex + Protocol.DELIMITER + 1); //TODO Configuration.getPuzzleIndex(t.getType())
 		} catch(IOException e){
 			System.out.println("Error getting server scramble.");
 		}

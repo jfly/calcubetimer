@@ -27,15 +27,14 @@ public class ScrambleFrame extends JDialog {
 
 	public void setVisible(boolean visible) {
 		Configuration.setScramblePopup(visible);
-		if(!visible) {
-			scrambleView.resetSize();
-		}
+//		if(!visible) {
+//			scrambleView.resetSize();
+//		}
 		super.setVisible(visible);
 	}
 
 	public void pack() {
-		scrambleView.setCubeColors(Configuration.getCubeColors());
-		scrambleView.setMegaminxColors(Configuration.getMegaminxColors());
+		scrambleView.syncColorScheme();
 		super.pack();
 	}
 

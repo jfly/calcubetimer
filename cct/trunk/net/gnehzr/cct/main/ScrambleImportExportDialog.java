@@ -6,6 +6,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import javax.swing.BoxLayout;
+import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -25,17 +26,15 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 	private JButton browse;
 	private JComboBox scrambleChooser;
 	private JSpinnerWithText scrambleLength, numberOfScrambles;
-	public ScrambleImportExportDialog(boolean importing, ScrambleType current) {
+	public ScrambleImportExportDialog(boolean importing, ComboBoxModel model) {
 		this.importing = importing;
 		urlField = new SubstanceTextField(importing ? Configuration.getDefaultScrambleURL() : "", 20);
 		urlField.setToolTipText(importing ? "Browse for file or type URL of desired scrambles." : "Choose file to export scrambles to.");
 		browse = new JButton("Browse");
 		browse.addActionListener(this);
 
-		scrambleChooser = new JComboBox(Configuration.getPuzzles());
-		scrambleChooser.setSelectedItem(current.getType());
+		scrambleChooser = new JComboBox(model);
 		scrambleChooser.addActionListener(this);
-
 
 		JPanel subPanel = new JPanel();
 		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.Y_AXIS));
@@ -52,7 +51,7 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 		subPanel.add(scrambleChooser);
 
 		if(!importing) { //Exporting, so length of scramble and number of scrambles are needed
-			scrambleLength = new JSpinnerWithText(current.getLength(), 1, "Length of scrambles");
+			scrambleLength = new JSpinnerWithText(((ScrambleType)model.getSelectedItem()).getLength(), 1, "Length of scrambles");
 			numberOfScrambles = new JSpinnerWithText(Configuration.getRASize(), 1, "Number of scrambles");
 			subPanel.add(scrambleLength);
 			subPanel.add(numberOfScrambles);
@@ -89,9 +88,7 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 				}
 			}
 		} else if(source == scrambleChooser) {
-//			int type = scrambleChooser.getSelectedIndex();
-//			if(scrambleLength != null)
-			scrambleLength.setValue(Configuration.getScrambleLength((String) scrambleChooser.getSelectedItem()));
+			scrambleLength.setValue(Configuration.getScrambleLength((ScrambleType) scrambleChooser.getSelectedItem()));
 		}
 	}
 
@@ -100,7 +97,6 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 	}
 
 	public ScrambleType getType() {
-		return new ScrambleType((String) scrambleChooser.getSelectedItem(),
-				scrambleLength == null ? 1 : scrambleLength.getSpinnerValue());
+		return (ScrambleType) scrambleChooser.getSelectedItem();
 	}
 }

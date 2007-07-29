@@ -17,12 +17,15 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -44,7 +47,7 @@ import net.gnehzr.cct.miscUtils.ComboRenderer;
 import net.gnehzr.cct.miscUtils.ImageFilter;
 import net.gnehzr.cct.miscUtils.ImagePreview;
 import net.gnehzr.cct.miscUtils.SubstanceTextField;
-import net.gnehzr.cct.scrambles.MegaminxScramble;
+import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent.ColorListener;
 import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
@@ -75,7 +78,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		tabbedPane = new JTabbedPane();
 		pane.add(tabbedPane, BorderLayout.CENTER);
 
-		JPanel tab = makeStandardOptionsPanel1();
+		JComponent tab = makeStandardOptionsPanel1();
 		tabbedPane.addTab("Options", tab);
 		tabbedPane.setMnemonicAt(0, KeyEvent.VK_O);
 
@@ -96,8 +99,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		tab = makeAverageSetupPanel();
 		tabbedPane.addTab("Average Stats", tab);
 
-		tab = makeCubeColorsPanel();
-		tabbedPane.addTab("Color Scheme", tab);
+		tab = makePuzzleColorsPanel();
+		tabbedPane.addTab("Color Schemes", tab);
 
 		applyButton = new JButton("Apply");
 		applyButton.addActionListener(this);
@@ -143,7 +146,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 	private JPanel makeStandardOptionsPanel1() {
 		JPanel options = new JPanel();
-
 		JPanel colorPanel = new JPanel(new GridLayout(0, 1, 0, 5));
 		options.add(colorPanel);
 
@@ -198,7 +200,12 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		currentAverage.addMouseListener(this);
 		colorPanel.add(currentAverage);
 
-		return options;
+		JPanel test = new JPanel();
+		test.setLayout(new BoxLayout(test, BoxLayout.PAGE_AXIS));
+		test.add(Box.createVerticalGlue());
+		test.add(options);
+		test.add(Box.createVerticalGlue());
+		return test;
 	}
 
 	private void syncGUIwithConfig() {
@@ -252,6 +259,11 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 		//makeAverageSetupPanel
 		averageStats.setText(Configuration.getAverageString());
+		
+		//makePuzzleColorsPanel
+		for(ScrambleViewComponent puzzle : solvedPuzzles) {
+			puzzle.syncColorScheme();
+		}
 	}
 
 	private JTextArea keySelector = null;
@@ -550,19 +562,30 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		return options;
 	}
 
-	private ScrambleViewComponent solvedCube, solvedMegaminx;
-	private JPanel makeCubeColorsPanel() {
+	private ScrambleViewComponent[] solvedPuzzles;
+	private JScrollPane makePuzzleColorsPanel() {
 		JPanel options = new JPanel();
-		solvedCube = new ScrambleViewComponent();
-		solvedCube.setColorListener(this);
-
-		solvedMegaminx = new ScrambleViewComponent();
-		solvedMegaminx.setScramble(new MegaminxScramble(0));
-		solvedMegaminx.setColorListener(this);
-
-		options.add(solvedCube);
-		options.add(solvedMegaminx);
-		return options;
+		options.setLayout(new BoxLayout(options, BoxLayout.LINE_AXIS));
+		options.add(Box.createHorizontalGlue());
+		JScrollPane scroller = new JScrollPane(options, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scroller.getHorizontalScrollBar().setUnitIncrement(10);
+		Class[] scrambles = Configuration.getScrambleClasses();
+		solvedPuzzles = new ScrambleViewComponent[scrambles.length];
+		for(int ch = 0; ch < scrambles.length; ch++) {
+			Class<?> scrambleType = scrambles[ch];
+			solvedPuzzles[ch] = new ScrambleViewComponent();
+			try {
+				solvedPuzzles[ch].setScramble((Scramble) scrambleType.getConstructor(String.class, int.class).newInstance("", 0));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			solvedPuzzles[ch].setColorListener(this);
+			solvedPuzzles[ch].setAlignmentY(Component.CENTER_ALIGNMENT);
+			options.add(solvedPuzzles[ch]);
+		}
+		options.add(Box.createHorizontalGlue());
+		scroller.setPreferredSize(new Dimension(400, 200)); //TODO - this isn't scrolling-savvy
+		return scroller;
 	}
 
 	public void mouseClicked(MouseEvent e) {
@@ -707,11 +730,13 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 		sundayQuote.setText(Configuration.getSundayQuoteDefault());
 
+		for(ScrambleViewComponent puzzle : solvedPuzzles) {
+			Class puzzleType = puzzle.getScramble().getClass();
+			puzzle.setColorScheme(puzzleType,Configuration.getPuzzleColorSchemeDefaults(puzzleType));
+		}
+		
 		sessionStats.setText(Configuration.getSessionStringDefault());
 		averageStats.setText(Configuration.getAverageStringDefault());
-
-		solvedCube.setCubeColors(Configuration.getCubeColorsDefault());
-		solvedMegaminx.setMegaminxColors(Configuration.getMegaminxColorsDefault());
 
 		splits.setSelected(Configuration.isSplitsDefault());
 		minSplitTime.setEnabled(splits.isEnabled());
@@ -775,10 +800,11 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 		Configuration.setSessionString(sessionStats.getText());
 		Configuration.setAverageString(averageStats.getText());
-
-		Configuration.setCubeColors(solvedCube.getCubeColors());
-
-		Configuration.setMegaminxColors(solvedMegaminx.getMegaminxColors());
+		
+		for(ScrambleViewComponent puzzle : solvedPuzzles) {
+			Class type = puzzle.getScramble().getClass();
+			Configuration.setPuzzleColorScheme(type, puzzle.getColorScheme(type));
+		}
 
 		Configuration.setSplits(splits.isSelected());
 		Configuration.setMinSplitDifference((Double) minSplitTime.getValue());
@@ -813,13 +839,13 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	public void keyReleased(KeyEvent e) {}
 	public void keyTyped(KeyEvent e) {}
 
-	public void colorClicked(ScrambleViewComponent source, int index, Color[] colorScheme) {
+	public void colorClicked(ScrambleViewComponent source, String face, HashMap<String, Color> colorScheme) {
 		Color selected = JColorChooser.showDialog(
 			this,
-			"Choose New Color",
-			colorScheme[index]);
+			"Choose New Color for Face: " + face,
+			colorScheme.get(face));
 		if(selected != null) {
-			colorScheme[index] = selected;
+			colorScheme.put(face, selected);
 			source.redo();
 		}
 	}

@@ -11,8 +11,6 @@ import java.util.concurrent.Semaphore;
 import java.text.SimpleDateFormat;
 
 import net.gnehzr.cct.scrambles.Scramble;
-import net.gnehzr.cct.scrambles.CubeScramble;
-import net.gnehzr.cct.scrambles.MegaminxScramble;
 import net.gnehzr.cct.umts.Protocol;
 
 public class CCTServer implements Runnable{
@@ -403,13 +401,13 @@ public class CCTServer implements Runnable{
 			}
 		}
 		else if(strs[0].equalsIgnoreCase("/megaminx")){
-			broadcast(Protocol.MESSAGE_ME, name + " requests megaminx scramble: " + new MegaminxScramble());
+//			broadcast(Protocol.MESSAGE_ME, name + " requests megaminx scramble: " + new MegaminxScramble("", ServerScrambleList.LENGTHS[10])); TODO
 		}
 		else{
 			try{
-				int x = Integer.parseInt(strs[0].substring(1));
-				if(x >= 2 && x <= 5) broadcast(Protocol.MESSAGE_ME, name + " requests " + x + " scramble: " + new CubeScramble(x, ServerScrambleList.LENGTHS[x-2], true).toString());
-				else sendHelpTo(name, Protocol.usageMessage(""));
+//				int x = Integer.parseInt(strs[0].substring(1));
+//				if(x >= 2 && x <= 5) broadcast(Protocol.MESSAGE_ME, name + " requests " + x + " scramble: " + new CubeScramble(x, ServerScrambleList.LENGTHS[x-2], true).toString()); TODO
+//				else sendHelpTo(name, Protocol.usageMessage(""));
 			} catch(Exception e){
 				sendHelpTo(name, Protocol.usageMessage(""));
 			}

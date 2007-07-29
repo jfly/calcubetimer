@@ -3,7 +3,6 @@ package net.gnehzr.cct.statistics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.ListIterator;
 import javax.swing.ButtonGroup;
@@ -18,7 +17,6 @@ import javax.swing.event.ListDataListener;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.main.CALCubeTimer;
-import net.gnehzr.cct.stackmatInterpreter.StackmatState;
 import net.gnehzr.cct.miscUtils.Utils;
 
 public class Statistics implements ListModel, ActionListener, ConfigurationChangeListener{
