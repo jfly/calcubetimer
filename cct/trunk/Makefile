@@ -1,4 +1,4 @@
-CLASSPATH=.:CCTRequired.jar
+CLASSPATH=.:contrib
 EXEC=net.gnehzr.cct.main.CALCubeTimer
 
 all:
