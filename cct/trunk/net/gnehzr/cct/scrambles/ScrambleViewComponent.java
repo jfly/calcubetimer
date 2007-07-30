@@ -22,8 +22,12 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	public ScrambleViewComponent() {
 		this.addComponentListener(this);
 	}
-	
-	private BufferedImage buffer = null;
+
+
+	public void redo() {
+		setScramble(currentScram);
+	}
+	private BufferedImage buffer = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
 	private Scramble currentScram = null;
 	public void setScramble(Scramble scramble) {
 		if(scramble != null) {
@@ -31,8 +35,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 			Class<?> puzzleType = currentScram.getClass();
 			buffer = currentScram.getScrambleImage(getWidth(), getHeight(), GAP, getUnitSize(puzzleType), getColorScheme(puzzleType));
 			repaint();
-		} else
-			buffer = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
+		}
 	}
 	public Scramble getScramble() {
 		return currentScram;
@@ -43,11 +46,13 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	}
 
 	public Dimension getMinimumSize() {
-		return currentScram.getMinimumSize(GAP, Configuration.getPuzzleUnitSizeDefault(currentScram.getClass()));
+		if(currentScram != null)
+			return currentScram.getMinimumSize(GAP, Configuration.getPuzzleUnitSizeDefault(currentScram.getClass()));
+		else return new Dimension(buffer.getWidth(), buffer.getHeight());
 	}
 	
 	public Dimension getMaximumSize() {
-		return currentScram.getMinimumSize(GAP, Configuration.getPuzzleUnitSizeDefault(currentScram.getClass()));
+		return getMinimumSize();
 	}
 
 	protected void paintComponent(Graphics g) {
@@ -71,10 +76,6 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 			setUnitSize(currentScram.getClass(), currentScram.getNewUnitSize(getWidth(), getHeight(), GAP));
 			redo();
 		}
-	}
-
-	public void redo() {
-		setScramble(currentScram);
 	}
 
 	private ColorListener listener = null;

@@ -33,9 +33,8 @@ public class ScrambleFrame extends JDialog {
 		super.setVisible(visible);
 	}
 
-	public void pack() {
+	public void syncColorScheme() {
 		scrambleView.syncColorScheme();
-		super.pack();
 	}
 
 	public void setScramble(Scramble newScramble) {

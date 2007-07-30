@@ -598,8 +598,10 @@ public class Configuration {
 	public static ScrambleType getScrambleType() {
 		for(ScrambleType type : getScrambleTypes())
 			if(type.getPuzzleName().equals(props.getProperty("scramble_default_Type")) &&
-					type.getVariation().equals(props.getProperty("scramble_default_Variation")))
+					type.getVariation().equals(props.getProperty("scramble_default_Variation"))) {
+				type.setLength(Integer.parseInt(props.getProperty("scramble_default_Length")));
 				return type;
+			}
 		return new ScrambleType(null, "", 10);
 	}
 	public static void setScrambleType(ScrambleType type) {
@@ -644,23 +646,26 @@ public class Configuration {
 		}
 		return scrambleClasses;
 	}
+	private static ScrambleType[] scrambleTypes;
 	public static ScrambleType[] getScrambleTypes() {
-		Class[] scrambles = getScrambleClasses();
-		ArrayList<ScrambleType> types = new ArrayList<ScrambleType>(scrambles.length);
-		for(Class<?> scramble : scrambles) {
-			try {
-				for(String var : (String[]) scramble.getField("VARIATIONS").get(null)) {
-					ScrambleType temp = new ScrambleType(scramble, var, 0);
-					temp.setLength(getScrambleLength(temp));
-					types.add(temp);
+		if(scrambleTypes == null) {
+			Class[] scrambles = getScrambleClasses();
+			ArrayList<ScrambleType> types = new ArrayList<ScrambleType>(scrambles.length);
+			for(Class<?> scramble : scrambles) {
+				try {
+					for(String var : (String[]) scramble.getField("VARIATIONS").get(null)) {
+						ScrambleType temp = new ScrambleType(scramble, var, 0);
+						temp.setLength(getScrambleLength(temp));
+						types.add(temp);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
+			scrambleTypes = new ScrambleType[types.size()];
+			types.toArray(scrambleTypes);
 		}
-		ScrambleType[] temp = new ScrambleType[types.size()];
-		types.toArray(temp);
-		return temp;
+		return scrambleTypes;
 	}
 	public static HashMap<String, Color> getPuzzleColorScheme(Class scrambleType) {
 		return getPuzzleColorScheme(scrambleType, props);

@@ -26,14 +26,15 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 	private JButton browse;
 	private JComboBox scrambleChooser;
 	private JSpinnerWithText scrambleLength, numberOfScrambles;
-	public ScrambleImportExportDialog(boolean importing, ComboBoxModel model) {
+	public ScrambleImportExportDialog(boolean importing, ScrambleType selected) {
 		this.importing = importing;
 		urlField = new SubstanceTextField(importing ? Configuration.getDefaultScrambleURL() : "", 20);
 		urlField.setToolTipText(importing ? "Browse for file or type URL of desired scrambles." : "Choose file to export scrambles to.");
 		browse = new JButton("Browse");
 		browse.addActionListener(this);
 
-		scrambleChooser = new JComboBox(model);
+		scrambleChooser = new JComboBox(Configuration.getScrambleTypes());
+		scrambleChooser.setSelectedItem(selected);
 		scrambleChooser.addActionListener(this);
 
 		JPanel subPanel = new JPanel();
@@ -51,7 +52,7 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 		subPanel.add(scrambleChooser);
 
 		if(!importing) { //Exporting, so length of scramble and number of scrambles are needed
-			scrambleLength = new JSpinnerWithText(((ScrambleType)model.getSelectedItem()).getLength(), 1, "Length of scrambles");
+			scrambleLength = new JSpinnerWithText(selected.getLength(), 1, "Length of scrambles");
 			numberOfScrambles = new JSpinnerWithText(Configuration.getRASize(), 1, "Number of scrambles");
 			subPanel.add(scrambleLength);
 			subPanel.add(numberOfScrambles);
@@ -87,7 +88,7 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 					urlField.setText("");
 				}
 			}
-		} else if(source == scrambleChooser) {
+		} else if(source == scrambleChooser && scrambleLength != null) {
 			scrambleLength.setValue(Configuration.getScrambleLength((ScrambleType) scrambleChooser.getSelectedItem()));
 		}
 	}
@@ -97,6 +98,9 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 	}
 
 	public ScrambleType getType() {
-		return (ScrambleType) scrambleChooser.getSelectedItem();
+		ScrambleType temp = (ScrambleType) scrambleChooser.getSelectedItem();
+		if(scrambleLength != null)
+			temp.setLength(scrambleLength.getSpinnerValue());
+		return temp;
 	}
 }

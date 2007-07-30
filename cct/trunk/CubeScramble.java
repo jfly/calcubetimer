@@ -240,13 +240,11 @@ public class CubeScramble extends Scramble {
 	}
 	
 	public int getNewUnitSize(int width, int height, int gap) {
-		System.out.println("updateSize in CubeScramble");
 		return (int) (Math.min((width - 5*gap) / 4. / size,
 				(height - 4*gap) / 3. / size));
 	}
 
 	public BufferedImage getScrambleImage(int width, int height, int gap, int cubieSize, HashMap<String, Color> colorScheme) {
-		System.out.println("New:" + cubieSize);
 		BufferedImage buffer = new BufferedImage(getCubeViewWidth(cubieSize, gap), getCubeViewHeight(cubieSize, gap), BufferedImage.TYPE_INT_ARGB);
 		drawCube(buffer.createGraphics(), image, gap, cubieSize, colorScheme);
 		return buffer;
