@@ -47,7 +47,7 @@ public class Configuration {
 		public synchronized Enumeration keys() {
 			Enumeration keysEnum = super.keys();
 			Vector keyList = new Vector();
-			while(keysEnum.hasMoreElements()){
+			while(keysEnum.hasMoreElements()) {
 				keyList.add(keysEnum.nextElement());
 			}
 			Collections.sort(keyList);
@@ -110,7 +110,7 @@ public class Configuration {
 			} catch (FileNotFoundException e) {}
 			SubstanceLookAndFeel.setCurrentWatermark(new SubstanceImageWatermark(in));
 		} else
-			SubstanceLookAndFeel.setCurrentWatermark(new org.jvnet.substance.watermark.SubstanceNullWatermark());
+			SubstanceLookAndFeel.setCurrentWatermark(new org.jvnet.substance.watermark.SubstanceNoneWatermark());
 
 		Window[] frames = JFrame.getWindows();
 		for(int ch = 0; ch < frames.length; ch++) {
@@ -691,7 +691,7 @@ public class Configuration {
 	public static void setPuzzleColorScheme(Class scrambleType, HashMap<String, Color> colorScheme) {
 		try {
 			String[] faceNames = (String[]) scrambleType.getField("FACE_NAMES").get(null);
-			String puzzleName = (String) scrambleType.getField("puzzleName").get(null);
+			String puzzleName = (String) scrambleType.getField("PUZZLE_NAME").get(null);
 			for(String face : faceNames) {
 				props.setProperty("puzzle_color_" + puzzleName + "Face" + face, Utils.colorToString(colorScheme.get(face)));
 			}
