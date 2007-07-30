@@ -620,27 +620,27 @@ public class Configuration {
 	private static Class[] scrambleClasses;
 	public static Class[] getScrambleClasses() {
 		if(scrambleClasses == null) {
-		    // Create a File object on the root of the directory containing the class files
-		    File file = new File(System.getProperty("user.dir") + "/scramblePlugins");
-		    try {
-		        URL url = file.toURI().toURL();
-		        URL[] urls = new URL[]{url};
-		        ClassLoader cl = new URLClassLoader(urls);
+			// Create a File object on the root of the directory containing the class files
+			File file = new File(System.getProperty("user.dir") + "/scramblePlugins");
+			try {
+				URL url = file.toURI().toURL();
+				URL[] urls = new URL[]{url};
+				ClassLoader cl = new URLClassLoader(urls);
 
 				ArrayList<Class> temp = new ArrayList<Class>();
-		    	for(String child : file.list()) {
-		    		if(!child.endsWith(".class"))
-		    			continue;
-		    		try {
-				        Class<?> cls = cl.loadClass(child.substring(0, child.indexOf(".")));
+				for(String child : file.list()) {
+					if(!child.endsWith(".class"))
+						continue;
+					try {
+						Class<?> cls = cl.loadClass(child.substring(0, child.indexOf(".")));
 						if(cls.getSuperclass().equals(Scramble.class))
 							temp.add(cls);
-		    		} catch(Exception e) {}
+					} catch(Exception e) {}
 				}
-		    	scrambleClasses = new Class[temp.size()];
-		    	scrambleClasses = temp.toArray(scrambleClasses);
+				scrambleClasses = new Class[temp.size()];
+				scrambleClasses = temp.toArray(scrambleClasses);
 
-		    } catch(Exception e) {e.printStackTrace();}
+			} catch(Exception e) {e.printStackTrace();}
 		}
 		return scrambleClasses;
 	}
