@@ -621,13 +621,13 @@ public class Configuration {
 	public static Class[] getScrambleClasses() {
 		if(scrambleClasses == null) {
 		    // Create a File object on the root of the directory containing the class files
-		    File file = new File(System.getProperty("user.dir")+"\\scramblePlugins");
+		    File file = new File(System.getProperty("user.dir") + "/scramblePlugins");
 		    try {
 		        URL url = file.toURI().toURL();
 		        URL[] urls = new URL[]{url};
 		        ClassLoader cl = new URLClassLoader(urls);
 
-				ArrayList<Class> temp = new ArrayList<Class>();
+			ArrayList<Class> temp = new ArrayList<Class>();
 		    	for(String child : file.list()) {
 		    		if(!child.endsWith(".class"))
 		    			continue;
@@ -636,7 +636,7 @@ public class Configuration {
 						if(cls.getSuperclass().equals(Scramble.class))
 							temp.add(cls);
 		    		} catch(Exception e) {}
-				}
+			}
 		    	scrambleClasses = new Class[temp.size()];
 		    	scrambleClasses = temp.toArray(scrambleClasses);
 
