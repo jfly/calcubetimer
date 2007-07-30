@@ -627,7 +627,7 @@ public class Configuration {
 		        URL[] urls = new URL[]{url};
 		        ClassLoader cl = new URLClassLoader(urls);
 
-			ArrayList<Class> temp = new ArrayList<Class>();
+				ArrayList<Class> temp = new ArrayList<Class>();
 		    	for(String child : file.list()) {
 		    		if(!child.endsWith(".class"))
 		    			continue;
@@ -636,7 +636,7 @@ public class Configuration {
 						if(cls.getSuperclass().equals(Scramble.class))
 							temp.add(cls);
 		    		} catch(Exception e) {}
-			}
+				}
 		    	scrambleClasses = new Class[temp.size()];
 		    	scrambleClasses = temp.toArray(scrambleClasses);
 
