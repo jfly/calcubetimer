@@ -19,6 +19,10 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 
 	private static final int GAP = Configuration.getScrambleGap();
 
+	public ScrambleViewComponent() {
+		this.addComponentListener(this);
+	}
+	
 	private BufferedImage buffer = null;
 	private Scramble currentScram = null;
 	public void setScramble(Scramble scramble) {
