@@ -1,19 +1,22 @@
 CLASSPATH=.:contrib
 EXEC=net.gnehzr.cct.main.CALCubeTimer
+SERVER=net.gnehzr.cct.umts.server.CCTServer
+
+PATHS=net/gnehzr scramblePlugins
 
 all:
 	java -cp ${CLASSPATH} ${EXEC}
 
 compile:
-	javac -cp ${CLASSPATH} `find net/gnehzr -regex .*java`
+	javac -cp ${CLASSPATH} `find ${PATHS} -regex .*java`
 
 server:
-	java -cp ${CLASSPATH} net.gnehzr.cct.umts.server.CCTServer pass
+	java -cp ${CLASSPATH} ${SERVER} pass
 
 clean:
-	rm `find net/gnehzr -regex .*class`
+	rm -f `find ${PATHS} -regex .*class`
 
 rclean: clean
-	rm cct.properties
+	rm -f cct.properties
 
 cycle: compile all rclean
