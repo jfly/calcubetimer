@@ -369,6 +369,12 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		return true;
 	}
 
+	private ListIterator<SolveTime> getSublist(int a, int b) {
+		if(b > times.size()) b = times.size();
+		else if(b < 0) b = 0;
+		return times.subList(a, b).listIterator();
+	}
+
 	private ListIterator<SolveTime> getSublist(averageType type) {
 		int[] bounds = getBounds(type);
 		return times.subList(bounds[0], bounds[1]).listIterator();
@@ -396,6 +402,19 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		return indexOfSolve >= bounds[0] && indexOfSolve < bounds[1];
 	}
 
+	public SolveTime[] getBestAndWorstTimes(int a, int b) {
+		SolveTime best = SolveTime.WORST;
+		SolveTime worst = SolveTime.BEST;
+		ListIterator<SolveTime> iter = getSublist(a, b);
+		while(iter.hasNext()){
+			SolveTime time = iter.next();
+			if(best.compareTo(time) >= 0) best = time;
+			//the following should not be an else
+			if(worst.compareTo(time) < 0) worst = time;
+		}
+		return new SolveTime[]{best, worst};
+	}
+
 	public SolveTime[] getBestAndWorstTimes(averageType type) {
 		SolveTime best = SolveTime.WORST;
 		SolveTime worst = SolveTime.BEST;
@@ -404,6 +423,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		while(iter.hasNext()){
 			SolveTime time = iter.next();
 			if(best.compareTo(time) >= 0) best = time;
+			//the following should not be an else
 			if(worst.compareTo(time) < 0 && !(ignoreInfinite && time.isInfiniteTime())) worst = time;
 		}
 		return new SolveTime[]{best, worst};
@@ -424,9 +444,18 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		return "\r\n" + times.nextIndex() + ".\t" + (parens ? "(" : "") + next.toString() + (parens ? ")" : "") + "\t" + next.getScramble() + (showSplits ? next.toSplitsString() : "") + toStatsStringHelper(times, best, worst, showSplits);
 	}
 
+	public String toTerseString(int n){
+		SolveTime[] bestAndWorst = getBestAndWorstTimes(n, n + curRASize);
+		ListIterator<SolveTime> list = getSublist(n, n + curRASize);
+		if(list.hasNext()) return toTerseStringHelper(list, bestAndWorst[0], bestAndWorst[1]);
+		else return "N/A";
+	}
+
 	public String toTerseString(averageType type) {
 		SolveTime[] bestAndWorst = getBestAndWorstTimes(type);
-		return toTerseStringHelper(getSublist(type), bestAndWorst[0], bestAndWorst[1]);
+		ListIterator<SolveTime> list = getSublist(type);
+		if(list.hasNext()) return toTerseStringHelper(list, bestAndWorst[0], bestAndWorst[1]);
+		else return "N/A";
 	}
 
 	private String toTerseStringHelper(ListIterator<SolveTime> printMe, SolveTime best, SolveTime worst) {
@@ -440,6 +469,13 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		else if(type == averageType.RA) sd = sds.get(indexOfBestRA).doubleValue();
 		else if(type == averageType.CURRENT) sd = sds.get(sds.size() - 1).doubleValue();
 		return Utils.format(sd);
+	}
+
+	private double bestTimeOfAverage(int n){
+		return getBestAndWorstTimes(n, n + curRASize)[0].secondsValue();
+	}
+	private double worstTimeOfAverage(int n){
+		return getBestAndWorstTimes(n, n + curRASize)[1].secondsValue();
 	}
 
 	//access methods
@@ -513,6 +549,31 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		if(sortaverages.size() == 0 || n < 0 || n >= sortaverages.size()) return Double.MAX_VALUE;
 		else return sds.get(averages.indexOf(sortaverages.get(n))).doubleValue();
 	}
+	
+	public double getBestTimeOfAverage(int n){
+		if(n < 0) n = averages.size() + n;
+
+		if(averages.size() == 0 || n < 0 || n >= averages.size()) return Double.MAX_VALUE;
+		return bestTimeOfAverage(n);
+	}
+	public double getWorstTimeOfAverage(int n){
+		if(n < 0) n = averages.size() + n;
+
+		if(averages.size() == 0 || n < 0 || n >= averages.size()) return Double.MAX_VALUE;
+		return worstTimeOfAverage(n);
+	}
+	public double getBestTimeOfSortAverage(int n){
+		if(n < 0) n = sortaverages.size() + n;
+
+		if(sortaverages.size() == 0 || n < 0 || n >= sortaverages.size()) return Double.MAX_VALUE;
+		return bestTimeOfAverage(averages.indexOf(sortaverages.get(n)));
+	}
+	public double getWorstTimeOfSortAverage(int n){
+		if(n < 0) n = sortaverages.size() + n;
+
+		if(sortaverages.size() == 0 || n < 0 || n >= sortaverages.size()) return Double.MAX_VALUE;
+		return worstTimeOfAverage(averages.indexOf(sortaverages.get(n)));
+	}
 
 	public double getProgressTime(){
 		if(times.size() < 2) return Double.MAX_VALUE;
@@ -569,5 +630,38 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 	}
 	public double getLastSD(){
 		return getSD(-1);
+	}
+	public double getBestTimeOfLastAverage(){
+		return getBestTimeOfAverage(-1);
+	}
+	public double getWorstTimeOfLastAverage(){
+		return getWorstTimeOfAverage(-1);
+	}
+
+	public double getBestTimeOfBestAverage(){
+		return getBestTimeOfSortAverage(0);
+	}
+	public double getWorstTimeOfBestAverage(){
+		return getWorstTimeOfSortAverage(0);
+	}
+	public double getBestTimeOfWorstAverage(){
+		return getBestTimeOfSortAverage(-1);
+	}
+	public double getWorstTimeOfWorstAverage(){
+		return getWorstTimeOfSortAverage(-1);
+	}
+
+	public String getBestAverageList(){
+		return toTerseString(averageType.RA);
+	}
+	public String getCurrentAverageList(){
+		return toTerseString(averageType.CURRENT);
+	}
+	public String getSessionAverageList(){
+		return toTerseString(averageType.SESSION);
+	}
+	public String getWorstAverageList(){
+		if(sortaverages.size() >= 1) return toTerseString(averages.indexOf(sortaverages.get(sortaverages.size() - 1)));
+		else return toTerseString(averageType.RA);
 	}
 }

@@ -55,6 +55,17 @@ public class DynamicString{
 		else if(s.equalsIgnoreCase("lastTime")) r = Utils.clockFormat(stats.getLastTime(), Configuration.isClockFormat());
 		else if(s.equalsIgnoreCase("lastAverage")) r = Utils.clockFormat(stats.getLastAverage(), Configuration.isClockFormat());
 		else if(s.equalsIgnoreCase("lastSD")) r = Utils.format(stats.getLastSD());
+		else if(s.equalsIgnoreCase("bestTimeOfLastAverage")) r = Utils.clockFormat(stats.getBestTimeOfLastAverage(), Configuration.isClockFormat());
+		else if(s.equalsIgnoreCase("worstTimeOfLastAverage")) r = Utils.clockFormat(stats.getWorstTimeOfLastAverage(), Configuration.isClockFormat());
+		else if(s.equalsIgnoreCase("bestTimeOfBestAverage")) r = Utils.clockFormat(stats.getBestTimeOfBestAverage(), Configuration.isClockFormat());
+		else if(s.equalsIgnoreCase("worstTimeOfBestAverage")) r = Utils.clockFormat(stats.getWorstTimeOfBestAverage(), Configuration.isClockFormat());
+		else if(s.equalsIgnoreCase("bestTimeOfWorstAverage")) r = Utils.clockFormat(stats.getBestTimeOfWorstAverage(), Configuration.isClockFormat());
+		else if(s.equalsIgnoreCase("worstTimeOfWorstAverage")) r = Utils.clockFormat(stats.getWorstTimeOfWorstAverage(), Configuration.isClockFormat());
+
+		else if(s.equalsIgnoreCase("bestAverageList")) r = stats.getBestAverageList();
+		else if(s.equalsIgnoreCase("currentAverageList")) r = stats.getCurrentAverageList();
+		else if(s.equalsIgnoreCase("sessionAverageList")) r = stats.getSessionAverageList();
+		else if(s.equalsIgnoreCase("worstAverageList")) r = stats.getWorstAverageList();
 
 		//Configuration section
 		else if(s.equalsIgnoreCase("color_bestAverage")) r = Utils.colorToString(Configuration.getBestRAColor());

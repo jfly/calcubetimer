@@ -1,0 +1,103 @@
+<panel layout="border"><!--panel-->
+	<center>
+		<panel layout="border"><!--leftpanel-->
+			<center>
+				<panel layout="box" orientation="page"><!--center-->
+					<component type="timerdisplay"/>
+					<component type="scrambletext"/>
+				</panel>
+			</center>
+			<page_end>
+				<panel layout="box" orientation="page"><!--southwest-->
+					<panel layout="flow" hgap="5" vgap="5">
+						<component type="stackmatstatuslabel"/>
+						<component type="scramblechooser"/>
+						<component type="scramblelength"/>
+						<component type="scramblenumber"/>
+						<component type="multislice"/>
+						<component type="serverscrambles"/>
+					</panel>
+					<panel layout="flow" hgap="5" vgap="5">
+						<panel layout="grid" cols="3"><!--buttonspanel-->
+							<component type="addtimebutton"/>
+							<component type="keyboardcheckbox"/>
+							<component type="resetbutton"/>
+							<button action="currentaverage"><![CDATA[<html><font color="$$color_currentaverage$$">Current Average: $$lastaverage$$</font></html>]]></button>
+							<button action="bestaverage"><![CDATA[<html><font color="$$color_bestaverage$$">Best Rolling Average: $$bestaverage$$</font></html>]]></button>
+							<button action="sessionaverage">Session Average: $$sessionaverage</button>
+						</panel>
+					</panel>
+					<label alignmentX=".5">$$solves$$/$$attempts$$ (solves/attempts)</label>
+					<panel layout="border" hgap="5" vgap="5">
+						<north>
+							<panel layout="grid" rows="1">
+								<label><![CDATA[<html>
+										<body>
+											Session Average: $$sessionAverage$$<br/>
+											Session SD: $$sessionSD$$<br/>
+											Pops: $$pops$$<br/>
+											+2s: $$+twos$$<br/>
+											DNFs: $$dnfs$$<br/>
+											Solves: $$solves$$<br/>
+											Attempts: $$attempts$$<br/>
+											Progress Time: $$progressTime$$<br/>
+											Progress Average: $$progressAverage$$<br/>
+											Best Time: $$bestTime$$<br/>
+											Best Average: $$bestAverage$$<br/>
+										</body>
+									</html>]]>
+								</label>
+								<label><![CDATA[<html>
+										<body>
+											Best SD: $$bestSD$$<br/>
+											Best Average's SD: $$bestAverageSD$$<br/>
+											Worst Time: $$worstTime$$<br/>
+											Worst Average: $$worstAverage$$<br/>
+											Worst SD: $$worstSD$$<br/>
+											Worst Average's SD: $$worstAverageSD$$<br/>
+											Last Time: $$lastTime$$<br/>
+											Last Average: $$lastAverage$$<br/>
+											Last SD: $$lastSD$$<br/>
+										</body>
+									</html>]]>
+								</label>
+								<label><![CDATA[<html>
+										<body>
+											Best Time of Last Average: $$bestTimeOfLastAverage$$<br/>
+											Worst Time of Last Average: $$worstTimeOfLastAverage$$<br/>
+											Best Time of Best Average: $$bestTimeOfBestAverage$$<br/>
+											Worst Time of Best Average: $$worstTimeOfBestAverage$$<br/>
+											Best Time of Worst Average: $$bestTimeOfWorstAverage$$<br/>
+											Worst Time of Worst Average: $$worstTimeOfWorstAverage$$<br/>
+											<br/>
+											Color of Best Average: $$color_bestAverage$$<br/>
+											Color of Best and Current Average: $$color_bestAndCurrentAverage$$<br/>
+											Color of Current Average: $$color_currentAverage$$<br/>
+											Color of Best Time: $$color_bestTime$$<br/>
+											Color of Worst Time: $$color_worstTime$$<br/>
+										</body>
+									</html>
+									]]>
+								</label>
+							</panel>
+						</north>
+						<center>
+							<label><![CDATA[<html>
+									<body>
+										best average list: $$bestAverageList$$<br/>
+										current average list: $$currentAverageList$$<br/>
+										session average list: $$sessionAverageList$$<br/>
+										worst average list: $$worstAverageList$$<br/>
+									</body>
+								</html>]]>
+							</label>
+						</center>
+					</panel>
+				</panel>
+			</page_end>
+		</panel>
+	</center>
+	<line_end>
+		<component type="timeslist"/>
+	</line_end>
+</panel>
