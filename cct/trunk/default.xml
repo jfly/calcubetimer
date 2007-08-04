@@ -15,7 +15,7 @@
 							<component type="scramblechooser"/>
 							<component type="scramblelength"/>
 							<component type="scramblenumber"/>
-							<component type="multislice"/>
+							<component type="scrambleattributes"/>
 							<component type="serverscrambles"/>
 						</panel>
 						<panel layout="flow" hgap="5" vgap="5">
