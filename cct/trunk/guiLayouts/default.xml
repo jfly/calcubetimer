@@ -20,6 +20,9 @@
 						</panel>
 						<panel layout="flow" hgap="5" vgap="5">
 							<panel layout="grid" cols="3"><!--buttonspanel-->
+								<panel />
+								<component type="startstoppanel"/>
+								<panel />
 								<component type="addtimebutton"/>
 								<component type="keyboardcheckbox"/>
 								<component type="resetbutton"/>

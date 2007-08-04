@@ -715,14 +715,6 @@ public class Configuration {
 			e.printStackTrace();
 		}
 	}
-//	public static int getPuzzleIndex(String puzzle) { //TODO - I don't like this, nor do I know if it can be trusted
-//		int ch;
-//		for(ch = 0; ch < puzzles.length; ch++) {
-//			if(puzzles[ch].equals(puzzle))
-//				break;
-//		}
-//		return ch;
-//	}
 	public static int getPuzzleUnitSize(Class puzzleType) {
 		return getPuzzleUnitSize(props, puzzleType);
 	}
@@ -749,5 +741,42 @@ public class Configuration {
 
 	public static int getScrambleGap() {
 		return Integer.parseInt(props.getProperty("scramble_Popup_gap"));
+	}
+	
+	public static void setXMLGUILayout(String layout) {
+		props.setProperty("gui_XMLlayout", layout);
+	}
+	//returns file stored in props file, if available
+	//otherwise, returns default.xml, if available
+	//otherwise, returns any available layout
+	//otherwise, returns null
+	public static String getXMLGUILayout() {
+		boolean defaultAvailable = false;
+		for(String file : getXMLLayoutsAvailable()) {
+			if(file.equals(props.getProperty("gui_XMLlayout")))
+				return file;
+			defaultAvailable |= file.equals("default.xml");
+		}
+		if(getXMLLayoutsAvailable() == null)
+			return null;
+		else if(defaultAvailable)
+			return "default.xml";
+		else return getXMLLayoutsAvailable()[0];
+	}
+	private static String[] availableLayouts;
+	public static String[] getXMLLayoutsAvailable() {
+		if(availableLayouts == null) {
+			File file = new File(System.getProperty("user.dir") + "/guiLayouts");
+			availableLayouts = file.list();
+			ArrayList<String> fs = new ArrayList<String>();
+			for(int ch = 0; ch < availableLayouts.length; ch++) {
+				if(availableLayouts[ch].endsWith(".xml")) {
+					fs.add(availableLayouts[ch]);
+				}
+			}
+			availableLayouts = new String[fs.size()];
+			fs.toArray(availableLayouts);
+		}
+		return availableLayouts;
 	}
 }

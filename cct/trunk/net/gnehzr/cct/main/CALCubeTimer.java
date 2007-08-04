@@ -262,13 +262,45 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		fullscreenFrame.setSize(screenSize.width, screenSize.height);
 		fullscreenFrame.validate();
 
+		this.setTitle("CCT " + CCT_VERSION);
+		this.setIconImage(cube.getImage());
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
 		this.setJMenuBar(createMenuBar());
 
+		parseXML_GUI(Configuration.getXMLGUILayout());
+		
+		size = Configuration.getMainFrameDimensions();
+		if(size == null) {
+			this.pack();
+		} else
+			this.setSize(size);
+		location = Configuration.getMainFrameLocation();
+		if(location == null)
+			this.setLocationRelativeTo(null);
+		else
+			this.setLocation(location);
+		updateScramble();
+
+		if(keyboardCheckBox.isSelected()) { //This is to ensure that the keyboard is focused
+			timeLabel.requestFocusInWindow();
+			startStopPanel.requestFocusInWindow();
+		} else
+			scrambleText.requestFocusInWindow();
+
+		Configuration.addConfigurationChangeListener(this);
+		Configuration.updateBackground();
+		timeLabel.componentResized(null);
+		this.setVisible(true);
+		scramblePopup.setVisible(Configuration.isScramblePopup());
+	}
+
+	private void parseXML_GUI(String file) {
 		DefaultHandler handler = new GUIParser(this);
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		try {
 			SAXParser saxParser = factory.newSAXParser();
-			saxParser.parse("default.xml", handler);
+			saxParser.parse("guiLayouts/"+file, handler);
 		} catch(SAXParseException spe) {
 			System.out.println(spe.getSystemId() + ":" + spe.getLineNumber() + ": parse error: " + spe.getMessage());
 
@@ -286,33 +318,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		} catch(IOException ioe) {
 			ioe.printStackTrace();
 		}
-
-		this.setTitle("CCT " + CCT_VERSION);
-		this.setIconImage(cube.getImage());
-		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		size = Configuration.getMainFrameDimensions();
-		if(size == null) {
-			this.pack();
-		} else
-			this.setSize(size);
-		location = Configuration.getMainFrameLocation();
-		if(location == null)
-			this.setLocationRelativeTo(null);
-		else
-			this.setLocation(location);
-		updateScramble();
-		this.setVisible(true);
-
-		if(keyboardCheckBox.isSelected()) { //This is to ensure that the keyboard is focused
-			timeLabel.requestFocusInWindow();
-			startStopPanel.requestFocusInWindow();
-		} else
-			scrambleText.requestFocusInWindow();
-
-		Configuration.addConfigurationChangeListener(this);
-		Configuration.updateBackground();
-
-		scramblePopup.setVisible(Configuration.isScramblePopup());
 	}
 
 	public Dimension getMinimumSize() { //This is a more appropriate way of doing gui's, to prevent weird resizing issues
@@ -464,6 +469,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				else if(temp.equalsIgnoreCase("resetbutton")) com = resetButton;
 				else if(temp.equalsIgnoreCase("scrambletext")) com = scrambleText;
 				else if(temp.equalsIgnoreCase("timerdisplay")) com = timeLabel;
+				else if(temp.equalsIgnoreCase("startstoppanel")) com = startStopPanel;
 				else if(temp.equalsIgnoreCase("timeslist")) com = timesScroller;
 			}
 			else if(elementName.equals("center") || elementName.equals("east") || elementName.equals("west") || elementName.equals("south") || elementName.equals("north") || elementName.equals("page_start") || elementName.equals("page_end") || elementName.equals("line_start") || elementName.equals("line_end")){
@@ -601,7 +607,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	*/
 
 	private JMenuItem connectToServer, importScrambles, exportScrambles, configuration, exit, documentation, about;
-	private JCheckBoxMenuItem hideScrambles, newLayout, spacebarOnly, annoyingDisplay, lessAnnoyingDisplay;
+	private JCheckBoxMenuItem hideScrambles, integrateTimer, spacebarOnly, annoyingDisplay, lessAnnoyingDisplay;
+	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Chagned";
 	private JButton maximize;
 	private JMenuBar createMenuBar() {
 		JMenuBar menuBar = new JMenuBar();
@@ -658,11 +665,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		submenu.setMnemonic(KeyEvent.VK_K);
 		menu.add(submenu);
 
-		newLayout = new JCheckBoxMenuItem("Integrate timer and display");
-		newLayout.addActionListener(this);
-		newLayout.setSelected(Configuration.isIntegratedTimerDisplay());
-		newLayout.setMnemonic(KeyEvent.VK_I);
-		submenu.add(newLayout);
+		integrateTimer = new JCheckBoxMenuItem("Integrate timer and display");
+		integrateTimer.addActionListener(this);
+		integrateTimer.setSelected(Configuration.isIntegratedTimerDisplay());
+		integrateTimer.setMnemonic(KeyEvent.VK_I);
+		submenu.add(integrateTimer);
 
 		annoyingDisplay = new JCheckBoxMenuItem("Use annoying status light");
 		annoyingDisplay.addActionListener(this);
@@ -688,6 +695,19 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		spacebarOnly.setMnemonic(KeyEvent.VK_S);
 		submenu.add(spacebarOnly);
 
+		submenu = new JMenu("Load custom GUI");
+		menu.add(submenu);
+		
+		ButtonGroup group = new ButtonGroup();
+		for(String file : Configuration.getXMLLayoutsAvailable()) {
+			JRadioButtonMenuItem temp = new JRadioButtonMenuItem(file);
+			temp.setSelected(file.equals(Configuration.getXMLGUILayout()));
+			temp.setActionCommand(GUI_LAYOUT_CHANGED);
+			temp.addActionListener(this);
+			group.add(temp);
+			submenu.add(temp);
+		}
+		
 		menuBar.add(Box.createHorizontalGlue());
 
 		menu = new JMenu("Help");
@@ -894,6 +914,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			curr.setAttributes(attributes);
 			curr.refreshImage();
 			updateScramble();
+		} else if(e.getActionCommand().equals(GUI_LAYOUT_CHANGED)) {
+			String layout = ((JRadioButtonMenuItem) source).getText();
+			parseXML_GUI(layout);
+			Configuration.setXMLGUILayout(layout);
+			this.pack();
 		} else if(source == fullScreenButton || source == maximize) {
 			setFullScreen(!isFullScreen);
 		} else if(source == keyboardCheckBox) {
@@ -916,14 +941,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		} else if(source == hideScrambles) {
 			Configuration.setHideScrambles(hideScrambles.isSelected());
 			scrambleText.refresh();
-		} else if(source == newLayout) { //TODO this is broken
-			/*
-			Configuration.setIntegratedTimerDisplay(newLayout.isSelected());
+		} else if(source == integrateTimer) {
+			Configuration.setIntegratedTimerDisplay(integrateTimer.isSelected());
 			timeLabel.setEnabledTiming(Configuration.isIntegratedTimerDisplay());
-			createButtonsPanel();
-			validate();
 			startStopPanel.requestFocusInWindow();
-			*/
 		} else if(source == annoyingDisplay) {
 			timeLabel.setOpaque(annoyingDisplay.isSelected());
 			Configuration.setAnnoyingDisplay(annoyingDisplay.isSelected());
