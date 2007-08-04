@@ -9,8 +9,8 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.Timer;
 
+@SuppressWarnings("serial")
 public class FunScrollPane extends JScrollPane implements ActionListener, WindowListener {
-	private static final long serialVersionUID = 1L;
 	private Timer autoscroll;
 	public FunScrollPane(Component arg) {
 		super(arg);

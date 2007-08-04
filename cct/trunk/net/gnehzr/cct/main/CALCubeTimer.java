@@ -63,8 +63,8 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 
+@SuppressWarnings("serial")
 public class CALCubeTimer extends JFrame implements ActionListener, MouseListener, KeyListener, ListDataListener, ChangeListener, ConfigurationChangeListener, WindowFocusListener{
-	private static final long serialVersionUID = 1L;
 	public static final String CCT_VERSION = "0.2";
 	private JFrame ab = null;
 	private JScrollPane timesScroller = null;
@@ -1335,6 +1335,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 }
 
+@SuppressWarnings("serial")
 class StatisticsAction extends AbstractAction{
 	private static String[] statsChoices = new String[] {"Save Statistics", "Back"};
 	private CALCubeTimer cct;

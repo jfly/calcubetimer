@@ -9,9 +9,8 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.main.KeyboardTimerPanel.KeyboardTimerComponent;
 
 
+@SuppressWarnings("serial")
 public class TimerPanel extends JLabel implements KeyboardTimerComponent {
-	private static final long serialVersionUID = 1L;
-
 	private KeyboardTimerPanel timer;
 	private ScrambleArea scrambles;
 	private TimerLabel timerDisplay; //this is to do the "semi-annoying" status light

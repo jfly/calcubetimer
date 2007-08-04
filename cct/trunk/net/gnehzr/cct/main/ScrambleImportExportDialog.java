@@ -6,7 +6,6 @@ import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import javax.swing.BoxLayout;
-import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -18,9 +17,8 @@ import net.gnehzr.cct.miscUtils.JSpinnerWithText;
 import net.gnehzr.cct.miscUtils.SubstanceTextField;
 import net.gnehzr.cct.scrambles.ScrambleType;
 
+@SuppressWarnings("serial")
 public class ScrambleImportExportDialog extends JPanel implements ActionListener {
-	private static final long serialVersionUID = 1L;
-
 	private boolean importing;
 	private SubstanceTextField urlField;
 	private JButton browse;

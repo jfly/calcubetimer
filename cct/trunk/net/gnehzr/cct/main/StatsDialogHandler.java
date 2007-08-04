@@ -38,8 +38,8 @@ import net.gnehzr.cct.miscUtils.SubstanceTextField;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
 
+@SuppressWarnings("serial")
 public class StatsDialogHandler extends JPanel implements ActionListener, ClipboardOwner {
-	private static final long serialVersionUID = 1L;
 	private static Clipboard clipBoard = null;
 
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
@@ -283,8 +283,8 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 
 	public void lostOwnership(Clipboard arg0, Transferable arg1) {}
 
+	@SuppressWarnings("serial")
 	private class PasswordPrompt extends JDialog implements ActionListener {
-		private static final long serialVersionUID = 1L;
 		private boolean canceled = true;
 		private JPasswordField pass = null;
 		private JButton ok, cancel = null;

@@ -15,8 +15,8 @@ import javax.swing.text.BadLocationException;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.scrambles.Scramble;
 
+@SuppressWarnings("serial")
 public class ScrambleArea extends JScrollPane implements ComponentListener {
-	private static final long serialVersionUID = 1L;
 	private JEditorPane scramble = null;
 
 	public ScrambleArea() {

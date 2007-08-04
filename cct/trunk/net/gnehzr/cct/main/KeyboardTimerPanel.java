@@ -18,7 +18,6 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
 
 public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseListener {
-	private static final long serialVersionUID = 1L;
 	private static KeyboardTimer keyboardTimer; //static so everything will start and stop this one timer!
 	private KeyboardTimerComponent thingToListenTo;
 	private ScrambleArea scrambles;
@@ -172,8 +171,8 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		keyboardTimer.reset();
 	}
 
+	@SuppressWarnings("serial")
 	public class KeyboardTimer extends Timer {
-		private static final long serialVersionUID = 1L;
 		public KeyboardTimer(int period, ActionListener listener) {
 			super(period, listener);
 		}

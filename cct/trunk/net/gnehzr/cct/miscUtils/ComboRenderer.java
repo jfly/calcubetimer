@@ -7,9 +7,8 @@ import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
+@SuppressWarnings("serial")
 public class ComboRenderer extends JLabel implements ListCellRenderer {
-	private static final long serialVersionUID = 1L;
-
 	public ComboRenderer() {
 		setOpaque(true);
 		setBorder(new EmptyBorder(1, 1, 1, 1));

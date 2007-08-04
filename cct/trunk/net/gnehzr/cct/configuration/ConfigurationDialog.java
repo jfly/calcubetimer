@@ -54,9 +54,8 @@ import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
 
 import com.l2fprod.common.swing.JFontChooser;
 
+@SuppressWarnings("serial")
 public class ConfigurationDialog extends JDialog implements KeyListener, MouseListener, ActionListener, ColorListener {
-	private static final long serialVersionUID = 1L;
-
 	private ComboItem[] items;
 	private StackmatInterpreter stackmat;
 	public ConfigurationDialog(JFrame parent, boolean modal, StackmatInterpreter stackmat) {

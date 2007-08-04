@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 import javax.swing.table.AbstractTableModel;
 
+@SuppressWarnings("serial")
 public class UserTable extends AbstractTableModel {
-	private static final long serialVersionUID = 1L;
-
 	private final String[] columnNames = {"Username", "Current Time", "Last Time", "Average"};
 	private ArrayList<User> users = new ArrayList<User>();
 

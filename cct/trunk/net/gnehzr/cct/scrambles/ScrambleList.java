@@ -2,8 +2,8 @@ package net.gnehzr.cct.scrambles;
 import java.io.BufferedReader;
 import java.util.ArrayList;
 
+@SuppressWarnings("serial")
 public class ScrambleList extends ArrayList<Scramble>{
-	private static final long serialVersionUID = 1L;
 	private ScrambleType type;
 	private int scrambleNumber = 0;
 	public ScrambleList(ScrambleType c){

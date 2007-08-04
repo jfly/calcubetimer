@@ -14,9 +14,8 @@ import net.gnehzr.cct.configuration.Configuration;
 
 import java.util.HashMap;
 
+@SuppressWarnings("serial")
 public class ScrambleViewComponent extends JComponent implements ComponentListener, MouseListener {
-	private static final long serialVersionUID = 1L;
-
 	private static final int GAP = Configuration.getScrambleGap();
 
 	public ScrambleViewComponent() {

@@ -10,8 +10,8 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 
+@SuppressWarnings("serial")
 public class ScrambleFrame extends JDialog {
-	private static final long serialVersionUID = 1L;
 	private ScrambleViewComponent scrambleView;
 	public ScrambleFrame(JFrame parent, String title) {
 		super(parent, title);

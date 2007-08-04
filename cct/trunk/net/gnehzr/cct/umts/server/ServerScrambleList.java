@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleType;
 
+@SuppressWarnings("serial")
 public class ServerScrambleList extends ArrayList<Scramble[]>{
-	private static final long serialVersionUID = 1L;
 	private ScrambleType[] types;
 	private static final String[] puzzles = {
 		"2x2x2",

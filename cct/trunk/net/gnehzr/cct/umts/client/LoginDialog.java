@@ -14,9 +14,8 @@ import javax.swing.JPanel;
 
 import net.gnehzr.cct.miscUtils.SubstanceTextField;
 
+@SuppressWarnings("serial")
 public class LoginDialog extends JDialog implements ActionListener, KeyListener {
-	private static final long serialVersionUID = 1L;
-
 	public LoginDialog(JFrame parent, boolean modal) {
 		super(parent, "Choose server to connect to", modal);
 

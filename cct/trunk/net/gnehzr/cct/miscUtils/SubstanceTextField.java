@@ -4,8 +4,8 @@ import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.plaf.TextUI;
 
+@SuppressWarnings("serial")
 public class SubstanceTextField  extends JTextField {
-	private static final long serialVersionUID = 1L;
 	public SubstanceTextField() {
 		this("", 0);
 	}

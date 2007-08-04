@@ -324,8 +324,8 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 			return next.toString() + (printMe.hasNext() ? ", " + toStringHelper(printMe, best, worst) : "");
 	}
 
+	@SuppressWarnings("serial")
 	private class CCTFrame extends JFrame {
-		private static final long serialVersionUID = 1L;
 		public CCTFrame(String title) {
 			super(title);
 		}

@@ -13,9 +13,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.JTextComponent;
 
+@SuppressWarnings("serial")
 public class JSpinnerWithText extends JPanel implements AncestorListener, ChangeListener {
-	private static final long serialVersionUID = 1L;
-
 	private JSpinner integerSpinner = null;
 
 	public JSpinnerWithText(int initial, int min, String text) {

@@ -38,12 +38,13 @@ public class Configuration {
 		public void configurationChanged();
 	}
 
+	@SuppressWarnings("serial")
 	public static class SortedProperties extends Properties {
-		private static final long serialVersionUID = 1L;
 		public SortedProperties(SortedProperties defaults) {
 			super(defaults);
 		}
 		public SortedProperties() {}
+		@SuppressWarnings("unchecked")
 		public synchronized Enumeration keys() {
 			Enumeration keysEnum = super.keys();
 			Vector keyList = new Vector();

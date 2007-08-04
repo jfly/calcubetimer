@@ -21,9 +21,8 @@ import javax.swing.border.TitledBorder;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.main.KeyboardTimerPanel.KeyboardTimerComponent;
 
+@SuppressWarnings("serial")
 public class TimerLabel extends JLabel implements ComponentListener, KeyboardTimerComponent {
-	private static final long serialVersionUID = 1L;
-
 	private Font font;
 	private KeyboardTimerPanel timer;
 	private ScrambleArea scrambles;

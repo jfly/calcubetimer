@@ -5,8 +5,8 @@ import java.awt.*;
 import java.io.File;
 
 /* ImagePreview.java is a 1.4 example used by FileChooserDemo2.java. */
+@SuppressWarnings("serial")
 public class ImagePreview extends JComponent implements PropertyChangeListener {
-	private static final long serialVersionUID = 1L;
 	ImageIcon thumbnail = null;
 	File file = null;
 

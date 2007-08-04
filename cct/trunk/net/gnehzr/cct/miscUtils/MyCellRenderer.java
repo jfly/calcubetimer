@@ -9,8 +9,8 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
 
+@SuppressWarnings("serial")
 public class MyCellRenderer extends JLabel implements ListCellRenderer {
-	private static final long serialVersionUID = 1L;
 	//Will highlight times from current average and from best rolling average
 	public MyCellRenderer() {
 		setOpaque(true);
