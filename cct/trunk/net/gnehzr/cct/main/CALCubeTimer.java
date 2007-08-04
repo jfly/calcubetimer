@@ -36,6 +36,8 @@ import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.help.FunScrollPane;
 import net.gnehzr.cct.miscUtils.DynamicButton;
 import net.gnehzr.cct.miscUtils.DynamicLabel;
+import net.gnehzr.cct.miscUtils.DynamicMenu;
+import net.gnehzr.cct.miscUtils.DynamicMenuItem;
 import net.gnehzr.cct.miscUtils.DynamicString;
 import net.gnehzr.cct.miscUtils.MyCellRenderer;
 import net.gnehzr.cct.scrambles.ScrambleList;
@@ -259,11 +261,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		fullscreenFrame.setSize(screenSize.width, screenSize.height);
 		fullscreenFrame.validate();
 
-		JPanel parsedPanel = new JPanel(new BorderLayout());
-		this.setContentPane(parsedPanel);
 		this.setJMenuBar(createMenuBar());
 
-		DefaultHandler handler = new GUIParser(parsedPanel);
+		DefaultHandler handler = new GUIParser(this);
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		try {
 			SAXParser saxParser = factory.newSAXParser();
@@ -315,23 +315,21 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 
 	private class GUIParser extends DefaultHandler {
-		private int level = 0;
+		private int level = -2;
 		private String location;
 		private ArrayList<String> strs;
 		private ArrayList<JComponent> componentTree;
 		private ArrayList<Boolean> needText;
 		private ArrayList<String> elementNames;
+		private JFrame frame;
 
-		public GUIParser(JPanel panel){
+		public GUIParser(JFrame frame){
+			this.frame = frame;
+
 			componentTree = new ArrayList<JComponent>();
-			componentTree.add(panel);
-
 			strs = new ArrayList<String>();
-			strs.add("");
 			needText = new ArrayList<Boolean>();
-			needText.add(new Boolean(false));
 			elementNames = new ArrayList<String>();
-			elementNames.add("");
 		}
 
 		public void setDocumentLocator(Locator l) {
@@ -344,9 +342,21 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 			level++;
 			String elementName = qName.toLowerCase();
-			elementNames.add(elementName);
 
-			needText.add(new Boolean(elementName.equals("label") || elementName.equals("button")));
+			if(level == -1){
+				if(!elementName.equals("gui")){
+					throw new SAXException("parse error: invalid root tag");
+				}
+				return;
+			}
+			else if(level == 0){
+				if(!(elementName.equals("menubar") || elementName.equals("panel")))
+					throw new SAXException("parse error: level 1 must be menubar or panel");
+			}
+
+			//must deal with level < 0 before adding anything
+			elementNames.add(elementName);
+			needText.add(elementName.equals("label") || elementName.equals("button") || elementName.equals("menu") || elementName.equals("menuitem"));
 			strs.add("");
 			
 			if(elementName.equals("label")){
@@ -432,6 +442,19 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			else if(elementName.equals("center") || elementName.equals("east") || elementName.equals("west") || elementName.equals("south") || elementName.equals("north") || elementName.equals("page_start") || elementName.equals("page_end") || elementName.equals("line_start") || elementName.equals("line_end")){
 				com = null;
 			}
+			else if(elementName.equals("menubar")){
+				com = new JMenuBar();
+			}
+			else if(elementName.equals("menu")){
+				com = new DynamicMenu();
+			}
+			else if(elementName.equals("menuitem")){
+				com = new DynamicMenuItem();
+			}
+			else if(elementName.equals("separator")){
+				com = new JSeparator();
+				//needs orientation
+			}
 			else throw new SAXException("invalid tag");
 
 			if(com != null && attrs != null){
@@ -447,22 +470,30 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 			componentTree.add(com);
 
-			if(com != null){
+			if(level == 0){
+				if(elementName.equals("panel")){
+					frame.setContentPane((JPanel)componentTree.get(level));
+				}
+				else if(elementName.equals("menubar")){
+					frame.setJMenuBar((JMenuBar)componentTree.get(level));
+				}
+			}
+			else if(com != null){
 				temp = null;
 				for(int i = level - 1; i >= 0; i--){
 					if(componentTree.get(i) != null){
 						if(temp == null) componentTree.get(i).add(com);
 						else{
 							String loc = null;
-							if(temp.equalsIgnoreCase("center")) loc = BorderLayout.CENTER;
-							else if(temp.equalsIgnoreCase("east")) loc = BorderLayout.EAST;
-							else if(temp.equalsIgnoreCase("west")) loc = BorderLayout.WEST;
-							else if(temp.equalsIgnoreCase("south")) loc = BorderLayout.SOUTH;
-							else if(temp.equalsIgnoreCase("north")) loc = BorderLayout.NORTH;
-							else if(temp.equalsIgnoreCase("page_start")) loc = BorderLayout.PAGE_START;
-							else if(temp.equalsIgnoreCase("page_end")) loc = BorderLayout.PAGE_END;
-							else if(temp.equalsIgnoreCase("line_start")) loc = BorderLayout.LINE_START;
-							else if(temp.equalsIgnoreCase("line_end")) loc = BorderLayout.LINE_END;
+							if(temp.equals("center")) loc = BorderLayout.CENTER;
+							else if(temp.equals("east")) loc = BorderLayout.EAST;
+							else if(temp.equals("west")) loc = BorderLayout.WEST;
+							else if(temp.equals("south")) loc = BorderLayout.SOUTH;
+							else if(temp.equals("north")) loc = BorderLayout.NORTH;
+							else if(temp.equals("page_start")) loc = BorderLayout.PAGE_START;
+							else if(temp.equals("page_end")) loc = BorderLayout.PAGE_END;
+							else if(temp.equals("line_start")) loc = BorderLayout.LINE_START;
+							else if(temp.equals("line_end")) loc = BorderLayout.LINE_END;
 							componentTree.get(i).add(com, loc);
 						}
 						break;
@@ -473,19 +504,21 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		}
 
 		public void endElement(String namespaceURI, String sName, String qName) throws SAXException {
-			if(needText.get(level))
-				if(componentTree.get(level) instanceof DynamicStringSettable)
-					((DynamicStringSettable)componentTree.get(level)).setDynamicString(new DynamicString(strs.get(level), stats));
+			if(level >= 0){
+				if(needText.get(level))
+					if(componentTree.get(level) instanceof DynamicStringSettable)
+						((DynamicStringSettable)componentTree.get(level)).setDynamicString(new DynamicString(strs.get(level), stats));
 
-			componentTree.remove(level);
-			elementNames.remove(level);
-			strs.remove(level);
-			needText.remove(level);
+				componentTree.remove(level);
+				elementNames.remove(level);
+				strs.remove(level);
+				needText.remove(level);
+			}
 			level--;
 		}
 
 		public void characters(char buf[], int offset, int len) throws SAXException {
-			if(needText.get(level)){
+			if(level >= 0 && needText.get(level)){
 				String s = new String(buf, offset, len);
 				if(!s.trim().equals("")) strs.set(level, strs.get(level) + s);
 			}
