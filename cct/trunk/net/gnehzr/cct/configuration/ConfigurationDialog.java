@@ -380,7 +380,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 		mixerPanel = new JPanel();
 
-		if(stackmat != null) { //TODO - is this ok here?
+		if(stackmat != null) {
 			items = stackmat.getMixerChoices();
 			int selected = stackmat.getSelectedMixerIndex();
 			lines = new JComboBox(items);
@@ -575,7 +575,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			Class<?> scrambleType = scrambles[ch];
 			solvedPuzzles[ch] = new ScrambleViewComponent();
 			try {
-				solvedPuzzles[ch].setScramble((Scramble) scrambleType.getConstructor(String.class, int.class).newInstance("", 0));
+				solvedPuzzles[ch].setScramble((Scramble) scrambleType.getConstructor(String.class, int.class, String[].class).newInstance("", 0, new String[0]));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

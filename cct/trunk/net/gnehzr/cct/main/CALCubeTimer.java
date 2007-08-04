@@ -40,6 +40,7 @@ import net.gnehzr.cct.miscUtils.DynamicMenu;
 import net.gnehzr.cct.miscUtils.DynamicMenuItem;
 import net.gnehzr.cct.miscUtils.DynamicString;
 import net.gnehzr.cct.miscUtils.MyCellRenderer;
+import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleList;
 import net.gnehzr.cct.scrambles.ScrambleType;
 import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
@@ -81,7 +82,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	private ScrambleFrame scramblePopup = null;
 	private ScrambleType scrambleChoice = null;
 	private JComboBox scrambleChooser = null;
-	private JCheckBox serverScrambles, multiSlice = null;
+	private JCheckBox serverScrambles = null;
+	private JPanel scrambleAttributes = null;
 	private JSpinner scrambleNumber, scrambleLength = null;
 	private ScrambleList scrambles = null;
 	private Statistics stats = null;
@@ -174,9 +176,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		((JSpinner.DefaultEditor) scrambleLength.getEditor()).getTextField().setColumns(3);
 		scrambleLength.addChangeListener(this);
 
-		multiSlice = new JCheckBox("Multi-slice", Configuration.isMultiSlice());
-//		multiSlice.setEnabled(cubeChoice.getPuzzleType() == ScrambleType.types.CUBE); TODO - multislice
-		multiSlice.addActionListener(this);
+		scrambleAttributes = new JPanel();
+		createScrambleAttributes();
 
 		serverScrambles = new JCheckBox("Server Scrambles", false);
 		serverScrambles.addActionListener(this);
@@ -308,10 +309,36 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		} else
 			scrambleText.requestFocusInWindow();
 
-		Configuration.addConfigurationChangeListener(this); //TODO is this okay here?
+		Configuration.addConfigurationChangeListener(this);
 		Configuration.updateBackground();
 
 		scramblePopup.setVisible(Configuration.isScramblePopup());
+	}
+
+	public Dimension getMinimumSize() { //This is a more appropriate way of doing gui's, to prevent weird resizing issues
+		return new Dimension(235, 30);
+	}
+	
+	private JCheckBox[] attributes;
+	private static final String SCRAMBLE_ATTRIBUTE_CHANGED = "Scramble Attribute Changed";
+	private void createScrambleAttributes() {
+		scrambleAttributes.removeAll();
+		String[] attrs = Configuration.getPuzzleAttributes(scrambleChoice.getPuzzleClass());
+		attributes = new JCheckBox[attrs.length];
+		
+		for(int ch = 0; ch < attrs.length; ch++) { //create checkbox for each possible attribute
+			boolean selected = false;
+			for(String attr : scrambleChoice.getAttributes()) { //see if attribute is selected
+				if(attrs[ch].equals(attr)) {
+					selected = true;
+					break;
+				}
+			}
+			attributes[ch] = new JCheckBox(attrs[ch], selected);
+			attributes[ch].setActionCommand(SCRAMBLE_ATTRIBUTE_CHANGED);
+			attributes[ch].addActionListener(this);
+			scrambleAttributes.add(attributes[ch]);
+		}
 	}
 
 	private class GUIParser extends DefaultHandler {
@@ -430,7 +457,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				else if(temp.equalsIgnoreCase("scramblechooser")) com = scrambleChooser;
 				else if(temp.equalsIgnoreCase("scramblenumber")) com = scrambleNumber;
 				else if(temp.equalsIgnoreCase("scramblelength")) com = scrambleLength;
-				else if(temp.equalsIgnoreCase("multislice")) com = multiSlice;
+				else if(temp.equalsIgnoreCase("scrambleattributes")) com = scrambleAttributes;
 				else if(temp.equalsIgnoreCase("serverscrambles")) com = serverScrambles;
 				else if(temp.equalsIgnoreCase("stackmatstatuslabel")) com = onLabel;
 				else if(temp.equalsIgnoreCase("addtimebutton")) com = addButton;
@@ -854,10 +881,18 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				scrambles = new ScrambleList(scrambleChoice);
 			}
 			updateScramble();
-		} else if(source == multiSlice) {
-//			cubeChoice.setMultiSlice(multiSlice.isSelected()); TODO - multislice
-//			if(scrambles.getCurrent() instanceof CubeScramble) ((CubeScramble) scrambles.getCurrent()).setMultislice(multiSlice.isSelected());
-			scrambles.getCurrent().revalidateScramble();
+		} else if(e.getActionCommand().equals(SCRAMBLE_ATTRIBUTE_CHANGED)) {
+			ArrayList<String> attrs = new ArrayList<String>();
+			for(JCheckBox attr : attributes) {
+				if(attr.isSelected())
+					attrs.add(attr.getText());
+			}
+			String[] attributes = new String[attrs.size()];
+			attributes = attrs.toArray(attributes);
+			scrambleChoice.setAttributes(attributes);
+			Scramble curr = scrambles.getCurrent();
+			curr.setAttributes(attributes);
+			curr.refreshImage();
 			updateScramble();
 		} else if(source == fullScreenButton || source == maximize) {
 			setFullScreen(!isFullScreen);
@@ -965,7 +1000,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 	private void updateScramble() {
 		if(scrambleChooser.getSelectedItem() == null) return;
-		if(scrambles.getCurrent() == null) scrambles = new ScrambleList((ScrambleType) scrambleChooser.getSelectedItem()); //get a scramble if any type is available
 		
 		ScrambleType newType = (ScrambleType) scrambleChooser.getSelectedItem();
 		int newLength = (Integer) scrambleLength.getValue();
@@ -995,7 +1029,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			if(choice == JOptionPane.YES_OPTION) {
 				newType.setLength(newLength);
 				scrambleChoice = newType;
-//				multiSlice.setEnabled(cubeChoice.getPuzzleType() == ScrambleType.types.CUBE); TODO - multislice
+				createScrambleAttributes();
+				validate();
 				if(serverScrambles.isSelected())
 					client.requestNextScramble(scrambleChoice);
 				else
@@ -1020,7 +1055,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 	public void dispose() {
 		Configuration.setKeyboardTimer(keyboardCheckBox.isSelected());
-		Configuration.setMultiSlice(multiSlice.isSelected());
 		Configuration.setScrambleType(scrambleChoice);
 		Configuration.setScrambleViewDimensions(scramblePopup.getSize());
 		Configuration.setScrambleViewLocation(scramblePopup.getLocation());

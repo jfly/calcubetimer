@@ -13,17 +13,16 @@ public class MegaminxScramble extends Scramble {
 	public static final String[] FACE_NAMES = {"A", "B", "C", "D", "E", "F", "a",
 		"b", "c", "d", "e", "f"};
 	public static final String PUZZLE_NAME = "Megaminx";
-	public static final String[] VARIATIONS = {""};
 	private int length;
 	private int[][] image;
 
-	public MegaminxScramble(String variation, String s) throws Exception {
+	public MegaminxScramble(String variation, String s, String... attrs) throws Exception {
 		super(s);
 		initializeImage();
 		if(!validateScramble()) throw new Exception("Invalid scramble!");
 	}
 
-	public MegaminxScramble(String variation, int length) {
+	public MegaminxScramble(String variation, int length, String... attrs) {
 		this.length = length;
 		initializeImage();
 		generateScramble();

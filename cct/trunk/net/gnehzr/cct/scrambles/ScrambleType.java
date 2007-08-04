@@ -6,7 +6,7 @@ public class ScrambleType {
 		try {
 			return (String) puzzleType.getField("PUZZLE_NAME").get(null);
 		} catch (Exception e) {	}
-		return null;
+		return "";
 	}
 	public Class<?> getPuzzleClass() {
 		return puzzleType;
@@ -23,28 +23,29 @@ public class ScrambleType {
 		return length;
 	}
 	
-	public ScrambleType(Class puzzleType, String variation, int length) {
+	public ScrambleType(Class puzzleType, String variation, int length, String... attributes) {
 		this.puzzleType = puzzleType;
 		this.variation = variation;
 		this.length = length;
+		this.attributes = attributes;
 	}
 
 	public Scramble generateScramble() {
+		Scramble temp = null;
 		try {
-			return (Scramble) puzzleType.getConstructor(String.class, int.class).newInstance(variation, length);
-		} catch (Exception e) {
-//			e.printStackTrace();
-		}
-		return null;
+			temp = (Scramble) puzzleType.getConstructor(String.class, int.class, String[].class).newInstance(variation, length, attributes);
+		} catch (Exception e) {}
+		return temp;
 	}
 
 	public Scramble generateScramble(String scramble) throws Exception {
+		Scramble temp = null;
 		try {
-			return (Scramble) puzzleType.getConstructor(String.class, String.class).newInstance(variation, scramble);
+			temp = (Scramble) puzzleType.getConstructor(String.class, String.class, String[].class).newInstance(variation, scramble, attributes);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return temp;
 	}
 	
 	public boolean equals(Object o) {
@@ -57,5 +58,12 @@ public class ScrambleType {
 	}
 	public String toString() {
 		return (variation == "") ? getPuzzleName() : variation;
+	}
+	private String[] attributes = new String[0];
+	public void setAttributes(String[] attrs) {
+		attributes = attrs;
+	}
+	public String[] getAttributes() {
+		return attributes;
 	}
 }

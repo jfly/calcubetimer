@@ -39,7 +39,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener {
 
 		scramble.setCaretPosition(0);
 		setProperSize();
-		((Container)getParent()).validate(); //TODO is this safe?
+		((Container)getParent()).validate();
 	}
 	public void setText(Scramble newScramble) {
 		String temps = newScramble.toFormattedString();

@@ -13,32 +13,45 @@ public class CubeScramble extends Scramble {
 	public static final String PUZZLE_NAME = "Cube";
 	public static final String[] VARIATIONS = {"2x2x2", "3x3x3", "4x4x4", "5x5x5",
 		"6x6x6", "7x7x7", "8x8x8", "9x9x9", "10x10x10", "11x11x11"};
+	public static final String[] ATTRIBUTES = {"Multi-slice"};
 	private int size;
 	private int length;
-	private boolean multislice = true;
 	private int[][][] image;
 
-	public CubeScramble(String variation, int length) {
-		this(variation.equals("") ? 3 : Integer.parseInt(variation.split("x")[0]), length, true);
+	public CubeScramble(String variation, int length, String... attrs) {
+		this(variation.equals("") ? 3 : Integer.parseInt(variation.split("x")[0]), length, attrs);
+	}
+
+	public CubeScramble(int size, int length, String... attrs) {
+		this.size = size;
+		this.length = length;
+		setAttributes(attrs);
+		initializeImage();
+		generateScramble();
 	}
 	
-	public CubeScramble(String variation, String s) throws Exception {
+	public CubeScramble(String variation, String s, String... attrs) throws Exception {
 		super(s);
 		this.size = Integer.parseInt(variation.split("x")[0]);
+		setAttributes(attrs);
 		initializeImage();
 		if(!validateScramble()) throw new Exception("Invalid scramble!");
 	}
 
-	public CubeScramble(int size, int length, boolean multislice) {
-		this.size = size;
-		this.length = length;
-		this.multislice = multislice;
+	private boolean multislice;
+	public void setAttributes(String... attributes) {
+		multislice = false;
+		for(String attr : attributes) {
+			if(attr.equals(ATTRIBUTES[0]))
+				multislice = true;
+		}
+	}
+	
+	public void refreshImage() {
 		initializeImage();
-		generateScramble();
+		validateScramble();		
 	}
-	public void setMultislice(boolean multi) {
-		multislice = multi;
-	}
+	
 	private void generateScramble(){
 		int lastAxis = -1;
 		int axis = 0;
@@ -114,14 +127,10 @@ public class CubeScramble extends Scramble {
 
 		return move;
 	}
-	public boolean revalidateScramble() {
-		initializeImage();
-		return validateScramble();
-	}
 	private final static String regexp23 = "^[LDBRUF][2']?$";
 	private final static String regexp45 = "^[LDBRUFldbruf][2']?$";
 	private final static String regexp = "^[LDBRUF](?:\\(\\d*\\))?[2']?$";
-	public boolean validateScramble(){
+	private boolean validateScramble(){
 		String[] strs = scramble.split(" ");
 
 		int c = 0;

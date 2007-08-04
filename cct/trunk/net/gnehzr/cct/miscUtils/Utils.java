@@ -51,7 +51,11 @@ public class Utils{
 		return s;
 	}
 
-	public static Color stringToColor(String s){
-		return new Color(Integer.parseInt(s, 16));
+	public static Color stringToColor(String s) {
+		try {
+			return new Color(Integer.parseInt(s, 16));
+		} catch(Exception e) {
+			return Color.WHITE;
+		}
 	}
 }

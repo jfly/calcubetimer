@@ -184,13 +184,6 @@ public class Configuration {
 		props.setProperty("gui_MainFrame_X", "" + location.x);
 		props.setProperty("gui_MainFrame_Y", "" + location.y);
 	}
-	public static boolean isMultiSlice() {
-		return Boolean.parseBoolean(
-				props.getProperty("scramble_MultiSlice"));
-	}
-	public static void setMultiSlice(boolean multi) {
-		props.setProperty("scramble_MultiSlice", "" + multi);
-	}
 
 	public static Color getBestAndCurrentColor() {
 		return getBestAndCurrentColor(props);
@@ -600,24 +593,35 @@ public class Configuration {
 			if(type.getPuzzleName().equals(props.getProperty("scramble_default_Type")) &&
 					type.getVariation().equals(props.getProperty("scramble_default_Variation"))) {
 				type.setLength(Integer.parseInt(props.getProperty("scramble_default_Length")));
+				type.setAttributes(props.getProperty("scramble_default_Attributes").split(","));
 				return type;
 			}
-		return new ScrambleType(null, "", 10);
+		try {
+			return getScrambleTypes()[0];
+		} catch(Exception e) {
+			return new ScrambleType(null, "", 10);
+		}
 	}
 	public static void setScrambleType(ScrambleType type) {
 		props.setProperty("scramble_default_Length", "" + type.getLength());
 		if(type.getPuzzleName() != null) {
 			props.setProperty("scramble_default_Type", type.getPuzzleName());
 			props.setProperty("scramble_default_Variation", type.getVariation());
+			String[] attributes = type.getAttributes();
+			String attrs = "";
+			for(int ch = 0; ch < attributes.length; ch++) {
+				attrs += attributes[ch] + (ch == attributes.length - 1 ? "" : ",");
+			}
+			props.setProperty("scramble_default_Attributes", attrs);
 		}
 	}
 	public static int getScrambleLength(ScrambleType puzzle) {
 		try {
 			return Integer.parseInt(props.getProperty("puzzle_scrambleLength_" + puzzle.getPuzzleName() + puzzle.getVariation()));
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
-		return 0;
+		return 10;
 	}
 	private static Class[] scrambleClasses;
 	public static Class[] getScrambleClasses() {
@@ -641,7 +645,6 @@ public class Configuration {
 				}
 				scrambleClasses = new Class[temp.size()];
 				scrambleClasses = temp.toArray(scrambleClasses);
-
 			} catch(Exception e) {e.printStackTrace();}
 		}
 		return scrambleClasses;
@@ -667,6 +670,7 @@ public class Configuration {
 		}
 		return scrambleTypes;
 	}
+	
 	public static HashMap<String, Color> getPuzzleColorScheme(Class scrambleType) {
 		return getPuzzleColorScheme(scrambleType, props);
 	}
@@ -732,6 +736,14 @@ public class Configuration {
 			e.printStackTrace();
 		}
 		return 10;
+	}
+	
+	public static String[] getPuzzleAttributes(Class<?> puzType) {
+		String[] attr = new String[0];
+		try {
+			attr = ((String[]) puzType.getField("ATTRIBUTES").get(null));
+		} catch (Exception e) {	}
+		return attr;
 	}
 
 	public static int getScrambleGap() {
