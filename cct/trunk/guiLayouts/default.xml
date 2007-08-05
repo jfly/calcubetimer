@@ -32,6 +32,7 @@
 							</panel>
 						</panel>
 						<label alignmentX=".5">$$solves$$/$$attempts$$ (solves/attempts)</label>
+						<selectablelabel><![CDATA[<html><center><font color="$$color_bestaverage$$">Best Rolling Average: $$bestaverage$$</font></center></html>]]></selectablelabel>
 					</panel>
 				</page_end>
 			</panel>

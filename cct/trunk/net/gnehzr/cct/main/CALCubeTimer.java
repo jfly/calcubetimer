@@ -38,6 +38,7 @@ import net.gnehzr.cct.miscUtils.DynamicButton;
 import net.gnehzr.cct.miscUtils.DynamicLabel;
 import net.gnehzr.cct.miscUtils.DynamicMenu;
 import net.gnehzr.cct.miscUtils.DynamicMenuItem;
+import net.gnehzr.cct.miscUtils.DynamicSelectableLabel;
 import net.gnehzr.cct.miscUtils.DynamicString;
 import net.gnehzr.cct.miscUtils.MyCellRenderer;
 import net.gnehzr.cct.scrambles.Scramble;
@@ -390,11 +391,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 			//must deal with level < 0 before adding anything
 			elementNames.add(elementName);
-			needText.add(elementName.equals("label") || elementName.equals("button") || elementName.equals("menu") || elementName.equals("menuitem"));
+			needText.add(elementName.equals("label") || elementName.equals("selectablelabel") || elementName.equals("button") || elementName.equals("menu") || elementName.equals("menuitem"));
 			strs.add("");
 			
 			if(elementName.equals("label")){
 				com = new DynamicLabel();
+			}
+			else if(elementName.equals("selectablelabel")) {
+				com = new DynamicSelectableLabel();
 			}
 			else if(elementName.equals("button")){
 				DynamicButton b = new DynamicButton();
