@@ -1,5 +1,7 @@
 package net.gnehzr.cct.scrambles;
 
+import net.gnehzr.cct.configuration.Configuration;
+
 public class ScrambleType {
 	private Class<?> puzzleType;
 	public String getPuzzleName() {
@@ -23,17 +25,16 @@ public class ScrambleType {
 		return length;
 	}
 	
-	public ScrambleType(Class puzzleType, String variation, int length, String... attributes) {
+	public ScrambleType(Class puzzleType, String variation, int length) {
 		this.puzzleType = puzzleType;
 		this.variation = variation;
 		this.length = length;
-		this.attributes = attributes;
 	}
 
 	public Scramble generateScramble() {
 		Scramble temp = null;
 		try {
-			temp = (Scramble) puzzleType.getConstructor(String.class, int.class, String[].class).newInstance(variation, length, attributes);
+			temp = (Scramble) puzzleType.getConstructor(String.class, int.class, String[].class).newInstance(variation, length, Configuration.getPuzzleAttributes(this));
 		} catch (Exception e) {}
 		return temp;
 	}
@@ -41,7 +42,7 @@ public class ScrambleType {
 	public Scramble generateScramble(String scramble) throws Exception {
 		Scramble temp = null;
 		try {
-			temp = (Scramble) puzzleType.getConstructor(String.class, String.class, String[].class).newInstance(variation, scramble, attributes);
+			temp = (Scramble) puzzleType.getConstructor(String.class, String.class, String[].class).newInstance(variation, scramble, Configuration.getPuzzleAttributes(this));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -58,12 +59,5 @@ public class ScrambleType {
 	}
 	public String toString() {
 		return (variation == "") ? getPuzzleName() : variation;
-	}
-	private String[] attributes = new String[0];
-	public void setAttributes(String[] attrs) {
-		attributes = attrs;
-	}
-	public String[] getAttributes() {
-		return attributes;
 	}
 }

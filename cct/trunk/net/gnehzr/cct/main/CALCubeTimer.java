@@ -250,6 +250,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		JPanel panel = new JPanel(new BorderLayout());
 		fullscreenFrame.setContentPane(panel);
 		bigTimersDisplay = new TimerLabel(timeListener, LCD_FONT, null);
+		bigTimersDisplay.setBackground(Color.WHITE);
 		bigTimersDisplay.setEnabledTiming(true);
 		bigTimersDisplay.setKeyboard(keyboardCheckBox.isSelected());
 
@@ -333,7 +334,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		
 		for(int ch = 0; ch < attrs.length; ch++) { //create checkbox for each possible attribute
 			boolean selected = false;
-			for(String attr : scrambleChoice.getAttributes()) { //see if attribute is selected
+			for(String attr : Configuration.getPuzzleAttributes(scrambleChoice)) { //see if attribute is selected
 				if(attrs[ch].equals(attr)) {
 					selected = true;
 					break;
@@ -909,7 +910,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			}
 			String[] attributes = new String[attrs.size()];
 			attributes = attrs.toArray(attributes);
-			scrambleChoice.setAttributes(attributes);
+			Configuration.setPuzzleAttributes(scrambleChoice, attributes);
 			Scramble curr = scrambles.getCurrent();
 			curr.setAttributes(attributes);
 			curr.refreshImage();

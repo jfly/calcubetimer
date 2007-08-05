@@ -591,10 +591,9 @@ public class Configuration {
 
 	public static ScrambleType getScrambleType() {
 		for(ScrambleType type : getScrambleTypes())
-			if(type.getPuzzleName().equals(props.getProperty("scramble_default_Type")) &&
-					type.getVariation().equals(props.getProperty("scramble_default_Variation"))) {
-				type.setLength(Integer.parseInt(props.getProperty("scramble_default_Length")));
-				type.setAttributes(props.getProperty("scramble_default_Attributes").split(","));
+			if(type.getPuzzleName().equals(props.getProperty("scramble_default_type")) &&
+					type.getVariation().equals(props.getProperty("scramble_default_variation"))) {
+				type.setLength(Integer.parseInt(props.getProperty("scramble_default_length")));
 				return type;
 			}
 		try {
@@ -604,16 +603,10 @@ public class Configuration {
 		}
 	}
 	public static void setScrambleType(ScrambleType type) {
-		props.setProperty("scramble_default_Length", "" + type.getLength());
+		props.setProperty("scramble_default_length", "" + type.getLength());
 		if(type.getPuzzleName() != null) {
-			props.setProperty("scramble_default_Type", type.getPuzzleName());
-			props.setProperty("scramble_default_Variation", type.getVariation());
-			String[] attributes = type.getAttributes();
-			String attrs = "";
-			for(int ch = 0; ch < attributes.length; ch++) {
-				attrs += attributes[ch] + (ch == attributes.length - 1 ? "" : ",");
-			}
-			props.setProperty("scramble_default_Attributes", attrs);
+			props.setProperty("scramble_default_type", type.getPuzzleName());
+			props.setProperty("scramble_default_variation", type.getVariation());
 		}
 	}
 	public static int getScrambleLength(ScrambleType puzzle) {
@@ -624,6 +617,21 @@ public class Configuration {
 		}
 		return 10;
 	}
+	
+
+	public static String[] getPuzzleAttributes(ScrambleType puzzle) {
+		String attrs = props.getProperty("puzzle_attributes_" + puzzle.getPuzzleName());
+		return attrs == null ? new String[0] : attrs.split(",");
+	}
+	
+	public static void setPuzzleAttributes(ScrambleType puzzle, String[] attributes) {
+		String attrs = "";
+		for(int ch = 0; ch < attributes.length; ch++) {
+			attrs += attributes[ch] + (ch == attributes.length - 1 ? "" : ",");
+		}
+		props.setProperty("puzzle_attributes_" + puzzle.getPuzzleName(), attrs);
+	}
+	
 	private static Class[] scrambleClasses;
 	public static Class[] getScrambleClasses() {
 		if(scrambleClasses == null) {
