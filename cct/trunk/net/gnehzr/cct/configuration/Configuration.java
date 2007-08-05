@@ -575,6 +575,13 @@ public class Configuration {
 		props.setProperty("gui_timer_SpacebarOnly", "" + spacebar);
 	}
 
+	public static boolean isFullScreenWhileTiming() {
+		return Boolean.parseBoolean(props.getProperty("gui_timer_FullScreenWhileTiming"));
+	}
+	public static void setFullScreenWhileTiming(boolean spacebar) {
+		props.setProperty("gui_timer_FullScreenWhileTiming", "" + spacebar);
+	}
+	
 	public static boolean isAnnoyingDisplay() {
 		return Boolean.parseBoolean(props.getProperty("gui_timer_AnnoyingDisplay"));
 	}

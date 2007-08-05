@@ -609,7 +609,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	*/
 
 	private JMenuItem connectToServer, importScrambles, exportScrambles, configuration, exit, documentation, about;
-	private JCheckBoxMenuItem hideScrambles, integrateTimer, spacebarOnly, annoyingDisplay, lessAnnoyingDisplay;
+	private JCheckBoxMenuItem hideScrambles, integrateTimer, spacebarOnly, annoyingDisplay, lessAnnoyingDisplay, fullScreenWhileTiming;
 	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Chagned";
 	private JButton maximize;
 	private JMenuBar createMenuBar() {
@@ -697,6 +697,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		spacebarOnly.setMnemonic(KeyEvent.VK_S);
 		submenu.add(spacebarOnly);
 
+		fullScreenWhileTiming = new JCheckBoxMenuItem("Fullscreen while timing");
+		fullScreenWhileTiming.addActionListener(this);
+		fullScreenWhileTiming.setSelected(Configuration.isFullScreenWhileTiming());
+		fullScreenWhileTiming.setMnemonic(KeyEvent.VK_F);
+		submenu.add(fullScreenWhileTiming);
+		
 		submenu = new JMenu("Load custom GUI");
 		menu.add(submenu);
 		
@@ -940,6 +946,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			updateScramble();
 		} else if(source == spacebarOnly) {
 			Configuration.setSpacebarOnly(spacebarOnly.isSelected());
+		} else if(source == fullScreenWhileTiming) {
+			Configuration.setFullScreenWhileTiming(fullScreenWhileTiming.isSelected());
 		} else if(source == hideScrambles) {
 			Configuration.setHideScrambles(hideScrambles.isSelected());
 			scrambleText.refresh();
@@ -1287,12 +1295,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			String command = e.getActionCommand();
 			TimerState newTime = (TimerState) e.getSource();
 			updateTime(newTime.toString());
-//			if(command.equals("New Time")) {
-//				setFullScreen(true); //TODO fullscreen while timing
-//			} else
-			if(command.equals("Stopped")) {
+			if(Configuration.isFullScreenWhileTiming() && command.equals("New Time")) {
+				setFullScreen(true);
+			} else if(command.equals("Stopped")) {
 				addTime(newTime);
-//				setFullScreen(false); //TODO fullscreen while timing
+				if(Configuration.isFullScreenWhileTiming())	setFullScreen(false);
 			} else if(command.equals("Split"))
 				addSplit(newTime);
 		}
