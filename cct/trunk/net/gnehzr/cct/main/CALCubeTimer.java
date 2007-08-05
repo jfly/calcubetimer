@@ -233,6 +233,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		startStopPanel = new TimerPanel(timeListener, scrambleText, timeLabel);
 		startStopPanel.setKeyboard(true);
 		startStopPanel.setEnabled(keyboardCheckBox.isSelected());
+		startStopPanel.setVisible(!Configuration.isIntegratedTimerDisplay());
 
 		timeLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 		timeLabel.setMinimumSize(new Dimension(0, 150));
@@ -658,7 +659,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		exit.addActionListener(this);
 		menu.add(exit);
 
-		menu = new JMenu("View");
+		menu = new JMenu("Options");
 		menu.setMnemonic(KeyEvent.VK_V);
 		menuBar.add(menu);
 
@@ -943,9 +944,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			Configuration.setHideScrambles(hideScrambles.isSelected());
 			scrambleText.refresh();
 		} else if(source == integrateTimer) {
-			Configuration.setIntegratedTimerDisplay(integrateTimer.isSelected());
-			timeLabel.setEnabledTiming(Configuration.isIntegratedTimerDisplay());
-			startStopPanel.requestFocusInWindow();
+			boolean isIntegrated = integrateTimer.isSelected();
+			Configuration.setIntegratedTimerDisplay(isIntegrated);
+			startStopPanel.setVisible(!isIntegrated);
+			timeLabel.setEnabledTiming(isIntegrated);
+			if(isIntegrated)
+				timeLabel.requestFocusInWindow();
+			else
+				startStopPanel.requestFocusInWindow();
 		} else if(source == annoyingDisplay) {
 			timeLabel.setOpaque(annoyingDisplay.isSelected());
 			Configuration.setAnnoyingDisplay(annoyingDisplay.isSelected());
@@ -1281,12 +1287,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			String command = e.getActionCommand();
 			TimerState newTime = (TimerState) e.getSource();
 			updateTime(newTime.toString());
-			/*if(command.equals("New Time")) {
-				setFullScreen(true); //TODO
-			} else */
+//			if(command.equals("New Time")) {
+//				setFullScreen(true); //TODO fullscreen while timing
+//			} else
 			if(command.equals("Stopped")) {
 				addTime(newTime);
-//				setFullScreen(false); //TODO
+//				setFullScreen(false); //TODO fullscreen while timing
 			} else if(command.equals("Split"))
 				addSplit(newTime);
 		}

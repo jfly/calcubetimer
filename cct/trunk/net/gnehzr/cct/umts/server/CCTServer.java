@@ -401,12 +401,12 @@ public class CCTServer implements Runnable{
 			}
 		}
 		else if(strs[0].equalsIgnoreCase("/megaminx")){
-//			broadcast(Protocol.MESSAGE_ME, name + " requests megaminx scramble: " + new MegaminxScramble("", ServerScrambleList.LENGTHS[10])); TODO
+//			broadcast(Protocol.MESSAGE_ME, name + " requests megaminx scramble: " + new MegaminxScramble("", ServerScrambleList.LENGTHS[10])); TODO server scrambles
 		}
 		else{
 			try{
 //				int x = Integer.parseInt(strs[0].substring(1));
-//				if(x >= 2 && x <= 5) broadcast(Protocol.MESSAGE_ME, name + " requests " + x + " scramble: " + new CubeScramble(x, ServerScrambleList.LENGTHS[x-2], true).toString()); TODO
+//				if(x >= 2 && x <= 5) broadcast(Protocol.MESSAGE_ME, name + " requests " + x + " scramble: " + new CubeScramble(x, ServerScrambleList.LENGTHS[x-2], true).toString()); TODO server scrambles
 //				else sendHelpTo(name, Protocol.usageMessage(""));
 			} catch(Exception e){
 				sendHelpTo(name, Protocol.usageMessage(""));
