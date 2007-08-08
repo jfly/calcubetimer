@@ -96,7 +96,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		sorttimes.add(i, s);
 
 		if(times.size() >= curRASize){
-			calculateLastAverage();
+			calculateCurrentAverage();
 		}
 
 		if(s.isPop()) numPops++;
@@ -112,7 +112,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		}
 	}
 
-	private void calculateLastAverage(){
+	private void calculateCurrentAverage(){
 		double avg = calculateRA(times.size() - curRASize, times.size());
 		if(avg > 0){
 			Double av = new Double(avg);
@@ -622,19 +622,29 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		return getSortAverageSD(-1);
 	}
 
-	public double getLastTime(){
+	public double getCurrentTime(){
 		return getTime(-1);
 	}
-	public double getLastAverage(){
+	public double getCurrentAverage(){
 		return getAverage(-1);
 	}
-	public double getLastSD(){
+	public double getCurrentSD(){
 		return getSD(-1);
 	}
-	public double getBestTimeOfLastAverage(){
+
+	public double getLastTime(){
+		return getTime(-2);
+	}
+	public double getLastAverage(){
+		return getAverage(-2);
+	}
+	public double getLastSD(){
+		return getSD(-2);
+	}
+	public double getBestTimeOfCurrentAverage(){
 		return getBestTimeOfAverage(-1);
 	}
-	public double getWorstTimeOfLastAverage(){
+	public double getWorstTimeOfCurrentAverage(){
 		return getWorstTimeOfAverage(-1);
 	}
 

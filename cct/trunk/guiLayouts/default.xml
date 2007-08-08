@@ -26,7 +26,7 @@
 								<component type="addtimebutton"/>
 								<component type="keyboardcheckbox"/>
 								<component type="resetbutton"/>
-								<button action="currentaverage"><![CDATA[<html><font color="$$color_currentaverage$$">Current Average: $$lastaverage$$</font></html>]]></button>
+								<button action="currentaverage"><![CDATA[<html><font color="$$color_currentaverage$$">Current Average: $$currentaverage$$</font></html>]]></button>
 								<button action="bestaverage"><![CDATA[<html><font color="$$color_bestaverage$$">Best Rolling Average: $$bestaverage$$</font></html>]]></button>
 								<button action="sessionaverage">Session Average: $$sessionaverage</button>
 							</panel>
@@ -41,13 +41,29 @@
 			<component type="timeslist"/>
 		</line_end>
 	</panel>
-	<!--<menubar>
-		<menu>Blah! $$sessionaverage
-			<menuitem>$$sessionsd$$
-			</menuitem>
+	<!--
+	<menubar>
+		<menu mnemonic="f">File
+			<menuitem>Import scrambles</menuitem>
+			<menuitem>Export scrambles</menuitem>
 			<separator/>
-			<menuitem>$$lasttime$$
-			</menuitem>
+			<menuitem>Connect to server</menuitem>
+			<separator/>
+			<menuitem>Configuration</menuitem>
+			<separator/>
+			<menuitem>Exit</menuitem>
 		</menu>
-	</menubar>-->
+		<menu mnemonic="o">Options
+			<menu mnemonic="k">Keyboard Timer
+			</menu>
+			<menu mnemonic="l">Load custom GUI TODO
+			</menu>
+		</menu>
+		<menu mnemonic="h">Help
+			<menuitem>View Documentation</menuitem>
+			<menuitem>About</menuitem>
+		</menu>
+		<component type="maximizeButton"/>
+	</menubar>
+	-->
 </gui>

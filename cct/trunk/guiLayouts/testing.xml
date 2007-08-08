@@ -23,7 +23,7 @@
 								<component type="addtimebutton"/>
 								<component type="keyboardcheckbox"/>
 								<component type="resetbutton"/>
-								<button action="currentaverage"><![CDATA[<html><font color="$$color_currentaverage$$">Current Average: $$lastaverage$$</font></html>]]></button>
+								<button action="currentaverage"><![CDATA[<html><font color="$$color_currentaverage$$">Current Average: $$currentaverage$$</font></html>]]></button>
 								<button action="bestaverage"><![CDATA[<html><font color="$$color_bestaverage$$">Best Rolling Average: $$bestaverage$$</font></html>]]></button>
 								<button action="sessionaverage">Session Average: $$sessionaverage</button>
 							</panel>
@@ -53,14 +53,17 @@
 											Worst Average: $$worstAverage$$<br/>
 											Worst SD: $$worstSD$$<br/>
 											Worst Average's SD: $$worstAverageSD$$<br/>
+											Current Time: $$currentTime$$<br/>
+											Current Average: $$currentAverage$$<br/>
+											Current SD: $$currentSD$$<br/>
 											Last Time: $$lastTime$$<br/>
 											Last Average: $$lastAverage$$<br/>
 											Last SD: $$lastSD$$<br/>
 										</html>]]>
 									</label>
 									<label><![CDATA[<html>
-											Best Time of Last Average: $$bestTimeOfLastAverage$$<br/>
-											Worst Time of Last Average: $$worstTimeOfLastAverage$$<br/>
+											Best Time of Current Average: $$bestTimeOfCurrentAverage$$<br/>
+											Worst Time of Current Average: $$worstTimeOfCurrentAverage$$<br/>
 											Best Time of Best Average: $$bestTimeOfBestAverage$$<br/>
 											Worst Time of Best Average: $$worstTimeOfBestAverage$$<br/>
 											Best Time of Worst Average: $$bestTimeOfWorstAverage$$<br/>

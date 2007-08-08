@@ -52,11 +52,14 @@ public class DynamicString{
 		else if(s.equalsIgnoreCase("worstAverage")) r = Utils.clockFormat(stats.getWorstAverage(), Configuration.isClockFormat());
 		else if(s.equalsIgnoreCase("worstSD")) r = Utils.format(stats.getWorstSD());
 		else if(s.equalsIgnoreCase("worstAverageSD")) r = Utils.format(stats.getWorstAverageSD());
+		else if(s.equalsIgnoreCase("currentTime")) r = Utils.clockFormat(stats.getCurrentTime(), Configuration.isClockFormat());
+		else if(s.equalsIgnoreCase("currentAverage")) r = Utils.clockFormat(stats.getCurrentAverage(), Configuration.isClockFormat());
+		else if(s.equalsIgnoreCase("currentSD")) r = Utils.format(stats.getCurrentSD());
 		else if(s.equalsIgnoreCase("lastTime")) r = Utils.clockFormat(stats.getLastTime(), Configuration.isClockFormat());
 		else if(s.equalsIgnoreCase("lastAverage")) r = Utils.clockFormat(stats.getLastAverage(), Configuration.isClockFormat());
 		else if(s.equalsIgnoreCase("lastSD")) r = Utils.format(stats.getLastSD());
-		else if(s.equalsIgnoreCase("bestTimeOfLastAverage")) r = Utils.clockFormat(stats.getBestTimeOfLastAverage(), Configuration.isClockFormat());
-		else if(s.equalsIgnoreCase("worstTimeOfLastAverage")) r = Utils.clockFormat(stats.getWorstTimeOfLastAverage(), Configuration.isClockFormat());
+		else if(s.equalsIgnoreCase("bestTimeOfCurrentAverage")) r = Utils.clockFormat(stats.getBestTimeOfCurrentAverage(), Configuration.isClockFormat());
+		else if(s.equalsIgnoreCase("worstTimeOfCurrentAverage")) r = Utils.clockFormat(stats.getWorstTimeOfCurrentAverage(), Configuration.isClockFormat());
 		else if(s.equalsIgnoreCase("bestTimeOfBestAverage")) r = Utils.clockFormat(stats.getBestTimeOfBestAverage(), Configuration.isClockFormat());
 		else if(s.equalsIgnoreCase("worstTimeOfBestAverage")) r = Utils.clockFormat(stats.getWorstTimeOfBestAverage(), Configuration.isClockFormat());
 		else if(s.equalsIgnoreCase("bestTimeOfWorstAverage")) r = Utils.clockFormat(stats.getBestTimeOfWorstAverage(), Configuration.isClockFormat());

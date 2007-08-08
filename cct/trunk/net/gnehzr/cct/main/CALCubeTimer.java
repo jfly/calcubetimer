@@ -450,6 +450,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				else if(temp.equalsIgnoreCase("timerdisplay")) com = timeLabel;
 				else if(temp.equalsIgnoreCase("startstoppanel")) com = startStopPanel;
 				else if(temp.equalsIgnoreCase("timeslist")) com = timesScroller;
+				else if(temp.equalsIgnoreCase("maximizeButton")) com = maximize;
 			}
 			else if(elementName.equals("center") || elementName.equals("east") || elementName.equals("west") || elementName.equals("south") || elementName.equals("north") || elementName.equals("page_start") || elementName.equals("page_end") || elementName.equals("line_start") || elementName.equals("line_end")){
 				com = null;
@@ -458,7 +459,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				com = new JMenuBar();
 			}
 			else if(elementName.equals("menu")){
-				com = new DynamicMenu();
+				JMenu menu = new DynamicMenu();
+				if((temp = attrs.getValue("mnemonic")) != null)
+					menu.setMnemonic(temp.charAt(0));
+
+				com = menu;
 			}
 			else if(elementName.equals("menuitem")){
 				com = new DynamicMenuItem();
@@ -467,7 +472,17 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				com = new JSeparator();
 				//needs orientation
 			}
-			else throw new SAXException("invalid tag");
+			/*
+			else if(elementName.equals("glue")){ //TODO glue thingys are Components, not JComponents
+				if((temp = attrs.getValue("orientation")) != null){
+					if(temp.equalsIgnoreCase("horizontal")) com = Box.createHorizontalGlue();
+					else if(temp.equalsIgnoreCase("vertical")) com = Box.createVerticalGlue();
+					else throw new SAXException("parse error in orientation");
+				}
+				else com = Box.createGlue();
+			}
+			*/
+			else throw new SAXException("invalid tag " + elementName);
 
 			if(com != null && attrs != null){
 				try{
