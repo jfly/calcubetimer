@@ -15,7 +15,42 @@ public class MegaminxScramble extends Scramble {
 	public static final String PUZZLE_NAME = "Megaminx";
 	private int length;
 	private int[][] image;
+	public static final int DEFAULT_UNIT_SIZE = 30;
 
+	public static int getDefaultScrambleLength(String variation) {
+		return 60;
+	}
+	public static String getDefaultFaceColor(String face) {
+		switch(face.charAt(0)) {
+			case 'A':
+				return "ffffff";
+			case 'B':
+				return "336633";
+			case 'C':
+				return "66ffff";
+			case 'D':
+				return "996633";
+			case 'E':
+				return "3333ff";
+			case 'F':
+				return "993366";
+			case 'a':
+				return "ffff00";
+			case 'b':
+				return "66ff66";
+			case 'c':
+				return "ff66ff";
+			case 'd':
+				return "000099";
+			case 'e':
+				return "ff0000";
+			case 'f':
+				return "ff9933";
+			default:
+				return null;
+		}
+	}
+	
 	public MegaminxScramble(String variation, String s, String... attrs) throws Exception {
 		super(s);
 		initializeImage();

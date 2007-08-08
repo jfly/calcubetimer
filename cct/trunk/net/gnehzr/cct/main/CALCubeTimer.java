@@ -147,7 +147,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 		configurationDialog = new ConfigurationDialog(this, true, stackmatTimer);
 
-		keyboardCheckBox = new JCheckBox("Use keyboard timer", Configuration.isKeyboardTimer());
+		keyboardCheckBox = new JCheckBox("Use keyboard timer");
 		keyboardCheckBox.setMnemonic(KeyEvent.VK_K);
 		keyboardCheckBox.addActionListener(this);
 		keyboardCheckBox.setToolTipText("NOTE: will disable Stackmat!");
@@ -188,12 +188,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		scramblePopup.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		scramblePopup.setIconImage(cube.getImage());
 		scramblePopup.setFocusableWindowState(false);
-		Dimension size = Configuration.getScrambleViewDimensions();
-		if(size != null)
-			scramblePopup.setSize(size);
-		Point location = Configuration.getScrambleViewLocation();
-		if(location != null)
-			scramblePopup.setLocation(location);
 
 		onLabel = new JLabel("Timer is OFF");
 		onLabel.setFont(onLabel.getFont().deriveFont(AffineTransform.getScaleInstance(2, 2)));
@@ -227,14 +221,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		scrambleText = new ScrambleArea();
 		scrambleText.setAlignmentX(.5f);
 		timeLabel = new TimerLabel(timeListener, LCD_FONT, scrambleText);
-		timeLabel.setOpaque(Configuration.isAnnoyingDisplay());
-		timeLabel.setEnabledTiming(Configuration.isIntegratedTimerDisplay());
-		timeLabel.setKeyboard(keyboardCheckBox.isSelected());
 
 		startStopPanel = new TimerPanel(timeListener, scrambleText, timeLabel);
 		startStopPanel.setKeyboard(true);
-		startStopPanel.setEnabled(keyboardCheckBox.isSelected());
-		startStopPanel.setVisible(!Configuration.isIntegratedTimerDisplay());
 
 		timeLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 		timeLabel.setMinimumSize(new Dimension(0, 150));
@@ -254,7 +243,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		bigTimersDisplay = new TimerLabel(timeListener, LCD_FONT, null);
 		bigTimersDisplay.setBackground(Color.WHITE);
 		bigTimersDisplay.setEnabledTiming(true);
-		bigTimersDisplay.setKeyboard(keyboardCheckBox.isSelected());
 
 		panel.add(bigTimersDisplay, BorderLayout.CENTER);
 		fullScreenButton = new JButton("+");
@@ -273,29 +261,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 		parseXML_GUI(Configuration.getXMLGUILayout());
 		
-		size = Configuration.getMainFrameDimensions();
-		if(size == null) {
-			this.pack();
-		} else
-			this.setSize(size);
-		location = Configuration.getMainFrameLocation();
-		if(location == null)
-			this.setLocationRelativeTo(null);
-		else
-			this.setLocation(location);
 		updateScramble();
 
-		if(keyboardCheckBox.isSelected()) { //This is to ensure that the keyboard is focused
-			timeLabel.requestFocusInWindow();
-			startStopPanel.requestFocusInWindow();
-		} else
-			scrambleText.requestFocusInWindow();
 
 		Configuration.addConfigurationChangeListener(this);
 		Configuration.updateBackground();
-		timeLabel.componentResized(null);
+		configurationChanged();
+		
 		this.setVisible(true);
-		scramblePopup.setVisible(Configuration.isScramblePopup());
 	}
 
 	private void parseXML_GUI(String file) {
@@ -1242,9 +1215,50 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 
 	public void configurationChanged() {
-		scramblePopup.setVisible(Configuration.isScramblePopup());
+		scrambleChoice = Configuration.getScrambleType();
+		
+		parseXML_GUI(Configuration.getXMLGUILayout());
+		setJMenuBar(createMenuBar());
+		
+		keyboardCheckBox.setSelected(Configuration.isKeyboardTimer());
+		
 		scramblePopup.syncColorScheme();
 		scramblePopup.pack();
+		Dimension size = Configuration.getScrambleViewDimensions();
+		if(size != null)
+			scramblePopup.setSize(size);
+		Point location = Configuration.getScrambleViewLocation();
+		if(location != null)
+			scramblePopup.setLocation(location);
+		scramblePopup.setVisible(Configuration.isScramblePopup());
+
+		timeLabel.setKeyboard(keyboardCheckBox.isSelected());
+		timeLabel.setEnabledTiming(Configuration.isIntegratedTimerDisplay());
+		timeLabel.setOpaque(Configuration.isAnnoyingDisplay());
+
+		startStopPanel.setEnabled(keyboardCheckBox.isSelected());
+		startStopPanel.setVisible(!Configuration.isIntegratedTimerDisplay());
+
+		bigTimersDisplay.setKeyboard(keyboardCheckBox.isSelected());
+
+		size = Configuration.getMainFrameDimensions();
+		if(size == null) {
+			this.pack();
+		} else
+			this.setSize(size);
+		location = Configuration.getMainFrameLocation();
+		if(location == null)
+			this.setLocationRelativeTo(null);
+		else
+			this.setLocation(location);
+
+		if(keyboardCheckBox.isSelected()) { //This is to ensure that the keyboard is focused
+			timeLabel.requestFocusInWindow();
+			startStopPanel.requestFocusInWindow();
+		} else
+			scrambleText.requestFocusInWindow();
+
+		timeLabel.componentResized(null);
 	}
 
 	private static String[] options = {"Accept", "+2", "POP"};
@@ -1299,7 +1313,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			String command = e.getActionCommand();
 			TimerState newTime = (TimerState) e.getSource();
 			updateTime(newTime.toString());
-			if(Configuration.isFullScreenWhileTiming() && command.equals("New Time")) {
+			if(Configuration.isFullScreenWhileTiming() && command.equals("Started")) {
 				setFullScreen(true);
 			} else if(command.equals("Stopped")) {
 				addTime(newTime);

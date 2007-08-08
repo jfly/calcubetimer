@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JFrame;
 
@@ -63,7 +65,7 @@ public class Configuration {
 		} catch (IOException e) {}
 	}
 
-	private static ArrayList<ConfigurationChangeListener> listeners = new ArrayList<ConfigurationChangeListener>();
+	private static CopyOnWriteArrayList<ConfigurationChangeListener> listeners = new CopyOnWriteArrayList<ConfigurationChangeListener>();
 	public static void addConfigurationChangeListener(ConfigurationChangeListener listener) {
 		listeners.add(listener);
 	}
@@ -96,6 +98,7 @@ public class Configuration {
 	}
 
 	public static void saveConfigurationToFile(File f) throws IOException {
+		currentFile = f;
 		FileOutputStream out = new FileOutputStream(currentFile);
 		props.store(out, "CCT " + CALCubeTimer.CCT_VERSION + " Properties File");
 		out.close();
@@ -121,8 +124,9 @@ public class Configuration {
 
 	public static void apply() {
 		updateBackground();
-		for(ConfigurationChangeListener listener : listeners)
+		for(ConfigurationChangeListener listener : listeners) {
 			listener.configurationChanged();
+		}
 	}
 
 	public static String getFileName() {
@@ -622,13 +626,38 @@ public class Configuration {
 		} catch (Exception e) {
 //			e.printStackTrace();
 		}
+		try {
+			return (Integer) puzzle.getPuzzleClass().getMethod("getDefaultScrambleLength", String.class).invoke(null, puzzle.getVariation());
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} 
 		return 10;
 	}
 	
 
 	public static String[] getPuzzleAttributes(ScrambleType puzzle) {
 		String attrs = props.getProperty("puzzle_attributes_" + puzzle.getPuzzleName());
-		return attrs == null ? new String[0] : attrs.split(",");
+		if(attrs != null) return attrs.split(",");
+		try {
+			return (String[]) puzzle.getPuzzleClass().getField("DEFAULT_ATTRIBUTES").get(null);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		}
+		return new String[0];
 	}
 	
 	public static void setPuzzleAttributes(ScrambleType puzzle, String[] attributes) {
@@ -693,14 +722,18 @@ public class Configuration {
 	public static HashMap<String, Color> getPuzzleColorSchemeDefaults(Class scrambleType) {
 		return getPuzzleColorScheme(scrambleType, defaults);
 	}
-	private static HashMap<String, Color> getPuzzleColorScheme(Class scrambleType, Properties props) {
+	private static HashMap<String, Color> getPuzzleColorScheme(Class<?> scrambleType, Properties props) {
 		HashMap<String, Color> scheme = null;
 		try {
 			String[] faceNames = (String[]) scrambleType.getField("FACE_NAMES").get(null);
 			String puzzleName = (String) scrambleType.getField("PUZZLE_NAME").get(null);
 			scheme = new HashMap<String, Color>(faceNames.length);
 			for(String face : faceNames) {
-				scheme.put(face, Utils.stringToColor(props.getProperty("puzzle_color_" + puzzleName + "Face" + face)));
+				String col = props.getProperty("puzzle_color_" + puzzleName + "Face" + face);
+				if(col == null) {
+					col = (String) scrambleType.getMethod("getDefaultFaceColor", String.class).invoke(null, face);
+				}
+				scheme.put(face, Utils.stringToColor(col));
 			}
 		} catch (SecurityException e) {
 			e.printStackTrace();
@@ -709,6 +742,10 @@ public class Configuration {
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		return scheme;
@@ -736,11 +773,22 @@ public class Configuration {
 	public static int getPuzzleUnitSizeDefault(Class puzzleType) {
 		return getPuzzleUnitSize(defaults, puzzleType);
 	}
-	private static int getPuzzleUnitSize(Properties props, Class puzzleType) {
+	private static int getPuzzleUnitSize(Properties props, Class<?> puzzleType) {
 		try {
 			String name = (String) puzzleType.getField("PUZZLE_NAME").get(null);
 			return Integer.parseInt(props.getProperty("scramble_Popup_UnitSize_" + name));
 		} catch (Exception e) {
+//			e.printStackTrace();
+		}
+		try {
+			return puzzleType.getField("DEFAULT_UNIT_SIZE").getInt(null);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
 		}
 		return 10;

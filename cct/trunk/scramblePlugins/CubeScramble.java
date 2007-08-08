@@ -14,9 +14,56 @@ public class CubeScramble extends Scramble {
 	public static final String[] VARIATIONS = {"2x2x2", "3x3x3", "4x4x4", "5x5x5",
 		"6x6x6", "7x7x7", "8x8x8", "9x9x9", "10x10x10", "11x11x11"};
 	public static final String[] ATTRIBUTES = {"Multi-slice"};
+	public static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
 	private int size;
 	private int length;
 	private int[][][] image;
+	public static final int DEFAULT_UNIT_SIZE = 11;
+
+	public static int getDefaultScrambleLength(String variation) {
+		switch(Integer.parseInt(""+variation.charAt(0))) {
+			case 2:
+				return 25;
+			case 3:
+				return 25;
+			case 4:
+				return 40;
+			case 5:
+				return 60;
+			case 6:
+				return 80;
+			case 7:
+				return 100;
+			case 8:
+				return 120;
+			case 9:
+				return 140;
+			case 10:
+				return 160;
+			case 11:
+				return 180;
+			default:
+				return 10;
+		}
+	}
+	public static String getDefaultFaceColor(String face) {
+		switch(face.charAt(0)) {
+			case 'B':
+				return "0000ff";
+			case 'D':
+				return "ffff00";
+			case 'F':
+				return "00ff00";
+			case 'L':
+				return "ffc800";
+			case 'R':
+				return "ff0000";
+			case 'U':
+				return "ffffff";
+			default:
+				return null;
+		}
+	}
 
 	public CubeScramble(String variation, int length, String... attrs) {
 		this(variation.equals("") ? 3 : Integer.parseInt(variation.split("x")[0]), length, attrs);

@@ -648,6 +648,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 					applyConfiguration();
 					saveConfigurationToFile(outputFile);
 				} catch (Exception e1) {
+					e1.printStackTrace();
 					JOptionPane.showMessageDialog(this,
 							"Error!\n" + e1.getMessage(),
 							"Hmmm...",
@@ -665,7 +666,10 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 				try {
 					Configuration.loadConfiguration(inputFile);
 					syncGUIwithConfig();
+					applyConfiguration();
+//					Configuration.apply();
 				} catch (Exception e1) {
+					e1.printStackTrace();
 					JOptionPane.showMessageDialog(this,
 							"Error!\n" + e1.getMessage(),
 							"Hmmm...",
