@@ -112,9 +112,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		});
 	}
 
-	StatisticsAction currentAverageAction;
-	StatisticsAction rollingAverageAction;
-	StatisticsAction sessionAverageAction;
+	private StatisticsAction currentAverageAction;
+	private StatisticsAction rollingAverageAction;
+	private StatisticsAction sessionAverageAction;
 	public void createAndShowGUI() {
 		addWindowFocusListener(this);
 
@@ -614,7 +614,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 	private JMenuItem connectToServer, importScrambles, exportScrambles, configuration, exit, documentation, about;
 	private JCheckBoxMenuItem hideScrambles, integrateTimer, spacebarOnly, annoyingDisplay, lessAnnoyingDisplay, fullScreenWhileTiming;
-	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Chagned";
+	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Changed";
 	private JButton maximize;
 	private JMenuBar createMenuBar() {
 		JMenuBar menuBar = new JMenuBar();
@@ -853,9 +853,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 					JOptionPane.YES_NO_OPTION);
 			if(choice == JOptionPane.YES_OPTION) {
 				serverScrambles.setSelected(false);
-				ScrambleImportExportDialog ScrambleImporter = new ScrambleImportExportDialog(true, (ScrambleType) scrambleChooser.getSelectedItem());
+				ScrambleImportExportDialog scrambleImporter = new ScrambleImportExportDialog(true, (ScrambleType) scrambleChooser.getSelectedItem());
 				choice = JOptionPane.showOptionDialog(this,
-						ScrambleImporter,
+						scrambleImporter,
 						"Import Scrambles",
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.QUESTION_MESSAGE,
@@ -863,15 +863,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 						okCancel,
 						okCancel[0]);
 				if(choice == JOptionPane.OK_OPTION) {
-					URL file = ScrambleImporter.getURL();
+					URL file = scrambleImporter.getURL();
 					if(file != null)
-						readScramblesFile(ScrambleImporter.getURL(), ScrambleImporter.getType());
+						readScramblesFile(scrambleImporter.getURL(), scrambleImporter.getType());
 				}
 			}
 		} else if(source == exportScrambles) {
-			ScrambleImportExportDialog ScrambleExporter = new ScrambleImportExportDialog(false, (ScrambleType) scrambleChooser.getSelectedItem());
+			ScrambleImportExportDialog scrambleExporter = new ScrambleImportExportDialog(false, (ScrambleType) scrambleChooser.getSelectedItem());
 			int choice = JOptionPane.showOptionDialog(this,
-					ScrambleExporter,
+					scrambleExporter,
 					"Export Scrambles",
 					JOptionPane.YES_NO_OPTION,
 					JOptionPane.QUESTION_MESSAGE,
@@ -879,9 +879,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 					okCancel,
 					okCancel[0]);
 			if(choice == JOptionPane.OK_OPTION) {
-				URL file = ScrambleExporter.getURL();
+				URL file = scrambleExporter.getURL();
 				if(file != null)
-					exportScrambles(file, ScrambleExporter.getNumberOfScrambles(), ScrambleExporter.getType());
+					exportScrambles(file, scrambleExporter.getNumberOfScrambles(), scrambleExporter.getType());
 			}
 		} else if(source == exit) {
 			this.dispose();
