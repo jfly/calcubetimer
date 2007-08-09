@@ -20,7 +20,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JFrame;
 
@@ -65,7 +64,7 @@ public class Configuration {
 		} catch (IOException e) {}
 	}
 
-	private static CopyOnWriteArrayList<ConfigurationChangeListener> listeners = new CopyOnWriteArrayList<ConfigurationChangeListener>();
+	private static ArrayList<ConfigurationChangeListener> listeners = new ArrayList<ConfigurationChangeListener>();
 	public static void addConfigurationChangeListener(ConfigurationChangeListener listener) {
 		listeners.add(listener);
 	}
