@@ -666,6 +666,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 				try {
 					Configuration.loadConfiguration(inputFile);
 					syncGUIwithConfig();
+					applyConfiguration();
 				} catch (Exception e1) {
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(this,
