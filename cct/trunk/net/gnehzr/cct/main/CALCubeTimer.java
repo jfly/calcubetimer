@@ -1300,7 +1300,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 					reset = false;
 					updateTime(current.toString());
 				} else if(event.equals("Split")) {
-					addSplit((TimerState) evt.getNewValue());
+					addSplit((TimerState) current);
 				} else if(event.equals("Reset")) {
 					updateTime("0:00.00");
 					reset = true;
@@ -1310,7 +1310,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 					if(addTime(current))
 						lastAccepted = current;
 				} else if(event.equals("Current Display")) {
-					timeLabel.setText(evt.getNewValue().toString());
+					timeLabel.setText(current.toString());
 				}
 			}
 		}
@@ -1332,7 +1332,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				setFullScreen(true);
 			} else if(command.equals("Stopped")) {
 				addTime(newTime);
-				if(Configuration.isFullScreenWhileTiming())	setFullScreen(false);
+				if(Configuration.isFullScreenWhileTiming()) setFullScreen(false);
 			} else if(command.equals("Split"))
 				addSplit(newTime);
 		}
