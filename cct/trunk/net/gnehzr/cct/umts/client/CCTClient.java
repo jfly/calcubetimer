@@ -53,15 +53,15 @@ public class CCTClient {
 		}
 	}
 
-	private Component disableEnable = null;
-	private Component enableDisable = null;
-	public void enableAndDisable(Component enableAndDisableMe) {
+	private AbstractAction disableEnable = null;
+	private AbstractAction enableDisable = null;
+	public void enableAndDisable(AbstractAction enableAndDisableMe) {
 		enableDisable = enableAndDisableMe;
 		if(gui.getFrame().isVisible())
 			enableDisable.setEnabled(false);
 	}
 
-	public void disableAndEnable(Component disableAndEnableMe) {
+	public void disableAndEnable(AbstractAction disableAndEnableMe) {
 		disableEnable = disableAndEnableMe;
 		if(gui.getFrame().isVisible())
 			disableEnable.setEnabled(true);
@@ -78,13 +78,17 @@ public class CCTClient {
 		return users;
 	}
 
-	public void cleanup(){
+	private void cleanupGUIActions(){
 		if(enableDisable != null)
 			enableDisable.setEnabled(true);
 		if(disableEnable != null){
 			disableEnable.setEnabled(false);
-			((JCheckBox)disableEnable).setSelected(false);
+			disableEnable.putValue(Action.SELECTED_KEY, false);
 		}
+	}
+
+	public void cleanup(){
+		cleanupGUIActions();
 
 		connected = false;
 		gui.setTitle("CCTClient v" + VERSION + ": not connected");
@@ -101,12 +105,7 @@ public class CCTClient {
 	}
 
 	public void closeSocket(){
-		if(enableDisable != null)
-			enableDisable.setEnabled(true);
-		if(disableEnable != null){
-			disableEnable.setEnabled(false);
-			((JCheckBox)disableEnable).setSelected(false);
-		}
+		cleanupGUIActions();
 
 		try{
 			connected = false;

@@ -1,32 +1,34 @@
 <gui>
-	<panel layout="border"><!--panel-->
+	<panel layout="border">
 		<center>
-			<panel layout="border"><!--leftpanel-->
+			<panel layout="border">
 				<center>
-					<panel layout="box" orientation="page"><!--center-->
-						<component type="timerdisplay"/>
-						<component type="scrambletext"/>
+					<panel layout="box" orientation="page">
+						<component type="timerDisplay"/>
+						<component type="scrambleText"/>
 					</panel>
 				</center>
 				<page_end>
-					<panel layout="box" orientation="page"><!--southwest-->
+					<panel layout="box" orientation="page">
 						<panel layout="flow" hgap="5" vgap="5">
-							<component type="stackmatstatuslabel"/>
-							<component type="scramblechooser"/>
-							<component type="scramblelength"/>
-							<component type="scramblenumber"/>
-							<component type="scrambleattributes"/>
-							<component type="serverscrambles"/>
+							<component type="stackmatStatusLabel"/>
+							<component type="scrambleChooser"/>
+							<component type="scrambleLength"/>
+							<component type="scrambleNumber"/>
+							<component type="scrambleAttributes"/>
+							<checkbox action="serverScrambles"/>
 						</panel>
 						<panel layout="flow" hgap="5" vgap="5">
-							<panel layout="grid" cols="3"><!--buttonspanel-->
-								<component type="addtimebutton"/>
-								<component type="keyboardcheckbox"/>
+							<panel layout="grid" cols="3">
+								<panel />
+								<component type="startStopPanel"/>
+								<panel />
+								<button action="addTime">Add Time</button>
+								<checkbox action="keyboardTiming"/>
 								<panel/>
-								<!--<component type="resetbutton"/>-->
-								<button action="currentaverage"><![CDATA[<html><font color="$$color_currentaverage$$">Current Average: $$currentaverage$$</font></html>]]></button>
-								<button action="bestaverage"><![CDATA[<html><font color="$$color_bestaverage$$">Best Rolling Average: $$bestaverage$$</font></html>]]></button>
-								<button action="sessionaverage">Session Average: $$sessionaverage</button>
+								<button action="currentAverage"><![CDATA[<html><font color="$$color_currentAverage$$">Current Average: $$currentAverage$$</font></html>]]></button>
+								<button action="bestAverage"><![CDATA[<html><font color="$$color_bestAverage$$">Best Rolling Average: $$bestAverage$$</font></html>]]></button>
+								<button action="sessionAverage">Session Average: $$sessionAverage</button>
 							</panel>
 						</panel>
 						<label alignmentX=".5">$$solves$$/$$attempts$$ (solves/attempts)</label>
@@ -35,7 +37,35 @@
 			</panel>
 		</center>
 		<line_end>
-			<component type="timeslist"/>
+			<component type="timesList"/>
 		</line_end>
 	</panel>
+	<menubar>
+		<menu mnemonic="f">File
+			<menuitem action="importScrambles">Import scrambles</menuitem>
+			<menuitem action="exportScrambles">Export scrambles</menuitem>
+			<separator/>
+			<menuitem action="connectToServer">Connect to server</menuitem>
+			<separator/>
+			<menuitem action="showConfiguration">Configuration</menuitem>
+			<separator/>
+			<menuitem action="exit">Exit</menuitem>
+		</menu>
+		<menu mnemonic="o">Options
+			<menu mnemonic="k">Keyboard Timer
+				<checkboxmenuitem action="toggleIntegratedTimer">Integrate timer and display</checkboxmenuitem>
+				<checkboxmenuitem action="toggleAnnoyingDisplay">Use annoying status light</checkboxmenuitem>
+				<checkboxmenuitem action="toggleLessAnnoyingDisplay">Use less-annoying status light</checkboxmenuitem>
+				<checkboxmenuitem action="toggleHideScrambles">Hide scrambles when timer not focused</checkboxmenuitem>
+				<checkboxmenuitem action="toggleSpacebarStartsTimer">Only spacebar starts timer</checkboxmenuitem>
+				<checkboxmenuitem action="toggleFullscreenTiming">Fullscreen while timing</checkboxmenuitem>
+			</menu>
+			<component type="customGUIMenu"/>
+		</menu>
+		<menu mnemonic="h">Help
+			<menuitem action="showDocumentation">View Documentation</menuitem>
+			<menuitem action="showAbout">About</menuitem>
+		</menu>
+		<component type="maximizeButton"/>
+	</menubar>
 </gui>
