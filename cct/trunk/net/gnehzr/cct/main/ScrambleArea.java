@@ -39,7 +39,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener {
 
 		scramble.setCaretPosition(0);
 		setProperSize();
-		((Container)getParent()).validate();
+		getParent().validate();
 	}
 	public void setText(Scramble newScramble) {
 		String temps = newScramble.toFormattedString();
@@ -48,7 +48,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener {
 
 		scramble.setCaretPosition(0);
 		setProperSize();
-		((Container)getParent()).validate();
+		getParent().validate();
 	}
 
 	private String doReplacement(String s){
