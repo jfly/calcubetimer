@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.7.0
+Created-By: 1.5.0_12-b04 (Sun Microsystems Inc.)
+Substance-Distribution: Lite
+Substance-Version: 4.0RC Key Largo
+Substance-BuildStamp: August 29, 2007 03:21:20 PDT
+

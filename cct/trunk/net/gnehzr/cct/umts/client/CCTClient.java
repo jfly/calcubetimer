@@ -12,7 +12,6 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 
 import java.net.*;
 import java.io.*;
-import java.awt.Component;
 import java.util.ArrayList;
 
 public class CCTClient {
