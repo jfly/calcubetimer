@@ -48,7 +48,9 @@ public class ScrambleArea extends JScrollPane implements ComponentListener {
 
 		scramble.setCaretPosition(0);
 		setProperSize();
-		getParent().validate();
+		Container par = getParent();
+		if(par != null)
+			par.validate();
 	}
 
 	private String doReplacement(String s){

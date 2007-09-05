@@ -663,18 +663,26 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			File inputFile = null;
 			if (choice == JFileChooser.APPROVE_OPTION) {
 				inputFile = fc.getSelectedFile();
-				try {
-					Configuration.loadConfiguration(inputFile);
-					syncGUIwithConfig();
-					applyConfiguration();
-				} catch (Exception e1) {
-					e1.printStackTrace();
+				if(inputFile.getAbsolutePath().equals(Configuration.getDefaultFile().getAbsolutePath()))
 					JOptionPane.showMessageDialog(this,
-							"Error!\n" + e1.getMessage(),
-							"Hmmm...",
+							"You cannot load the default properties.\n" +
+							"If you want to restore the defaults, just delete cct.properties.",
+							"Sorry",
 							JOptionPane.WARNING_MESSAGE);
+				else {
+					try {
+						Configuration.loadConfiguration(inputFile);
+						syncGUIwithConfig();
+						applyConfiguration();
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(this,
+								"Error!\n" + e1.getMessage(),
+								"Hmmm...",
+								JOptionPane.WARNING_MESSAGE);
+					}
+					refreshTitle();
 				}
-				refreshTitle();
 			}
 		} else if(source == splits) {
 			minSplitTime.setEnabled(splits.isSelected());

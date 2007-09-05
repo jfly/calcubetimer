@@ -71,10 +71,10 @@ public class Configuration {
 	}
 
 	private static SortedProperties defaults, props;
-	private static File currentFile;
+	private static File currentFile, defaultFile;
 	public static void loadConfiguration(File f) throws IOException {
 		defaults = new SortedProperties();
-		InputStream in = new FileInputStream("defaults.properties");
+		InputStream in = new FileInputStream(defaultFile = new File("defaults.properties"));
 		defaults.load(in);
 		in.close();
 		defaults.setProperty("statistics_string_Average", defaults.getProperty("statistics_string_Average").replaceAll("\n", newLine));
@@ -102,6 +102,10 @@ public class Configuration {
 		FileOutputStream out = new FileOutputStream(currentFile);
 		props.store(out, "CCT " + CALCubeTimer.CCT_VERSION + " Properties File");
 		out.close();
+	}
+	
+	public static File getDefaultFile() {
+		return defaultFile;
 	}
 
 	public static void updateBackground() {
@@ -841,5 +845,11 @@ public class Configuration {
 			fs.toArray(availableLayouts);
 		}
 		return availableLayouts;
+	}
+	
+	public static Dimension getKeyboardTimerPanelSize() {
+		int width = Integer.parseInt(props.getProperty("gui_KeyboardTimer_Width"));
+		int height = Integer.parseInt(props.getProperty("gui_KeyboardTimer_Height"));
+		return new Dimension(width, height);
 	}
 }

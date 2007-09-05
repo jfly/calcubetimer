@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListDataEvent;
@@ -44,6 +45,7 @@ import net.gnehzr.cct.miscUtils.DynamicMenuItem;
 import net.gnehzr.cct.miscUtils.DynamicSelectableLabel;
 import net.gnehzr.cct.miscUtils.DynamicString;
 import net.gnehzr.cct.miscUtils.MyCellRenderer;
+import net.gnehzr.cct.miscUtils.Utils;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleList;
 import net.gnehzr.cct.scrambles.ScrambleType;
@@ -376,14 +378,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 		createMenuBar();
 
-		parseXML_GUI(Configuration.getXMLGUILayout());
-
-		updateScramble();
-
 		Configuration.addConfigurationChangeListener(this);
 		Configuration.updateBackground();
-		configurationChanged();
 
+		updateScramble();
+		configurationChanged();
 		this.setVisible(true);
 	}
 
@@ -510,6 +509,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			}
 			else if(elementName.equals("selectablelabel")) {
 				com = new DynamicSelectableLabel();
+				try{
+					if((temp = attrs.getValue("editable")) != null)
+						((DynamicSelectableLabel) com).setEditable(Boolean.parseBoolean(temp));
+				} catch(Exception e){
+					throw new SAXException(e);
+				}
 			}
 			else if(elementName.equals("button")){
 				com = new DynamicButton();
@@ -555,14 +560,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 						else throw new SAXException("parse error in orientation");
 					}
 
-					if((temp = attrs.getValue("layout")) != null){
+					if((temp = attrs.getValue("layout")) != null) {
 						if(temp.equalsIgnoreCase("border")) layout = new BorderLayout(hgap, vgap);
 						else if(temp.equalsIgnoreCase("box")) layout = new BoxLayout(com, orientation);
 						else if(temp.equalsIgnoreCase("grid")) layout = new GridLayout(rows, cols, hgap, vgap);
 						else if(temp.equalsIgnoreCase("flow")) layout = new FlowLayout(align, hgap, vgap);
 						else throw new SAXException("parse error in layout");
-					}
-					else layout = new FlowLayout(align, hgap, vgap);
+					} else 
+						layout = new FlowLayout(align, hgap, vgap);
 				}
 
 				com.setLayout(layout);
@@ -606,16 +611,18 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				com = new JSeparator();
 				//TODO needs orientation
 			}
-			/*
-			else if(elementName.equals("glue")){ //TODO glue thingys are Components, not JComponents
-				if((temp = attrs.getValue("orientation")) != null){
-					if(temp.equalsIgnoreCase("horizontal")) com = Box.createHorizontalGlue();
-					else if(temp.equalsIgnoreCase("vertical")) com = Box.createVerticalGlue();
+			
+			else if(elementName.equals("glue")) {
+				Component glue = null;
+				if((temp = attrs.getValue("orientation")) != null) {
+					if(temp.equalsIgnoreCase("horizontal")) glue = Box.createHorizontalGlue();
+					else if(temp.equalsIgnoreCase("vertical")) glue = Box.createVerticalGlue();
 					else throw new SAXException("parse error in orientation");
 				}
-				else com = Box.createGlue();
-			}
-			*/
+				else glue = Box.createGlue();
+				com = new JPanel();
+				com.add(glue);
+			}			
 			else throw new SAXException("invalid tag " + elementName);
 
 			if(com instanceof AbstractButton){
@@ -634,7 +641,25 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 						com.setAlignmentX(Float.parseFloat(temp));
 					if((temp = attrs.getValue("alignmentY")) != null)
 						com.setAlignmentY(Float.parseFloat(temp));
-				} catch(NumberFormatException e) {
+					if((temp = attrs.getValue("border")) != null) {
+						String[] titleAttrs = temp.split(";");
+						
+						Border border = null;
+						if(titleAttrs[0].equals(""))
+							border = BorderFactory.createEtchedBorder();
+						else
+							border = BorderFactory.createLineBorder(Utils.stringToColor(new DynamicString(titleAttrs[0], null).toString()));
+						if(titleAttrs.length > 1)
+							border = BorderFactory.createTitledBorder(border, titleAttrs[1]);
+						com.setBorder(border);
+					}
+					if((temp = attrs.getValue("opaque")) != null)
+						com.setOpaque(Boolean.parseBoolean(temp));
+					if((temp = attrs.getValue("background")) != null)
+						com.setBackground(Utils.stringToColor(temp));
+					if((temp = attrs.getValue("foreground")) != null)
+						com.setForeground(Utils.stringToColor(temp));
+				} catch(Exception e) {
 					throw new SAXException(e);
 				}
 			}
@@ -925,15 +950,18 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 
 	public void dispose() {
+		saveToConfiguration();
+		Configuration.saveConfigurationToFile();
+		super.dispose();
+		System.exit(0);
+	}
+	private void saveToConfiguration() {
 		Configuration.setKeyboardTimer((Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
 		Configuration.setScrambleType(scrambleChoice);
 		Configuration.setScrambleViewDimensions(scramblePopup.getSize());
 		Configuration.setScrambleViewLocation(scramblePopup.getLocation());
 		Configuration.setMainFrameDimensions(this.getSize());
 		Configuration.setMainFrameLocation(this.getLocation());
-		Configuration.saveConfigurationToFile();
-		super.dispose();
-		System.exit(0);
 	}
 
 	private boolean isFullScreen = false;
@@ -1207,6 +1235,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 
 	public void showConfigurationDialog(){
+		saveToConfiguration();
 		configurationDialog.show(0);
 	}
 
@@ -1300,7 +1329,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				StackmatState current = (StackmatState) evt.getNewValue();
 				timeLabel.setStackmatHands(current.bothHands());
 				if(event.equals("TimeChange")) {
-	//				setFullScreen(true); TODO - fullscreen when timing
+					if(Configuration.isFullScreenWhileTiming()) setFullScreen(true); //TODO - fullscreen when timing
 					reset = false;
 					updateTime(current.toString());
 				} else if(event.equals("Split")) {
@@ -1309,7 +1338,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 					updateTime("0:00.00");
 					reset = true;
 				} else if(event.equals("New Time")) {
-	//				setFullScreen(false);
+					if(Configuration.isFullScreenWhileTiming()) setFullScreen(false);
 					updateTime(current.toString());
 					if(addTime(current))
 						lastAccepted = current;

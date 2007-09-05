@@ -187,9 +187,9 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		public boolean startTimer() {
 			start = System.currentTimeMillis();
 			if(start - current < 500)	return false;
+			super.fireActionPerformed(new ActionEvent(getTimerState(), 0, "Started"));
 			reset = false;
 			super.start();
-			super.fireActionPerformed(new ActionEvent(getTimerState(), 0, "Started"));
 			return true;
 		}
 

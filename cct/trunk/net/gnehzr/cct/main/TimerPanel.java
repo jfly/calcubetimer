@@ -1,6 +1,7 @@
 package net.gnehzr.cct.main;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 
 import javax.swing.JLabel;
@@ -22,6 +23,11 @@ public class TimerPanel extends JLabel implements KeyboardTimerComponent {
 		setHorizontalTextPosition(JLabel.CENTER);
 		timer = new KeyboardTimerPanel(this, timeListener, scrambles);
 		this.setToolTipText("Just click here to request focus");
+		
+		Dimension size = Configuration.getKeyboardTimerPanelSize();
+		setPreferredSize(size);
+		setMinimumSize(size);
+		setMaximumSize(size);
 	}
 	private boolean keyboard = true;
 	public void setKeyboard(boolean isKey) {

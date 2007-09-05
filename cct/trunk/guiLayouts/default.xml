@@ -5,12 +5,12 @@
 				<center>
 					<panel layout="box" orientation="page">
 						<component type="timerDisplay"/>
-						<component type="scrambleText"/>
+						<component border="" type="scrambleText"/>
 					</panel>
 				</center>
 				<page_end>
 					<panel layout="box" orientation="page">
-						<panel layout="flow" hgap="5" vgap="5">
+						<panel border="000000" layout="flow" hgap="5" vgap="5">
 							<component type="stackmatStatusLabel"/>
 							<component type="scrambleChooser"/>
 							<component type="scrambleLength"/>
@@ -18,11 +18,9 @@
 							<component type="scrambleAttributes"/>
 							<checkbox action="serverScrambles"/>
 						</panel>
+						<component alignmentX=".5" type="startStopPanel"/>
 						<panel layout="flow" hgap="5" vgap="5">
-							<panel layout="grid" cols="3">
-								<panel />
-								<component type="startStopPanel"/>
-								<panel />
+							<panel border="000000;Hello" layout="grid" cols="3">
 								<button action="addTime">Add Time</button>
 								<checkbox action="keyboardTiming"/>
 								<button action="reset">Reset</button>
@@ -31,7 +29,7 @@
 								<button action="sessionAverage">Session Average: $$sessionAverage</button>
 							</panel>
 						</panel>
-						<label alignmentX=".5">$$solves$$/$$attempts$$ (solves/attempts)</label>
+						<selectablelabel alignmentX=".5"><![CDATA[<html><center>$$solves$$/$$attempts$$ (solves/attempts)</center></html>]]></selectablelabel>
 					</panel>
 				</page_end>
 			</panel>
@@ -62,6 +60,7 @@
 			</menu>
 			<component type="customGUIMenu"/>
 		</menu>
+		<glue orientation="horizontal" />
 		<menu mnemonic="h">Help
 			<menuitem action="showDocumentation">View Documentation</menuitem>
 			<menuitem action="showAbout">About</menuitem>
