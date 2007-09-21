@@ -71,7 +71,7 @@ import javax.xml.parsers.SAXParser;
 
 @SuppressWarnings("serial")
 public class CALCubeTimer extends JFrame implements ActionListener, MouseListener, KeyListener, ListDataListener, ChangeListener, ConfigurationChangeListener, WindowFocusListener{
-	public static final String CCT_VERSION = "0.3 SVN";
+	public static final String CCT_VERSION = "0.3 beta";
 	private static JFrame ab = null;
 	private JScrollPane timesScroller = null;
 	private TimerLabel timeLabel = null;
