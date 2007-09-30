@@ -36,17 +36,18 @@ public class MyCellRenderer extends JLabel implements ListCellRenderer {
 		} else if(bestAndWorst[1] == value) {
 			foreground = Configuration.getWorstTimeColor();
 		}
-
-		boolean memberOfBestRA = times.containsTime((SolveTime) value, Statistics.averageType.RA);
-		boolean memberOfCurrentAverage = times.containsTime((SolveTime) value, Statistics.averageType.CURRENT);
-
-		if(memberOfBestRA && memberOfCurrentAverage)
-			background = Configuration.getBestAndCurrentColor();
-		else if(memberOfCurrentAverage)
-			background = Configuration.getCurrentAverageColor();
-		else if(memberOfBestRA)
-			background = Configuration.getBestRAColor();
-
+		
+		if(value instanceof SolveTime) {
+			boolean memberOfBestRA = times.containsTime((SolveTime) value, Statistics.averageType.RA);
+			boolean memberOfCurrentAverage = times.containsTime((SolveTime) value, Statistics.averageType.CURRENT);
+		
+			if(memberOfBestRA && memberOfCurrentAverage)
+				background = Configuration.getBestAndCurrentColor();
+			else if(memberOfCurrentAverage)
+				background = Configuration.getCurrentAverageColor();
+			else if(memberOfBestRA)
+				background = Configuration.getBestRAColor();
+		}
 		if(isSelected) {
 			if(background == null)
 				background = Color.GRAY;

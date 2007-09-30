@@ -43,14 +43,8 @@ public class SolveTime implements Comparable<SolveTime> {
 	}
 
 	public SolveTime(String time, String scramble) throws Exception {
-		if(time.equals(""))
-			hundredths = -42;
-		else
-			setTime(time);
+		setTime(time);
 		this.scramble = scramble;
-	}
-	public boolean isInitialized() {
-		return hundredths != -42;
 	}
 	
 	public void setTime(String time) throws Exception {
@@ -59,13 +53,12 @@ public class SolveTime implements Comparable<SolveTime> {
 		isPop = time == null || time == "" || time.equalsIgnoreCase("POP");
 		if(time.equalsIgnoreCase("N/A")) {
 			hundredths = Integer.MAX_VALUE;
-		} else if(!isDNF && !isPop){
-			if(time.endsWith("+")){
+		} else if(!isDNF && !isPop) {
+			isPlusTwo = time.endsWith("+");
+			if(isPlusTwo)
 				time = time.substring(0, time.length() - 1);
-				isPlusTwo = true;
-			}
 			String[] temp = time.split(":");
-			if(temp.length > 3) throw new Exception("Time has too many colons!");
+			if(temp.length > 3 || time.lastIndexOf(":") == time.length() - 1) throw new Exception("Time has invalid placement of colons!");
 			else if(time.indexOf(".") != time.lastIndexOf(".")) throw new Exception("Time has too many decimal points!");
 			else if(time.indexOf(".") >= 0 && time.indexOf(":") >= 0 && time.indexOf(".") < time.lastIndexOf(":")) throw new Exception("Invalid decimal point!");
 			else if(time.indexOf("-") >= 0) throw new Exception("Can't have non-positive times!");
@@ -73,19 +66,21 @@ public class SolveTime implements Comparable<SolveTime> {
 			double seconds = 0;
 			for(int i = 0; i < temp.length; i++){
 				seconds *= 60;
-				double d = Double.parseDouble(temp[i]);
+				double d = 0;
+				try {
+					d = Double.parseDouble(temp[i]);
+				} catch(NumberFormatException e) {
+					throw new Exception("Invalid numeric characters!");
+				}
 				if(i != 0 && d >= 60) throw new Exception("Argument too large!");
 				seconds += d;
 			}
-
+			seconds -= (isPlusTwo ? 2 : 0);
 			if(seconds < 0) throw new Exception("Can't have negative times!");
 			else if(seconds > 21000000) throw new Exception("Time too large!");
 			this.hundredths = (int)(100 * seconds + .5);
-		}
-	}
-
-	public void forcePlusTwo(boolean isPlusTwo) {
-		this.isPlusTwo = isPlusTwo;
+		} else
+			System.out.println(isPop + "\t" + hundredths);
 	}
 
 	public String getScramble() {
@@ -111,14 +106,18 @@ public class SolveTime implements Comparable<SolveTime> {
 		}
 		return temp;
 	}
+	
+	public double rawSecondsValue() {
+		return hundredths / 100.;
+	}
 
 	public double secondsValue() {
-		return hundredths / 100.;
+		return value() / 100.;
 	}
 
 	public int value() {
 		if(isInfiniteTime()) return Integer.MAX_VALUE - 1;
-		return hundredths;
+		return hundredths + (isPlusTwo ? 200 : 0);
 	}
 
 	public int compareTo(SolveTime o) {
@@ -158,11 +157,12 @@ public class SolveTime implements Comparable<SolveTime> {
 	}
 
 	public void setPlusTwo(boolean plustwo) {
-		if(!isPlusTwo && plustwo)
-			hundredths += 200;
-		else if(isPlusTwo && !plustwo)
-			hundredths -= 200;
 		isPlusTwo = plustwo;
+//		if(!isPlusTwo && plustwo)
+//			hundredths += 200;
+//		else if(isPlusTwo && !plustwo)
+//			hundredths -= 200;
+//		isPlusTwo = plustwo;
 	}
 
 	public ArrayList<SolveTime> getSplits() {

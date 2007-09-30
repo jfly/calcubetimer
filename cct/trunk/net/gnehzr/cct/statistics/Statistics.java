@@ -2,9 +2,12 @@ package net.gnehzr.cct.statistics;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.ListIterator;
+
+import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -205,38 +208,14 @@ public class Statistics implements MutableListModel, ActionListener, Configurati
 		return curRASize;
 	}
 
-	//ListModel
-	private ArrayList<ListDataListener> listeners = new ArrayList<ListDataListener>(2);
-	public void addListDataListener(ListDataListener listener) {
-		listeners.add(listener);
-	}
-	public void removeListDataListener(ListDataListener listener){
-		listeners.remove(listener);
-	}
-	public Object getElementAt(int index){
-		try{
-			return times.get(index);
-		} catch(IndexOutOfBoundsException e){
-			return null;
-		}
-	}
-	public int getSize(){
-		return times.size();
-	}
-
-	private void contentsChanged(ListDataEvent e) {
-		ListIterator<ListDataListener> listers = listeners.listIterator();
-		while(listers.hasNext()) {
-			listers.next().contentsChanged(e);
-		}
-	}
-
-	private JListMutable timesList = null;
+	private JListMutable timesList;
 	private JTextField tf;
-	private JRadioButtonMenuItem none, plusTwo, pop, dnf;
-	public void showPopup(MouseEvent e, JListMutable timesList, JTextField tf) {
+	public void setListandEditor(JListMutable timesList, JTextField tf) {
 		this.timesList = timesList;
 		this.tf = tf;
+	}
+	private JRadioButtonMenuItem none, plusTwo, pop, dnf;
+	public void showPopup(MouseEvent e) {
 		JPopupMenu jpopup = new JPopupMenu();
 		Object[] selectedSolves = timesList.getSelectedValues();
 		switch(selectedSolves.length) {
@@ -244,8 +223,7 @@ public class Statistics implements MutableListModel, ActionListener, Configurati
 				return;
 			case 1:
 				SolveTime selectedSolve = (SolveTime) selectedSolves[0];
-				double seconds = selectedSolve.secondsValue();
-				JMenuItem rawTime = new JMenuItem("Raw Time: " + Utils.format((selectedSolve.isPlusTwo() ? seconds - 2 : seconds)));
+				JMenuItem rawTime = new JMenuItem("Raw Time: " + Utils.format(selectedSolve.rawSecondsValue()));
 				rawTime.setEnabled(false);
 				jpopup.add(rawTime);
 
@@ -675,21 +653,61 @@ public class Statistics implements MutableListModel, ActionListener, Configurati
 		if(sortaverages.size() >= 1) return toTerseString(averages.indexOf(sortaverages.get(sortaverages.size() - 1)));
 		else return toTerseString(averageType.RA);
 	}
+	
 
+
+	//ListModel
+	private ArrayList<ListDataListener> listeners = new ArrayList<ListDataListener>(2);
+	public void addListDataListener(ListDataListener listener) {
+		listeners.add(listener);
+	}
+	public void removeListDataListener(ListDataListener listener){
+		listeners.remove(listener);
+	}
+	
+	public Object getElementAt(int index) {
+		if(index == times.size()) {
+			return "Add new time...";
+		}
+		try{
+			return times.get(index);
+		} catch(IndexOutOfBoundsException e) {
+			return null;
+		}
+	}
+	public int getSize() {
+		return times.size()+1;
+	}
+	private void contentsChanged(ListDataEvent e) {
+		ListIterator<ListDataListener> listers = listeners.listIterator();
+		while(listers.hasNext()) {
+			listers.next().contentsChanged(e);
+		}
+	}
 	public boolean isCellEditable(int index) {
 		return true;
 	}
-
-	public void setValueAt(Object value, int index) {
-		SolveTime val = times.get(index);
+	public boolean setValueAt(Object value, int index) {
+		boolean newTime = index == times.size();
+		SolveTime val = newTime ? new SolveTime(0, "") : times.get(index);
 		try {
 			val.setTime((String) value);
-		} catch (Exception e) {
-			//the time should be removed if it is being added, but not when it is being edited
-			if(!val.isInitialized())
-				times.remove(index);
+			if(newTime) {
+				add(val);
+			} else {
+				refresh();
+				contentsChanged(new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, index, index));
+				notifyStrings();
+			}
+		} catch(Exception e) {
+			tf.setToolTipText(e.getMessage());
+			Action toolTipAction = tf.getActionMap().get("postTip");
+			if(toolTipAction != null) {
+				ActionEvent postTip = new ActionEvent(tf, ActionEvent.ACTION_PERFORMED, "");
+				toolTipAction.actionPerformed(postTip);
+			}
+			return false;
 		}
-		refresh();
-		contentsChanged(new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, index, index));
+		return true;
 	}
 }

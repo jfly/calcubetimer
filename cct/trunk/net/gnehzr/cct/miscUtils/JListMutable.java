@@ -17,9 +17,6 @@ import javax.swing.*;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 
-import net.gnehzr.cct.statistics.SolveTime;
-import net.gnehzr.cct.statistics.Statistics;
-
 // @author Santhosh Kumar T - santhosh@in.fiorano.com 
 @SuppressWarnings("serial")
 public class JListMutable extends JList implements CellEditorListener { 
@@ -66,9 +63,10 @@ public class JListMutable extends JList implements CellEditorListener {
         Object value = getModel().getElementAt(index);
         boolean isSelected = isSelectedIndex(index);
         Component comp = editor.getListCellEditorComponent(this, value, isSelected, index);
-        if (comp instanceof JComponent) {
+		((JComponent) comp).setToolTipText("Type new time here"); //TODO internationalize!
+        if(comp instanceof JComponent) {
             JComponent jComp = (JComponent)comp;
-            if (jComp.getNextFocusableComponent() == null) {	//TODO - not sure what this does, and it is deprecated
+            if(jComp.getNextFocusableComponent() == null) {	//TODO - not sure what this does, and it is deprecated
                 jComp.setNextFocusableComponent(this);
             }
         }
@@ -95,7 +93,7 @@ public class JListMutable extends JList implements CellEditorListener {
             	repaint(cellRect);
         }
     }
-    public boolean editCellAt(int index, EventObject e){ 
+    public boolean editCellAt(int index, EventObject e){
         if(editor!=null && !editor.stopCellEditing()) 
             return false; 
  
@@ -178,24 +176,24 @@ public class JListMutable extends JList implements CellEditorListener {
         return false; 
     } 
  
-    public void setValueAt(Object value, int index){ 
-        ((MutableListModel)getModel()).setValueAt(value, index); 
-    } 
- 
-    /*-------------------------------------------------[ CellEditorListener ]---------------------------------------------------*/ 
- 
-    public void editingStopped(ChangeEvent e) {
-        if (editor != null) {
-            Object value = editor.getCellEditorValue();
-            setValueAt(value, editingIndex);
-            removeEditor(); 
-        }
+    public boolean setValueAt(Object value, int index){
+        return ((MutableListModel)getModel()).setValueAt(value, index);
     }
  
+    /*-------------------------------------------------[ CellEditorListener ]---------------------------------------------------*/ 
+
+    public void editingStopped(ChangeEvent e) {
+        if(editor != null) {
+            Object value = editor.getCellEditorValue();
+            if(setValueAt(value, editingIndex))
+            	removeEditor();
+        }
+    }
+
     public void editingCanceled(ChangeEvent e) {
         removeEditor();
     } 
- 
+
     /*-------------------------------------------------[ Editing Actions]---------------------------------------------------*/ 
  
     private static class StartEditingAction extends AbstractAction { 
@@ -221,13 +219,6 @@ public class JListMutable extends JList implements CellEditorListener {
  
     private class CancelEditingAction extends AbstractAction {
         public void actionPerformed(ActionEvent e) {
-        	ListModel model = getModel();
-        	int index = getEditingIndex();
-        	Object val = model.getElementAt(index);
-        	if(editor.getCellEditorValue().equals("") &&
-        			model instanceof Statistics && val instanceof SolveTime &&
-        			!((SolveTime) val).isInitialized())
-        			((Statistics) model).remove(val);
             JListMutable list = (JListMutable)e.getSource();
             list.removeEditor();
         }

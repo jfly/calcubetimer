@@ -334,6 +334,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		
 		timesList = new JListMutable(stats);
 		tf = new JTextField();
+		stats.setListandEditor(timesList, tf);
 		tf.addFocusListener(new FocusListener() {
 			public void focusGained(FocusEvent e) {
 				tf.selectAll();
@@ -979,9 +980,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 	private void maybeShowPopup(MouseEvent e) {
 		if(e.isPopupTrigger()) {
-			if(timesList.getSelectedIndices().length < 2)
+			if(timesList.getSelectedIndices().length < 2) {
+				//if right clicking on a single time, this will select it first
 				timesList.setSelectedIndex(timesList.locationToIndex(e.getPoint()));
-			stats.showPopup(e, timesList, tf);
+			}
+			if(timesList.getSelectedIndex() != stats.getSize() - 1)
+				stats.showPopup(e);
 		}
 	}
 	public void keyPressed(KeyEvent e) {
@@ -1161,13 +1165,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 //}
 	
 	// Actions section {{{
-	public void addTimeAction(){ //TODO
+	public void addTimeAction() { //TODO
 //		SolveTime newTime = promptForTime(this, scrambles.getCurrent().toString());
-		try {
-			stats.add(new SolveTime("", scrambles.getCurrent().toString()));
-		} catch (Exception e) {}
-		timesList.editCellAt(stats.getSize() - 1, null);
-		tf.setText("");
+		int index = stats.getSize() - 1;
+		timesList.setSelectedIndex(index);
+		timesList.editCellAt(index, null);
 		tf.requestFocusInWindow();
 	}
 

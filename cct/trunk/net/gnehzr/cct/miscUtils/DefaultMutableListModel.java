@@ -8,7 +8,8 @@ public class DefaultMutableListModel extends DefaultListModel implements Mutable
         return true; 
     } 
  
-    public void setValueAt(Object value, int index){ 
-        super.setElementAt(value, index); 
+    public boolean setValueAt(Object value, int index){ 
+        super.setElementAt(value, index);
+        return true;
     }
 }  
