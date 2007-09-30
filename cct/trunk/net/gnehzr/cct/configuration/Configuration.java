@@ -672,8 +672,8 @@ public class Configuration {
 		props.setProperty("puzzle_attributes_" + puzzle.getPuzzleName(), attrs);
 	}
 	
-	private static Class[] scrambleClasses;
-	public static Class[] getScrambleClasses() {
+	private static Class<?>[] scrambleClasses;
+	public static Class<?>[] getScrambleClasses() {
 		if(scrambleClasses == null) {
 			// Create a File object on the root of the directory containing the class files
 			File file = new File(System.getProperty("user.dir") + "/scramblePlugins");
@@ -682,7 +682,7 @@ public class Configuration {
 				URL[] urls = new URL[]{url};
 				ClassLoader cl = new URLClassLoader(urls);
 
-				ArrayList<Class> temp = new ArrayList<Class>();
+				ArrayList<Class<?>> temp = new ArrayList<Class<?>>();
 				for(String child : file.list()) {
 					if(!child.endsWith(".class"))
 						continue;
@@ -701,7 +701,7 @@ public class Configuration {
 	private static ScrambleType[] scrambleTypes;
 	public static ScrambleType[] getScrambleTypes() {
 		if(scrambleTypes == null) {
-			Class[] scrambles = getScrambleClasses();
+			Class<?>[] scrambles = getScrambleClasses();
 			ArrayList<ScrambleType> types = new ArrayList<ScrambleType>(scrambles.length);
 			for(Class<?> scramble : scrambles) {
 				try {
@@ -720,10 +720,10 @@ public class Configuration {
 		return scrambleTypes;
 	}
 	
-	public static HashMap<String, Color> getPuzzleColorScheme(Class scrambleType) {
+	public static HashMap<String, Color> getPuzzleColorScheme(Class<?> scrambleType) {
 		return getPuzzleColorScheme(scrambleType, props);
 	}
-	public static HashMap<String, Color> getPuzzleColorSchemeDefaults(Class scrambleType) {
+	public static HashMap<String, Color> getPuzzleColorSchemeDefaults(Class<?> scrambleType) {
 		return getPuzzleColorScheme(scrambleType, defaults);
 	}
 	private static HashMap<String, Color> getPuzzleColorScheme(Class<?> scrambleType, Properties props) {
@@ -754,7 +754,7 @@ public class Configuration {
 		}
 		return scheme;
 	}
-	public static void setPuzzleColorScheme(Class scrambleType, HashMap<String, Color> colorScheme) {
+	public static void setPuzzleColorScheme(Class<?> scrambleType, HashMap<String, Color> colorScheme) {
 		try {
 			String[] faceNames = (String[]) scrambleType.getField("FACE_NAMES").get(null);
 			String puzzleName = (String) scrambleType.getField("PUZZLE_NAME").get(null);

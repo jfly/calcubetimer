@@ -70,7 +70,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 
 @SuppressWarnings("serial")
-public class CALCubeTimer extends JFrame implements ActionListener, MouseListener, KeyListener, ListDataListener, ChangeListener, ConfigurationChangeListener, WindowFocusListener{
+public class CALCubeTimer extends JFrame implements ActionListener, MouseListener, KeyListener, ListDataListener, ChangeListener, ConfigurationChangeListener, WindowFocusListener {
 	public static final String CCT_VERSION = "0.3 beta";
 	private static JFrame ab = null;
 	private JScrollPane timesScroller = null;
@@ -1318,7 +1318,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			String event = evt.getPropertyName();
 			boolean on = !event.equals("Off");
 			timeLabel.setStackmatOn(on);
-			if (on)
+			if(on)
 				onLabel.setText("Timer is ON");
 			else
 				onLabel.setText("Timer is OFF");
@@ -1327,6 +1327,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 			if(evt.getNewValue() instanceof StackmatState){
 				StackmatState current = (StackmatState) evt.getNewValue();
+//				System.out.println(current.bothHands());
 				timeLabel.setStackmatHands(current.bothHands());
 				if(event.equals("TimeChange")) {
 					if(Configuration.isFullScreenWhileTiming()) setFullScreen(true); //TODO - fullscreen when timing

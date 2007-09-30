@@ -17,7 +17,7 @@ public class StackmatState extends TimerState {
 
 	public StackmatState() {}
 
-	public StackmatState(StackmatState previous, ArrayList periodData) {
+	public StackmatState(StackmatState previous, ArrayList<Integer> periodData) {
 		if(periodData.size() == 89) { //all data present
 			isValid = true;
 			int value = parseTime(periodData);
@@ -38,7 +38,7 @@ public class StackmatState extends TimerState {
 		}
 	}
 
-	private int parseTime(ArrayList periodData){
+	private int parseTime(ArrayList<Integer> periodData){
 		parseHeader(periodData);
 		minutes = parseDigit(periodData, 1, Configuration.isInvertedMinutes());
 		seconds = parseDigit(periodData, 2, Configuration.isInvertedSeconds()) * 10 + parseDigit(periodData, 3, Configuration.isInvertedSeconds());
@@ -46,9 +46,9 @@ public class StackmatState extends TimerState {
 		return 6000 * minutes + 100 * seconds + hundredths;
 	}
 
-	private void parseHeader(ArrayList periodData){
+	private void parseHeader(ArrayList<Integer> periodData){
 		int temp = 0;
-		for(int i = 1; i <= 5; i++) temp += ((Integer)periodData.get(i)).intValue() << (5 - i);
+		for(int i = 1; i <= 5; i++) temp += periodData.get(i) << (5 - i);
 
 		leftHand = temp == 6;
 		rightHand = temp == 9;
@@ -56,9 +56,9 @@ public class StackmatState extends TimerState {
 		greenLight = temp == 16;
 	}
 
-	private int parseDigit(ArrayList periodData, int pos, boolean invert){
+	private int parseDigit(ArrayList<Integer> periodData, int pos, boolean invert){
 		int temp = 0;
-		for(int i = 1; i <= 4; i++) temp += ((Integer)periodData.get(pos * 10 + i)).intValue() << (i - 1);
+		for(int i = 1; i <= 4; i++) temp += periodData.get(pos * 10 + i) << (i - 1);
 
 		return invert ? 15 - temp : temp;
 	}

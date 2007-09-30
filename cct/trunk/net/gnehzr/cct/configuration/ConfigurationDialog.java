@@ -568,7 +568,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		options.add(Box.createHorizontalGlue());
 		JScrollPane scroller = new JScrollPane(options, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scroller.getHorizontalScrollBar().setUnitIncrement(10);
-		Class[] scrambles = Configuration.getScrambleClasses();
+		Class<?>[] scrambles = Configuration.getScrambleClasses();
 		solvedPuzzles = new ScrambleViewComponent[scrambles.length];
 		for(int ch = 0; ch < scrambles.length; ch++) {
 			Class<?> scrambleType = scrambles[ch];
@@ -741,7 +741,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		sundayQuote.setText(Configuration.getSundayQuoteDefault());
 
 		for(ScrambleViewComponent puzzle : solvedPuzzles) {
-			Class puzzleType = puzzle.getScramble().getClass();
+			Class<?> puzzleType = puzzle.getScramble().getClass();
 			puzzle.setColorScheme(puzzleType,Configuration.getPuzzleColorSchemeDefaults(puzzleType));
 		}
 		
@@ -812,7 +812,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setAverageString(averageStats.getText());
 		
 		for(ScrambleViewComponent puzzle : solvedPuzzles) {
-			Class type = puzzle.getScramble().getClass();
+			Class<?> type = puzzle.getScramble().getClass();
 			Configuration.setPuzzleColorScheme(type, puzzle.getColorScheme(type));
 		}
 

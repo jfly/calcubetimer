@@ -48,11 +48,13 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 			scrambles.setHidden(false);
 	}
 	public void setStackmatOn(boolean on) {
-		if(on && !keyboard)
+		if(keyboard || on)
 			thingToListenTo.setFocusedState();
+		else
+			thingToListenTo.setUnfocusedState();
 	}
 	public void setStackmatHands(boolean handsOn) {
-		if(!keyboard)
+		if(!keyboard && handsOn)
 			thingToListenTo.setKeysDownState();
 	}
 
