@@ -7,7 +7,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
 import net.gnehzr.cct.miscUtils.Utils;
 
-public class SolveTime implements Comparable {
+public class SolveTime implements Comparable<SolveTime> {
 	public static final SolveTime BEST = new SolveTime(0, null);
 	public static final SolveTime WORST = new SolveTime((TimerState)null, null);
 
@@ -42,16 +42,24 @@ public class SolveTime implements Comparable {
 		this.splits = splits;
 	}
 
-	public SolveTime(String time, String scramble) throws Exception{
+	public SolveTime(String time, String scramble) throws Exception {
+		if(time.equals(""))
+			hundredths = -42;
+		else
+			setTime(time);
+		this.scramble = scramble;
+	}
+	public boolean isInitialized() {
+		return hundredths != -42;
+	}
+	
+	public void setTime(String time) throws Exception {
 		if(time != null) time = time.trim();
-		if(time == null || time == "" || time.equalsIgnoreCase("Too many pops!") || time.equalsIgnoreCase("POP")){
-			isPop = true;
-		} else if(time.equalsIgnoreCase("DNF")) {
-			isDNF = true;
-		} else if(time.equalsIgnoreCase("N/A")){
+		isDNF = time.equalsIgnoreCase("DNF");
+		isPop = time == null || time == "" || time.equalsIgnoreCase("POP");
+		if(time.equalsIgnoreCase("N/A")) {
 			hundredths = Integer.MAX_VALUE;
-		}
-		else {
+		} else if(!isDNF && !isPop){
 			if(time.endsWith("+")){
 				time = time.substring(0, time.length() - 1);
 				isPlusTwo = true;
@@ -74,7 +82,6 @@ public class SolveTime implements Comparable {
 			else if(seconds > 21000000) throw new Exception("Time too large!");
 			this.hundredths = (int)(100 * seconds + .5);
 		}
-		this.scramble = scramble;
 	}
 
 	public void forcePlusTwo(boolean isPlusTwo) {
@@ -114,8 +121,8 @@ public class SolveTime implements Comparable {
 		return hundredths;
 	}
 
-	public int compareTo(Object o) {
-		return this.value() - ((SolveTime) o).value();
+	public int compareTo(SolveTime o) {
+		return this.value() - o.value();
 	}
 
 	public boolean isPop() {

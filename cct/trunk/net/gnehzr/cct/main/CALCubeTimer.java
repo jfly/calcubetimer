@@ -3,6 +3,8 @@ package net.gnehzr.cct.main;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -36,6 +38,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationDialog;
 import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.help.FunScrollPane;
+import net.gnehzr.cct.miscUtils.DefaultListCellEditor;
 import net.gnehzr.cct.miscUtils.DynamicButton;
 import net.gnehzr.cct.miscUtils.DynamicCheckBox;
 import net.gnehzr.cct.miscUtils.DynamicCheckBoxMenuItem;
@@ -44,6 +47,7 @@ import net.gnehzr.cct.miscUtils.DynamicMenu;
 import net.gnehzr.cct.miscUtils.DynamicMenuItem;
 import net.gnehzr.cct.miscUtils.DynamicSelectableLabel;
 import net.gnehzr.cct.miscUtils.DynamicString;
+import net.gnehzr.cct.miscUtils.JListMutable;
 import net.gnehzr.cct.miscUtils.MyCellRenderer;
 import net.gnehzr.cct.miscUtils.Utils;
 import net.gnehzr.cct.scrambles.Scramble;
@@ -76,7 +80,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	private JScrollPane timesScroller = null;
 	private TimerLabel timeLabel = null;
 	private JLabel onLabel = null;
-	private JList timesList = null;
+	private JListMutable timesList = null;
 	private TimerPanel startStopPanel = null;
 	private JFrame fullscreenFrame = null;
 	private TimerLabel bigTimersDisplay = null;
@@ -283,6 +287,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		actionMap.put("showabout", aboutAction);
 	}
 
+	private JTextField tf; 
 	private void createAndShowGUI() {
 		addWindowFocusListener(this);
 
@@ -326,8 +331,17 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 		stats = new Statistics();
 		stats.addListDataListener(this);
-
-		timesList = new JList(stats);
+		
+		timesList = new JListMutable(stats);
+		tf = new JTextField();
+		tf.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent e) {
+				tf.selectAll();
+			}
+			public void focusLost(FocusEvent e) {}
+        });
+        tf.setBorder(BorderFactory.createLineBorder(Color.black));
+        timesList.setListCellEditor(new DefaultListCellEditor(tf));
 		timesList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		timesList.setLayoutOrientation(JList.VERTICAL);
 		timesList.addMouseListener(this);
@@ -781,29 +795,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		new CALCubeTimer();
 	}
 
-	public static SolveTime promptForTime(JFrame frame, String scramble) {
-		String input = null;
-		SolveTime newTime = null;
-		try {
-			input = ((String) JOptionPane.showInputDialog(
-					frame,
-					"Type in new time (in seconds), POP, or DNF",
-					"Input New Time",
-					JOptionPane.PLAIN_MESSAGE,
-					cube,
-					null,
-					"")).trim();
-			newTime = new SolveTime(input, scramble);
-		} catch (Exception error) {
-			if (input != null)
-				JOptionPane.showMessageDialog(frame,
-						"Not a legal time.\n" + error.getMessage(),
-						"Invalid time: " + input,
-						JOptionPane.WARNING_MESSAGE);
-		}
-		return newTime;
-	}
-
 	private static String[] okCancel = new String[] {"OK", "Cancel"};
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
@@ -990,7 +981,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		if(e.isPopupTrigger()) {
 			if(timesList.getSelectedIndices().length < 2)
 				timesList.setSelectedIndex(timesList.locationToIndex(e.getPoint()));
-			stats.showPopup(e, timesList);
+			stats.showPopup(e, timesList, tf);
 		}
 	}
 	public void keyPressed(KeyEvent e) {
@@ -1001,7 +992,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			} catch(Exception excptn) {
 				return;
 			}
-			if(selected.length == 0)
+			if(selected.length == 0 || selected[0] == null)
 				return;
 			String temp = "";
 			for(int ch = 0; ch < selected.length; ch++) {
@@ -1146,13 +1137,38 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		timeLabel.componentResized(null);
 	}
 
+//	public static SolveTime promptForTime(JFrame frame, String scramble) {
+//	String input = null;
+//	SolveTime newTime = null;
+//	try {
+//		input = ((String) JOptionPane.showInputDialog(
+//				frame,
+//				"Type in new time (in seconds), POP, or DNF",
+//				"Input New Time",
+//				JOptionPane.PLAIN_MESSAGE,
+//				cube,
+//				null,
+//				"")).trim();
+//		newTime = new SolveTime(input, scramble);
+//	} catch (Exception error) {
+//		if (input != null)
+//			JOptionPane.showMessageDialog(frame,
+//					"Not a legal time.\n" + error.getMessage(),
+//					"Invalid time: " + input,
+//					JOptionPane.WARNING_MESSAGE);
+//	}
+//	return newTime;
+//}
+	
 	// Actions section {{{
-	public void addTimeAction(){
-		SolveTime newTime = promptForTime(this, scrambles.getCurrent().toString());
-		if(newTime != null) {
-			stats.add(newTime);
-			repaintTimes(); //needed for some strange reason although contentschanged calls it
-		}
+	public void addTimeAction(){ //TODO
+//		SolveTime newTime = promptForTime(this, scrambles.getCurrent().toString());
+		try {
+			stats.add(new SolveTime("", scrambles.getCurrent().toString()));
+		} catch (Exception e) {}
+		timesList.editCellAt(stats.getSize() - 1, null);
+		tf.setText("");
+		tf.requestFocusInWindow();
 	}
 
 	public void resetAction(){

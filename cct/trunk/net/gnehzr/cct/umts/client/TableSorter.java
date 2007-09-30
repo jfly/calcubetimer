@@ -265,7 +265,7 @@ public class TableSorter extends AbstractTableModel {
 
 	// Helper classes
 
-	private class Row implements Comparable {
+	private class Row implements Comparable<Object> {
 		private int modelIndex;
 
 		public Row(int index) {
@@ -276,8 +276,8 @@ public class TableSorter extends AbstractTableModel {
 			int row1 = modelIndex;
 			int row2 = ((Row) o).modelIndex;
 
-			for (Iterator it = sortingColumns.iterator(); it.hasNext();) {
-				Directive directive = (Directive) it.next();
+			for (Iterator<Directive> it = sortingColumns.iterator(); it.hasNext();) {
+				Directive directive = it.next();
 				int column = directive.column;
 				Object o1 = tableModel.getValueAt(row1, column);
 				Object o2 = tableModel.getValueAt(row2, column);
@@ -291,7 +291,7 @@ public class TableSorter extends AbstractTableModel {
 				} else if (o2 == null) {
 					comparison = 1;
 				} else {
-					if(o1 instanceof SolveTime) comparison = ((SolveTime)o1).compareTo(o2);
+					if(o1 instanceof SolveTime && o2 instanceof SolveTime) comparison = ((SolveTime)o1).compareTo((SolveTime)o2);
 					else comparison = o1.toString().compareToIgnoreCase(o2.toString());
 				}
 				if (comparison != 0) {

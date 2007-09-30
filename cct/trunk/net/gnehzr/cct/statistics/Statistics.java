@@ -6,20 +6,20 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.ListIterator;
 import javax.swing.ButtonGroup;
-import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ListModel;
+import javax.swing.JTextField;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
-import net.gnehzr.cct.main.CALCubeTimer;
+import net.gnehzr.cct.miscUtils.JListMutable;
+import net.gnehzr.cct.miscUtils.MutableListModel;
 import net.gnehzr.cct.miscUtils.Utils;
 
-public class Statistics implements ListModel, ActionListener, ConfigurationChangeListener{
+public class Statistics implements MutableListModel, ActionListener, ConfigurationChangeListener {
 	public enum averageType { CURRENT, RA, SESSION }
 
 	private ArrayList<SolveTime> times;
@@ -43,13 +43,13 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 
 	private int curRASize;
 
-	public Statistics(){
+	public Statistics() {
 		Configuration.addConfigurationChangeListener(this);
 		curRASize = Configuration.getRASize();
 		initialize();
 	}
 
-	private void initialize(){
+	private void initialize() {
 		times = new ArrayList<SolveTime>();
 		averages = new ArrayList<Double>();
 		sds = new ArrayList<Double>();
@@ -83,7 +83,6 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 
 	public void add(SolveTime s){
 		addHelper(s);
-
 		contentsChanged(new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, times.size() - 1, times.size() - 1));
 		notifyStrings();
 	}
@@ -232,10 +231,12 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		}
 	}
 
-	private JList timesList = null;
+	private JListMutable timesList = null;
+	private JTextField tf;
 	private JRadioButtonMenuItem none, plusTwo, pop, dnf;
-	public void showPopup(MouseEvent e, JList timesList) {
+	public void showPopup(MouseEvent e, JListMutable timesList, JTextField tf) {
 		this.timesList = timesList;
+		this.tf = tf;
 		JPopupMenu jpopup = new JPopupMenu();
 		Object[] selectedSolves = timesList.getSelectedValues();
 		switch(selectedSolves.length) {
@@ -298,7 +299,7 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 		JMenuItem discard = new JMenuItem("Discard");
 		discard.addActionListener(this);
 		jpopup.add(discard);
-
+		timesList.requestFocusInWindow();
 		jpopup.show(e.getComponent(), e.getX(), e.getY());
 	}
 
@@ -321,9 +322,8 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 			timesList.setSelectedIndex(0); //This is necessary to avoid a weird bug with the shift button
 			timesList.clearSelection();
 		} else if(command.equals("Edit time")) {
-			SolveTime time = CALCubeTimer.promptForTime(null, selectedSolve.getScramble());
-			if(time != null)
-				times.set(timesList.getSelectedIndex(), time);
+			timesList.editCellAt(timesList.getSelectedIndex(), null);
+			tf.requestFocusInWindow();
 		}
 		refresh();
 	}
@@ -673,5 +673,22 @@ public class Statistics implements ListModel, ActionListener, ConfigurationChang
 	public String getWorstAverageList(){
 		if(sortaverages.size() >= 1) return toTerseString(averages.indexOf(sortaverages.get(sortaverages.size() - 1)));
 		else return toTerseString(averageType.RA);
+	}
+
+	public boolean isCellEditable(int index) {
+		return true;
+	}
+
+	public void setValueAt(Object value, int index) {
+		SolveTime val = times.get(index);
+		try {
+			val.setTime((String) value);
+		} catch (Exception e) {
+			//the time should be removed if it is being added, but not when it is being edited
+			if(!val.isInitialized())
+				times.remove(index);
+		}
+		refresh();
+		contentsChanged(new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, index, index));
 	}
 }
