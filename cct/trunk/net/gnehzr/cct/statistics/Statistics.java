@@ -244,7 +244,8 @@ public class Statistics implements MutableListModel, ActionListener, Configurati
 				return;
 			case 1:
 				SolveTime selectedSolve = (SolveTime) selectedSolves[0];
-				JMenuItem rawTime = new JMenuItem("Raw Time: " + selectedSolve.secondsValue());
+				double seconds = selectedSolve.secondsValue();
+				JMenuItem rawTime = new JMenuItem("Raw Time: " + Utils.format((selectedSolve.isPlusTwo() ? seconds - 2 : seconds)));
 				rawTime.setEnabled(false);
 				jpopup.add(rawTime);
 
