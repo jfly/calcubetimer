@@ -32,7 +32,8 @@ import net.gnehzr.cct.scrambles.ScrambleType;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants;
 import org.jvnet.substance.watermark.SubstanceImageWatermark;
-
+//Might this: http://www.javacoffeebreak.com/articles/designpatterns/index.html
+//be a better solution?
 public class Configuration {
 	private Configuration(){}
 
@@ -771,10 +772,10 @@ public class Configuration {
 			e.printStackTrace();
 		}
 	}
-	public static int getPuzzleUnitSize(Class puzzleType) {
+	public static int getPuzzleUnitSize(Class<?> puzzleType) {
 		return getPuzzleUnitSize(props, puzzleType);
 	}
-	public static int getPuzzleUnitSizeDefault(Class puzzleType) {
+	public static int getPuzzleUnitSizeDefault(Class<?> puzzleType) {
 		return getPuzzleUnitSize(defaults, puzzleType);
 	}
 	private static int getPuzzleUnitSize(Properties props, Class<?> puzzleType) {

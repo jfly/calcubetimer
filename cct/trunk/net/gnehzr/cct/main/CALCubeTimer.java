@@ -3,8 +3,6 @@ package net.gnehzr.cct.main;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -278,6 +276,17 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		fullScreenTimingAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_F);
 		actionMap.put("togglefullscreentiming", fullScreenTimingAction);
 
+		//TODO - possibly switch to anonymous classes?
+//		AbstractAction act = new AbstractAction() {
+//			public void actionPerformed(ActionEvent e) {
+//				Configuration.setFullScreenWhileTiming(((AbstractButton)e.getSource()).isSelected());
+//			}
+//		};
+//		act.putValue(Action.SELECTED_KEY, Configuration.isFullScreenWhileTiming());
+//		act.putValue(Action.NAME, "Fullscreen while timing");
+//		act.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_F);
+//		actionMap.put("togglefullscreentiming", act);
+
 		documentationAction = new DocumentationAction(this);
 		documentationAction.putValue(Action.NAME, "View Documentation");
 		actionMap.put("showdocumentation", documentationAction);
@@ -335,12 +344,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		timesList = new JListMutable(stats);
 		tf = new JTextField();
 		stats.setListandEditor(timesList, tf);
-		tf.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent e) {
-				tf.selectAll();
-			}
-			public void focusLost(FocusEvent e) {}
-        });
+
+		UIManager.put(LafWidget.TEXT_EDIT_CONTEXT_MENU, Boolean.TRUE);
+		UIManager.put(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.TRUE);
         tf.setBorder(BorderFactory.createLineBorder(Color.black));
         timesList.setListCellEditor(new DefaultListCellEditor(tf));
 		timesList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -770,27 +776,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		JFrame.setDefaultLookAndFeelDecorated(true);
 
 		UIManager.setLookAndFeel(new SubstanceLookAndFeel());
-
 //		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 //		UIManager.setLookAndFeel(new SubstanceModerateLookAndFeel());
+		
 		UIManager.put(LafWidget.ANIMATION_KIND, LafConstants.AnimationKind.NONE);
 //		UIManager.put(SubstanceLookAndFeel.WATERMARK_TO_BLEED, Boolean.TRUE);
-
-//		This code was suggested by Kirill Grouchnikov as a workaround to
-//		http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6506298
-//
-//		We check for Java 6 first, because nothing inside the if statement will
-//		run on anything else.  Frankly, it won't run on any JDK but Sun's, but
-//		this entire class is only for Windows/Substance.  Yes, this is a very
-//		ugly hack and it makes me unhappy, but we have no alternative to get
-//		aa text on Java 6.
-
-		if (System.getProperty("java.version").startsWith("1.6")) {
-			final boolean lafCond = sun.swing.SwingUtilities2.isLocalDisplay();
-			Object aaTextInfo = sun.swing.SwingUtilities2.AATextInfo.getAATextInfo(lafCond);
-			UIManager.getDefaults().put(sun.swing.SwingUtilities2.AA_TEXT_PROPERTY_KEY, aaTextInfo);
-		}
-		System.setProperty("swing.aatext", "true");
 
 		initializeAbout();
 		new CALCubeTimer();

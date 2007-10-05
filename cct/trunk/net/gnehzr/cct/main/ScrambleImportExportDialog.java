@@ -11,22 +11,22 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.miscUtils.JSpinnerWithText;
-import net.gnehzr.cct.miscUtils.SubstanceTextField;
 import net.gnehzr.cct.scrambles.ScrambleType;
 
 @SuppressWarnings("serial")
 public class ScrambleImportExportDialog extends JPanel implements ActionListener {
 	private boolean importing;
-	private SubstanceTextField urlField;
+	private JTextField urlField;
 	private JButton browse;
 	private JComboBox scrambleChooser;
 	private JSpinnerWithText scrambleLength, numberOfScrambles;
 	public ScrambleImportExportDialog(boolean importing, ScrambleType selected) {
 		this.importing = importing;
-		urlField = new SubstanceTextField(importing ? Configuration.getDefaultScrambleURL() : "", 20);
+		urlField = new JTextField(importing ? Configuration.getDefaultScrambleURL() : "", 20);
 		urlField.setToolTipText(importing ? "Browse for file or type URL of desired scrambles." : "Choose file to export scrambles to.");
 		browse = new JButton("Browse");
 		browse.addActionListener(this);

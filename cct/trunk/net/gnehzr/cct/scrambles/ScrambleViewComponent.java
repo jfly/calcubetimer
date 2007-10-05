@@ -97,8 +97,8 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		public void colorClicked(ScrambleViewComponent source, String face, HashMap<String, Color> colorScheme);
 	}
 	
-	private HashMap<Class, HashMap<String, Color>> colorSchemes = new HashMap<Class, HashMap<String, Color>>();
-	public HashMap<String, Color> getColorScheme(Class puzzleType) {
+	private HashMap<Class<?>, HashMap<String, Color>> colorSchemes = new HashMap<Class<?>, HashMap<String, Color>>();
+	public HashMap<String, Color> getColorScheme(Class<?> puzzleType) {
 		HashMap<String, Color> scheme = colorSchemes.get(puzzleType);
 		if(scheme == null) {
 			scheme = Configuration.getPuzzleColorScheme(puzzleType);
@@ -106,7 +106,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		}
 		return scheme;
 	}
-	public void setColorScheme(Class puzzleType, HashMap<String, Color> scheme) {
+	public void setColorScheme(Class<?> puzzleType, HashMap<String, Color> scheme) {
 		colorSchemes.put(puzzleType, scheme);
 		redo();
 	}
@@ -115,8 +115,8 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		redo();
 	}
 	
-	private HashMap<Class, Integer> unitSizes = new HashMap<Class, Integer>();
-	private int getUnitSize(Class puzzleType) {
+	private HashMap<Class<?>, Integer> unitSizes = new HashMap<Class<?>, Integer>();
+	private int getUnitSize(Class<?> puzzleType) {
 		Integer unitSize = unitSizes.get(puzzleType);
 		if(unitSize == null) {
 			unitSize = Configuration.getPuzzleUnitSize(puzzleType);
@@ -124,7 +124,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		}
 		return unitSize;
 	}
-	private void setUnitSize(Class puzzleType, int unitSize) {
+	private void setUnitSize(Class<?> puzzleType, int unitSize) {
 		unitSizes.put(puzzleType, unitSize);
 	}
 }

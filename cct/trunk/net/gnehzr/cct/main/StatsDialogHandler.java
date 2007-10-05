@@ -30,11 +30,11 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationDialog;
 import net.gnehzr.cct.miscUtils.SendMailUsingAuthentication;
-import net.gnehzr.cct.miscUtils.SubstanceTextField;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
 
@@ -48,7 +48,7 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 	private JButton copyButton = null;
 	private JButton emailButton = null;
 	private JTextArea textArea = null;
-	private SubstanceTextField toAddress, subject = null;
+	private JTextField toAddress, subject = null;
 	private JCheckBox sundayContest = null;
 	private Statistics times = null;
 	private Statistics.averageType type;
@@ -87,7 +87,7 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 			c.gridy = 0;
 			emailStuff.add(new JLabel("Destination address: "), c);
 
-			toAddress = new SubstanceTextField(50);
+			toAddress = new JTextField(50);
 			toAddress.setToolTipText("Separate multiple addresses with commas");
 			c.gridx = 1;
 			c.gridy = 0;
@@ -106,7 +106,7 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 
 			c.gridx = 1;
 			c.gridy = 1;
-			subject = new SubstanceTextField("Sunday Contest");
+			subject = new JTextField("Sunday Contest");
 			emailStuff.add(subject, c);
 			add(emailStuff, BorderLayout.PAGE_START);
 		} else {

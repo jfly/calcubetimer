@@ -38,6 +38,7 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
 import net.gnehzr.cct.main.KeyboardTimerPanel;
@@ -46,7 +47,6 @@ import net.gnehzr.cct.miscUtils.ComboListener;
 import net.gnehzr.cct.miscUtils.ComboRenderer;
 import net.gnehzr.cct.miscUtils.ImageFilter;
 import net.gnehzr.cct.miscUtils.ImagePreview;
-import net.gnehzr.cct.miscUtils.SubstanceTextField;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent.ColorListener;
@@ -269,7 +269,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private int splitkey;
 	private JCheckBox flashyWindow = null;
 	private JCheckBox isBackground = null;
-	private SubstanceTextField backgroundFile = null;
+	private JTextField backgroundFile = null;
 	private JButton browse = null;
 	private JSlider opacity = null;
 	private JLabel currentFont = null;
@@ -310,7 +310,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		sideBySide = new JPanel();
 		isBackground = new JCheckBox("Enable watermark");
 		isBackground.addActionListener(this);
-		backgroundFile = new SubstanceTextField(30);
+		backgroundFile = new JTextField(30);
 		backgroundFile.setToolTipText("Clear for default");
 		browse = new JButton("Browse...");
 		browse.addActionListener(this);
@@ -399,11 +399,11 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		return options;
 	}
 
-	private SubstanceTextField name, country = null;
-	private SubstanceTextField sundayQuote = null;
-	private SubstanceTextField userEmail = null;
-	private SubstanceTextField host, port = null;
-	private SubstanceTextField username = null;
+	private JTextField name, country = null;
+	private JTextField sundayQuote = null;
+	private JTextField userEmail = null;
+	private JTextField host, port = null;
+	private JTextField username = null;
 	private JCheckBox SMTPauth = null;
 	private JPasswordField password = null;
 	private JPanel makeSundaySetupPanel() {
@@ -412,7 +412,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.fill = GridBagConstraints.BOTH;
 		c.ipady = 5;
 
-		name = new SubstanceTextField();
+		name = new JTextField();
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 0;
@@ -429,14 +429,14 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridx = 4;
 		c.gridy = 0;
 		options.add(new JLabel("Country: "), c);
-		country = new SubstanceTextField(5);
+		country = new JTextField(5);
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 5;
 		c.gridy = 0;
 		options.add(country, c);
 
-		sundayQuote = new SubstanceTextField();
+		sundayQuote = new JTextField();
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 0;
@@ -448,7 +448,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridy = 1;
 		options.add(sundayQuote, c);
 
-		userEmail = new SubstanceTextField();
+		userEmail = new JTextField();
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 0;
@@ -460,7 +460,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridy = 2;
 		options.add(userEmail, c);
 
-		host = new SubstanceTextField();
+		host = new JTextField();
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 0;
@@ -477,14 +477,14 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridx = 4;
 		c.gridy = 3;
 		options.add(new JLabel("Port: "), c);
-		port = new SubstanceTextField(3);
+		port = new JTextField(3);
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 5;
 		c.gridy = 3;
 		options.add(port, c);
 
-		username = new SubstanceTextField();
+		username = new JTextField();
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 0;

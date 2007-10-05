@@ -31,6 +31,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.Timer;
 import javax.swing.event.TableModelEvent;
@@ -42,7 +43,6 @@ import javax.swing.text.html.StyleSheet;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.main.CALCubeTimer;
-import net.gnehzr.cct.miscUtils.SubstanceTextField;
 import net.gnehzr.cct.stackmatInterpreter.StackmatState;
 import net.gnehzr.cct.statistics.SolveTime;
 
@@ -72,7 +72,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 //	private Timer messageAppender = null;
 	private JScrollPane textScrollPane = null;
 	private JTable userTable = null;
-	private SubstanceTextField messageBox = null;
+	private JTextField messageBox = null;
 	private JButton sendButton = null;
 	private JSplitPane splitPane = null;
 	private JPanel messageBoxPanel = null;
@@ -110,18 +110,9 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 		JScrollPane userScrollPane = new JScrollPane(userTable);
 		userTable.setPreferredScrollableViewportSize(new Dimension(250, 0));
 
-		messageBox = new SubstanceTextField(50);
+		messageBox = new JTextField(50);
 		messageBox.addActionListener(this);
 		messageBox.addKeyListener(this);
-
-//		try { //This is so that ctrl-backspace will work fine, since it doesn't in substance
-//			LookAndFeel current = UIManager.getLookAndFeel();
-//			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-//			messageBox.setUI((TextUI) UIManager.getLookAndFeel().getDefaults().getUI(messageBox));
-//			UIManager.setLookAndFeel(current);
-//		} catch (Exception e1) {
-//			e1.printStackTrace();
-//		}
 
 		sendButton = new JButton("Send");
 		sendButton.addActionListener(this);

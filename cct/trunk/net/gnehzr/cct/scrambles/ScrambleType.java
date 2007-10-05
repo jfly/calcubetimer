@@ -25,7 +25,7 @@ public class ScrambleType {
 		return length;
 	}
 	
-	public ScrambleType(Class puzzleType, String variation, int length) {
+	public ScrambleType(Class<?> puzzleType, String variation, int length) {
 		this.puzzleType = puzzleType;
 		this.variation = variation;
 		this.length = length;

@@ -11,8 +11,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import net.gnehzr.cct.miscUtils.SubstanceTextField;
+import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
 public class LoginDialog extends JDialog implements ActionListener, KeyListener {
@@ -23,7 +22,7 @@ public class LoginDialog extends JDialog implements ActionListener, KeyListener 
 		setLocationRelativeTo(parent);
 	}
 
-	private SubstanceTextField server, port, userName = null;
+	private JTextField server, port, userName = null;
 	private JButton connectButton, cancelButton = null;
 	private boolean isCancelled = false;
 	public void createGUI() {
@@ -35,9 +34,9 @@ public class LoginDialog extends JDialog implements ActionListener, KeyListener 
 		c.ipadx = 5;
 		c.ipady = 3;
 
-		server = new SubstanceTextField(10);
-		port = new SubstanceTextField("" + CCTClient.DEFAULT_PORT);
-		userName = new SubstanceTextField();
+		server = new JTextField(10);
+		port = new JTextField("" + CCTClient.DEFAULT_PORT);
+		userName = new JTextField();
 		userName.setToolTipText("Username must not be the same as anyone already connected," +
 				" and it must be less than 10 digits");
 		connectButton = new JButton("Connect!");

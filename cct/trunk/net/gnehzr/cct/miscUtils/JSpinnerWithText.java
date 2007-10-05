@@ -1,6 +1,5 @@
 package net.gnehzr.cct.miscUtils;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -27,18 +26,6 @@ public class JSpinnerWithText extends JPanel implements AncestorListener, Change
 		integerSpinner = new JSpinner(averageModel);
 		((JSpinner.DefaultEditor) integerSpinner.getEditor()).getTextField().setColumns(5);
 		//Ugly, but necessary. See http://forum.java.sun.com/thread.jspa?forumID=57&threadID=409748
-		((JSpinner.DefaultEditor) integerSpinner.getEditor()).getTextField().addFocusListener(
-				new FocusAdapter() {
-					public void focusGained(FocusEvent e) {
-						if (e.getSource() instanceof JTextComponent) {
-							final JTextComponent textComponent=((JTextComponent)e.getSource());
-							SwingUtilities.invokeLater(new Runnable(){
-								public void run() {
-									textComponent.selectAll();
-								}});
-						}
-					}
-				});
 		integerSpinner.addChangeListener(this);
 
 		JPanel subPanel = new JPanel();
