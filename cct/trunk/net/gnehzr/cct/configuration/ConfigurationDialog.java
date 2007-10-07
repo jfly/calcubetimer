@@ -40,6 +40,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.Timer;
 
 import net.gnehzr.cct.main.KeyboardTimerPanel;
 import net.gnehzr.cct.miscUtils.ComboItem;
@@ -58,9 +59,11 @@ import com.l2fprod.common.swing.JFontChooser;
 public class ConfigurationDialog extends JDialog implements KeyListener, MouseListener, ActionListener, ColorListener {
 	private ComboItem[] items;
 	private StackmatInterpreter stackmat;
-	public ConfigurationDialog(JFrame parent, boolean modal, StackmatInterpreter stackmat) {
+	private Timer tickTock;
+	public ConfigurationDialog(JFrame parent, boolean modal, StackmatInterpreter stackmat, Timer tickTock) {
 		super(parent, modal);
 		this.stackmat = stackmat;
+		this.tickTock = tickTock;
 		createGUI();
 		setLocationRelativeTo(parent);
 	}
@@ -139,8 +142,9 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		pack();
 	}
 
-	private JCheckBox clockFormat, promptForNewTime, scramblePopup, splits = null;
+	private JCheckBox clockFormat, promptForNewTime, scramblePopup, splits, metronome = null;
 	private JSpinner minSplitTime, RASize = null;
+	public TickerSlider metronomeDelay = null;
 	private JLabel currentAverage, bestRA, currentAndRA, bestTime, worstTime = null;
 
 	private JPanel makeStandardOptionsPanel1() {
@@ -203,66 +207,16 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		test.setLayout(new BoxLayout(test, BoxLayout.PAGE_AXIS));
 		test.add(Box.createVerticalGlue());
 		test.add(options);
+		sideBySide = new JPanel();
+		metronome = new JCheckBox("Enable metronome?");
+		metronome.addActionListener(this);
+		metronomeDelay = new TickerSlider(tickTock);
+		sideBySide.add(metronome);
+		sideBySide.add(new JLabel("Delay:"));
+		sideBySide.add(metronomeDelay);
+		test.add(sideBySide);
 		test.add(Box.createVerticalGlue());
 		return test;
-	}
-
-	private void syncGUIwithConfig() {
-		//makeStandardOptionsPanel1
-		clockFormat.setSelected(Configuration.isClockFormat());
-		promptForNewTime.setSelected(Configuration.isPromptForNewTime());
-		scramblePopup.setSelected(Configuration.isScramblePopup());
-		bestRA.setBackground(Configuration.getBestRAColor());
-		currentAndRA.setBackground(Configuration.getBestAndCurrentColor());
-		bestTime.setBackground(Configuration.getBestTimeColor());
-		worstTime.setBackground(Configuration.getWorstTimeColor());
-		currentAverage.setBackground(Configuration.getCurrentAverageColor());
-		RASize.setValue(Configuration.getRASize());
-
-		//makeStandardOptionsPanel2
-		minSplitTime.setValue(Configuration.getMinSplitDifference());
-		splits.setSelected(Configuration.isSplits());
-		splitkey = Configuration.getSplitkey();
-		keySelector.setText(KeyEvent.getKeyText(splitkey));
-		keySelector.setEnabled(splits.isSelected());
-		flashyWindow.setSelected(Configuration.isFlashWindow());
-		isBackground.setSelected(Configuration.isBackground());
-		backgroundFile.setText(Configuration.getBackground());
-		opacity.setValue((int) (10*Configuration.getOpacity()));
-		backgroundFile.setEnabled(isBackground.isSelected());
-		browse.setEnabled(isBackground.isSelected());
-		opacity.setEnabled(isBackground.isSelected());
-		currentFont.setFont(Configuration.getScrambleFont());
-		minSplitTime.setEnabled(splits.isSelected());
-
-		//makeStackmatOptionsPanel
-		stackmatValue.setValue(Configuration.getSwitchThreshold());
-		invertedMinutes.setSelected(Configuration.isInvertedMinutes());
-		invertedSeconds.setSelected(Configuration.isInvertedSeconds());
-		invertedHundredths.setSelected(Configuration.isInvertedHundredths());
-
-		//makeSundaySetupPanel
-		name.setText(Configuration.getName());
-		country.setText(Configuration.getCountry());
-		sundayQuote.setText(Configuration.getSundayQuote());
-		userEmail.setText(Configuration.getUserEmail());
-		host.setText(Configuration.getSMTPHost());
-		port.setText(Configuration.getPort());
-		username.setText(Configuration.getUsername());
-		SMTPauth.setSelected(Configuration.isSMTPauth());
-		password.setText(new String(Configuration.getPassword()));
-		password.setEnabled(SMTPauth.isSelected());
-
-		//makeSessionSetupPanel
-		sessionStats.setText(Configuration.getSessionString());
-
-		//makeAverageSetupPanel
-		averageStats.setText(Configuration.getAverageString());
-		
-		//makePuzzleColorsPanel
-		for(ScrambleViewComponent puzzle : solvedPuzzles) {
-			puzzle.syncColorScheme();
-		}
 	}
 
 	private JTextArea keySelector = null;
@@ -611,8 +565,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			applyConfiguration();
 			Configuration.saveConfigurationToFile();
 			refreshTitle();
-		}
-		else if(source == saveButton) {
+		} else if(source == saveButton) {
 			applyConfiguration();
 			Configuration.saveConfigurationToFile();
 			refreshTitle();
@@ -720,9 +673,72 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			lines.setSelectedIndex(selected);
 			mixerPanel.add(lines, 0);
 			pack();
+		} else if(source == metronome) {
+			metronomeDelay.setEnabled(metronome.isSelected());
 		}
 	}
 
+	private void syncGUIwithConfig() {
+		//makeStandardOptionsPanel1
+		clockFormat.setSelected(Configuration.isClockFormat());
+		promptForNewTime.setSelected(Configuration.isPromptForNewTime());
+		scramblePopup.setSelected(Configuration.isScramblePopup());
+		bestRA.setBackground(Configuration.getBestRAColor());
+		currentAndRA.setBackground(Configuration.getBestAndCurrentColor());
+		bestTime.setBackground(Configuration.getBestTimeColor());
+		worstTime.setBackground(Configuration.getWorstTimeColor());
+		currentAverage.setBackground(Configuration.getCurrentAverageColor());
+		RASize.setValue(Configuration.getRASize());
+		metronome.setSelected(Configuration.isMetronome());
+		metronomeDelay.setDelayBounds(Configuration.getMetronomeDelayMinimum(), Configuration.getMetronomeDelayMaximum(), Configuration.getMetronomeDelay());
+		metronomeDelay.setEnabled(metronome.isSelected());
+
+		//makeStandardOptionsPanel2
+		minSplitTime.setValue(Configuration.getMinSplitDifference());
+		splits.setSelected(Configuration.isSplits());
+		splitkey = Configuration.getSplitkey();
+		keySelector.setText(KeyEvent.getKeyText(splitkey));
+		keySelector.setEnabled(splits.isSelected());
+		flashyWindow.setSelected(Configuration.isFlashWindow());
+		isBackground.setSelected(Configuration.isBackground());
+		backgroundFile.setText(Configuration.getBackground());
+		opacity.setValue((int) (10*Configuration.getOpacity()));
+		backgroundFile.setEnabled(isBackground.isSelected());
+		browse.setEnabled(isBackground.isSelected());
+		opacity.setEnabled(isBackground.isSelected());
+		currentFont.setFont(Configuration.getScrambleFont());
+		minSplitTime.setEnabled(splits.isSelected());
+
+		//makeStackmatOptionsPanel
+		stackmatValue.setValue(Configuration.getSwitchThreshold());
+		invertedMinutes.setSelected(Configuration.isInvertedMinutes());
+		invertedSeconds.setSelected(Configuration.isInvertedSeconds());
+		invertedHundredths.setSelected(Configuration.isInvertedHundredths());
+
+		//makeSundaySetupPanel
+		name.setText(Configuration.getName());
+		country.setText(Configuration.getCountry());
+		sundayQuote.setText(Configuration.getSundayQuote());
+		userEmail.setText(Configuration.getUserEmail());
+		host.setText(Configuration.getSMTPHost());
+		port.setText(Configuration.getPort());
+		username.setText(Configuration.getUsername());
+		SMTPauth.setSelected(Configuration.isSMTPauth());
+		password.setText(new String(Configuration.getPassword()));
+		password.setEnabled(SMTPauth.isSelected());
+
+		//makeSessionSetupPanel
+		sessionStats.setText(Configuration.getSessionString());
+
+		//makeAverageSetupPanel
+		averageStats.setText(Configuration.getAverageString());
+		
+		//makePuzzleColorsPanel
+		for(ScrambleViewComponent puzzle : solvedPuzzles) {
+			puzzle.syncColorScheme();
+		}
+	}
+	//TODO MERGE ABOVE METHOD AND BELOW METHOD!!!
 	private void resetAllButEmail() {
 		currentAndRA.setBackground(Configuration.getBestAndCurrentColorDefault());
 		currentAverage.setBackground(Configuration.getCurrentAverageColorDefault());
@@ -732,7 +748,10 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		clockFormat.setSelected(Configuration.isClockFormatDefault());
 		promptForNewTime.setSelected(Configuration.isPromptForNewTimeDefault());
 		RASize.setValue(Configuration.getRASizeDefault());
-
+		metronome.setSelected(Configuration.isMetronomeDefault());
+		metronomeDelay.setDelayBounds(Configuration.getMetronomeDelayMinimum(), Configuration.getMetronomeDelayMaximum(), Configuration.getMetronomeDelayDefault());
+		metronomeDelay.setEnabled(metronome.isSelected());
+		
 		stackmatValue.setValue(Configuration.getSwitchThreshold());
 		invertedMinutes.setSelected(Configuration.isInvertedMinutesDefault());
 		invertedSeconds.setSelected(Configuration.isInvertedSecondsDefault());
@@ -791,7 +810,9 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setPromptForNewTime(promptForNewTime.isSelected());
 		Configuration.setScramblePopup(scramblePopup.isSelected());
 		Configuration.setRASize((Integer) RASize.getValue());
-
+		Configuration.setMetronome(metronome.isSelected());
+		Configuration.setMetronomeDelay(metronomeDelay.getMilliSecondsDelay());
+		
 		Configuration.setSwitchThreshold((Integer) stackmatValue.getValue());
 		Configuration.setInvertedMinutes(invertedMinutes.isSelected());
 		Configuration.setInvertedSeconds(invertedSeconds.isSelected());

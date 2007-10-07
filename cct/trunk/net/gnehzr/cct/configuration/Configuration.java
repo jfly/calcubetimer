@@ -853,4 +853,39 @@ public class Configuration {
 		int height = Integer.parseInt(props.getProperty("gui_KeyboardTimer_Height"));
 		return new Dimension(width, height);
 	}
+	
+	public static void setMetronome(boolean enabled) {
+		props.setProperty("misc_metronome_enabled", ""+enabled);
+	}
+	public static boolean isMetronomeDefault() {
+		return isMetronome(defaults);
+	}
+	public static boolean isMetronome() {
+		return isMetronome(props);
+	}
+	private static boolean isMetronome(Properties props) {
+		return Boolean.parseBoolean(props.getProperty("misc_metronome_enabled"));
+	}
+	public static void setMetronomeDelay(int delay) {
+		props.setProperty("misc_metronome_delay", ""+delay);
+	}
+	public static int getMetronomeDelayMinimum() {
+		return Integer.parseInt(props.getProperty("misc_metronome_delayMin"));
+	}
+	public static int getMetronomeDelayMaximum() {
+		return Integer.parseInt(props.getProperty("misc_metronome_delayMax"));
+	}
+	public static int getMetronomeDelayDefault() {
+		return getMetronomeDelay(defaults);
+	}
+	public static int getMetronomeDelay() {
+		return getMetronomeDelay(props);
+	}
+	private static int getMetronomeDelay(Properties props) {
+		return Integer.parseInt(props.getProperty("misc_metronome_delay"));
+	}
+
+	public static String getTickFilename() {
+		return props.getProperty("misc_metronome_click");
+	}
 }

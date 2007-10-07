@@ -15,7 +15,7 @@ public class TimerState implements Comparable<TimerState> {
 		hundredthsValue = hundredths;
 	}
 	public SolveTime toSolveTime(String scramble, ArrayList<SolveTime> splits) {
-		return new SolveTime(this, scramble, splits);
+		return new SolveTime(this, scramble,  splits);
 	}
 	public int value() {
 		return hundredthsValue;

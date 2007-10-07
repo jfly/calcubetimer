@@ -9,7 +9,7 @@ import net.gnehzr.cct.miscUtils.Utils;
 
 public class SolveTime implements Comparable<SolveTime> {
 	public static final SolveTime BEST = new SolveTime(0, null);
-	public static final SolveTime WORST = new SolveTime((TimerState)null, null);
+	public static final SolveTime WORST = new SolveTime();
 
 	private boolean isPop = false;
 	private boolean isPlusTwo = false;
@@ -20,12 +20,12 @@ public class SolveTime implements Comparable<SolveTime> {
 
 	public SolveTime() {
 		hundredths = Integer.MAX_VALUE;
-		scramble = null;
+		setScramble(null);
 	}
 
 	public SolveTime(double seconds, String scramble) {
 		this.hundredths = (int)(100 * seconds + .5);
-		this.scramble = scramble;
+		setScramble(scramble);
 	}
 
 	public SolveTime(TimerState time, String scramble) {
@@ -34,7 +34,7 @@ public class SolveTime implements Comparable<SolveTime> {
 		} else { //If time == null, then it was a POP
 			isPop = true;
 		}
-		this.scramble = scramble;
+		setScramble(scramble);
 	}
 
 	public SolveTime(TimerState time, String scramble, ArrayList<SolveTime> splits) {
@@ -44,7 +44,7 @@ public class SolveTime implements Comparable<SolveTime> {
 
 	public SolveTime(String time, String scramble) throws Exception {
 		setTime(time);
-		this.scramble = scramble;
+		setScramble(scramble);
 	}
 	
 	public void setTime(String time) throws Exception {
@@ -81,6 +81,10 @@ public class SolveTime implements Comparable<SolveTime> {
 			this.hundredths = (int)(100 * seconds + .5);
 		} else
 			System.out.println(isPop + "\t" + hundredths);
+	}
+	
+	public void setScramble(String scramble) {
+		this.scramble = scramble;
 	}
 
 	public String getScramble() {

@@ -296,11 +296,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		actionMap.put("showabout", aboutAction);
 	}
 
-	private JTextField tf; 
+	private Timer tickTock;
+	private JTextField tf;
 	private void createAndShowGUI() {
 		addWindowFocusListener(this);
-
-		configurationDialog = new ConfigurationDialog(this, true, stackmatTimer);
+		tickTock = new Timer(0, null);
+		configurationDialog = new ConfigurationDialog(this, true, stackmatTimer, tickTock);
 
 		scrambleChoice = Configuration.getScrambleType();
 		scrambles = new ScrambleList(scrambleChoice);
@@ -1014,10 +1015,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 	public void contentsChanged(ListDataEvent e) {
 		if(e != null && e.getType() == ListDataEvent.INTERVAL_ADDED) {
+			Scramble curr = scrambles.getCurrent();
+			if(curr != null)
+				stats.get(stats.getSize() - 2).setScramble(scrambles.getCurrent().toString());
 			if((Boolean)serverScramblesAction.getValue(Action.SELECTED_KEY)) {
 				client.requestNextScramble(scrambleChoice);
-			} else if(scrambles.getCurrent() != null) {
-				boolean outOfScrambles = scrambles.getCurrent().isImported(); //This is tricky, think before you change it
+			} else if(curr != null) {
+				boolean outOfScrambles = curr.isImported(); //This is tricky, think before you change it
 				outOfScrambles = !scrambles.getNext().isImported() && outOfScrambles;
 				if(outOfScrambles)
 					JOptionPane.showMessageDialog(this,
@@ -1155,7 +1159,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 //}
 	
 	// Actions section {{{
-	public void addTimeAction() { //TODO
+	public void addTimeAction() {
 //		SolveTime newTime = promptForTime(this, scrambles.getCurrent().toString());
 		int index = stats.getSize() - 1;
 		timesList.setSelectedIndex(index);
@@ -1317,6 +1321,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 	// End actions section }}}
 
+	private void startMetronome() {
+		tickTock.setDelay(Configuration.getMetronomeDelay());
+		tickTock.start();
+	}
+	
+	private void stopMetronome() {
+		tickTock.stop();
+	}
+	
 	private static String[] options = {"Accept", "+2", "POP"};
 	private class TimerHandler implements PropertyChangeListener, ActionListener {
 		private StackmatState lastAccepted = new StackmatState();
@@ -1335,10 +1348,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 			if(evt.getNewValue() instanceof StackmatState){
 				StackmatState current = (StackmatState) evt.getNewValue();
-//				System.out.println(current.bothHands());
 				timeLabel.setStackmatHands(current.bothHands());
 				if(event.equals("TimeChange")) {
-					if(Configuration.isFullScreenWhileTiming()) setFullScreen(true); //TODO - fullscreen when timing
+					if(Configuration.isFullScreenWhileTiming()) setFullScreen(true);
+					if(Configuration.isMetronome()) startMetronome();
 					reset = false;
 					updateTime(current.toString());
 				} else if(event.equals("Split")) {
@@ -1348,6 +1361,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 					reset = true;
 				} else if(event.equals("New Time")) {
 					if(Configuration.isFullScreenWhileTiming()) setFullScreen(false);
+					if(Configuration.isMetronome()) stopMetronome();
 					updateTime(current.toString());
 					if(addTime(current))
 						lastAccepted = current;
@@ -1370,11 +1384,17 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			String command = e.getActionCommand();
 			TimerState newTime = (TimerState) e.getSource();
 			updateTime(newTime.toString());
-			if(Configuration.isFullScreenWhileTiming() && command.equals("Started")) {
-				setFullScreen(true);
+			if(command.equals("Started")) {
+				if(Configuration.isFullScreenWhileTiming())
+					setFullScreen(true);
+				if(Configuration.isMetronome())
+					startMetronome();
 			} else if(command.equals("Stopped")) {
 				addTime(newTime);
-				if(Configuration.isFullScreenWhileTiming()) setFullScreen(false);
+				if(Configuration.isFullScreenWhileTiming())
+					setFullScreen(false);
+				if(Configuration.isMetronome())
+					stopMetronome();
 			} else if(command.equals("Split"))
 				addSplit(newTime);
 		}
@@ -1393,8 +1413,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		}
 
 		private boolean addTime(TimerState addMe) {
-			String scram = scrambles.getCurrent() == null ? "" : scrambles.getCurrent().toString();
-			SolveTime protect = addMe.toSolveTime(scram, splits);
+			SolveTime protect = addMe.toSolveTime(null, splits);
 			splits = new ArrayList<SolveTime>();
 			boolean sameAsLast = addMe.compareTo(lastAccepted) == 0;
 			if(sameAsLast) {

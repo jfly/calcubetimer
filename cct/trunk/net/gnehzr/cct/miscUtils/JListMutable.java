@@ -25,10 +25,10 @@ public class JListMutable extends JList implements CellEditorListener {
     protected ListCellEditor editor = null; 
     private PropertyChangeListener editorRemover = null; 
  
-    public JListMutable(ListModel dataModel){ 
-        super(dataModel); 
-        init(); 
-    } 
+    public JListMutable(ListModel dataModel) {
+        super(dataModel);
+        init();
+    }
  
     private void init(){ 
         getActionMap().put("startEditing", new StartEditingAction());                                                             //NOI18N 
@@ -86,8 +86,10 @@ public class JListMutable extends JList implements CellEditorListener {
             }
 
             Rectangle cellRect = getCellBounds(editingIndex, editingIndex);
-
-            editingIndex = -1;
+            
+//            Removed to fix bug where typing in an invalid time, and then double clicking another time
+//            would result in an index out of range exception
+//            editingIndex = -1;
             editorComp = null;
             if(cellRect != null)
             	repaint(cellRect);
@@ -118,7 +120,6 @@ public class JListMutable extends JList implements CellEditorListener {
             editorComp.setBounds(getCellBounds(index, index)); 
             add(editorComp); 
             editorComp.validate(); 
- 
             editingIndex = index; 
             editor.addCellEditorListener(this); 
  
@@ -157,9 +158,9 @@ public class JListMutable extends JList implements CellEditorListener {
                 } else if ((c instanceof Window) || 
                            (c instanceof Applet && c.getParent() == null)) { 
                     if (c == SwingUtilities.getRoot(JListMutable.this)) { 
-                        if (!getListCellEditor().stopCellEditing()) { 
-                            getListCellEditor().cancelCellEditing(); 
-                        } 
+//                        if(!getListCellEditor().stopCellEditing()) {
+                            getListCellEditor().cancelCellEditing();
+//                        }
                     } 
                     break; 
                 } 
@@ -185,6 +186,7 @@ public class JListMutable extends JList implements CellEditorListener {
     public void editingStopped(ChangeEvent e) {
         if(editor != null) {
             Object value = editor.getCellEditorValue();
+//            System.out.println(value + "\t" + editingIndex);
             if(setValueAt(value, editingIndex))
             	removeEditor();
         }
@@ -242,13 +244,13 @@ public class JListMutable extends JList implements CellEditorListener {
         private boolean repostEvent(MouseEvent e) { 
             // Check for isEditing() in case another event has 
             // caused the editor to be removed. See bug #4306499. 
-            if (dispatchComponent == null || !isEditing()) { 
-                return false; 
-            } 
+            if (dispatchComponent == null || !isEditing()) {
+                return false;
+            }
             MouseEvent e2 = SwingUtilities.convertMouseEvent(JListMutable.this, e, dispatchComponent); 
-            dispatchComponent.dispatchEvent(e2); 
-            return true; 
-        } 
+            dispatchComponent.dispatchEvent(e2);
+            return true;
+        }
  
         private boolean shouldIgnore(MouseEvent e) { 
             return e.isConsumed() || (!(SwingUtilities.isLeftMouseButton(e) && isEnabled())); 
@@ -260,8 +262,8 @@ public class JListMutable extends JList implements CellEditorListener {
             Point p = e.getPoint(); 
             int index = locationToIndex(p); 
             // The autoscroller can generate drag events outside the Table's range. 
-            if(index==-1) 
-                return; 
+            if(index==-1)
+                return;
  
             if(editCellAt(index, e)){ 
                 setDispatchComponent(e); 

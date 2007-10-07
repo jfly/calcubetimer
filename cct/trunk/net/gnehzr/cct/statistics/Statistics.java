@@ -688,14 +688,14 @@ public class Statistics implements MutableListModel, ActionListener, Configurati
 	}
 	public boolean setValueAt(Object value, int index) {
 		boolean newTime = index == times.size();
-		SolveTime val = newTime ? new SolveTime(0, "") : times.get(index);
+		SolveTime val = newTime ? new SolveTime(0, "NEED SCRAMBLE HERE!") : times.get(index);
 		try {
 			val.setTime((String) value);
 			if(newTime) {
 				add(val);
 			} else {
 				refresh();
-				contentsChanged(new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, index, index));
+				contentsChanged(new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, index, index));
 				notifyStrings();
 			}
 		} catch(Exception e) {
