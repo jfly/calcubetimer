@@ -61,6 +61,7 @@
 			<component type="customGUIMenu"/>
 		</menu>
 		<glue orientation="horizontal" />
+		<component type="profilecombobox"/>
 		<menu mnemonic="h">Help
 			<menuitem action="showDocumentation">View Documentation</menuitem>
 			<menuitem action="showAbout">About</menuitem>

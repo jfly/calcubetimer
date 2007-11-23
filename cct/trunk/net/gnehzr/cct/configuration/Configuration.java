@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -25,6 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.JFrame;
 
 import net.gnehzr.cct.main.CALCubeTimer;
+import net.gnehzr.cct.main.Profile;
 import net.gnehzr.cct.miscUtils.Utils;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleType;
@@ -62,7 +64,7 @@ public class Configuration {
 	public static final String newLine = System.getProperty("line.separator");
 	public static void init() {
 		try {
-			loadConfiguration(new File("cct.properties"));
+			loadConfiguration(guestFile = new File("profiles/Default/Default.properties"));
 		} catch (IOException e) {}
 	}
 
@@ -72,16 +74,16 @@ public class Configuration {
 	}
 
 	private static SortedProperties defaults, props;
-	private static File currentFile, defaultFile;
+	private static File currentFile, initialFile, guestFile;
 	public static void loadConfiguration(File f) throws IOException {
+		f.createNewFile();
 		defaults = new SortedProperties();
-		InputStream in = new FileInputStream(defaultFile = new File("defaults.properties"));
+		InputStream in = new FileInputStream(initialFile = new File("profiles/initial.properties"));
 		defaults.load(in);
 		in.close();
 		defaults.setProperty("statistics_string_Average", defaults.getProperty("statistics_string_Average").replaceAll("\n", newLine));
 		defaults.setProperty("statistics_string_Session", defaults.getProperty("statistics_string_Session").replaceAll("\n", newLine));
 		props = new SortedProperties(defaults);
-
 		try {
 			currentFile = f;
 			in = new FileInputStream(f);
@@ -105,8 +107,12 @@ public class Configuration {
 		out.close();
 	}
 	
+	public static void setCurrentFile(File newCurrent) {
+		currentFile = newCurrent;
+	}
+	
 	public static File getDefaultFile() {
-		return defaultFile;
+		return initialFile;
 	}
 
 	public static void updateBackground() {
@@ -887,5 +893,40 @@ public class Configuration {
 
 	public static String getTickFilename() {
 		return props.getProperty("misc_metronome_click");
+	}
+	
+	public static Profile[] getProfiles() {
+		String[] profDirs = new File("./profiles").list(new FilenameFilter() {
+			public boolean accept(File f, String s) {
+				File temp = new File(f, s);
+				return !temp.isHidden() && temp.isDirectory();
+			}
+		});
+		Profile[] profs = new Profile[profDirs.length];
+		for(int ch = 0; ch < profDirs.length; ch++) {
+			profs[ch] = new Profile(profDirs[ch]);
+		}
+		return profs;
+	}
+	public static Profile getSelectedProfile() {
+		return new Profile(props.getProperty("misc_profile"));
+	}
+	public static void setSelectedProfile(Profile newProfile) {
+		try {
+			String name = newProfile.getName();
+			props.setProperty("misc_profile", name);
+			FileInputStream in = new FileInputStream(guestFile);
+			SortedProperties props = new SortedProperties();
+			props.load(in);
+			in.close();
+			props.setProperty("misc_profile", name);
+			FileOutputStream out = new FileOutputStream(guestFile);
+			props.store(out, "CCT " + CALCubeTimer.CCT_VERSION + " Properties File");
+			out.close();
+		} catch(FileNotFoundException e) {
+			e.printStackTrace();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

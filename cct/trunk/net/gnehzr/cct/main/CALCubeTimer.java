@@ -36,6 +36,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationDialog;
 import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.help.FunScrollPane;
+import net.gnehzr.cct.main.EditableProfileList.EditableProfileListListener;
 import net.gnehzr.cct.miscUtils.DefaultListCellEditor;
 import net.gnehzr.cct.miscUtils.DynamicButton;
 import net.gnehzr.cct.miscUtils.DynamicCheckBox;
@@ -72,7 +73,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 
 @SuppressWarnings("serial")
-public class CALCubeTimer extends JFrame implements ActionListener, MouseListener, KeyListener, ListDataListener, ChangeListener, ConfigurationChangeListener, WindowFocusListener {
+public class CALCubeTimer extends JFrame implements ActionListener, MouseListener, KeyListener, ListDataListener, ChangeListener, ConfigurationChangeListener, WindowFocusListener, EditableProfileListListener {
 	public static final String CCT_VERSION = "0.3 beta";
 	private static JFrame ab = null;
 	private JScrollPane timesScroller = null;
@@ -89,6 +90,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	private JPanel scrambleAttributes = null;
 	private JSpinner scrambleNumber, scrambleLength = null;
 	private ScrambleList scrambles = null;
+	private EditableProfileList profiles = null;
 	private Statistics stats = null;
 	private StackmatInterpreter stackmatTimer = null;
 	private TimerHandler timeListener = null;
@@ -101,7 +103,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	public CALCubeTimer() throws Exception {
 		this.setUndecorated(true);
 
-		Configuration.init();
+		Configuration.init();		
 		stackmatTimer = new StackmatInterpreter();
 		stackmatTimer.execute();
 		Configuration.addConfigurationChangeListener(stackmatTimer);
@@ -123,7 +125,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		pane.setOpaque(false);
 		pane.setEditable(false);
 		URL helpURL = CALCubeTimer.class.getResource("about.html");
-		if (helpURL != null) {
+		if(helpURL != null) {
 			try {
 				pane.setPage(helpURL);
 			} catch (IOException e) {
@@ -298,6 +300,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 	private Timer tickTock;
 	private JTextField tf;
+	private JButton maximize;
+	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Changed";
+	private JMenu customGUIMenu;
 	private void createAndShowGUI() {
 		addWindowFocusListener(this);
 		tickTock = new Timer(0, null);
@@ -398,20 +403,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		this.setIconImage(cube.getImage());
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-		createMenuBar();
-
-		Configuration.addConfigurationChangeListener(this);
-		Configuration.updateBackground();
-
-		updateScramble();
-		configurationChanged();
-		this.setVisible(true);
-	}
-
-	private JButton maximize;
-	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Changed";
-	private JMenu customGUIMenu;
-	private void createMenuBar() {
 		customGUIMenu = new JMenu("Load custom GUI");
 
 		ButtonGroup group = new ButtonGroup();
@@ -426,6 +417,56 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 		maximize = new JButton(flipFullScreenAction);
 		maximize.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE); //TODO MINSIZE PROPERTY
+
+
+		profiles = new EditableProfileList("Add new profile", new Profile("Default"));
+		for(Profile prof : Configuration.getProfiles()) {
+			profiles.addProfile(prof);
+		}
+		profiles.setEditableProfileListListener(this);
+		profiles.setSelectedProfile(Configuration.getSelectedProfile());
+		profiles.setMaximumSize(new Dimension(1000, 100));
+//		profileSelected(Configuration.getSelectedProfile());
+		
+		Configuration.addConfigurationChangeListener(this);
+//		configurationChanged();
+		updateScramble();
+		this.setVisible(true);
+	}
+	public void profileChanged(Profile outWithOld, Profile inWithNew) {
+		if(outWithOld == null) { //Item added
+			inWithNew.createProfileDirectory();
+			profileSelected(inWithNew);
+		} else { //Item changed
+			outWithOld.renameTo(inWithNew);
+		}
+	}
+	public void profileDeleted(Profile deleted) {
+		if(!deleted.delete()) {
+			//TODO - message box since delete failed?
+		}
+	}
+	private Profile previouslySelected;
+	public void profileSelected(final Profile selected) {
+		if(previouslySelected != null && profiles.containsProfile(previouslySelected)) {
+			saveToConfiguration();
+			Configuration.saveConfigurationToFile();
+		}
+		previouslySelected = selected;
+		try {
+			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					try {
+						Configuration.loadConfiguration(new File("profiles/"+selected+"/"+selected+".properties"));
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					Configuration.apply();
+				}
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void parseXML_GUI(String file) {
@@ -608,7 +649,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				else if(temp.equalsIgnoreCase("timeslist")) com = timesScroller;
 				else if(temp.equalsIgnoreCase("customguimenu")) com = customGUIMenu;
 				else if(temp.equalsIgnoreCase("maximizebutton")) com = maximize;
-
+				else if(temp.equalsIgnoreCase("profilecombobox")) com = profiles;
 			}
 			else if(elementName.equals("center") || elementName.equals("east") || elementName.equals("west") || elementName.equals("south") || elementName.equals("north") || elementName.equals("page_start") || elementName.equals("page_end") || elementName.equals("line_start") || elementName.equals("line_end")){
 				com = null;
@@ -764,7 +805,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	/** Returns an ImageIcon, or null if the path was invalid. */
 	public static ImageIcon createImageIcon(String path, String description) {
 		URL imgURL = CALCubeTimer.class.getResource(path);
-		if (imgURL != null) {
+		if(imgURL != null) {
 			return new ImageIcon(imgURL, description);
 		} else {
 			System.err.println("Couldn't find file: " + path);
@@ -945,6 +986,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		Configuration.setScrambleViewLocation(scramblePopup.getLocation());
 		Configuration.setMainFrameDimensions(this.getSize());
 		Configuration.setMainFrameLocation(this.getLocation());
+		Configuration.setSelectedProfile(profiles.getSelectedProfile());
 	}
 
 	private boolean isFullScreen = false;
@@ -1430,7 +1472,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			}
 			int choice = JOptionPane.YES_OPTION;
 			if(Configuration.isPromptForNewTime() && !sameAsLast) {
-
 				choice = JOptionPane.showOptionDialog(null,
 						"Your time: " + protect.toString() + "\n Hit esc or close dialog to discard.",
 						"Confirm Time",
