@@ -1,0 +1,10 @@
+<laf-plugin>
+	<component-plugin-class>org.jvnet.substance.plugin.BasePlugin</component-plugin-class>
+	<skin-plugin-class>org.jvnet.substance.plugin.BaseSkinPlugin</skin-plugin-class>
+	<theme-plugin-class>org.jvnet.substance.plugin.BaseThemePlugin</theme-plugin-class>
+	<watermark-plugin-class>org.jvnet.substance.plugin.BaseWatermarkPlugin</watermark-plugin-class>
+	<button-shaper-plugin-class>org.jvnet.substance.plugin.BaseButtonShaperPlugin</button-shaper-plugin-class>
+	<gradient-painter-plugin-class>org.jvnet.substance.plugin.BaseGradientPainterPlugin</gradient-painter-plugin-class>
+	<title-painter-plugin-class>org.jvnet.substance.plugin.BaseTitlePainterPlugin</title-painter-plugin-class>
+	<border-painter-plugin-class>org.jvnet.substance.plugin.BaseBorderPainterPlugin</border-painter-plugin-class>
+</laf-plugin>

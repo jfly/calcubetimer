@@ -2,13 +2,14 @@ package net.gnehzr.cct.main;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -23,17 +24,16 @@ import net.gnehzr.cct.main.KeyboardTimerPanel.KeyboardTimerComponent;
 
 @SuppressWarnings("serial")
 public class TimerLabel extends JLabel implements ComponentListener, KeyboardTimerComponent {
-	private Font font;
 	private KeyboardTimerPanel timer;
 	private ScrambleArea scrambles;
-	public TimerLabel(ActionListener timeListener, Font font, ScrambleArea scrambles) {
+	public TimerLabel(ActionListener timeListener, ScrambleArea scrambles) {
 		super("0.00", JLabel.CENTER);
 		this.scrambles = scrambles;
 		addComponentListener(this);
 		setGreenButton();
-		this.font = font;
 		timer = new KeyboardTimerPanel(this, timeListener, scrambles);
 	}
+	
 	public void setEnabledTiming(boolean enabled) {
 		if(!enabled)
 			setBorder(BorderFactory.createEmptyBorder());
@@ -75,20 +75,25 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 	public void componentMoved(ComponentEvent arg0) {
 
 	}
+	
+	private Font font;
+	public void setFont(Font font) {
+		this.font = font;
+		super.setFont(font);
+	}
+	
 	public void componentResized(ComponentEvent e) {
-		if(font != null) {
+		if(font != null) { //this is to avoid an exception before showing the component
 			String newTime = getText();
-			FontMetrics metrics = getFontMetrics(font);
 			Insets border = getInsets();
-			double height = (double) (getHeight() - border.top - border.bottom) / metrics.getHeight();
-			double width = (double) (getWidth() - border.left - border.right) / metrics.stringWidth(newTime);
+			Rectangle2D bounds = font.getStringBounds(newTime, new FontRenderContext(null, true, true));
+			double height = (double) (getHeight() - border.top - border.bottom) / bounds.getHeight();
+			double width = (double) (getWidth() - border.left - border.right) / (bounds.getWidth()+10);
 			double ratio = Math.min(width, height);
-			setFont(font.deriveFont(AffineTransform.getScaleInstance(ratio, ratio)));
+			super.setFont(font.deriveFont(AffineTransform.getScaleInstance(ratio, ratio)));
 		}
 	}
-	public void componentShown(ComponentEvent arg0) {
-
-	}
+	public void componentShown(ComponentEvent arg0) {}
 	public void setFocusedState() {
 		if(keyboard && scrambles != null)
 			scrambles.setHidden(false);

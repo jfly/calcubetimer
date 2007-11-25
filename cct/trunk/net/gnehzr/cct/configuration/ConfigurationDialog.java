@@ -42,6 +42,8 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.Timer;
 
+import say.swing.JFontChooser;
+
 import net.gnehzr.cct.main.KeyboardTimerPanel;
 import net.gnehzr.cct.miscUtils.ComboItem;
 import net.gnehzr.cct.miscUtils.ComboListener;
@@ -52,8 +54,6 @@ import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent.ColorListener;
 import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
-
-import com.l2fprod.common.swing.JFontChooser;
 
 @SuppressWarnings("serial")
 public class ConfigurationDialog extends JDialog implements KeyListener, MouseListener, ActionListener, ColorListener {
@@ -219,15 +219,15 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		return test;
 	}
 
-	private JTextArea keySelector = null;
+	private JTextArea keySelector;
 	private int splitkey;
-	private JCheckBox flashyWindow = null;
-	private JCheckBox isBackground = null;
-	private JTextField backgroundFile = null;
-	private JButton browse = null;
-	private JSlider opacity = null;
-	private JLabel currentFont = null;
-	private JButton fontSelectorButton = null;
+	private JCheckBox flashyWindow;
+	private JCheckBox isBackground;
+	private JTextField backgroundFile;
+	private JButton browse;
+	private JSlider opacity;
+//	private JLabel scrambleFont, timerFont;
+	private JButton scrambleFontButton, timerFontButton;
 	private JPanel makeStandardOptionsPanel2() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -281,12 +281,13 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		panel.add(sideBySide);
 
 		sideBySide = new JPanel();
-		currentFont = new JLabel("Scramble Font");
-		sideBySide.add(currentFont);
-
-		fontSelectorButton = new JButton("Choose font");
-		fontSelectorButton.addActionListener(this);
-		sideBySide.add(fontSelectorButton);
+		scrambleFontButton = new JButton("Scramble font");
+		scrambleFontButton.addActionListener(this);
+		sideBySide.add(scrambleFontButton);
+		
+		timerFontButton = new JButton("Timer font");
+		timerFontButton.addActionListener(this);
+		sideBySide.add(timerFontButton);
 
 		panel.add(sideBySide);
 		return panel;
@@ -651,17 +652,21 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			backgroundFile.setEnabled(isBackground.isSelected());
 			browse.setEnabled(isBackground.isSelected());
 			opacity.setEnabled(isBackground.isSelected());
-		} else if(source == fontSelectorButton) {
-			JFontChooser font = new JFontChooser();
-			font.setSelectedFont(currentFont.getFont());
-			font.showFontDialog(this, "Choose Scramble Font");
-
-			Font selected = font.getSelectedFont();
-			if(selected.getSize() > 40) {
-				selected = selected.deriveFont(40f);
+		} else if(source == timerFontButton || source == scrambleFontButton) {
+			JFontChooser font = new JFontChooser(new String[]{ "8", "9", "10",
+																"11", "12", "14", "16", "18", "20", "22", "24", "26", "28", "36"},
+				(source == timerFontButton) ? Configuration.getTimerFontDefault() : Configuration.getScrambleFontDefault(),
+				source == scrambleFontButton,
+				40);
+			font.setSelectedFont(((JButton)source).getFont());
+			if(font.showDialog(this) == JFontChooser.OK_OPTION) {
+				Font selected = font.getSelectedFont();
+				if(selected.getSize() > 40) {
+					selected = selected.deriveFont(40f);
+				}
+				((JButton)source).setFont(selected);
+				pack();
 			}
-			currentFont.setFont(selected);
-			pack();
 		} else if(source == stackmatRefresh){
 			items = stackmat.getMixerChoices();
 			int selected = stackmat.getSelectedMixerIndex();
@@ -706,7 +711,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		backgroundFile.setEnabled(isBackground.isSelected());
 		browse.setEnabled(isBackground.isSelected());
 		opacity.setEnabled(isBackground.isSelected());
-		currentFont.setFont(Configuration.getScrambleFont());
+		scrambleFontButton.setFont(Configuration.getScrambleFont());
+		timerFontButton.setFont(Configuration.getTimerFont());
 		minSplitTime.setEnabled(splits.isSelected());
 
 		//makeStackmatOptionsPanel
@@ -781,7 +787,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		browse.setEnabled(isBackground.isSelected());
 		opacity.setEnabled(isBackground.isSelected());
 
-		currentFont.setFont(Configuration.getScrambleFontDefault());
+		scrambleFontButton.setFont(Configuration.getScrambleFontDefault());
+		timerFontButton.setFont(Configuration.getTimerFontDefault());
 
 		sundayQuote.setText(Configuration.getSundayQuoteDefault());
 	}
@@ -847,7 +854,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setBackground(backgroundFile.getText());
 		Configuration.setOpacity((float) (opacity.getValue() / 10.));
 
-		Configuration.setScrambleFont(currentFont.getFont());
+		Configuration.setScrambleFont(scrambleFontButton.getFont());
+		Configuration.setTimerFont(timerFontButton.getFont());
 
 		Configuration.apply();
 

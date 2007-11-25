@@ -97,8 +97,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	private CCTClient client;
 	private ConfigurationDialog configurationDialog;
 	private static final ImageIcon cube = createImageIcon("cube.png", "Cube");
-	private final Font LCD_FONT = Font.createFont(Font.TRUETYPE_FONT,
-			CALCubeTimer.class.getResourceAsStream("Digiface Regular.ttf")).deriveFont(60f);
 
 	public CALCubeTimer() throws Exception {
 		this.setUndecorated(true);
@@ -172,7 +170,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		actionMap = new HashMap<String, AbstractAction>();
 
 		keyboardTimingAction = new KeyboardTimingAction(this);
-		keyboardTimingAction.putValue(Action.SELECTED_KEY, Configuration.isKeyboardTimer());
 		keyboardTimingAction.putValue(Action.NAME, "Use keyboard timer");
 		keyboardTimingAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_K);
 		keyboardTimingAction.putValue(Action.SHORT_DESCRIPTION, "NOTE: will disable Stackmat!");
@@ -243,37 +240,31 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		actionMap.put("exit", exitAction);
 
 		integratedTimerAction = new IntegratedTimerAction(this);
-		integratedTimerAction.putValue(Action.SELECTED_KEY, Configuration.isIntegratedTimerDisplay());
 		integratedTimerAction.putValue(Action.NAME, "Integrate timer and display");
 		integratedTimerAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_I);
 		actionMap.put("toggleintegratedtimer", integratedTimerAction);
 
 		annoyingDisplayAction = new AnnoyingDisplayAction(this);
-		annoyingDisplayAction.putValue(Action.SELECTED_KEY, Configuration.isAnnoyingDisplay());
 		annoyingDisplayAction.putValue(Action.NAME, "Use annoying status light");
 		annoyingDisplayAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
 		actionMap.put("toggleannoyingdisplay", annoyingDisplayAction);
 
 		lessAnnoyingDisplayAction = new LessAnnoyingDisplayAction(this);
-		lessAnnoyingDisplayAction.putValue(Action.SELECTED_KEY, Configuration.isLessAnnoyingDisplay());
 		lessAnnoyingDisplayAction.putValue(Action.NAME, "Use less-annoying status light");
 		lessAnnoyingDisplayAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_L);
 		actionMap.put("togglelessannoyingdisplay", lessAnnoyingDisplayAction);
 
 		hideScramblesAction = new HideScramblesAction(this);
-		hideScramblesAction.putValue(Action.SELECTED_KEY, Configuration.isHideScrambles());
 		hideScramblesAction.putValue(Action.NAME, "Hide scrambles when timer not focused");
 		hideScramblesAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_H);
 		actionMap.put("togglehidescrambles", hideScramblesAction);
 
 		spacebarOptionAction = new SpacebarOptionAction();
-		spacebarOptionAction.putValue(Action.SELECTED_KEY, Configuration.isSpacebarOnly());
 		spacebarOptionAction.putValue(Action.NAME, "Only spacebar starts timer");
 		spacebarOptionAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
 		actionMap.put("togglespacebarstartstimer", spacebarOptionAction);
 
 		fullScreenTimingAction = new FullScreenTimingAction();
-		fullScreenTimingAction.putValue(Action.SELECTED_KEY, Configuration.isFullScreenWhileTiming());
 		fullScreenTimingAction.putValue(Action.NAME, "Fullscreen while timing");
 		fullScreenTimingAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_F);
 		actionMap.put("togglefullscreentiming", fullScreenTimingAction);
@@ -367,7 +358,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 		scrambleText = new ScrambleArea();
 		scrambleText.setAlignmentX(.5f);
-		timeLabel = new TimerLabel(timeListener, LCD_FONT, scrambleText);
+		timeLabel = new TimerLabel(timeListener, scrambleText);
 
 		startStopPanel = new TimerPanel(timeListener, scrambleText, timeLabel);
 		startStopPanel.setKeyboard(true);
@@ -387,7 +378,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 		JPanel panel = new JPanel(new BorderLayout());
 		fullscreenFrame.setContentPane(panel);
-		bigTimersDisplay = new TimerLabel(timeListener, LCD_FONT, null);
+		bigTimersDisplay = new TimerLabel(timeListener, null);
 		bigTimersDisplay.setBackground(Color.WHITE);
 		bigTimersDisplay.setEnabledTiming(true);
 
@@ -429,7 +420,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 //		profileSelected(Configuration.getSelectedProfile());
 		
 		Configuration.addConfigurationChangeListener(this);
-//		configurationChanged();
 		updateScramble();
 		this.setVisible(true);
 	}
@@ -1132,6 +1122,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 
 	public void configurationChanged() {
+		keyboardTimingAction.putValue(Action.SELECTED_KEY, Configuration.isKeyboardTimer());
+		integratedTimerAction.putValue(Action.SELECTED_KEY, Configuration.isIntegratedTimerDisplay());
+		annoyingDisplayAction.putValue(Action.SELECTED_KEY, Configuration.isAnnoyingDisplay());
+		lessAnnoyingDisplayAction.putValue(Action.SELECTED_KEY, Configuration.isLessAnnoyingDisplay());
+		hideScramblesAction.putValue(Action.SELECTED_KEY, Configuration.isHideScrambles());
+		spacebarOptionAction.putValue(Action.SELECTED_KEY, Configuration.isSpacebarOnly());
+		fullScreenTimingAction.putValue(Action.SELECTED_KEY, Configuration.isFullScreenWhileTiming());
 		scrambleChoice = Configuration.getScrambleType();
 
 		parseXML_GUI(Configuration.getXMLGUILayout());
@@ -1148,10 +1145,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			scramblePopup.setLocation(location);
 		scramblePopup.setVisible(Configuration.isScramblePopup());
 
+		scrambleText.refresh();
+		
 		timeLabel.setKeyboard(Configuration.isKeyboardTimer());
 		timeLabel.setEnabledTiming(Configuration.isIntegratedTimerDisplay());
 		timeLabel.setOpaque(Configuration.isAnnoyingDisplay());
-
+		timeLabel.setFont(Configuration.getTimerFont());
+		
 		startStopPanel.setEnabled((Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
 		startStopPanel.setVisible(!Configuration.isIntegratedTimerDisplay());
 
@@ -1385,7 +1385,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				onLabel.setText("Timer is ON");
 			else
 				onLabel.setText("Timer is OFF");
-			if((Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY))
+			if(Configuration.isKeyboardTimer())
 				return;
 
 			if(evt.getNewValue() instanceof StackmatState){

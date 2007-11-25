@@ -3,6 +3,8 @@ package net.gnehzr.cct.configuration;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Window;
 import java.io.File;
@@ -68,6 +70,7 @@ public class Configuration {
 		} catch (IOException e) {}
 	}
 
+	//TODO - why is this data type necessary?
 	private static CopyOnWriteArrayList<ConfigurationChangeListener> listeners = new CopyOnWriteArrayList<ConfigurationChangeListener>();
 	public static void addConfigurationChangeListener(ConfigurationChangeListener listener) {
 		listeners.add(listener);
@@ -539,6 +542,7 @@ public class Configuration {
 	public static void setBackground(boolean isBackground) {
 		props.setProperty("background_ImageEnabled", "" + isBackground);
 	}
+	
 	public static Font getScrambleFont() {
 		return getScrambleFont(props);
 	}
@@ -546,14 +550,48 @@ public class Configuration {
 		return getScrambleFont(defaults);
 	}
 	private static Font getScrambleFont(Properties props) {
-		return Font.decode(
-				props.getProperty("scramble_Font"));
+		return Font.decode(props.getProperty("scramble_Font"));
 	}
-
 	public static void setScrambleFont(Font scrambleFont) {
 		props.setProperty("scramble_Font", scrambleFont.getFontName() + "-" +
 				(scrambleFont.isBold() ? "bold" : "") + (scrambleFont.isItalic() ? "italic" : "") + (scrambleFont.isPlain() ? "plain" : "") + "-" +
 				scrambleFont.getSize());
+	}
+	
+	public static Font getTimerFont() {
+		return getTimerFont(props);
+	}
+	public static Font getTimerFontDefault() {
+		return getTimerFont(defaults);
+	}
+	private static Font lcdFont;
+	private static Font getTimerFont(Properties props) {
+		if(lcdFont == null) {
+			try {
+				lcdFont = Font.createFont(Font.TRUETYPE_FONT, 
+					CALCubeTimer.class.getResourceAsStream("Digiface Regular.ttf")).deriveFont(60f);
+				GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(lcdFont);
+			} catch (FontFormatException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		String font = props.getProperty("timer_Font");
+		if(font == null) {
+			return lcdFont;
+		} else
+			return Font.decode(props.getProperty("timer_Font"));
+	}
+	public static void setTimerFont(Font scrambleFont) {
+		props.setProperty("timer_Font",
+				(scrambleFont.equals(lcdFont) ? "" :
+									scrambleFont.getFontName() +
+									"-" +
+									(scrambleFont.isPlain() ? "plain" :
+															(scrambleFont.isBold() ? "bold" : "") + (scrambleFont.isItalic() ? "italic" : "")) +
+									"-" +
+									scrambleFont.getSize()));
 	}
 
 	public static boolean isKeyboardTimer() {

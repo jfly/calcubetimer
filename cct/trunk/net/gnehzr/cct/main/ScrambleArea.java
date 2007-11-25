@@ -32,7 +32,9 @@ public class ScrambleArea extends JScrollPane implements ComponentListener {
 		setPreferredSize(new Dimension(0, 100));
 		addComponentListener(this);
 	}
+	private Object latest;
 	public void setText(String string) {
+		latest = string;
 		Font temp = Configuration.getScrambleFont();
 		string = doReplacement(string);
 		scramble.setText("<span style = \"font-family: " + temp.getFamily() + "; font-size: " + temp.getSize() + (temp.isItalic() ? "; font-style: italic" : "") + "\">" + string + "</span>");
@@ -42,6 +44,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener {
 		getParent().validate();
 	}
 	public void setText(Scramble newScramble) {
+		latest = newScramble;
 		String temps = newScramble.toFormattedString();
 		temps = doReplacement(temps);
 		scramble.setText(temps);
@@ -66,6 +69,10 @@ public class ScrambleArea extends JScrollPane implements ComponentListener {
 	private boolean hid;
 	public void refresh() {
 		setHidden(hid);
+		if(latest instanceof Scramble) {
+			setText((Scramble) latest);
+		} else
+			setText(latest.toString());
 	}
 	public void setHidden(boolean hidden) {
 		hid = hidden;
