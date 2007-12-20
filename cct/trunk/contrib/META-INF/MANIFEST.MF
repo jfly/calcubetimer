@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Ant-Version: Apache Ant 1.7.0
-Created-By: 1.6.0_05-ea-b04 (Sun Microsystems Inc.)
-Substance-Distribution: Full
-Substance-Version: 4.1dev Lima
-Substance-BuildStamp: September 30, 2007 10:54:57 PDT
-
