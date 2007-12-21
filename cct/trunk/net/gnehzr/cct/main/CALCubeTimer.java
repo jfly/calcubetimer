@@ -299,11 +299,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		tickTock = new Timer(0, null);
 		configurationDialog = new ConfigurationDialog(this, true, stackmatTimer, tickTock);
 
-		scrambleChoice = Configuration.getScrambleType();
+//		scrambleChoice = Configuration.getScrambleType();
 		scrambles = new ScrambleList(scrambleChoice);
 
 		scrambleChooser = new JComboBox(Configuration.getScrambleTypes());
-		scrambleChooser.setSelectedItem(scrambleChoice);
+//		scrambleChooser.setSelectedItem(scrambleChoice);
 		scrambleChooser.addActionListener(this);
 
 		SpinnerNumberModel model = new SpinnerNumberModel(1, //initial value
@@ -315,7 +315,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		((JSpinner.DefaultEditor) scrambleNumber.getEditor()).getTextField().setColumns(3);
 		scrambleNumber.addChangeListener(this);
 
-		model = new SpinnerNumberModel(scrambleChoice.getLength(), //initial value
+		model = new SpinnerNumberModel(1, //initial value
 				1,					//min
 				null,				//max
 				1);					//step
@@ -420,8 +420,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 //		profileSelected(Configuration.getSelectedProfile());
 		
 		Configuration.addConfigurationChangeListener(this);
-		updateScramble();
-		this.setVisible(true);
 	}
 	public void profileChanged(Profile outWithOld, Profile inWithNew) {
 		if(outWithOld == null) { //Item added
@@ -466,7 +464,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse("guiLayouts/"+file, handler);
 		} catch(SAXParseException spe) {
-			System.out.println(spe.getSystemId() + ":" + spe.getLineNumber() + ": parse error: " + spe.getMessage());
+			System.err.println(spe.getSystemId() + ":" + spe.getLineNumber() + ": parse error: " + spe.getMessage());
 
 			Exception x = spe;
 			if(spe.getException() != null)
@@ -492,6 +490,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	private static final String SCRAMBLE_ATTRIBUTE_CHANGED = "Scramble Attribute Changed";
 	private void createScrambleAttributes() {
 		scrambleAttributes.removeAll();
+		if(scrambleChoice == null) //this happens when we are initializing cct, before a profile is selected
+			return;
 		String[] attrs = Configuration.getPuzzleAttributes(scrambleChoice.getPuzzleClass());
 		attributes = new JCheckBox[attrs.length];
 
@@ -513,7 +513,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	//{{{ GUIParser
 	private class GUIParser extends DefaultHandler {
 		private int level = -2;
-		private String location;
+//		private String location;
 		private ArrayList<String> strs;
 		private ArrayList<JComponent> componentTree;
 		private ArrayList<Boolean> needText;
@@ -530,7 +530,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		}
 
 		public void setDocumentLocator(Locator l) {
-			location = l.getSystemId();
+//			location = l.getSystemId();
 		}
 
 		//{{{ startElement
@@ -779,7 +779,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		}
 
 		public void warning(SAXParseException e) throws SAXParseException {
-			System.out.println(e.getSystemId() + ":" + e.getLineNumber() + ": warning: " + e.getMessage());
+			System.err.println(e.getSystemId() + ":" + e.getLineNumber() + ": warning: " + e.getMessage());
 		}
 	} //}}}
 
@@ -915,7 +915,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		int newLength = (Integer) scrambleLength.getValue();
 		if(scrambleChoice != newType || scrambleChoice.getLength() != newLength) {
 			int choice = JOptionPane.YES_OPTION;
-			if(scrambles.getCurrent().isImported() && !(Boolean)serverScramblesAction.getValue(Action.SELECTED_KEY)) {
+			if(scrambleChoice != null && scrambles.getCurrent().isImported() && !(Boolean)serverScramblesAction.getValue(Action.SELECTED_KEY)) {
 				choice = JOptionPane.showOptionDialog(this,
 						"Do you want to discard the imported scrambles?",
 						"Discard scrambles?",
@@ -925,7 +925,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 						null,
 						null);
 			} else {
-				if(scrambles.size() != 1)
+				if(scrambles.size() > 1)
 					choice = JOptionPane.showOptionDialog(this,
 							"Do you really wish to switch the type of scramble?\n" +
 							"All previous scrambles will be lost. Your times, however, will be saved.",
@@ -1129,9 +1129,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		hideScramblesAction.putValue(Action.SELECTED_KEY, Configuration.isHideScrambles());
 		spacebarOptionAction.putValue(Action.SELECTED_KEY, Configuration.isSpacebarOnly());
 		fullScreenTimingAction.putValue(Action.SELECTED_KEY, Configuration.isFullScreenWhileTiming());
-		scrambleChoice = Configuration.getScrambleType();
-
+		scrambleChooser.setSelectedItem(Configuration.getScrambleType());
+		updateScramble();
 		parseXML_GUI(Configuration.getXMLGUILayout());
+		if(!this.isVisible())
+			this.setVisible(true);
 
 		keyboardTimingAction.putValue(Action.SELECTED_KEY, Configuration.isKeyboardTimer());
 
@@ -1151,6 +1153,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		timeLabel.setEnabledTiming(Configuration.isIntegratedTimerDisplay());
 		timeLabel.setOpaque(Configuration.isAnnoyingDisplay());
 		timeLabel.setFont(Configuration.getTimerFont());
+		bigTimersDisplay.setFont(Configuration.getTimerFont());
 		
 		startStopPanel.setEnabled((Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
 		startStopPanel.setVisible(!Configuration.isIntegratedTimerDisplay());
@@ -1173,7 +1176,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			startStopPanel.requestFocusInWindow();
 		} else
 			scrambleText.requestFocusInWindow();
-
 		timeLabel.componentResized(null);
 	}
 
