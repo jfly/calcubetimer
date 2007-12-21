@@ -21,7 +21,10 @@ public class CubeScramble extends Scramble {
 	public static final int DEFAULT_UNIT_SIZE = 11;
 
 	public static int getDefaultScrambleLength(String variation) {
-		switch(Integer.parseInt(""+variation.charAt(0))) {
+		int end = variation.indexOf("x");
+		if(end < 0)
+			return 10;
+		switch(Integer.parseInt(variation.substring(0, end))) {
 			case 2:
 				return 25;
 			case 3:
