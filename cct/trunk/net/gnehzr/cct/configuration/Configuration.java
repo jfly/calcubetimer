@@ -735,11 +735,15 @@ public class Configuration {
 						Class<?> cls = cl.loadClass(child.substring(0, child.indexOf(".")));
 						if(cls.getSuperclass().equals(Scramble.class))
 							temp.add(cls);
-					} catch(Exception e) {}
+					} catch(NoClassDefFoundError ee) {
+						ee.printStackTrace();
+					}
 				}
 				scrambleClasses = new Class[temp.size()];
 				scrambleClasses = temp.toArray(scrambleClasses);
-			} catch(Exception e) {e.printStackTrace();}
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return scrambleClasses;
 	}

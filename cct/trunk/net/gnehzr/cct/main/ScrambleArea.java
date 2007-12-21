@@ -72,7 +72,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener {
 		if(latest instanceof Scramble) {
 			setText((Scramble) latest);
 		} else
-			setText(latest.toString());
+			setText(latest == null ? "" : latest.toString());
 	}
 	public void setHidden(boolean hidden) {
 		hid = hidden;
