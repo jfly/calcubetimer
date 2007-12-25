@@ -145,7 +145,7 @@ public class MegaminxScramble extends Scramble {
 			turn(side, dir);
 		}
 	}
-
+	
 	private void turn(int side, int dir){
 		for(int i = 0; i < dir; i++){
 			turn(side);
@@ -187,7 +187,7 @@ public class MegaminxScramble extends Scramble {
 		image[f][s5] = temp;
 	}
 	
-	public BufferedImage getScrambleImage(int width, int height, int gap, int minxRad, HashMap<String, Color> colorScheme) {
+	public BufferedImage getScrambleImage(int gap, int minxRad, HashMap<String, Color> colorScheme) {
 		BufferedImage buffer = new BufferedImage(getMegaminxViewWidth(gap, minxRad), getMegaminxViewHeight(gap, minxRad), BufferedImage.TYPE_INT_ARGB);
 		drawMinx(buffer.createGraphics(), gap, minxRad, colorScheme);
 		return buffer;

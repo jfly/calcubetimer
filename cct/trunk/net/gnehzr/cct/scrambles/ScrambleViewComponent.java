@@ -32,7 +32,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		if(scramble != null) {
 			currentScram = scramble;
 			Class<?> puzzleType = currentScram.getClass();
-			buffer = currentScram.getScrambleImage(getWidth(), getHeight(), GAP, getUnitSize(puzzleType), getColorScheme(puzzleType));
+			buffer = currentScram.getScrambleImage(GAP, getUnitSize(puzzleType), getColorScheme(puzzleType));
 			repaint();
 		}
 	}

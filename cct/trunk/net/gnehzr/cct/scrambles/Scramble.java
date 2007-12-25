@@ -25,8 +25,9 @@ public abstract class Scramble {
 	}
 
 	public String toFormattedString() {
-		String temps = scramble.replaceAll("\\(", "<span style=\"font-size: INSERT_SUBSIZE\">");
-		temps = temps.replaceAll("\\)", "</span>"); //i'm trusting the compiler is smart here
+		return toFormattedString(scramble);
+	}
+	protected String toFormattedString(String temps) {
 		return "<span style = \"font-family: INSERT_FAMILY; font-size: INSERT_SIZE INSERT_STYLE\">" + temps + "</span>";
 	}
 
@@ -51,7 +52,7 @@ public abstract class Scramble {
 	//public Constructor(String variation, String scramble, String... attrs) - REQUIRED
 	public abstract int getNewUnitSize(int width, int height, int gap);	
 	public abstract Dimension getMinimumSize(int gap, int unitSize);
-	public abstract BufferedImage getScrambleImage(int width, int height, int gap, int unitSize, HashMap<String, Color> colorScheme);
+	public abstract BufferedImage getScrambleImage(int gap, int unitSize, HashMap<String, Color> colorScheme);
 	public abstract String getFaceClicked(int x, int y, int gap, int unitSize);
 	
 	/* Optional fields */

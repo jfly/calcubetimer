@@ -35,7 +35,7 @@ public class ScrambleType {
 		Scramble temp = null;
 		try {
 			temp = (Scramble) puzzleType.getConstructor(String.class, int.class, String[].class).newInstance(variation, length, Configuration.getPuzzleAttributes(this));
-		} catch (Exception e) {}
+		} catch (Exception e) {e.printStackTrace();}
 		return temp;
 	}
 

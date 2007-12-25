@@ -36,7 +36,9 @@ public class ScrambleFrame extends JDialog {
 	public void syncColorScheme() {
 		scrambleView.syncColorScheme();
 	}
-
+	public ScrambleViewComponent getScrambleView() {
+		return scrambleView;
+	}
 	public void setScramble(Scramble newScramble) {
 		scrambleView.setScramble(newScramble);
 		getContentPane().remove(scrambleView); //This is necessary for some freaking reason

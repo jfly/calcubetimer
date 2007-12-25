@@ -156,9 +156,10 @@ public class CubeScramble extends Scramble {
 			lastAxis = axis;
 		}
 	}
-
-	public int getSize(){
-		return size;
+	public String toFormattedString() {
+		String temps = scramble.replaceAll("\\(", "<span style=\"font-size: INSERT_SUBSIZE\">");
+		temps = temps.replaceAll("\\)", "</span>"); //i'm trusting the compiler is smart here
+		return super.toFormattedString(temps);
 	}
 
 	protected String moveString(int n){
@@ -303,7 +304,7 @@ public class CubeScramble extends Scramble {
 				(height - 4*gap) / 3. / size));
 	}
 
-	public BufferedImage getScrambleImage(int width, int height, int gap, int cubieSize, HashMap<String, Color> colorScheme) {
+	public BufferedImage getScrambleImage(int gap, int cubieSize, HashMap<String, Color> colorScheme) {
 		BufferedImage buffer = new BufferedImage(getCubeViewWidth(cubieSize, gap), getCubeViewHeight(cubieSize, gap), BufferedImage.TYPE_INT_ARGB);
 		drawCube(buffer.createGraphics(), image, gap, cubieSize, colorScheme);
 		return buffer;
