@@ -342,8 +342,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		tf = new JTextField();
 		stats.setListandEditor(timesList, tf);
 
-		UIManager.put(LafWidget.TEXT_EDIT_CONTEXT_MENU, Boolean.TRUE);
-		UIManager.put(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.TRUE);
         tf.setBorder(BorderFactory.createLineBorder(Color.black));
         timesList.setListCellEditor(new DefaultListCellEditor(tf));
 		timesList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -351,7 +349,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		timesList.addMouseListener(this);
 		timesList.addKeyListener(this);
 		timesList.setCellRenderer(new MyCellRenderer());
-
+		
 		timesScroller = new JScrollPane(timesList);
 
 		repaintTimes();
@@ -367,9 +365,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		timeLabel.setMinimumSize(new Dimension(0, 150));
 		timeLabel.setPreferredSize(new Dimension(0, 150));
 		timeLabel.setAlignmentX(.5f);
-
-		timesScroller.setMinimumSize(new Dimension(100, 0));
-		timesScroller.setPreferredSize(new Dimension(100, 0));
 
 		JFrame.setDefaultLookAndFeelDecorated(false);
 		fullscreenFrame = new JFrame();
@@ -810,7 +805,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		UIManager.setLookAndFeel(new SubstanceLookAndFeel());
 //		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 //		UIManager.setLookAndFeel(new SubstanceModerateLookAndFeel());
-		
+
+		UIManager.put(LafWidget.TEXT_EDIT_CONTEXT_MENU, Boolean.TRUE);
+		UIManager.put(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.TRUE); //TODO - this appears to be broken
 		UIManager.put(LafWidget.ANIMATION_KIND, LafConstants.AnimationKind.NONE);
 //		UIManager.put(SubstanceLookAndFeel.WATERMARK_TO_BLEED, Boolean.TRUE);
 

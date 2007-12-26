@@ -666,7 +666,7 @@ public class Statistics implements MutableListModel, ActionListener, Configurati
 	
 	public Object getElementAt(int index) {
 		if(index == times.size()) {
-			return "Add new time...";
+			return "Add time...";
 		}
 		try{
 			return times.get(index);
