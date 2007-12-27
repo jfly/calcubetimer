@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<project default="dist">
+	<property name="dist" location="dist" />
+	<target name="dist" depends="compile, compress" description="Main distribution">
+		<echo>
+            Building CALCubeTimer.jar
+        </echo>
+	</target>
+
+	<target name="compile" description="Compilation target">
+		<javac srcdir="net/" />
+		<javac srcdir="scramblePlugins/" />
+	</target>
+
+	<target name="compress" description="Compression target">
+		<mkdir dir="${dist}" />
+		<jar jarfile="${dist}/CALCubeTimer.jar" manifest="files/cct.mf" basedir="." includes="*.class">
+			<fileset dir="." includes="net/**"/>
+			<zipfileset src="mailapi.jar" excludes="META-INF/**"/>
+			<zipfileset src="substance.jar" excludes="META-INF/**"/>
+		</jar>
+		<copy todir="${dist}">
+			<fileset dir=".">
+				<include name="guiLayouts/*" />
+				<include name="scramblePlugins/*.class" />
+				<include name="profiles/**" />
+			</fileset>
+		</copy>
+	</target>
+</project>
