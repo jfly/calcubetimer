@@ -6,8 +6,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -18,8 +16,6 @@ import java.util.EventObject;
 import javax.swing.*;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
-
-import org.jvnet.lafwidget.LafWidget;
 
 // @author Santhosh Kumar T - santhosh@in.fiorano.com 
 @SuppressWarnings("serial")
@@ -67,15 +63,6 @@ public class JListMutable extends JList implements CellEditorListener {
         Object value = getModel().getElementAt(index);
         boolean isSelected = isSelectedIndex(index);
         Component comp = editor.getListCellEditorComponent(this, value, isSelected, index);
-        comp.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent e) {
-				((JTextField)e.getSource()).selectAll();
-			}
-			public void focusLost(FocusEvent e) {
-				
-			} //TODO - what happened to swing's laf plugins? broken?
-        	
-        });
         if(comp instanceof JComponent) {
             JComponent jComp = (JComponent)comp;
             jComp.setToolTipText("Type new time here"); //TODO internationalize!

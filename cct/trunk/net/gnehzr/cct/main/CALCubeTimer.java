@@ -807,7 +807,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 //		UIManager.setLookAndFeel(new SubstanceModerateLookAndFeel());
 
 		UIManager.put(LafWidget.TEXT_EDIT_CONTEXT_MENU, Boolean.TRUE);
-		UIManager.put(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.TRUE); //TODO - this appears to be broken
+		UIManager.put(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.TRUE);
 		UIManager.put(LafWidget.ANIMATION_KIND, LafConstants.AnimationKind.NONE);
 //		UIManager.put(SubstanceLookAndFeel.WATERMARK_TO_BLEED, Boolean.TRUE);
 
@@ -1127,47 +1127,42 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		spacebarOptionAction.putValue(Action.SELECTED_KEY, Configuration.isSpacebarOnly());
 		fullScreenTimingAction.putValue(Action.SELECTED_KEY, Configuration.isFullScreenWhileTiming());
 		scrambleChooser.setSelectedItem(Configuration.getScrambleType());
-		updateScramble();
-		parseXML_GUI(Configuration.getXMLGUILayout());
-		if(!this.isVisible())
-			this.setVisible(true);
-
-		keyboardTimingAction.putValue(Action.SELECTED_KEY, Configuration.isKeyboardTimer());
-
-		scramblePopup.syncColorScheme();
-		scramblePopup.pack();
-		Dimension size = Configuration.getScrambleViewDimensions();
-		if(size != null)
-			scramblePopup.setSize(size);
-		Point location = Configuration.getScrambleViewLocation();
-		if(location != null)
-			scramblePopup.setLocation(location);
-		scramblePopup.setVisible(Configuration.isScramblePopup());
-
-		scrambleText.refresh();
-		
+		keyboardTimingAction.putValue(Action.SELECTED_KEY, Configuration.isKeyboardTimer());		
 		timeLabel.setKeyboard(Configuration.isKeyboardTimer());
 		timeLabel.setEnabledTiming(Configuration.isIntegratedTimerDisplay());
 		timeLabel.setOpaque(Configuration.isAnnoyingDisplay());
 		timeLabel.setFont(Configuration.getTimerFont());
 		bigTimersDisplay.setFont(Configuration.getTimerFont());
-		
 		startStopPanel.setEnabled((Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
 		startStopPanel.setVisible(!Configuration.isIntegratedTimerDisplay());
-
 		bigTimersDisplay.setKeyboard((Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
 
-		size = Configuration.getMainFrameDimensions();
+		updateScramble();
+		parseXML_GUI(Configuration.getXMLGUILayout());
+		Dimension size = Configuration.getMainFrameDimensions();
 		if(size == null) {
 			this.pack();
 		} else
 			this.setSize(size);
-		location = Configuration.getMainFrameLocation();
+		Point location = Configuration.getMainFrameLocation();
 		if(location == null)
 			this.setLocationRelativeTo(null);
 		else
 			this.setLocation(location);
+		if(!this.isVisible()) {
+			this.setVisible(true);
+		}
 
+		scramblePopup.syncColorScheme();
+		scramblePopup.pack();
+		size = Configuration.getScrambleViewDimensions();
+		if(size != null)
+			scramblePopup.setSize(size);
+		location = Configuration.getScrambleViewLocation();
+		if(location != null)
+			scramblePopup.setLocation(location);
+		scramblePopup.setVisible(Configuration.isScramblePopup());
+		
 		if((Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY)) { //This is to ensure that the keyboard is focused
 			timeLabel.requestFocusInWindow();
 			startStopPanel.requestFocusInWindow();
