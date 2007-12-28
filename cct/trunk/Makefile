@@ -1,4 +1,4 @@
-CLASSPATH=.:contrib
+CLASSPATH=.:mailapi.jar:substance.jar
 EXEC=net.gnehzr.cct.main.CALCubeTimer
 SERVER=net.gnehzr.cct.umts.server.CCTServer
 
