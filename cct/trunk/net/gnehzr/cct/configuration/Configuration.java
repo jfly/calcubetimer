@@ -569,7 +569,7 @@ public class Configuration {
 		if(lcdFont == null) {
 			try {
 				lcdFont = Font.createFont(Font.TRUETYPE_FONT, 
-					CALCubeTimer.class.getResourceAsStream("Digiface Regular.ttf")).deriveFont(60f);
+					CALCubeTimer.class.getResourceAsStream("Digiface Regular.ttf")).deriveFont(20f);
 				GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(lcdFont);
 			} catch (FontFormatException e) {
 				e.printStackTrace();
@@ -578,13 +578,16 @@ public class Configuration {
 			}
 		}
 		String font = props.getProperty("timer_Font");
-		if(font == null) {
+		if(font == null || font.equals("")) {
 			return lcdFont;
 		} else
 			return Font.decode(props.getProperty("timer_Font"));
 	}
 	public static void setTimerFont(Font scrambleFont) {
-		props.setProperty("timer_Font",
+		if(scrambleFont.getName().contains("Digiface"))
+			props.setProperty("timer_Font", "");
+		else
+			props.setProperty("timer_Font",
 				(scrambleFont.equals(lcdFont) ? "" :
 									scrambleFont.getFontName() +
 									"-" +

@@ -6,9 +6,14 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -141,12 +146,39 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		setResizable(false);
 		pack();
 	}
+	
+	@SuppressWarnings("serial")
+	private class JColorComponent extends JComponent {
+		final int PAD_HEIGHT = 6;
+		final int PAD_WIDTH = 10;
+		private String text;
+		public JColorComponent(String text) {
+			this.text = text;
+		}
+		private Rectangle bounds = null;
+		@Override
+		public void paint(Graphics g) {
+			Graphics2D g2d = (Graphics2D)g;
+			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			g2d.setColor(getBackground());
+			g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
+			g2d.setColor(Color.BLACK);
+
+			FontMetrics fm = getFontMetrics(getFont());
+			double width = fm.getStringBounds(text, g).getWidth();
+			g2d.drawString(text, (int)(getWidth() / 2.0 - width / 2.0), PAD_HEIGHT / 2 + fm.getAscent());
+		}
+		@Override
+		public Dimension getPreferredSize() {
+			bounds = getFontMetrics(getFont()).getStringBounds(text, null).getBounds();
+			return new Dimension(bounds.width+PAD_WIDTH, bounds.height+PAD_HEIGHT);
+		}
+	}
 
 	private JCheckBox clockFormat, promptForNewTime, scramblePopup, splits, metronome = null;
 	private JSpinner minSplitTime, RASize = null;
 	public TickerSlider metronomeDelay = null;
-	private JLabel currentAverage, bestRA, currentAndRA, bestTime, worstTime = null;
-
+	private JColorComponent bestRA, currentAverage, currentAndRA, bestTime, worstTime = null;
 	private JPanel makeStandardOptionsPanel1() {
 		JPanel options = new JPanel();
 		JPanel colorPanel = new JPanel(new GridLayout(0, 1, 0, 5));
@@ -177,29 +209,24 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		sideBySide.add(RASize);
 		rightPanel.add(sideBySide);
 
-		bestRA = new JLabel("Best rolling average", JLabel.CENTER);
-		bestRA.setOpaque(true);
+		bestRA = new JColorComponent("Best rolling average");
 		bestRA.addMouseListener(this);
 		colorPanel.add(bestRA);
-
-		currentAndRA = new JLabel("Best/Current rolling average", JLabel.CENTER);
-		currentAndRA.setOpaque(true);
+		
+		currentAndRA = new JColorComponent("Best/Current rolling average");
 		currentAndRA.addMouseListener(this);
 		colorPanel.add(currentAndRA);
 
-		bestTime = new JLabel("Best time", JLabel.CENTER);
-		bestTime.setPreferredSize(new Dimension(0, 20));
-		bestTime.setOpaque(true);
+		bestTime = new JColorComponent("Best time");
+//		bestTime.setPreferredSize(new Dimension(0, 20));
 		bestTime.addMouseListener(this);
 		colorPanel.add(bestTime);
 
-		worstTime = new JLabel("Worst time", JLabel.CENTER);
-		worstTime.setOpaque(true);
+		worstTime = new JColorComponent("Worst time");
 		worstTime.addMouseListener(this);
 		colorPanel.add(worstTime);
 
-		currentAverage = new JLabel("Current average", JLabel.CENTER);
-		currentAverage.setOpaque(true);
+		currentAverage = new JColorComponent("Current average");
 		currentAverage.addMouseListener(this);
 		colorPanel.add(currentAverage);
 
@@ -544,8 +571,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 	public void mouseClicked(MouseEvent e) {
 		Object source = e.getSource();
-		if(source instanceof JLabel) {
-			JLabel label = (JLabel) source;
+		if(source instanceof JColorComponent) {
+			JColorComponent label = (JColorComponent) source;
 			Color selected = JColorChooser.showDialog(
 					this,
 					"Choose New Color",

@@ -299,11 +299,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		tickTock = new Timer(0, null);
 		configurationDialog = new ConfigurationDialog(this, true, stackmatTimer, tickTock);
 
-//		scrambleChoice = Configuration.getScrambleType();
 		scrambles = new ScrambleList(scrambleChoice);
 
 		scrambleChooser = new JComboBox(Configuration.getScrambleTypes());
-//		scrambleChooser.setSelectedItem(scrambleChoice);
 		scrambleChooser.addActionListener(this);
 
 		SpinnerNumberModel model = new SpinnerNumberModel(1, //initial value
@@ -412,7 +410,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		profiles.setEditableProfileListListener(this);
 		profiles.setSelectedProfile(Configuration.getSelectedProfile());
 		profiles.setMaximumSize(new Dimension(1000, 100));
-//		profileSelected(Configuration.getSelectedProfile());
 		
 		Configuration.addConfigurationChangeListener(this);
 	}
