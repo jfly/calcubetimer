@@ -8,15 +8,16 @@ import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.miscUtils.ComboItem;
 
 public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implements ConfigurationChangeListener {
-	private static final int SAMPLINGRATE = 44100;
 	private static final int QUALITY = 2;
 	private static final int FRAMES = 64;
-	private static final int NOISESPIKETHRESHOLD = SAMPLINGRATE * 25 / 44100; //less than signalLengthPerBit
-	private static final int NEWPERIOD = SAMPLINGRATE / 44;
-	private static final double SIGNALLENGTHPERBIT = SAMPLINGRATE * 38 / 44100.;
 
-	private static final AudioFormat FORMAT = new AudioFormat(SAMPLINGRATE, QUALITY * 8, 1, true, false);
-	public static final DataLine.Info INFO = new DataLine.Info(TargetDataLine.class, FORMAT);
+	private int samplingRate;
+	private int noiseSpikeThreshold;
+	private int newPeriod;
+	private double signalLengthPerBit;
+
+	private AudioFormat format;
+	public DataLine.Info info;
 
 	private TargetDataLine line;
 
@@ -27,15 +28,29 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 	private static Mixer.Info[] aInfos = AudioSystem.getMixerInfo();
 
 	public StackmatInterpreter(){
-		super();
+		initialize(44100);
+	}
+
+	public StackmatInterpreter(int samplingRate){
+		initialize(samplingRate);
+	}
+
+	private void initialize(int samplingRate){
+		this.samplingRate = samplingRate;
+		noiseSpikeThreshold = samplingRate * 25 / 44100;
+		newPeriod = samplingRate / 44;
+		signalLengthPerBit = samplingRate * 38 / 44100.;
+
+		format = new AudioFormat(samplingRate, QUALITY * 8, 1, true, false);
+		info = new DataLine.Info(TargetDataLine.class, format);
 
 		if(Configuration.getMixerNumber() >= 0){
 			changeLine(Configuration.getMixerNumber());
 		}
 		else{
 			try{
-				line = (TargetDataLine) AudioSystem.getLine(INFO);
-				line.open(FORMAT);
+				line = (TargetDataLine) AudioSystem.getLine(info);
+				line.open(format);
 				line.start();
 			} catch(LineUnavailableException e){
 				cleanup();
@@ -76,12 +91,12 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 
 		try{
 			Mixer mixer = AudioSystem.getMixer(aInfos[mixerNum]);
-			if(mixer.isLineSupported(INFO)){
+			if(mixer.isLineSupported(info)){
 				if(line != null){
 					cleanup();
 				}
-				line = (TargetDataLine)mixer.getLine(INFO);
-				line.open(FORMAT);
+				line = (TargetDataLine)mixer.getLine(info);
+				line.open(format);
 				line.start();
 			}
 		} catch(LineUnavailableException e){
@@ -107,7 +122,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 	public ComboItem[] getMixerChoices(){
 		ComboItem[] items = new ComboItem[aInfos.length+1];
 		for(int i = 0; i < aInfos.length; i++){
-			items[i] = new ComboItem("Mixer " + i + ": " + aInfos[i].getName() + " desc: " + aInfos[i].getDescription(), AudioSystem.getMixer(aInfos[i]).isLineSupported(INFO));
+			items[i] = new ComboItem("Mixer " + i + ": " + aInfos[i].getName() + " desc: " + aInfos[i].getDescription(), AudioSystem.getMixer(aInfos[i]).isLineSupported(info));
 		}
 		items[items.length-1] = new ComboItem("No Mixer", true);
 
@@ -144,16 +159,16 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 					currentSample = buffer[QUALITY*j];
 					for(int i = 1; i < QUALITY; i++) currentSample += buffer[QUALITY*j+i] << (8 * i);
 //					System.out.println(currentSample);
-					if(timeSinceLastFlip < NEWPERIOD * 4) timeSinceLastFlip++;
-					else if(timeSinceLastFlip == NEWPERIOD * 4){
+					if(timeSinceLastFlip < newPeriod * 4) timeSinceLastFlip++;
+					else if(timeSinceLastFlip == newPeriod * 4){
 						state = new StackmatState();
 						timeSinceLastFlip++;
 						firePropertyChange("Off", null, null);
 					}
 
-					if(Math.abs(lastSample - currentSample) > (Configuration.getSwitchThreshold() << (QUALITY * 4)) && timeSinceLastFlip > NOISESPIKETHRESHOLD) {
+					if(Math.abs(lastSample - currentSample) > (Configuration.getSwitchThreshold() << (QUALITY * 4)) && timeSinceLastFlip > noiseSpikeThreshold) {
 //						System.out.println(counter);
-						if(timeSinceLastFlip > NEWPERIOD) {
+						if(timeSinceLastFlip > newPeriod) {
 							if(currentPeriod.size() < 1) {
 								lastBit = bitValue(currentSample - lastSample);
 								timeSinceLastFlip = 0;
@@ -186,7 +201,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 							currentPeriod = new ArrayList<Integer>(100);
 						}
 						else {
-							for(int i = 0; i < Math.round(timeSinceLastFlip / SIGNALLENGTHPERBIT); i++) currentPeriod.add(new Integer(lastBit));
+							for(int i = 0; i < Math.round(timeSinceLastFlip / signalLengthPerBit); i++) currentPeriod.add(new Integer(lastBit));
 						}
 						lastBit = bitValue(currentSample - lastSample);
 						timeSinceLastFlip = 0;
