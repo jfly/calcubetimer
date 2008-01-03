@@ -18,8 +18,8 @@ public class SquareOneScramble extends Scramble {
 	public static final String[] FACE_NAMES = { "Back", "Left", "Front", "Right",
 		"Up", "Down" };
 	public static final String PUZZLE_NAME = "Square-1";
-	 public static final String[] ATTRIBUTES = { "Use alternative notation" }; //credit lars?
-	 public static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
+	public static final String[] ATTRIBUTES = { "Use alternative notation" }; //credit lars?
+	public static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
 	private int length;
 	private char[][] state;
 	private enum Level { UP, DOWN };
