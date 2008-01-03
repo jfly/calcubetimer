@@ -2,7 +2,7 @@ CLASSPATH=.:mailapi.jar:substance.jar
 EXEC=net.gnehzr.cct.main.CALCubeTimer
 SERVER=net.gnehzr.cct.umts.server.CCTServer
 
-PATHS=net/gnehzr/ scramblePlugins/
+PATHS=net/gnehzr/ scramblePlugins/ say/swing/
 
 DIST=dist/CALCubeTimer.jar
 SERVERDIST=dist/CCTServer.jar
@@ -23,7 +23,7 @@ clean:
 	rm -rf dist
 
 rclean: clean
-	rm -f cct.properties
+	rm -f profiles/Default/Default.properties
 
 cycle: compile all rclean
 
