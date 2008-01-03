@@ -50,7 +50,7 @@ public class ScrambleDebugger {
 		//TODO - check for everything, this is a debugger!
 		Scramble s = null;
 		try {
-			s = (Scramble) cls.getConstructor(String.class, int.class, String[].class).newInstance("", 0, new String[0]);
+			s = (Scramble) cls.getConstructor(String.class, int.class, String[].class).newInstance("", 10, new String[0]);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {

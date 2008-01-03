@@ -80,12 +80,12 @@ public class CubeScramble extends Scramble {
 		generateScramble();
 	}
 	
-	public CubeScramble(String variation, String s, String... attrs) throws Exception {
+	public CubeScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
 		super(s);
 		this.size = Integer.parseInt(variation.split("x")[0]);
 		setAttributes(attrs);
 		initializeImage();
-		if(!validateScramble()) throw new Exception("Invalid scramble!");
+		if(!validateScramble()) throw new InvalidScrambleException();
 	}
 
 	private boolean multislice;

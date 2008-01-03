@@ -6,6 +6,7 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -21,25 +22,26 @@ public class SquareOneScramble extends Scramble {
 	 public static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
 	private int length;
 	private char[][] state;
+	private enum Level { UP, DOWN };
 	public static final int DEFAULT_UNIT_SIZE = 35;
 
 	public static int getDefaultScrambleLength(String variation) {
 		return 40;
 	}
 
-	public static String getDefaultFaceColor(String face) {//TODO - default to square one
+	public static String getDefaultFaceColor(String face) {
 		switch (face.charAt(0)) {
-		case 'L':
-			return "0000ff";
-		case 'U':
-			return "ffff00";
 		case 'R':
+			return "0000ff";
+		case 'L':
+			return "ffff00";
+		case 'D':
 			return "00ff00";
 		case 'B':
 			return "ffc800";
 		case 'F':
 			return "ff0000";
-		case 'D':
+		case 'U':
 			return "ffffff";
 		default:
 			return null;
@@ -58,12 +60,11 @@ public class SquareOneScramble extends Scramble {
 	}
 
 	public SquareOneScramble(String variation, String s, String... attrs)
-			throws Exception {
+			throws InvalidScrambleException {
 		super(s);
 		setAttributes(attrs);
 		initializeImage();
-		if (!validateScramble())
-			throw new Exception("Invalid scramble!");
+		if(!validateScramble())	throw new InvalidScrambleException();
 	}
 
 	private boolean easyRead;
@@ -102,55 +103,69 @@ public class SquareOneScramble extends Scramble {
 		return -1;
 	}
 
-	private boolean isValidTurn(char[] level, int cwTurn) {
+	private boolean isValidTurn(Level l, int cwTurn) {
 		int sum = 0;
-		int ch = indexOfPieceAfterTurning(level, cwTurn);
+		int ch = indexOfPieceAfterTurning(state[l.ordinal()], cwTurn % 6);
 		if (ch == -1)
 			return false;
-		for (; ch < level.length && sum != 6; ch++) {
-			sum += wedges(level[ch]);
+		for (; ch < state[l.ordinal()].length && sum != 6; ch++) {
+			sum += wedges(state[l.ordinal()][ch]);
 		}
 		return sum == 6;
 	}
 
-	private int oneIfNZ(int ch) {
-		return (ch != 0) ? 1 : 0;
-	}
-
 	private void generateScramble() {
-		int moves;
-		for (int i = 0; i < length; i += moves) {
-			int cwUp, cwDown;
-			do {
-				cwUp = random(12);
-				cwDown = random(12);
-				moves = oneIfNZ(cwUp) + oneIfNZ(cwDown);
-			} while (i + moves > length || !isValidTurn(state[0], cwUp % 6)
-					|| !isValidTurn(state[1], cwDown % 6));
-			applyTurn(state[0], cwUp);
-			applyTurn(state[1], cwDown);
-			if (cwUp > 6)
-				cwUp = cwUp - 12;
-			if (cwDown > 6)
-				cwDown = cwDown - 12;
-			if (moves > 0) {
-				scramble += " " + (easyRead ? "(" : "") + cwUp + "," + cwDown + (easyRead ? ")" : "") + " "; //TODO - generalize this
+		boolean r = false;
+		for (int i = 0; i < length; i++) {
+			//positive int = cwUp, neg int = cwDown, 0 = RIGHT
+			ArrayList<Integer> validTurns = new ArrayList<Integer>();
+			for(int ch = 1; ch < 12; ch++) {
+				if(u == 0 && isValidTurn(Level.UP, ch))
+					validTurns.add(ch);
+				if(d == 0 && isValidTurn(Level.DOWN, ch))
+					validTurns.add(-ch);
 			}
-			if ((i == 0 || moves > 0) && i + moves + 1 <= length) { // can do an R
-				moves++;
-				scramble += "/";
-				doR(state);
+			if(!r)
+				validTurns.add(0);
+			int turn = validTurns.get(random(validTurns.size()));
+			if(turn > 0) {
+				applyTurn(Level.UP, turn);
+				r = false;
+			} else if(turn < 0) {
+				applyTurn(Level.DOWN, -turn);
+				r = false;
+			} else {
+				doR();
+				r = true;
 			}
 		}
+		finalizeScramble();
 	}
-
-	private void applyTurn(char[] level, int wedgeTurns) {
-		char[] old = Arrays.copyOf(level, level.length);
-		Arrays.fill(level, (char) 0);
+	private int u = 0, d = 0;
+	private void finalizeScramble() {
+		if(u + d == 0)
+			return;
+		if(u > 6)
+			u -= 12;
+		if(d > 6)
+			d -= 12;
+		String temp = u + "," + d;
+		if(easyRead)
+			temp = "(" + temp + ")";
+		scramble += temp;
+		u = 0; d = 0;
+	}
+	private void applyTurn(Level l, int wedgeTurns) {
+		if(Level.UP == l)
+			u = wedgeTurns;
+		else
+			d = wedgeTurns;
+		char[] old = Arrays.copyOf(state[l.ordinal()], state[l.ordinal()].length);
+		Arrays.fill(state[l.ordinal()], (char) 0);
 		int newStartPiece = indexOfPieceAfterTurning(old, wedgeTurns);
 		int numPieces = numPieces(old);
 		for (int ch = 0; ch < numPieces; ch++) {
-			level[ch] = old[(newStartPiece + ch) % numPieces];
+			state[l.ordinal()][ch] = old[(newStartPiece + ch) % numPieces];
 		}
 	}
 
@@ -161,7 +176,9 @@ public class SquareOneScramble extends Scramble {
 		return ch;
 	}
 
-	private void doR(char[][] state) {
+	private void doR() {
+		finalizeScramble();
+		scramble += " / ";
 		// fill up the top
 		char[] oldTop = Arrays.copyOf(state[0], state[0].length);
 		Arrays.fill(state[0], indexOfPieceAfterTurning(state[0], 6),
@@ -182,31 +199,30 @@ public class SquareOneScramble extends Scramble {
 		}
 	}
 
-	private final Pattern regexp = Pattern.compile("^[(]?([-]?[0-9]+),([-]?[0-9]+)[)]?$");
+	private final Pattern regexp = Pattern.compile("^[ ]*[(]?([-]?[0-9]+),([-]?[0-9]+)[)]?[ ]*$");
 	private boolean validateScramble() {
-		String[] trns = scramble.split(" ");
+		String[] trns = scramble.split("/", -1);
 		scramble = "";
 		for(int ch = 0; ch < trns.length; ch++) {
 			Matcher match;
-			if(trns[ch].equals("/")) {
-				scramble += "/";
-				doR(state);
-			} else if(trns[ch].equals("")) {
+			if(trns[ch].matches("[ ]*")) {
 				
 			} else if((match = regexp.matcher(trns[ch])).matches()) {
 				int top = Integer.parseInt(match.group(1));
 				int bot = Integer.parseInt(match.group(2));
-				scramble += " " + (easyRead ? "(" : "") + top + "," + bot + (easyRead ? ")" : "") + " "; //TODO - generalize
 				if(top < 0) top += 12;
 				if(bot < 0) bot += 12;
-				if(!isValidTurn(state[0], top % 6) || !isValidTurn(state[1], bot % 6)) {
+				if(!isValidTurn(Level.UP, top) || !isValidTurn(Level.DOWN, bot)) {
 					return false;
 				}
-				applyTurn(state[0], top);
-				applyTurn(state[1], bot);
+				applyTurn(Level.UP, top);
+				applyTurn(Level.DOWN, bot);
 			} else
 				return false;
+			if(ch != trns.length - 1)
+				doR();
 		}
+		finalizeScramble();
 		return true;
 	}
 	
@@ -281,7 +297,7 @@ public class SquareOneScramble extends Scramble {
 		}
 	}
 
-	double multiplier = 1.4; //multiplier
+	double multiplier = 1.4;
 	private GeneralPath[] getWedgePoly(double x, double y, int radius) {
 		AffineTransform trans = AffineTransform.getTranslateInstance(x, y);
 		GeneralPath p = new GeneralPath();

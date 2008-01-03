@@ -51,10 +51,10 @@ public class MegaminxScramble extends Scramble {
 		}
 	}
 	
-	public MegaminxScramble(String variation, String s, String... attrs) throws Exception {
+	public MegaminxScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
 		super(s);
 		initializeImage();
-		if(!validateScramble()) throw new Exception("Invalid scramble!");
+		if(!validateScramble()) throw new InvalidScrambleException();
 	}
 
 	public MegaminxScramble(String variation, int length, String... attrs) {

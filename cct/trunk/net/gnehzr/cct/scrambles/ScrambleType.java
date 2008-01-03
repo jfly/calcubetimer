@@ -1,6 +1,9 @@
 package net.gnehzr.cct.scrambles;
 
+import java.lang.reflect.InvocationTargetException;
+
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.scrambles.Scramble.InvalidScrambleException;
 
 public class ScrambleType {
 	private Class<?> puzzleType;
@@ -39,11 +42,24 @@ public class ScrambleType {
 		return temp;
 	}
 
-	public Scramble generateScramble(String scramble) throws Exception {
+	public Scramble generateScramble(String scramble) throws InvalidScrambleException {
 		Scramble temp = null;
 		try {
 			temp = (Scramble) puzzleType.getConstructor(String.class, String.class, String[].class).newInstance(variation, scramble, Configuration.getPuzzleAttributes(this));
-		} catch (Exception e) {
+		} catch (InvocationTargetException e) {
+			if(e.getCause() instanceof InvalidScrambleException) {
+				InvalidScrambleException ise = (InvalidScrambleException) e.getCause();
+				throw ise;
+			}
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
 		return temp;
