@@ -18,6 +18,8 @@ public class MegaminxScramble extends Scramble {
 	private int length;
 	private int[][] image;
 	public static final int DEFAULT_UNIT_SIZE = 30;
+	public static final double UNFOLDHEIGHT = 2 + 3 * Math.sin(.3 * Math.PI) + Math.sin(.1 * Math.PI);
+	public static final double UNFOLDWIDTH = 4 * Math.cos(.1 * Math.PI) + 2 * Math.cos(.3 * Math.PI);
 
 	public static int getDefaultScrambleLength(String variation) {
 		return 60;
@@ -321,16 +323,16 @@ public class MegaminxScramble extends Scramble {
 	}
 
 	private int getMegaminxViewWidth(int gap, int minxRad) {
-		return (int)(minxRad*9.9596+3*gap);
+		return (int)(UNFOLDWIDTH * 2 * minxRad + 3 * gap);
 	}
 	private int getMegaminxViewHeight(int gap, int minxRad) {
-		return (int)(4.736*minxRad+2*gap);
+		return (int)(UNFOLDHEIGHT * minxRad + 2 * gap);
 	}
 	public int getNewUnitSize(int width, int height, int gap) {
 //		return  1 + (int) (Math.min((width - 3*gap) / 9.9596, //This appears to be always 1 less than before, even if it hasn't resized
 //				(height - 2*gap) / 4.736));
-		return (int) Math.round(Math.min((width - 3*gap) / 9.9596,
-				(height - 2*gap) / 4.736));
+		return (int) Math.round(Math.min((width - 3*gap) / (UNFOLDWIDTH * 2),
+				(height - 2*gap) / UNFOLDHEIGHT));
 	}
 
 	public String getFaceClicked(int x, int y, int gap, int minxRad) {
