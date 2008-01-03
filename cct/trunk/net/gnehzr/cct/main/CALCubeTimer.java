@@ -400,7 +400,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		}
 
 		maximize = new JButton(flipFullScreenAction);
-		maximize.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE); //TODO MINSIZE PROPERTY
+		maximize.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE);
 
 
 		profiles = new EditableProfileList("Add new profile", new Profile("Default"));
@@ -851,7 +851,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 					outputFile.getPath(),
 					JOptionPane.INFORMATION_MESSAGE);
 		} catch(Exception e) {
-			showErrorMessage("Unknown error\n" + e.toString(), "Hmmmmm... Unknown error");
+			showErrorMessage("Error!\n" + e.toString(), "Hmmmmm...");
 		}
 	}
 
@@ -861,25 +861,23 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			in = new BufferedReader(new InputStreamReader(inputFile.openStream()));
 			scrambles = ScrambleList.importScrambles(type, in);
 			in.close();
-			JOptionPane.showMessageDialog(this,
-					"Scrambles successfully loaded!",
-					inputFile.getPath(),
-					JOptionPane.INFORMATION_MESSAGE);
 
 			int newLength = scrambles.getCurrent().getLength();
 			scrambleChoice = type;
 			scrambleChoice.setLength(newLength);
-//			safeSetValue(scrambleLength, newLength);
+			safeSetValue(scrambleLength, newLength);
 			safeSelectItem(scrambleChooser, type);
-//			updateScramble();
-//			this triggers an event that calls updateScramble, so commenting is probably okay
-			scrambleLength.setValue(newLength);
+			updateScramble();
+			JOptionPane.showMessageDialog(this,
+					"Scrambles successfully loaded!",
+					inputFile.getPath(),
+					JOptionPane.INFORMATION_MESSAGE);
 		} catch(ConnectException e) {
 			showErrorMessage("Connection refused!", "Error!");
 		} catch(FileNotFoundException e) {
 			showErrorMessage(inputFile + "\nURL not found!", "Four-O-Four-ed!");
 		} catch(Exception e) {
-			showErrorMessage("Unknown error\n" + e.toString(), "Hmmmmm... Unknown error");
+			showErrorMessage("Error!\n" + e.toString(), "Hmmmmm...");
 		}
 	}
 

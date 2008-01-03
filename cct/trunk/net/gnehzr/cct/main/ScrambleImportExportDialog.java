@@ -12,13 +12,15 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.miscUtils.JSpinnerWithText;
 import net.gnehzr.cct.scrambles.ScrambleType;
 
 @SuppressWarnings("serial")
-public class ScrambleImportExportDialog extends JPanel implements ActionListener {
+public class ScrambleImportExportDialog extends JPanel implements ActionListener, AncestorListener {
 	private boolean importing;
 	private JTextField urlField;
 	private JButton browse;
@@ -55,10 +57,16 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 			subPanel.add(scrambleLength);
 			subPanel.add(numberOfScrambles);
 		}
-
 		add(subPanel);
+		this.addAncestorListener(this);
 	}
-
+	
+	public void ancestorAdded(AncestorEvent e) {
+		urlField.requestFocus();
+	}
+	public void ancestorMoved(AncestorEvent event) {}
+	public void ancestorRemoved(AncestorEvent event) {}
+	
 	public URL getURL() {
 		try {
 			return new URI(urlField.getText()).toURL();

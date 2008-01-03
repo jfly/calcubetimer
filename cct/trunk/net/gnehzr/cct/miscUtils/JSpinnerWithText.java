@@ -6,14 +6,12 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.JTextComponent;
 
 @SuppressWarnings("serial")
-public class JSpinnerWithText extends JPanel implements AncestorListener, ChangeListener {
+public class JSpinnerWithText extends JPanel implements ChangeListener {
 	private JSpinner integerSpinner = null;
 
 	public JSpinnerWithText(int initial, int min, String text) {
@@ -33,7 +31,6 @@ public class JSpinnerWithText extends JPanel implements AncestorListener, Change
         subPanel.add(integerSpinner);
 
         add(subPanel);
-        addAncestorListener(this);
 	}
 
 	public int getSpinnerValue() {
@@ -44,12 +41,6 @@ public class JSpinnerWithText extends JPanel implements AncestorListener, Change
 		integerSpinner.setValue(i);
 	}
 
-	@SuppressWarnings("deprecation")
-	public void ancestorAdded(AncestorEvent e) {
-		integerSpinner.requestDefaultFocus();
-	}
-	public void ancestorMoved(AncestorEvent e) {}
-	public void ancestorRemoved(AncestorEvent e) {}
 	public void stateChanged(ChangeEvent e) {
 		final JTextComponent textComponent = ((JSpinner.DefaultEditor)integerSpinner.getEditor()).getTextField();
 		SwingUtilities.invokeLater(new Runnable(){
