@@ -94,7 +94,6 @@ public class TickerSlider extends JPanel implements ChangeListener {
 	}
 
 	public static void main(String... args) {
-		Configuration.init();
 		JFrame test = new JFrame();
 		test.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		TickerSlider temp = new TickerSlider(new Timer(0, null));

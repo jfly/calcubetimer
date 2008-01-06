@@ -79,8 +79,7 @@ public class SolveTime implements Comparable<SolveTime> {
 			if(seconds < 0) throw new Exception("Can't have negative times!");
 			else if(seconds > 21000000) throw new Exception("Time too large!");
 			this.hundredths = (int)(100 * seconds + .5);
-		} else
-			System.out.println(isPop + "\t" + hundredths);
+		}
 	}
 	
 	public void setScramble(String scramble) {
