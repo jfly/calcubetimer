@@ -673,6 +673,8 @@ public abstract class Configuration {
 		}
 	}
 	public static void setPuzzle(String puzzle) {
+		if(getScrambleType(puzzle) == null)
+			return;
 		props.setProperty("scramble_default_length", "" + getScrambleType(puzzle).getLength());
 		props.setProperty("scramble_default_puzzle", puzzle);
 	}
@@ -694,7 +696,9 @@ public abstract class Configuration {
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
-		} 
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
 		return 10;
 	}
 	

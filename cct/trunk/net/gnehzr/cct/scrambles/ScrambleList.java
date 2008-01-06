@@ -20,8 +20,10 @@ public class ScrambleList extends ArrayList<Scramble>{
 		try {
 			temp = get(scrambleNumber);
 		} catch(IndexOutOfBoundsException e) {
-			temp = type.generateScramble();
-			add(scrambleNumber, temp);
+			if(type != null) {
+				temp = type.generateScramble();
+				add(scrambleNumber, temp);
+			}
 		}
 		return temp;
 	}
