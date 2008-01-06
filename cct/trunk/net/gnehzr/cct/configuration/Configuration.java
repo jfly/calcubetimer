@@ -15,6 +15,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -36,11 +37,8 @@ import net.gnehzr.cct.scrambles.ScrambleType;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants;
 import org.jvnet.substance.watermark.SubstanceImageWatermark;
-//Might this: http://www.javacoffeebreak.com/articles/designpatterns/index.html
-//be a better solution?
-public class Configuration {
-	private Configuration(){}
 
+public abstract class Configuration {
 	public interface ConfigurationChangeListener {
 		public void configurationChanged();
 	}
@@ -64,35 +62,43 @@ public class Configuration {
 	}
 
 	public static final String newLine = System.getProperty("line.separator");
-	public static void init() {
+	static {
 		try {
 			loadConfiguration(guestFile = new File("profiles/Default/Default.properties"));
-		} catch (IOException e) {}
+		} catch (IOException e) {e.printStackTrace();} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
 	}
 
-	//TODO - why is this data type necessary?
 	private static CopyOnWriteArrayList<ConfigurationChangeListener> listeners = new CopyOnWriteArrayList<ConfigurationChangeListener>();
-	public static void addConfigurationChangeListener(ConfigurationChangeListener listener) {
+	public static void addConfigurationChangeListener(final ConfigurationChangeListener listener) {
 		listeners.add(listener);
 	}
 
 	private static SortedProperties defaults, props;
 	private static File currentFile, initialFile, guestFile;
-	public static void loadConfiguration(File f) throws IOException {
-		f.createNewFile();
+	public static void loadConfiguration(File f) throws IOException, URISyntaxException {
 		defaults = new SortedProperties();
 		InputStream in = new FileInputStream(initialFile = new File("profiles/initial.properties"));
+//		System.out.println(initialFile.exists());
 		defaults.load(in);
 		in.close();
 		defaults.setProperty("statistics_string_Average", defaults.getProperty("statistics_string_Average").replaceAll("\n", newLine));
 		defaults.setProperty("statistics_string_Session", defaults.getProperty("statistics_string_Session").replaceAll("\n", newLine));
 		props = new SortedProperties(defaults);
-		try {
-			currentFile = f;
-			in = new FileInputStream(f);
-			props.load(in);
-			in.close();
-		} catch(Exception e) {}
+		
+		currentFile = f;
+//		System.out.println("hi " + Configuration.class.getResource("profile/initial.properties"));
+//		System.out.println(System.getProperty("user.dir")); //TODO - get proper directory here!
+		File root = new File(Configuration.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+		if(root.isFile())
+			root = root.getParentFile();
+		System.out.println(root);
+		f.getParentFile().mkdir();
+		f.createNewFile();
+		in = new FileInputStream(f);
+		props.load(in);
+		in.close();
 	}
 
 	public static void saveConfigurationToFile() {
@@ -135,10 +141,11 @@ public class Configuration {
 			frames[ch].repaint();
 		}
 	}
-
+	
 	public static void apply() {
 		updateBackground();
-		for(ConfigurationChangeListener listener : listeners) {
+		//we must iterate over a copy of listeners to avoid threading issues
+		for(ConfigurationChangeListener listener : new ArrayList<ConfigurationChangeListener>(listeners)) {
 			listener.configurationChanged();
 		}
 	}
@@ -652,25 +659,22 @@ public class Configuration {
 		props.setProperty("gui_timer_LessAnnoyingDisplay", "" + b);
 	}
 
-	public static ScrambleType getScrambleType() {
-		for(ScrambleType type : getScrambleTypes())
-			if(type.getPuzzleName().equals(props.getProperty("scramble_default_type")) &&
-					type.getVariation().equals(props.getProperty("scramble_default_variation"))) {
-				type.setLength(Integer.parseInt(props.getProperty("scramble_default_length")));
-				return type;
-			}
+	public static String getPuzzle() {
+		String lastPuzzle = props.getProperty("scramble_default_puzzle");
+		ScrambleType type = getScrambleType(lastPuzzle);
+		if(type != null) {
+			type.setLength(Integer.parseInt(props.getProperty("scramble_default_length")));
+			return lastPuzzle;
+		}
 		try {
-			return getScrambleTypes()[0];
-		} catch(Exception e) {
-			return new ScrambleType(null, "", 10);
+			return getCustomScrambleTypes().get(0);
+		} catch(IndexOutOfBoundsException e) {
+			return null;
 		}
 	}
-	public static void setScrambleType(ScrambleType type) {
-		props.setProperty("scramble_default_length", "" + type.getLength());
-		if(type.getPuzzleName() != null) {
-			props.setProperty("scramble_default_type", type.getPuzzleName());
-			props.setProperty("scramble_default_variation", type.getVariation());
-		}
+	public static void setPuzzle(String puzzle) {
+		props.setProperty("scramble_default_length", "" + getScrambleType(puzzle).getLength());
+		props.setProperty("scramble_default_puzzle", puzzle);
 	}
 	public static int getScrambleLength(ScrambleType puzzle) {
 		try {
@@ -770,6 +774,50 @@ public class Configuration {
 			types.toArray(scrambleTypes);
 		}
 		return scrambleTypes;
+	}
+	
+	public static ScrambleType getScrambleType(String puzzleName) {
+		if(puzzleName == null)
+			return null;
+		String puzz = puzzleName.split(":")[0];
+		for(ScrambleType type : getScrambleTypes()) {
+			if(type.toString().equals(puzz))
+				return type;
+		}
+		return null;
+	}
+	
+	public static ArrayList<String> getCustomScrambleTypesDefaults() {
+		return getCustomScrambleTypes(defaults);
+	}
+	
+	public static ArrayList<String> getCustomScrambleTypes() {
+		return getCustomScrambleTypes(props);
+	}
+	
+	private static ArrayList<String> getCustomScrambleTypes(Properties props) {
+		ArrayList<String> scramType = new ArrayList<String>();
+		for(ScrambleType t : getScrambleTypes()) {
+			scramType.add(t.toString());
+		}
+		
+		String[] variations = props.getProperty("scramble_types").split(";");
+		for(int ch = variations.length - 1; ch >= 0; ch--) {
+			String puzz = variations[ch].split(":")[0];
+			if(scramType.contains(puzz)) {
+				if(variations[ch].indexOf(':') == -1)
+					scramType.remove(puzz);
+				scramType.add(0, variations[ch]);
+			}
+		}
+		return scramType;
+	}
+	public static void setCustomScrambleTypes(String[] customTypes) {
+		String types = "";
+		for(String t : customTypes) {
+			types += t + ";";
+		}
+		props.setProperty("scramble_types", types);
 	}
 	
 	public static HashMap<String, Color> getPuzzleColorScheme(Class<?> scrambleType) {

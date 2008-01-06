@@ -35,8 +35,8 @@ public class EditableProfileList extends JPanel implements ActionListener, KeyLi
 	}
 	private String addText;
 	private Profile protectedProfile = null;
+	@SuppressWarnings("serial")
 	private class MyRenderer extends JLabel implements ListCellRenderer {
-		private static final long serialVersionUID = 1L;
 		public MyRenderer() {
 			setOpaque(true);
 		}

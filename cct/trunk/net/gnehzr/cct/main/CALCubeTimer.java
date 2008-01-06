@@ -1,12 +1,18 @@
 package net.gnehzr.cct.main;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.LayoutManager;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.awt.geom.AffineTransform;
@@ -21,23 +27,57 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.Timer;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationDialog;
 import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.help.FunScrollPane;
 import net.gnehzr.cct.main.EditableProfileList.EditableProfileListListener;
-import net.gnehzr.cct.miscUtils.DefaultListCellEditor;
 import net.gnehzr.cct.miscUtils.DynamicButton;
 import net.gnehzr.cct.miscUtils.DynamicCheckBox;
 import net.gnehzr.cct.miscUtils.DynamicCheckBoxMenuItem;
@@ -46,8 +86,10 @@ import net.gnehzr.cct.miscUtils.DynamicMenu;
 import net.gnehzr.cct.miscUtils.DynamicMenuItem;
 import net.gnehzr.cct.miscUtils.DynamicSelectableLabel;
 import net.gnehzr.cct.miscUtils.DynamicString;
+import net.gnehzr.cct.miscUtils.DynamicStringSettable;
 import net.gnehzr.cct.miscUtils.JListMutable;
 import net.gnehzr.cct.miscUtils.MyCellRenderer;
+import net.gnehzr.cct.miscUtils.PuzzleTypeCellRenderer;
 import net.gnehzr.cct.miscUtils.Utils;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleList;
@@ -55,37 +97,33 @@ import net.gnehzr.cct.scrambles.ScrambleType;
 import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
 import net.gnehzr.cct.stackmatInterpreter.StackmatState;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
-import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
+import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.umts.client.CCTClient;
 
 import org.jvnet.lafwidget.LafWidget;
 import org.jvnet.lafwidget.utils.LafConstants;
 import org.jvnet.substance.SubstanceLookAndFeel;
-
-import net.gnehzr.cct.miscUtils.DynamicStringSettable;
-
-import org.xml.sax.*;
+import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-
 @SuppressWarnings("serial")
-public class CALCubeTimer extends JFrame implements ActionListener, MouseListener, KeyListener, ListDataListener, ChangeListener, ConfigurationChangeListener, WindowFocusListener, EditableProfileListListener {
+public class CALCubeTimer extends JFrame implements ActionListener, ListDataListener, ChangeListener, ConfigurationChangeListener, WindowFocusListener, EditableProfileListListener {
 	public static final String CCT_VERSION = "0.3 beta";
 	private static JFrame ab = null;
 	private JScrollPane timesScroller = null;
 	private TimerLabel timeLabel = null;
 	private JLabel onLabel = null;
-	private JListMutable timesList = null;
+	private JListMutable<SolveTime> timesList = null;
 	private TimerPanel startStopPanel = null;
 	private JFrame fullscreenFrame = null;
 	private TimerLabel bigTimersDisplay = null;
 	private ScrambleArea scrambleText = null;
 	private ScrambleFrame scramblePopup = null;
-	private ScrambleType scrambleChoice = null;
+	private String puzzleChoice = null;
 	private JComboBox scrambleChooser = null;
 	private JPanel scrambleAttributes = null;
 	private JSpinner scrambleNumber, scrambleLength = null;
@@ -96,12 +134,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	private TimerHandler timeListener = null;
 	private CCTClient client;
 	private ConfigurationDialog configurationDialog;
-	private static final ImageIcon cube = createImageIcon("cube.png", "Cube");
+	public static final ImageIcon cube = createImageIcon("cube.png", "Cube");
 
 	public CALCubeTimer() throws Exception {
 		this.setUndecorated(true);
 
-		Configuration.init();		
 		stackmatTimer = new StackmatInterpreter();
 		stackmatTimer.execute();
 		Configuration.addConfigurationChangeListener(stackmatTimer);
@@ -120,6 +157,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		ab.setIconImage(cube.getImage());
 		ab.setAlwaysOnTop(true);
 		JTextPane pane = new JTextPane();
+		pane.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 		pane.setOpaque(false);
 		pane.setEditable(false);
 		URL helpURL = CALCubeTimer.class.getResource("about.html");
@@ -269,7 +307,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		fullScreenTimingAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_F);
 		actionMap.put("togglefullscreentiming", fullScreenTimingAction);
 
-		//TODO - possibly switch to anonymous classes?
+		//TODO - possibly switch to anonymous inner classes?
 //		AbstractAction act = new AbstractAction() {
 //			public void actionPerformed(ActionEvent e) {
 //				Configuration.setFullScreenWhileTiming(((AbstractButton)e.getSource()).isSelected());
@@ -299,10 +337,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		tickTock = new Timer(0, null);
 		configurationDialog = new ConfigurationDialog(this, true, stackmatTimer, tickTock);
 
-		scrambles = new ScrambleList(scrambleChoice);
+		scrambles = new ScrambleList(Configuration.getScrambleType(puzzleChoice));
 
-		scrambleChooser = new JComboBox(Configuration.getScrambleTypes());
+		scrambleChooser = new JComboBox(Configuration.getCustomScrambleTypes().toArray(new String[0]));
 		scrambleChooser.addActionListener(this);
+		scrambleChooser.setRenderer(new PuzzleTypeCellRenderer());
 
 		SpinnerNumberModel model = new SpinnerNumberModel(1, //initial value
 				1,					//min
@@ -336,19 +375,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		stats = new Statistics();
 		stats.addListDataListener(this);
 		
-		timesList = new JListMutable(stats);
 		tf = new JTextField();
-		stats.setListandEditor(timesList, tf);
-
         tf.setBorder(BorderFactory.createLineBorder(Color.black));
-        timesList.setListCellEditor(new DefaultListCellEditor(tf));
+		timesList = new JListMutable<SolveTime>(stats, tf, false, "Type new time here", "Add time...");
 		timesList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		timesList.setLayoutOrientation(JList.VERTICAL);
-		timesList.addMouseListener(this);
-		timesList.addKeyListener(this);
-		timesList.setCellRenderer(new MyCellRenderer());
-		
+		timesList.setCellRenderer(new MyCellRenderer(stats));
 		timesScroller = new JScrollPane(timesList);
+//		timesScroller.setPreferredSize(new Dimension(100, 0));TODO
 
 		repaintTimes();
 
@@ -440,6 +474,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 						Configuration.loadConfiguration(new File("profiles/"+selected+"/"+selected+".properties"));
 					} catch (IOException e) {
 						e.printStackTrace();
+					} catch (URISyntaxException e) {
+						e.printStackTrace();
 					}
 					Configuration.apply();
 				}
@@ -482,14 +518,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	private static final String SCRAMBLE_ATTRIBUTE_CHANGED = "Scramble Attribute Changed";
 	private void createScrambleAttributes() {
 		scrambleAttributes.removeAll();
-		if(scrambleChoice == null) //this happens when we are initializing cct, before a profile is selected
+		if(puzzleChoice == null) //this happens when we are initializing cct, before a profile is selected
 			return;
-		String[] attrs = Configuration.getPuzzleAttributes(scrambleChoice.getPuzzleClass());
+		ScrambleType curr = Configuration.getScrambleType(puzzleChoice);
+		String[] attrs = Configuration.getPuzzleAttributes(curr.getPuzzleClass());
 		attributes = new JCheckBox[attrs.length];
 
 		for(int ch = 0; ch < attrs.length; ch++) { //create checkbox for each possible attribute
 			boolean selected = false;
-			for(String attr : Configuration.getPuzzleAttributes(scrambleChoice)) { //see if attribute is selected
+			for(String attr : Configuration.getPuzzleAttributes(curr)) { //see if attribute is selected
 				if(attrs[ch].equals(attr)) {
 					selected = true;
 					break;
@@ -823,7 +860,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 			}
 			String[] attributes = new String[attrs.size()];
 			attributes = attrs.toArray(attributes);
-			Configuration.setPuzzleAttributes(scrambleChoice, attributes);
+			Configuration.setPuzzleAttributes(Configuration.getScrambleType(puzzleChoice), attributes);
 			Scramble curr = scrambles.getCurrent();
 			curr.setAttributes(attributes);
 			curr.refreshImage();
@@ -855,18 +892,18 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		}
 	}
 
-	private void readScramblesFile(URL inputFile, ScrambleType type) {
+	private void readScramblesFile(URL inputFile, ScrambleType newType) {
 		BufferedReader in = null;
 		try {
 			in = new BufferedReader(new InputStreamReader(inputFile.openStream()));
-			scrambles = ScrambleList.importScrambles(type, in);
+			scrambles = ScrambleList.importScrambles(newType, in);
 			in.close();
 
 			int newLength = scrambles.getCurrent().getLength();
-			scrambleChoice = type;
-			scrambleChoice.setLength(newLength);
+			puzzleChoice = newType.toString();
+			newType.setLength(newLength);
 			safeSetValue(scrambleLength, newLength);
-			safeSelectItem(scrambleChooser, type);
+			safeSelectItem(scrambleChooser, puzzleChoice);
 			updateScramble();
 			JOptionPane.showMessageDialog(this,
 					"Scrambles successfully loaded!",
@@ -890,7 +927,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		test.setValue(val);
 		test.addChangeListener(this);
 	}
-	private void safeSelectItem(JComboBox test, Object item) {
+	private void safeSelectItem(JComboBox test, String item) {
 		test.removeActionListener(this);
 		test.setSelectedItem(item);
 		test.addActionListener(this);
@@ -903,9 +940,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	private void updateScramble() {
 		if(scrambleChooser.getSelectedItem() == null) return;
 
-		ScrambleType newType = (ScrambleType) scrambleChooser.getSelectedItem();
+		String newPuzzleChoice = (String)scrambleChooser.getSelectedItem();
 		int newLength = (Integer) scrambleLength.getValue();
-		if(scrambleChoice != newType || scrambleChoice.getLength() != newLength) {
+		
+		ScrambleType scrambleChoice = Configuration.getScrambleType(puzzleChoice);
+		ScrambleType newScrambleChoice = Configuration.getScrambleType(newPuzzleChoice);
+		if(scrambleChoice != newScrambleChoice || scrambleChoice.getLength() != newLength) {
 			int choice = JOptionPane.YES_OPTION;
 			if(scrambleChoice != null && scrambles.getCurrent().isImported() && !(Boolean)serverScramblesAction.getValue(Action.SELECTED_KEY)) {
 				choice = JOptionPane.showOptionDialog(this,
@@ -929,8 +969,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 							null);
 			}
 			if(choice == JOptionPane.YES_OPTION) {
-				newType.setLength(newLength);
-				scrambleChoice = newType;
+				newScrambleChoice.setLength(newLength);
+				puzzleChoice = newPuzzleChoice;
+				scrambleChoice = newScrambleChoice;
 				createScrambleAttributes();
 				validate();
 				if((Boolean)serverScramblesAction.getValue(Action.SELECTED_KEY))
@@ -938,8 +979,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				else
 					scrambles = new ScrambleList(scrambleChoice);
 			}
-		}
-		safeSelectItem(scrambleChooser, scrambleChoice);
+		} else
+			puzzleChoice = newPuzzleChoice;
+		safeSelectItem(scrambleChooser, puzzleChoice);
 		safeSetValue(scrambleLength, scrambleChoice.getLength());
 		//update new number of scrambles
 		if((Integer)((SpinnerNumberModel)scrambleNumber.getModel()).getMaximum() != scrambles.size())
@@ -963,7 +1005,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 	private void saveToConfiguration() {
 		Configuration.setKeyboardTimer((Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
-		Configuration.setScrambleType(scrambleChoice);
+		Configuration.setPuzzle(puzzleChoice);
 		Configuration.setScrambleViewDimensions(scramblePopup.getSize());
 		Configuration.setScrambleViewLocation(scramblePopup.getLocation());
 		Configuration.setMainFrameDimensions(this.getSize());
@@ -981,69 +1023,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		}
 	}
 
-	//Listeners for the JList of times
-	public void mouseClicked(MouseEvent e) {}
-	public void mouseEntered(MouseEvent e) {}
-	public void mouseExited(MouseEvent e) {}
-	public void mousePressed(MouseEvent e) {
-		if(e.getSource() == timesList)
-			maybeShowPopup(e);
-	}
-	public void mouseReleased(MouseEvent e) {
-		if(e.getSource() == timesList)
-			maybeShowPopup(e);
-	}
-	private void maybeShowPopup(MouseEvent e) {
-		if(e.isPopupTrigger()) {
-			if(timesList.getSelectedIndices().length < 2) {
-				//if right clicking on a single time, this will select it first
-				timesList.setSelectedIndex(timesList.locationToIndex(e.getPoint()));
-			}
-			if(timesList.getSelectedIndex() != stats.getSize() - 1)
-				stats.showPopup(e);
-		}
-	}
-	public void keyPressed(KeyEvent e) {
-		if(e.getSource() == timesList && (e.getKeyCode() == KeyEvent.VK_DELETE || e.getKeyCode() == KeyEvent.VK_BACK_SPACE)) {
-			Object[] selected = null;
-			try {
-				selected = timesList.getSelectedValues();
-			} catch(Exception excptn) {
-				return;
-			}
-			if(selected.length == 0 || selected[0] == null)
-				return;
-			String temp = "";
-			for(int ch = 0; ch < selected.length; ch++) {
-				temp += selected[ch] + ((ch != selected.length - 1) ? ", " : "");
-			}
-			int choice = JOptionPane.showConfirmDialog(
-					this,
-					"Are you sure you wish to remove " + temp + "?",
-					"Confirm",
-					JOptionPane.YES_NO_OPTION);
-			if(choice == JOptionPane.YES_OPTION) {
-				for(int ch = 0; ch < selected.length; ch++) {
-					stats.remove(selected[ch]);
-				}
-				if(selected.length > 1)
-					timesList.clearSelection();
-				else if(timesList.getSelectedIndex() >= stats.getSize()){
-					timesList.setSelectedIndex(stats.getSize() - 1);
-				}
-			}
-		}
-	}
-	public void keyReleased(KeyEvent e) {}
-	public void keyTyped(KeyEvent e) {}
-
 	public void contentsChanged(ListDataEvent e) {
 		if(e != null && e.getType() == ListDataEvent.INTERVAL_ADDED) {
 			Scramble curr = scrambles.getCurrent();
 			if(curr != null)
-				stats.get(stats.getSize() - 2).setScramble(scrambles.getCurrent().toString());
+				stats.get(stats.getSize() - 1).setScramble(scrambles.getCurrent().toString());
 			if((Boolean)serverScramblesAction.getValue(Action.SELECTED_KEY)) {
-				client.requestNextScramble(scrambleChoice);
+				client.requestNextScramble(Configuration.getScrambleType(puzzleChoice));
 			} else if(curr != null) {
 				boolean outOfScrambles = curr.isImported(); //This is tricky, think before you change it
 				outOfScrambles = !scrambles.getNext().isImported() && outOfScrambles;
@@ -1090,6 +1076,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 	public void setScramble(String s) { //this is only called by cctclient
 		try {
+			ScrambleType scrambleChoice = Configuration.getScrambleType(puzzleChoice);
 			scrambles = new ScrambleList(scrambleChoice, scrambleChoice.generateScramble(s));
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
@@ -1121,7 +1108,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		hideScramblesAction.putValue(Action.SELECTED_KEY, Configuration.isHideScrambles());
 		spacebarOptionAction.putValue(Action.SELECTED_KEY, Configuration.isSpacebarOnly());
 		fullScreenTimingAction.putValue(Action.SELECTED_KEY, Configuration.isFullScreenWhileTiming());
-		scrambleChooser.setSelectedItem(Configuration.getScrambleType());
+		scrambleChooser.setModel(new DefaultComboBoxModel(Configuration.getCustomScrambleTypes().toArray(new String[0])));
+		scrambleChooser.setSelectedItem(Configuration.getPuzzle());
 		keyboardTimingAction.putValue(Action.SELECTED_KEY, Configuration.isKeyboardTimer());		
 		timeLabel.setKeyboard(Configuration.isKeyboardTimer());
 		timeLabel.setEnabledTiming(Configuration.isIntegratedTimerDisplay());
@@ -1131,7 +1119,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		startStopPanel.setEnabled((Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
 		startStopPanel.setVisible(!Configuration.isIntegratedTimerDisplay());
 		bigTimersDisplay.setKeyboard((Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
-
+		
 		updateScramble();
 		parseXML_GUI(Configuration.getXMLGUILayout());
 		Dimension size = Configuration.getMainFrameDimensions();
@@ -1192,10 +1180,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	// Actions section {{{
 	public void addTimeAction() {
 //		SolveTime newTime = promptForTime(this, scrambles.getCurrent().toString());
-		int index = stats.getSize() - 1;
-		timesList.setSelectedIndex(index);
-		timesList.editCellAt(index, null);
-		tf.requestFocusInWindow();
+		timesList.promptForNewItem();//TODO
 	}
 
 	public void resetAction(){
@@ -1206,6 +1191,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 				JOptionPane.YES_NO_OPTION);
 		if(choice == JOptionPane.YES_OPTION) {
 			timeLabel.reset();
+			ScrambleType scrambleChoice = Configuration.getScrambleType(puzzleChoice);
 			if((Boolean)serverScramblesAction.getValue(Action.SELECTED_KEY)) {
 				client.requestNextScramble(scrambleChoice);
 			} else {
@@ -1226,7 +1212,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 					JOptionPane.YES_NO_OPTION);
 		if(choice == JOptionPane.YES_OPTION) {
 			serverScramblesAction.putValue(Action.SELECTED_KEY, false);
-			ScrambleImportExportDialog scrambleImporter = new ScrambleImportExportDialog(true, (ScrambleType) scrambleChooser.getSelectedItem());
+			ScrambleImportExportDialog scrambleImporter = new ScrambleImportExportDialog(true, Configuration.getScrambleType(puzzleChoice));
 			choice = JOptionPane.showOptionDialog(this,
 					scrambleImporter,
 					"Import Scrambles",
@@ -1244,7 +1230,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 
 	public void exportScramblesAction(){
-		ScrambleImportExportDialog scrambleExporter = new ScrambleImportExportDialog(false, (ScrambleType) scrambleChooser.getSelectedItem());
+		ScrambleImportExportDialog scrambleExporter = new ScrambleImportExportDialog(false, Configuration.getScrambleType(puzzleChoice));
 		int choice = JOptionPane.showOptionDialog(this,
 				scrambleExporter,
 				"Export Scrambles",
@@ -1265,9 +1251,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 
 	public void showDocumentation(){
-		URI uri = null;
 		try {
-			uri = new URI("readme.html");
+			URI uri = new File("documentation/readme.html").toURI();
 			Desktop.getDesktop().browse(uri);
 		} catch(Exception error) {
 			JOptionPane.showMessageDialog(this,
@@ -1279,7 +1264,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 
 	public void showConfigurationDialog(){
 		saveToConfiguration();
-		configurationDialog.show(0);
+		configurationDialog.setVisible(true);
 	}
 
 	public void connectToServer(){
@@ -1292,6 +1277,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 		boolean b = (Boolean)serverScramblesAction.getValue(Action.SELECTED_KEY);
 		scrambleNumber.setEnabled(!b);
 		scrambleLength.setEnabled(!b);
+		ScrambleType scrambleChoice = Configuration.getScrambleType(puzzleChoice);
 		if(b) {
 			client.requestNextScramble(scrambleChoice);
 		} else {
@@ -1319,7 +1305,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, MouseListene
 	}
 
 	public void scrambleChooserAction(){
-		safeSetValue(scrambleLength, Configuration.getScrambleLength((ScrambleType) scrambleChooser.getSelectedItem()));
+		safeSetValue(scrambleLength, Configuration.getScrambleLength(Configuration.getScrambleType((String)scrambleChooser.getSelectedItem())));
 		updateScramble();
 	}
 

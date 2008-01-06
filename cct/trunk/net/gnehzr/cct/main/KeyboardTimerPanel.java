@@ -100,15 +100,16 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 				((Timer) evt.getSource()).stop();
 			}
 			public int keyCode;
-			public boolean equals(Object i) {
-				keyCode = (Integer) i;
-				return super.equals(i);
+			//This method allows us to emulate a constructor for an
+			//anonymous inner class. I also use this trick in JListMutable.
+			//I'm not sure this is the best way of doing this, but it's
+			//the only thing I could think of.
+			public ActionListener setKeyCode(int keyCode) {
+				this.keyCode = keyCode;
+				return this;
 			}
-		};
-		//TODO ok, this is horribly ugly, all I want to do is pass an int into the
-		//actionListener, is there some way of adding my own method?
-		checkForKeyPress.equals(code);
-
+		}.setKeyCode(code);
+		
 		new Timer(10, checkForKeyPress).start();
 	}
 

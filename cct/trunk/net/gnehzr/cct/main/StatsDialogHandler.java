@@ -215,7 +215,7 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 						"I don't know how to do that yet!",
 						JOptionPane.YES_NO_OPTION);
 				if(choice == JOptionPane.YES_OPTION)
-					configurationDialog.show(3);
+					configurationDialog.showSundayOptions();
 				if(choice == JOptionPane.CLOSED_OPTION)
 					return;
 				if(SendMailUsingAuthentication.isNotSetup())

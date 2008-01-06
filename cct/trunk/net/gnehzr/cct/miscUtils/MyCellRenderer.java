@@ -1,4 +1,5 @@
 package net.gnehzr.cct.miscUtils;
+
 import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JLabel;
@@ -11,17 +12,15 @@ import net.gnehzr.cct.statistics.SolveTime;
 
 @SuppressWarnings("serial")
 public class MyCellRenderer extends JLabel implements ListCellRenderer {
-	//Will highlight times from current average and from best rolling average
-	public MyCellRenderer() {
+	// Will highlight times from current average and from best rolling average
+	private Statistics times;
+	public MyCellRenderer(Statistics times) {
+		this.times = times;
 		setOpaque(true);
 	}
 
-	public Component getListCellRendererComponent(JList list,
-			Object value,
-			int index,
-			boolean isSelected,
-			boolean cellHasFocus) {
-
+	public Component getListCellRendererComponent(JList list, Object value,
+			int index, boolean isSelected, boolean cellHasFocus) {
 		setEnabled(list.isEnabled());
 		setFont(list.getFont());
 		setText("  " + value.toString() + "  ");
@@ -29,27 +28,29 @@ public class MyCellRenderer extends JLabel implements ListCellRenderer {
 		Color foreground = null;
 		Color background = null;
 
-		Statistics times = (Statistics) list.getModel();
-		SolveTime[] bestAndWorst = times.getBestAndWorstTimes(Statistics.averageType.SESSION);
-		if(bestAndWorst[0] == value) {
+		SolveTime[] bestAndWorst = times
+				.getBestAndWorstTimes(Statistics.averageType.SESSION);
+		if (bestAndWorst[0] == value) {
 			foreground = Configuration.getBestTimeColor();
-		} else if(bestAndWorst[1] == value) {
+		} else if (bestAndWorst[1] == value) {
 			foreground = Configuration.getWorstTimeColor();
 		}
-		
-		if(value instanceof SolveTime) {
-			boolean memberOfBestRA = times.containsTime((SolveTime) value, Statistics.averageType.RA);
-			boolean memberOfCurrentAverage = times.containsTime((SolveTime) value, Statistics.averageType.CURRENT);
-		
-			if(memberOfBestRA && memberOfCurrentAverage)
+
+		if (value instanceof SolveTime) {
+			boolean memberOfBestRA = times.containsTime((SolveTime) value,
+					Statistics.averageType.RA);
+			boolean memberOfCurrentAverage = times.containsTime(
+					(SolveTime) value, Statistics.averageType.CURRENT);
+
+			if (memberOfBestRA && memberOfCurrentAverage)
 				background = Configuration.getBestAndCurrentColor();
-			else if(memberOfCurrentAverage)
+			else if (memberOfCurrentAverage)
 				background = Configuration.getCurrentAverageColor();
-			else if(memberOfBestRA)
+			else if (memberOfBestRA)
 				background = Configuration.getBestRAColor();
 		}
-		if(isSelected) {
-			if(background == null)
+		if (isSelected) {
+			if (background == null)
 				background = Color.GRAY;
 			else
 				background = background.darker();
