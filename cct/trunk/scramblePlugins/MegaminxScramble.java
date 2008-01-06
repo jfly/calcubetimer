@@ -15,7 +15,6 @@ public class MegaminxScramble extends Scramble {
 	public static final String[] FACE_NAMES = {"A", "B", "C", "D", "E", "F", "a",
 		"b", "c", "d", "e", "f"};
 	public static final String PUZZLE_NAME = "Megaminx";
-	private int length;
 	private int[][] image;
 	public static final int DEFAULT_UNIT_SIZE = 30;
 	public static final double UNFOLDHEIGHT = 2 + 3 * Math.sin(.3 * Math.PI) + Math.sin(.1 * Math.PI);
@@ -86,6 +85,7 @@ public class MegaminxScramble extends Scramble {
 	private static String regexp = "^[ABCDEFabcdef][234]?$";
 	private boolean validateScramble() {
 		String[] strs = scramble.split(" ");
+		length = strs.length;
 
 		int c = 0;
 		for(int i = 0; i < strs.length; i++){
@@ -106,7 +106,6 @@ public class MegaminxScramble extends Scramble {
 			for(int i = 0; i < cstrs.length; i++){
 				int face = -1;
 				for(int ch = 0; ch < FACE_NAMES.length; ch++) {
-					System.out.println(cstrs[i] + "\t" + cstrs[i].charAt(0) + "\t" + FACE_NAMES[ch] + "\t" + FACE_NAMES[ch].equals(cstrs[i].charAt(0)) + "\t" + FACE_NAMES[ch].equals(cstrs[i].charAt(0)+""));
 					if(FACE_NAMES[ch].equals(""+cstrs[i].charAt(0))) {
 						face = ch;
 						break;
@@ -329,8 +328,6 @@ public class MegaminxScramble extends Scramble {
 		return (int)(UNFOLDHEIGHT * minxRad + 2 * gap);
 	}
 	public int getNewUnitSize(int width, int height, int gap) {
-//		return  1 + (int) (Math.min((width - 3*gap) / 9.9596, //This appears to be always 1 less than before, even if it hasn't resized
-//				(height - 2*gap) / 4.736));
 		return (int) Math.round(Math.min((width - 3*gap) / (UNFOLDWIDTH * 2),
 				(height - 2*gap) / UNFOLDHEIGHT));
 	}

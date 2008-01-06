@@ -14,7 +14,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
 
-import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.main.ScrambleFrame;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent.ColorListener;
 
@@ -28,7 +27,6 @@ public class ScrambleDebugger {
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
-		Configuration.init();
 		Class<?> cls = null;
 		try {
 			File scramClass = new File(args[0]);
@@ -50,7 +48,7 @@ public class ScrambleDebugger {
 		//TODO - check for everything, this is a debugger!
 		Scramble s = null;
 		try {
-			s = (Scramble) cls.getConstructor(String.class, int.class, String[].class).newInstance("", 10, new String[0]);
+			s = (Scramble) cls.getConstructor(String.class, int.class, String[].class).newInstance("", 0, new String[0]);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {

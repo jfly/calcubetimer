@@ -8,6 +8,7 @@ import java.util.HashMap;
 public abstract class Scramble {
 	protected String scramble = "";
 	private boolean imported = false;
+	protected int length = 0;
 
 	public Scramble() {}
 
@@ -15,13 +16,13 @@ public abstract class Scramble {
 		scramble = s;
 		imported = true;
 	}
-
-	protected static int random(int choices) {
-		return (int)(choices * Math.random());
-	}
 	
 	public int getLength() {
-		return scramble.split(" ").length;
+		return length;
+	}
+	
+	protected static int random(int choices) {
+		return (int)(choices * Math.random());
 	}
 
 	public String toFormattedString() {

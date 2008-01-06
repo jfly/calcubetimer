@@ -16,7 +16,6 @@ public class CubeScramble extends Scramble {
 	public static final String[] ATTRIBUTES = {"Multi-slice"};
 	public static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
 	private int size;
-	private int length;
 	private int[][][] image;
 	public static final int DEFAULT_UNIT_SIZE = 11;
 
@@ -74,7 +73,7 @@ public class CubeScramble extends Scramble {
 
 	public CubeScramble(int size, int length, String... attrs) {
 		this.size = size;
-		this.length = length;
+		super.length = length;
 		setAttributes(attrs);
 		initializeImage();
 		generateScramble();
@@ -183,6 +182,7 @@ public class CubeScramble extends Scramble {
 	private final static String regexp = "^[LDBRUF](?:\\(\\d*\\))?[2']?$";
 	private boolean validateScramble(){
 		String[] strs = scramble.split(" ");
+		length = strs.length;
 
 		int c = 0;
 		for(int i = 0; i < strs.length; i++){
