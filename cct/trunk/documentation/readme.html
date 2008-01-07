@@ -1,55 +1,52 @@
-<!-- saved from url=(0022)http://internet.e-mail -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-<style type="text/css">
-	table {
-		border: 1px outset black;
-		margin: 20px;
-		}
-	td {
-		padding: 0px 5px 2px 5px;
-		}
-	hr {
-		color: black;
-		}
-	p {
-		margin: 20px;
-		}
-	img {
-		text-align:center;
-		display:block;
-		}
-	li {
-		padding: 0px 0px 0px 0px;
-		}
-</style>
 <head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<title>CCT Readme</title>
+	<style type="text/css">
+		table {
+			border: 1px outset black;
+			margin: 20px;
+			}
+		td {
+			padding: 0px 5px 2px 5px;
+			}
+		hr {
+			color: black;
+			}
+		p {
+			margin: 20px;
+			}
+		img {
+			text-align:center;
+			display:block;
+			}
+		li {
+			padding: 0px 0px 0px 0px;
+			}
+	</style>
 </head>
 
 <body>
-	<h1>CCT</h1>
+	<h1>CCT Readme</h1>
 	<p>Note: An up to date version of this file can be found
 	<a href="http://gnehzr.net/cct/readme.html">here</a>.</p>
-	<hr>
-	<h2>Help!</h2>
-	
-	<table>
-		<tr><td><h3>Table of Contents</h3></td></tr>
-		<ol>
-			<tr><td><li><a href="#faq">Frequently Asked Questions</a></li></td></tr>
-			<tr><td><li><a href="#java">Getting it running</a></li></td></tr>
-			<tr><td><li><a href="#setup">Setting up the Stackmat</a></li></td></tr>
-			<tr><td><li><a href="#stats">How the statistics work</a></li></td></tr>
-			<tr><td><li><a href="#gui">User Interface</a></li></td></tr>
-			<tr><td><li><a href="#sc">Sunday Contest</a></li></td></tr>
-			<tr><td><li><a href="#umts">What does UMTS stand for? (connecting to a server)</a></li></td></tr>
-			<tr><td><li><a href="#config">How do I customize my settings?</a></li></td></tr>
-			<tr><td><li><a href="#releases">Release history</a></li></td></tr>
-			<tr><td><li><a href="#bugs">I found a bug, help!</a></li></td></tr>
-		</ol>
-	</table>
-	
+	<h2>Table of Contents</h2>
+	<ul>
+		<li><a href="#faq">Frequently Asked Questions</a></li>
+		<li><a href="#java">Getting it running</a></li>
+		<li><a href="#setup">Setting up the Stackmat</a></li>
+		<li><a href="#stats">How the statistics work</a></li>
+		<li><a href="#gui">User Interface</a></li>
+		<li><a href="#sc">Sunday Contest</a></li>
+		<li><a href="#umts">What does UMTS stand for? (connecting to a server)</a></li>
+		<li><a href="#config">How do I customize my settings?</a></li>
+		<li><a href="#releases">Release history</a></li>
+		<li><a href="#bugs">I found a bug, help!</a></li>
+	</ul>
+
 	<div id="content">
-		<h3><a name="faq">FAQs</h3>
+		<h2><a name="faq">FAQs</a></h2>
 			
 		<p>Q: Why does it say: "The jar file "CALCubeTimer.jar" couldn't be launched. Check the Console for possible error messages" or "The main class could not be found"?<br>
 		A: See <a href="#java">this</a>.</p>
@@ -83,7 +80,7 @@
 		A: This value is the key to how we convert the Stackmat signal into
 		the corresponding numerical time. We interpret the signal as a sound wave, and
 		it comes in looking something like this:
-		<br><img src="signal.jpg"><br>
+		<br><img src="signal.jpg" alt="Stackmat signal"><br>
 		We need to discretize these peaks and troughs into 1's and 0's. This
 		should be pretty easy to conceptualize, but the programming is 
 		tricky because these peaks and troughs are not at all uniform.
@@ -107,7 +104,7 @@
 		<p>Q: what's a calcube timer?<br>
 		A: urghh....</p>
 		
-		<h3><a name="java">Java 1.6</a></h3>
+		<h2><a name="java">Java 1.6</a></h2>
 		<p>You need the latest version of Java (SE 6) to run CCT.
 		Here's what you need to do to get the right version for your OS.</p>
 		
@@ -138,7 +135,7 @@
 			</li>
 		</ul>
 		
-		<h3><a name="setup">Stackmat Support</a></h3>
+		<h2><a name="setup">Stackmat Support</a></h2>
 		<p>Hopefully, you are pretty excited about pluging your stackmat
 		into your computer (we were!) Here's what you need to get it working:</p>
 		
@@ -149,9 +146,9 @@
 		
 		<p>You should be able to get these from a local electronics shop, or online.
 		Here's a picture of our setup.</p>
-		<img id="centered" src="stackmat.jpg">
+		<img id="centered" src="stackmat.jpg" alt="stackmat cable connection">
 		
-		<h3><a name="stats">Rolling Averages</a></h3>
+		<h2><a name="stats">Rolling Averages</a></h2>
 		<p>CCT provides you with complete control over times. If you accidentally 
 		enter an incorrect time, you can discard it, or simply change it to whatever
 		you meant for it. All these features can be accessed by right clicking on the 
@@ -167,7 +164,7 @@
 		be configured under File > Configuration, where there is a simple syntax for gettting
 		just what you want out of CCT.</p>
 		
-		<h3><a name="gui">User Interface</a></h3>
+		<h2><a name="gui">User Interface</a></h2>
 		<p>There are many new user interface options in CCT v0.2. Most of these are related to
 		the keyboard timer. These options can be accessed in the View menu.
 		<ul>
@@ -194,7 +191,7 @@
 			turn only the inside slice.</li>
 		</ul>
 		
-		<h3><a name="sc">Sunday Contest</a></h3>
+		<h2><a name="sc">Sunday Contest</a></h2>
 		<p>Not only is there support for importing scrambles from file,
 		there is an option to import times from url. This is perfect for
 		a situation such as the Sunday Contest.</p>
@@ -205,7 +202,7 @@
 		<p>There might be some bugs for emailing, so copy your times down before attempting
 		to use the email feature.</p>
 		
-		<h3><a name="umts">UMTS</a></h3>
+		<h2><a name="umts">UMTS</a></h2>
 		<p>UMTS stands for Ultimate Multiple Timer Support. There is a server
 		which you can start up and multiple people can connect to remotely. You can
 		see everybody's times, and people can choose to have the same scrambles. In
@@ -220,7 +217,7 @@
 		title to flicker between caps and lowercase until you check the window.
 		<p>The server can be downloaded as an additional executable jar file.</p>
 		
-		<h3><a name="config">Configuration</a></h3>
+		<h2><a name="config">Configuration</a></h2>
 		<p>For version 0.2 of CCT, we overhauled the configuration system to make use of 
 		Java's properties files. As a result, configuration files from CCT v0.1 will not
 		function with CCT v0.2. One of the advantages of the new system is that settings
@@ -230,10 +227,10 @@
 		defaults.properties file for a description of each setting. There is no need to edit
 		the defaults.properties file, just edit cct.properties, as those settings take
 		precedence over that defaults. If at any point you mess up your cct.properties
-		file, you can just delete it, and the defaults will be restored.
+		file, you can just delete it, and the defaults will be restored.</p>
 		
-		<h3><a name="releases">Release History:</a></h3>
-		April 15, 2007 - Version 0.1
+		<h2><a name="releases">Release History:</a></h2>
+		2007 Apr 15 - Version 0.1
 		<ul>
 			<li>Lots of configuration options! Just about every stupid feature we added can be disabled.</li>
 			<li>Fullscreen support turns your monitor into a big stackmat display.</li>
@@ -248,19 +245,22 @@
 			on the keyboard instead, if you aren't using a stackmat.</li>
 		</ul>
 		
-		June 25, 2007 - Version 0.2
+		2007 Jun 25 - Version 0.2
 		<ul>
 			<li>Various bugs addressed</li>
 			<li>GUI overhaul</li>
 			<li>Configuration overhaul</li>
 			<li>Scramble options added, including support for cubes up to 11x11x11</li>
 		</ul>
-		
-		<h3><a name="bugs">Bugs and Feature Requests</a></h3>
+		<h2><a name="bugs">Bugs and Feature Requests</a></h2>
 		<p>Please email us at <a href="mailto:cubetimer@gmail.com">cubetimer@gmail.com</a> for any bugs you encounter or features
 		you feel should be implemented.</p>
 	</div>
 	<hr>
-	<i>Last updated 25 June 2007.</i>
+	<p>
+	<i>
+		Last updated 2007 Sep 18.
+	</i>
+	</p>
 </body>
 </html>
