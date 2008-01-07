@@ -109,7 +109,7 @@ public class JListMutable<E> extends JList implements CellEditorListener,
 					int to = getSelectedIndex();
 					if (to == from || from == model.getSize() - 1 || to == model.getSize() - 1)
 						return;
-					E element = (E) model.getElementAt(from);//TODO minor bug with dragging quickly
+					E element = (E) model.getElementAt(from);
 					model.remove(element);
 					model.insertValueAt(element, to);
 					from = to;

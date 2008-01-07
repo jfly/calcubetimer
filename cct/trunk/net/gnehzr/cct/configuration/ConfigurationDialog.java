@@ -359,7 +359,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		panel.add(sideBySide);
 		return panel;
 	}
-	
+
 	private class PuzzleListModel implements MutableListModel<String> {
 		private ArrayList<String> contents;
 
@@ -379,6 +379,13 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 			if (Configuration.getScrambleType(newPuzzle) == null)
 				throw new Exception(
 						"Invalid puzzle type. See right hand side of screen for details.");
+			if (contents.contains(newPuzzle))
+				throw new Exception("Can't have duplicate puzzle types!");
+			String[] split = newPuzzle.split(":", -1);
+			if (split.length != 2 || newPuzzle.indexOf(';') != -1)
+				throw new Exception("Invalid character (: OR ;) in puzzle name!");
+			if (split[1].equals(""))
+				throw new Exception("You must type in a puzzle type!");
 			if (index == contents.size()) {
 				contents.add(newPuzzle);
 			} else {
@@ -411,11 +418,14 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		}
 
 		public boolean remove(String value) {
-			return contents.remove(value);
+			boolean temp = contents.remove(value);
+			fireContentsChanged();
+			return temp;
 		}
 
 		public void insertValueAt(String value, int index) {
 			contents.add(index, value);
+			fireContentsChanged();
 		}
 
 		public ArrayList<String> getContents() {
@@ -426,10 +436,12 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 			return index != contents.size() && isCellEditable(index);
 		}
 
-		public void showPopup(MouseEvent e, JListMutable<String> source) {}
+		public void showPopup(MouseEvent e, JListMutable<String> source) {
+		}
 	}
+
 	private PuzzleListModel puzzles = new PuzzleListModel();
-	
+
 	private JPanel makeScrambleTypeOptionsPanel() {
 		JPanel panel = new JPanel(new BorderLayout(10, 10));
 
@@ -444,19 +456,23 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 				}
 			}
 		});
-		
-		JListMutable<String> scramType = new JListMutable<String>(puzzles, tf, true,
-				"Type the name of the new puzzle here.", "Add new puzzle...");
+
+		JListMutable<String> scramType = new JListMutable<String>(puzzles, tf,
+				true, "Type the name of the new puzzle here.",
+				"Add new puzzle...");
 		scramType.setCellRenderer(new PuzzleTypeCellRenderer());
 
 		JScrollPane scroller = new JScrollPane(scramType);
 		panel.add(scroller, BorderLayout.CENTER);
 
-		panel.add(new JLabel("<html><body>" //TODO make this correct...
+		panel.add(new JLabel("<html><body>" // TODO make this correct...
 				+ "<div align=center><u>Legend</u></div><br>"
-				+ "$D = date and time<br>" + "$C = number of solves<br>"
-				+ "$P = number of pops<br>" + "$A = average<br>"
-				+ "$S = standard deviation<br>" + "$B = best time<br>"
+				+ "$D = date and time<br>"
+				+ "$C = number of solves<br>"
+				+ "$P = number of pops<br>"
+				+ "$A = average<br>"
+				+ "$S = standard deviation<br>"
+				+ "$B = best time<br>"
 				+ "$W = worst time<br>"
 				+ "$I = individual times and scrambles<br>"
 				+ "$i = times, scrambles, and splits<br>"
