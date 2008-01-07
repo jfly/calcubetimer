@@ -3,8 +3,8 @@
 	<property name="dist" location="dist" />
 	<target name="dist" depends="compile, compress" description="Main distribution">
 		<echo>
-            Building CALCubeTimer.jar
-        </echo>
+			Building CALCubeTimer.jar
+		</echo>
 	</target>
 
 	<target name="compile" description="Compilation target">
