@@ -340,6 +340,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		scrambles = new ScrambleList(Configuration.getScrambleType(puzzleChoice));
 
 		scrambleChooser = new JComboBox(Configuration.getCustomScrambleTypes().toArray(new String[0]));
+		scrambleChooser.setMaximumRowCount(12);
 		scrambleChooser.addActionListener(this);
 		scrambleChooser.setRenderer(new PuzzleTypeCellRenderer());
 
@@ -382,7 +383,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		timesList.setLayoutOrientation(JList.VERTICAL);
 		timesList.setCellRenderer(new MyCellRenderer(stats));
 		timesScroller = new JScrollPane(timesList);
-//		timesScroller.setPreferredSize(new Dimension(100, 0));TODO
 
 		repaintTimes();
 
@@ -441,11 +441,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		for(Profile prof : Configuration.getProfiles()) {
 			profiles.addProfile(prof);
 		}
-		profiles.setEditableProfileListListener(this);
-		profiles.setSelectedProfile(Configuration.getSelectedProfile());
 		profiles.setMaximumSize(new Dimension(1000, 100));
 		
 		Configuration.addConfigurationChangeListener(this);
+		profiles.setEditableProfileListListener(this);
+		//this will fire a change in the selected profile, thereby firing a configuration change
+		profiles.setSelectedProfile(Configuration.getSelectedProfile());
 	}
 	public void profileChanged(Profile outWithOld, Profile inWithNew) {
 		if(outWithOld == null) { //Item added
@@ -468,21 +469,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		}
 		previouslySelected = selected;
 		try {
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					try {
-						Configuration.loadConfiguration(new File("profiles/"+selected+"/"+selected+".properties"));
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (URISyntaxException e) {
-						e.printStackTrace();
-					}
-					Configuration.apply();
-				}
-			});
-		} catch (Exception e) {
+			Configuration.loadConfiguration(new File("profiles/"+selected+"/"+selected+".properties"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
+		Configuration.apply();
 	}
 
 	private void parseXML_GUI(String file) {
@@ -1180,7 +1173,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	// Actions section {{{
 	public void addTimeAction() {
 //		SolveTime newTime = promptForTime(this, scrambles.getCurrent().toString());
-		timesList.promptForNewItem();//TODO
+		timesList.promptForNewItem();
 	}
 
 	public void resetAction(){
