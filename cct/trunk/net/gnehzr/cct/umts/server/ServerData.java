@@ -23,10 +23,7 @@ public class ServerData{
 	}
 
 	public void removeClient(Client c){
-		String name = c.getUsername().toLowerCase();
-		if(clients.get(name) == c){
-			clients.remove(name).getUsername();
-		}
+		clients.remove(c.getUsername().toLowerCase());
 	}
 
 	public boolean isNameDuplicate(String name){

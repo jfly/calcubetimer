@@ -284,10 +284,6 @@ public class CCTServer implements Runnable{
 		}
 	}
 
-	public void failedConnection(Client c){
-		data.removeClient(c);
-	}
-
 	public void processExit(Client c, String s){
 		data.removeClient(c);
 		if(s == null || !s.startsWith("/exit")){
@@ -412,6 +408,8 @@ public class CCTServer implements Runnable{
 		else if(strs[0].equalsIgnoreCase("/megaminx")){
 //			broadcast(Protocol.MESSAGE_ME, name + " requests megaminx scramble: " + new MegaminxScramble("", ServerScrambleList.LENGTHS[10])); TODO server scrambles
 		}
+		else if(strs[0].equalsIgnoreCase("/square1")){
+		}
 		else{
 			try{
 //				int x = Integer.parseInt(strs[0].substring(1));
@@ -420,7 +418,6 @@ public class CCTServer implements Runnable{
 			} catch(Exception e){
 				sendHelpTo(name, Protocol.usageMessage(""));
 			}
-
 		}
 	}
 

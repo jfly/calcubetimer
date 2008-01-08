@@ -37,10 +37,7 @@ public class ServerUserThread extends Thread{
 			server.println("Failed connect: IO error. " + (InetSocketAddress)socket.getRemoteSocketAddress());
 		}
 
-		if(!connected){
-			server.failedConnection(client);
-			return;
-		}
+		if(!connected) return;
 
 		String s = null;
 		boolean exception = false;
