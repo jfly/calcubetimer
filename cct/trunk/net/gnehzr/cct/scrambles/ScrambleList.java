@@ -46,15 +46,13 @@ public class ScrambleList extends ArrayList<Scramble>{
 	}
 
 	public static ScrambleList importScrambles(ScrambleType c, BufferedReader in) throws Exception{
-		if(in.ready()){
-			ScrambleList list = new ScrambleList(c);
-			while(in.ready()){
-				list.add(c.generateScramble(in.readLine()));
-			}
-			c.setLength(list.getCurrent().getLength());
-			list.setType(c);
-			return list;
+		ScrambleList list = new ScrambleList(c);
+		String curr;
+		while((curr = in.readLine()) != null){
+			list.add(c.generateScramble(curr));
 		}
-		else return new ScrambleList(c);
+		c.setLength(list.getCurrent().getLength());
+		list.setType(c);
+		return list;
 	}
 }
