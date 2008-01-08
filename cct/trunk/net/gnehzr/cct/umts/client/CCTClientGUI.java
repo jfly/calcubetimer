@@ -274,8 +274,11 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 			}
 		} else if (e.getActionCommand().equals("Details")) {
 			ArrayList<SolveTime> solves = selectedUser.getSolves();
+			ArrayList<SolveTime> bestSolves = selectedUser.getBestSolves();
 			JOptionPane.showMessageDialog(frame,
-					(solves.isEmpty() ? "This user has not yet completed any solves!" : toString(solves)),
+					(solves.isEmpty() ?
+					 	"This user has not yet completed any solves!" :
+						"Current: " + toString(solves) + "\nBest: " + toString(bestSolves)),
 					"Details for " + selectedUser.getName(),
 					JOptionPane.INFORMATION_MESSAGE);
 		} else if(e.getSource() == fullScreenButton) {

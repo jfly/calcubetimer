@@ -6,7 +6,7 @@ import javax.swing.table.AbstractTableModel;
 
 @SuppressWarnings("serial")
 public class UserTable extends AbstractTableModel {
-	private final String[] columnNames = {"Username", "Current Time", "Last Time", "Average"};
+	private final String[] columnNames = {"Username", "Current Time", "Last Time", "Average", "Best Average"};
 	private ArrayList<User> users = new ArrayList<User>();
 
 	public void clear() {
@@ -53,6 +53,8 @@ public class UserTable extends AbstractTableModel {
 				return rowUser.getLastTime();
 			case 3:
 				return rowUser.getCurrentAverage();
+			case 4:
+				return rowUser.getBestAverage();
 			default:
 				return null;
 		}

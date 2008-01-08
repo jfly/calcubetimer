@@ -15,7 +15,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class CCTClient {
-	public final static String VERSION = "0.2";
+	public final static String VERSION = "0.3";
 	public final static int DEFAULT_PORT = 32125;
 
 	private int port;
@@ -245,6 +245,20 @@ public class CCTClient {
 		}
 	}
 
+	public void sendBestAverage(String s, Statistics stats){
+		int num = Math.min(stats.getRASize(), stats.getSize());
+		s = Protocol.DATA_BEST_AVERAGE + s;
+		for(int i = stats.getIndexOfBestRA(), c = 0; i < stats.getSize() && c < num; i++, c++){
+			s += Protocol.DELIMITER + stats.get(i).toString();
+		}
+
+		try{
+			write(s);
+		} catch(IOException e){
+			System.out.println("Error sending best average.");
+		}
+	}
+
 	private void write(char b) throws IOException{
 		write("" + b);
 	}
@@ -297,6 +311,9 @@ public class CCTClient {
 			case Protocol.DATA_CURRENT_TIME:
 			case Protocol.DATA_TIME:
 				processTime(type, s);
+				break;
+			case Protocol.DATA_BEST_AVERAGE:
+				processBestAverage(s);
 				break;
 			case Protocol.DATA_AVERAGE:
 				processAverage(s);
@@ -404,6 +421,30 @@ public class CCTClient {
 			}
 		}
 		u.setSolves(list);
+		users.fireTableDataChanged();
+	}
+
+	private void processBestAverage(String s){
+		String[] strs = s.split("" + Protocol.DELIMITER);
+		String name = strs[0];
+		String time = strs[1];
+		User u = users.getUser(name);
+		try{
+			u.setBestAverage(new SolveTime(time, null));
+		} catch(Exception e){
+			System.out.println("Error in processed time " + time);
+		}
+
+		ArrayList<SolveTime> list = new ArrayList<SolveTime>();
+		for(int i = 2; i < strs.length; i++){
+			String temp = strs[i];
+			try{
+				list.add(new SolveTime(temp, null));
+			} catch(Exception e){
+				System.out.println("Error in processed time " + time);
+			}
+		}
+		u.setBestSolves(list);
 		users.fireTableDataChanged();
 	}
 

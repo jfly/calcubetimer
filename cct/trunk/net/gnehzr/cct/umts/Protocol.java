@@ -26,6 +26,7 @@ public class Protocol{
 	public final static char DATA_NAME = 'e';
 	public final static char DATA_SCRAMBLE = 'f';
 	public final static char DATA_SCRAMBLE_NUMBER = 'g';
+	public final static char DATA_BEST_AVERAGE = 'h';
 
 	public final static char COMMAND_HELP = '!';
 	public final static char COMMAND_WHOIS = '"';
@@ -34,7 +35,8 @@ public class Protocol{
 	public final static String DELIMITER = "\uFFFF";
 	public final static String DELIMITER2 = "\uFFFE";
 
-	public final static String[] COMMANDS = { "help", "exit", "me", "w", "whois", "admin", "2", "3", "4", "5", "megaminx" };
+	public final static String[] COMMANDS = { "help", "exit", "me", "w", "whois", "admin",
+		"2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "megaminx", "square1" };
 
 	public final static String[] ADMIN_COMMANDS = { "login", "name", "motd" };
 

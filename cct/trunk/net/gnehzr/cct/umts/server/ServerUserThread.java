@@ -37,7 +37,10 @@ public class ServerUserThread extends Thread{
 			server.println("Failed connect: IO error. " + (InetSocketAddress)socket.getRemoteSocketAddress());
 		}
 
-		if(!connected) return;
+		if(!connected){
+			server.failedConnection(client);
+			return;
+		}
 
 		String s = null;
 		boolean exception = false;
@@ -77,6 +80,9 @@ public class ServerUserThread extends Thread{
 				break;
 			case Protocol.DATA_AVERAGE:
 				server.broadcastAverage(client.getUsername(), s);
+				break;
+			case Protocol.DATA_BEST_AVERAGE:
+				server.broadcastBestAverage(client.getUsername(), s);
 				break;
 			case Protocol.COMMAND_EXIT:
 				connected = false;

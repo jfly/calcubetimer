@@ -826,6 +826,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	private void repaintTimes() {
 		String temp = stats.average(Statistics.averageType.CURRENT);
 		sendAverage(temp);
+		temp = stats.average(Statistics.averageType.RA);
+		sendBestAverage(temp);
 		currentAverageAction.setEnabled(stats.isValid(Statistics.averageType.CURRENT));
 		rollingAverageAction.setEnabled(stats.isValid(Statistics.averageType.RA));
 		sessionAverageAction.setEnabled(stats.isValid(Statistics.averageType.SESSION));
@@ -1081,6 +1083,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	private void sendAverage(String s){
 		if(client != null && client.isConnected()){
 			client.sendAverage(s, stats);
+		}
+	}
+
+	private void sendBestAverage(String s){
+		if(client != null && client.isConnected()){
+			client.sendBestAverage(s, stats);
 		}
 	}
 

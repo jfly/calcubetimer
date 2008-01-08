@@ -14,7 +14,7 @@ import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.umts.Protocol;
 
 public class CCTServer implements Runnable{
-	public final static String VERSION = "0.2";
+	public final static String VERSION = "0.3";
 	private final static String USAGE = "Usage: CCTServer [password] (port)";
 	private final static int DEFAULT_PORT = 32125;
 	private final static SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -89,6 +89,10 @@ public class CCTServer implements Runnable{
 		broadcast(Protocol.DATA_AVERAGE, name + Protocol.DELIMITER + times);
 	}
 
+	public void broadcastBestAverage(String name, String times){
+		broadcast(Protocol.DATA_BEST_AVERAGE, name + Protocol.DELIMITER + times);
+	}
+
 	public void broadcastMessage(String s){
 		broadcast(Protocol.MESSAGE_NORMAL, s);
 	}
@@ -129,12 +133,13 @@ public class CCTServer implements Runnable{
 					println(strs[0] + " disconnected. (" + strs[1] + ")");
 				}
 				break;
-				case Protocol.DATA_CURRENT_TIME:
-				case Protocol.DATA_TIME:
-				case Protocol.DATA_AVERAGE:
-				case Protocol.DATA_NAME:
+			case Protocol.DATA_CURRENT_TIME:
+			case Protocol.DATA_TIME:
+			case Protocol.DATA_AVERAGE:
+			case Protocol.DATA_BEST_AVERAGE:
+			case Protocol.DATA_NAME:
 				break;
-				default:
+			default:
 				println(s);
 		}
 	}
@@ -277,6 +282,10 @@ public class CCTServer implements Runnable{
 		} catch(Exception e){
 			println("Invalid scramble request from " + name + ".");
 		}
+	}
+
+	public void failedConnection(Client c){
+		data.removeClient(c);
 	}
 
 	public void processExit(Client c, String s){

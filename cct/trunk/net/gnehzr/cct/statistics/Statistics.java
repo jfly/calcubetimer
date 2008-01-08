@@ -505,6 +505,10 @@ public class Statistics implements MutableListModel<SolveTime>,
 		return getBestAndWorstTimes(n, n + curRASize)[1].secondsValue();
 	}
 
+	public int getIndexOfBestRA(){
+		return indexOfBestRA;
+	}
+
 	// access methods
 	public double getSessionAvg() {
 		return curSessionAvg;

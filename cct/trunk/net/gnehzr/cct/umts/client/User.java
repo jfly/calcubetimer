@@ -6,11 +6,11 @@ import net.gnehzr.cct.statistics.SolveTime;
 
 public class User {
 	public static final User NULLUSER = new User("", "");
-	private SolveTime currentTime, lastTime, currentAverage = null;
-	private ArrayList<SolveTime> solves;
-	private String name = null;
-	private String displayName = null;
-	private String color = "#";
+	private SolveTime currentTime, lastTime, currentAverage, bestAverage;
+	private ArrayList<SolveTime> solves, bestSolves;
+	private String name;
+	private String displayName;
+	private String color;
 	public User(String name, String dispname) {
 		this.name = name;
 		this.displayName = dispname;
@@ -18,7 +18,10 @@ public class User {
 		lastTime = new SolveTime();
 		currentAverage = new SolveTime();
 		solves = new ArrayList<SolveTime>();
+		bestAverage = new SolveTime();
+		bestSolves = new ArrayList<SolveTime>();
 
+		color = "#";
 		String hex = "0123456789ab";
 		for(int ch = 0; ch < 6; ch ++) {
 			int rand = (int)(Math.random() * hex.length());
@@ -30,11 +33,15 @@ public class User {
 	public void setSolves(ArrayList<SolveTime> solves){
 		this.solves = solves;
 	}
-
+	public void setBestSolves(ArrayList<SolveTime> solves){
+		this.bestSolves = solves;
+	}
 	public ArrayList<SolveTime> getSolves(){
 		return solves;
 	}
-
+	public ArrayList<SolveTime> getBestSolves(){
+		return bestSolves;
+	}
 	public SolveTime getLastTime() {
 		return lastTime;
 	}
@@ -46,6 +53,12 @@ public class User {
 	}
 	public void setCurrentTime(SolveTime newTime) {
 		currentTime = newTime;
+	}
+	public SolveTime getBestAverage() {
+		return bestAverage;
+	}
+	public void setBestAverage(SolveTime newTime) {
+		bestAverage = newTime;
 	}
 	public SolveTime getCurrentAverage() {
 		return currentAverage;
