@@ -15,6 +15,9 @@ all:
 compile:
 	javac -cp ${CLASSPATH} `find ${PATHS} -regex .*java`
 
+warnings:
+	javac -cp ${CLASSPATH} -Xlint:unchecked `find ${PATHS} -regex .*java`
+
 server:
 	java -cp ${CLASSPATH} ${SERVER} pass
 
