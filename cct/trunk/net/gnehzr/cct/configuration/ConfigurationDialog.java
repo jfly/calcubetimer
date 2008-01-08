@@ -556,7 +556,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 	private JTextField username = null;
 	private JCheckBox SMTPauth = null;
 	private JPasswordField password = null;
-	private JCheckBox useSMTPServer = null;
+	private JCheckBox useSMTPServer, showEmail = null;
 	private JPanel emailOptions;
 	private JPanel makeSundaySetupPanel() {
 		JPanel sundayOptions = new JPanel(new GridBagLayout());
@@ -617,7 +617,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		c.gridwidth = 2;
 		c.gridx = 4;
 		c.gridy = 2;
-		sundayOptions.add(new JCheckBox("Show address?"), c);
+		showEmail = new JCheckBox("Show address?");
+		sundayOptions.add(showEmail, c);
 		
 
 		emailOptions = new JPanel(new GridBagLayout());
@@ -968,6 +969,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		SMTPauth.setSelected(Configuration.isSMTPauth());
 		password.setText(new String(Configuration.getPassword()));
 		password.setEnabled(SMTPauth.isSelected());
+		showEmail.setSelected(Configuration.isShowEmail());
 
 		// makeSessionSetupPanel
 		sessionStats.setText(Configuration.getSessionString());
@@ -1065,6 +1067,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		Configuration.setInvertedHundredths(invertedHundredths.isSelected());
 		Configuration.setMixerNumber(lines.getSelectedIndex());
 
+		Configuration.setShowEmail(showEmail.isSelected());
 		Configuration.setName(name.getText());
 		Configuration.setCountry(country.getText());
 		Configuration.setSundayQuote(sundayQuote.getText());

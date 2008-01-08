@@ -158,7 +158,8 @@ public class StatsDialogHandler extends JDialog implements ActionListener {
 					Configuration.getCountry(),
 					Configuration.getUserEmail(),
 					times.average(type), times.toTerseString(type),
-					Configuration.getSundayQuote(), true);
+					Configuration.getSundayQuote(),
+					Configuration.isShowEmail());
 		} else if (source == doneButton) {
 			this.setVisible(false);
 		} else if(source == emailButton) {

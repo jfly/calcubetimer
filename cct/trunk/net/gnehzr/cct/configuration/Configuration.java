@@ -336,6 +336,13 @@ public abstract class Configuration {
 	public static void setInvertedMinutes(boolean inverted) {
 		props.setProperty("stackmat_InvertedMinutes", "" + inverted);
 	}
+	
+	public static boolean isShowEmail() {
+		return Boolean.parseBoolean(props.getProperty("Sunday_showAddress"));
+	}
+	public static void setShowEmail(boolean showEmail) {
+		props.setProperty("Sunday_showAddress", showEmail + "");
+	}
 	public static String getName() {
 		return props.getProperty("sunday_Name");
 	}
