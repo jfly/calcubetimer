@@ -9,11 +9,14 @@ public class Profile {
 	private File directory, configuration;
 	public Profile(String name) {
 		this.name = name;
-		directory = new File("profiles/"+name+"/");
-		configuration = new File("profiles/"+name+"/"+name+".properties");
+		directory = new File(Configuration.profilesFolder, name+"/");
+		configuration = new File(Configuration.profilesFolder, name+"/"+name+".properties");
 	}
 	public String getName() {
 		return name;
+	}
+	public File getConfigurationFile() {
+		return configuration;
 	}
 	public void createProfileDirectory() {
 		directory.mkdir();

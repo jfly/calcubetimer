@@ -128,8 +128,8 @@ public class EditableProfileList extends JPanel implements ActionListener, KeyLi
 							"Confirm Profile Removal", 
 							JOptionPane.YES_NO_OPTION);
 					if(choice == JOptionPane.YES_OPTION) {
-						l.profileDeleted(item);
 						profiles.removeItemAt(selected);
+						l.profileDeleted(item);
 						refreshPopup();
 					}
 				}
@@ -142,7 +142,6 @@ public class EditableProfileList extends JPanel implements ActionListener, KeyLi
 					l = null;
 					Profile old = null;
 					if(editingIndex != profiles.getModel().getSize() - 1) {
-						System.out.println(profiles.getSelectedItem());
 						old = (Profile) profiles.getSelectedItem();
 						profiles.removeItemAt(editingIndex);
 					}
@@ -185,8 +184,6 @@ public class EditableProfileList extends JPanel implements ActionListener, KeyLi
 	public void focusGained(FocusEvent e) {}
 	public void focusLost(FocusEvent e) {
 		profiles.setEditable(false);
-//		setSelectedIndex(0);
-//		System.out.println("FOCUS:"+e);
 	}
 
 	public interface EditableProfileListListener {

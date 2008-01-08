@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -21,7 +22,6 @@ import java.util.TimeZone;
 import javax.mail.MessagingException;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -35,6 +35,7 @@ import javax.swing.JTextField;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationDialog;
 import net.gnehzr.cct.miscUtils.SendMailUsingAuthentication;
+import net.gnehzr.cct.miscUtils.Utils;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
 
@@ -47,9 +48,9 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 
 	private JButton copyButton = null;
 	private JButton emailButton = null;
+	private JButton submitButton = null;
 	private JTextArea textArea = null;
 	private JTextField toAddress, subject = null;
-	private JCheckBox sundayContest = null;
 	private Statistics times = null;
 	private Statistics.averageType type;
 	private ConfigurationDialog configurationDialog;
@@ -74,6 +75,9 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 
 		emailButton = new JButton("Email");
 		emailButton.addActionListener(this);
+		
+		submitButton = new JButton("Sunday Contest");
+		submitButton.addActionListener(this);
 
 		JPanel rightPanel = new JPanel();
 		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
@@ -93,13 +97,6 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 			c.gridy = 0;
 			emailStuff.add(toAddress, c);
 
-			sundayContest = new JCheckBox("Sunday Contest");
-			sundayContest.setToolTipText("Check this box for Sunday Contest formatting of times.");
-			sundayContest.addActionListener(this);
-			c.gridx = 2;
-			c.gridy = 0;
-			emailStuff.add(sundayContest, c);
-
 			c.gridx = 0;
 			c.gridy = 1;
 			emailStuff.add(new JLabel("Subject: "), c);
@@ -112,6 +109,8 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 		} else {
 			emailButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 			rightPanel.add(emailButton);
+			submitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+			rightPanel.add(submitButton);
 		}
 		rightPanel.add(copyButton);
 
@@ -122,28 +121,18 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 	}
 
 	private void updateStats() {
-		String stats = "";
-		boolean contest = false;
-		try {
-			contest = sundayContest.isSelected();
-		} catch(Exception e) {}
-
-		if(contest) {
-			stats = Configuration.getSundayString(times.average(type), times.toTerseString(type));
-		} else {
-			SolveTime[] bestAndWorst = times.getBestAndWorstTimes(type);
-			stats = ((type == Statistics.averageType.SESSION) ? Configuration.getSessionString() : Configuration.getAverageString());
-			stats = stats.replaceAll("\\$D", SDF.format(cal.getTime()));
-			stats = stats.replaceAll("\\$C", "" + times.getNumSolves());
-			stats = stats.replaceAll("\\$P", "" + times.getNumPops());
-			stats = stats.replaceAll("\\$A", times.average(type));
-			stats = stats.replaceAll("\\$S", times.standardDeviation(type));
-			stats = stats.replaceAll("\\$B", bestAndWorst[0].toString());
-			stats = stats.replaceAll("\\$W", bestAndWorst[1].toString());
-			stats = stats.replaceAll("\\$T", times.toTerseString(type));
-			stats = stats.replaceAll("\\$I", times.toStatsString(type, false));
-			stats = stats.replaceAll("\\$i", times.toStatsString(type, Configuration.isSplits()));
-		}
+		SolveTime[] bestAndWorst = times.getBestAndWorstTimes(type);
+		String stats = ((type == Statistics.averageType.SESSION) ? Configuration.getSessionString() : Configuration.getAverageString());
+		stats = stats.replaceAll("\\$D", SDF.format(cal.getTime()));
+		stats = stats.replaceAll("\\$C", "" + times.getNumSolves());
+		stats = stats.replaceAll("\\$P", "" + times.getNumPops());
+		stats = stats.replaceAll("\\$A", times.average(type));
+		stats = stats.replaceAll("\\$S", times.standardDeviation(type));
+		stats = stats.replaceAll("\\$B", bestAndWorst[0].toString());
+		stats = stats.replaceAll("\\$W", bestAndWorst[1].toString());
+		stats = stats.replaceAll("\\$T", times.toTerseString(type));
+		stats = stats.replaceAll("\\$I", times.toStatsString(type, false));
+		stats = stats.replaceAll("\\$i", times.toStatsString(type, Configuration.isSplits()));
 
 		textArea.setText(stats);
 	}
@@ -152,7 +141,7 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 		return textArea.getText();
 	}
 	public String[] getToAddresses() {
-		return toAddress.getText().split(",");
+		return toAddress.getText().split("[,;]");
 	}
 	public String getSubject() {
 		return subject.getText();
@@ -260,10 +249,17 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 							JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
-		} else if(source == sundayContest) {
-			updateStats();
-			if(sundayContest.isSelected()) {
-				toAddress.setText("nascarjon@gmail.com"); //or jon_morris@rubiks.com
+		} else if (source == submitButton) {
+//			stats = Configuration.getSundayString(times.average(type), times.toTerseString(type));
+			try {
+				System.out.println(Utils.submitSundayContest(
+						Configuration.getName(),
+						Configuration.getCountry(),
+						Configuration.getUserEmail(),
+						times.average(type), times.toTerseString(type),
+						Configuration.getSundayQuote(), true));
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
 		}
 	}

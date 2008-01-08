@@ -137,11 +137,25 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	public static final ImageIcon cube = createImageIcon("cube.png", "Cube");
 
 	public CALCubeTimer() throws Exception {
+		try {
+			Configuration.addMainConfigurationChangeListener(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(
+					this,
+					e.getLocalizedMessage(),
+					"Can't start CCT!",
+					JOptionPane.ERROR_MESSAGE);
+			// TODO this is where we will know about any "serious errors" that will
+			// prevent us from starting cct
+			System.exit(1);
+		}
 		this.setUndecorated(true);
 
 		stackmatTimer = new StackmatInterpreter();
 		stackmatTimer.execute();
 		Configuration.addConfigurationChangeListener(stackmatTimer);
+
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				timeListener = new TimerHandler();
@@ -424,8 +438,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		customGUIMenu = new JMenu("Load custom GUI");
 
 		ButtonGroup group = new ButtonGroup();
-		for(String file : Configuration.getXMLLayoutsAvailable()) {
-			JRadioButtonMenuItem temp = new JRadioButtonMenuItem(file);
+		for(File file : Configuration.getXMLLayoutsAvailable()) {
+			JRadioButtonMenuItem temp = new JRadioButtonMenuItem(file.getName());
 			temp.setSelected(file.equals(Configuration.getXMLGUILayout()));
 			temp.setActionCommand(GUI_LAYOUT_CHANGED);
 			temp.addActionListener(this);
@@ -443,7 +457,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		}
 		profiles.setMaximumSize(new Dimension(1000, 100));
 		
-		Configuration.addConfigurationChangeListener(this);
 		profiles.setEditableProfileListListener(this);
 		//this will fire a change in the selected profile, thereby firing a configuration change
 		profiles.setSelectedProfile(Configuration.getSelectedProfile());
@@ -462,28 +475,33 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		}
 	}
 	private Profile previouslySelected;
-	public void profileSelected(final Profile selected) {
+	public void profileSelected(Profile selected) {
 		if(previouslySelected != null && profiles.containsProfile(previouslySelected)) {
 			saveToConfiguration();
 			Configuration.saveConfigurationToFile();
 		}
 		previouslySelected = selected;
 		try {
-			Configuration.loadConfiguration(new File("profiles/"+selected+"/"+selected+".properties"));
+			Configuration.loadConfiguration(selected.getConfigurationFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-		Configuration.apply();
+		//the following is necessary to updae the gui when the profile changes
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				Configuration.apply();
+			}
+		});
 	}
 
-	private void parseXML_GUI(String file) {
+	private void parseXML_GUI(File xmlGUIfile) {
 		DefaultHandler handler = new GUIParser(this);
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		try {
 			SAXParser saxParser = factory.newSAXParser();
-			saxParser.parse("guiLayouts/"+file, handler);
+			saxParser.parse(xmlGUIfile, handler);
 		} catch(SAXParseException spe) {
 			System.err.println(spe.getSystemId() + ":" + spe.getLineNumber() + ": parse error: " + spe.getMessage());
 
@@ -811,7 +829,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		currentAverageAction.setEnabled(stats.isValid(Statistics.averageType.CURRENT));
 		rollingAverageAction.setEnabled(stats.isValid(Statistics.averageType.RA));
 		sessionAverageAction.setEnabled(stats.isValid(Statistics.averageType.SESSION));
-		timesList.ensureIndexIsVisible(stats.getSize() - 1);
+		timesList.ensureIndexIsVisible(stats.getSize());
 	}
 
 	/** Returns an ImageIcon, or null if the path was invalid. */
@@ -860,7 +878,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 			updateScramble();
 		} else if(e.getActionCommand().equals(GUI_LAYOUT_CHANGED)) {
 			String layout = ((JRadioButtonMenuItem) source).getText();
-			parseXML_GUI(layout);
+			parseXML_GUI(Configuration.getXMLFile(layout));
 			Configuration.setXMLGUILayout(layout);
 			this.pack();
 		} else if(source == scrambleChooser) {
@@ -886,9 +904,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	}
 
 	private void readScramblesFile(URL inputFile, ScrambleType newType) {
-		BufferedReader in = null;
 		try {
-			in = new BufferedReader(new InputStreamReader(inputFile.openStream()));
+			BufferedReader in = new BufferedReader(new InputStreamReader(inputFile.openStream()));
 			scrambles = ScrambleList.importScrambles(newType, in);
 			in.close();
 
@@ -1245,7 +1262,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 
 	public void showDocumentation(){
 		try {
-			URI uri = new File("documentation/readme.html").toURI();
+			URI uri = new File(Configuration.documentationFolder, "readme.html").toURI();
 			Desktop.getDesktop().browse(uri);
 		} catch(Exception error) {
 			JOptionPane.showMessageDialog(this,

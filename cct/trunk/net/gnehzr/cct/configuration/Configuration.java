@@ -61,26 +61,66 @@ public abstract class Configuration {
 		}
 	}
 
+	private static File root;
+	private static File getRootDirectory() {
+		if (root == null) {
+			try {
+				root = new File(Configuration.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+				if(root.isFile())
+					root = root.getParentFile();
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+		}
+		return root;
+	}
+	
+	private static final File guiLayoutsFolder = new File(getRootDirectory(), "guiLayouts/");
+	public static final File profilesFolder = new File(getRootDirectory(), "profiles/");
+	private static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/");
+	public static final File documentationFolder = new File(getRootDirectory(), "documentation/");
 	public static final String newLine = System.getProperty("line.separator");
+	
+	//we will notify any listeners of serious errors so they can message the user and close gracefully
+	private static String seriousError = "";
 	static {
 		try {
-			loadConfiguration(guestFile = new File("profiles/Default/Default.properties"));
-		} catch (IOException e) {e.printStackTrace();} catch (URISyntaxException e) {
+			loadConfiguration(guestFile = new File(profilesFolder, "Default/Default.properties"));
+			File[] layouts = getXMLLayoutsAvailable();
+			if(layouts == null || layouts.length == 0) {
+				seriousError += "Could not find " + guiLayoutsFolder.getAbsolutePath() + "\n";
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
 	}
 
+	//only people interested in knowing about show-stopping errors should call this
+	public static void addMainConfigurationChangeListener(ConfigurationChangeListener listener) throws Exception {
+		if(!seriousError.equals("")) {
+			throw new Exception(seriousError);
+		}
+		addConfigurationChangeListener(listener);
+	}
+	
 	private static CopyOnWriteArrayList<ConfigurationChangeListener> listeners = new CopyOnWriteArrayList<ConfigurationChangeListener>();
-	public static void addConfigurationChangeListener(final ConfigurationChangeListener listener) {
+	public static void addConfigurationChangeListener(ConfigurationChangeListener listener) {
 		listeners.add(listener);
 	}
 
 	private static SortedProperties defaults, props;
 	private static File currentFile, initialFile, guestFile;
 	public static void loadConfiguration(File f) throws IOException, URISyntaxException {
+		initialFile = new File(profilesFolder, "initial.properties");
+		if (!initialFile.exists()) {
+			seriousError += "Couldn't find " + initialFile.getAbsolutePath() + "\n";
+			return;
+		}
+		InputStream in = new FileInputStream(initialFile);
+
 		defaults = new SortedProperties();
-		InputStream in = new FileInputStream(initialFile = new File("profiles/initial.properties"));
-//		System.out.println(initialFile.exists());
 		defaults.load(in);
 		in.close();
 		defaults.setProperty("statistics_string_Average", defaults.getProperty("statistics_string_Average").replaceAll("\n", newLine));
@@ -88,12 +128,6 @@ public abstract class Configuration {
 		props = new SortedProperties(defaults);
 		
 		currentFile = f;
-//		System.out.println("hi " + Configuration.class.getResource("profile/initial.properties"));
-//		System.out.println(System.getProperty("user.dir")); //TODO - get proper directory here!
-		File root = new File(Configuration.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-		if(root.isFile())
-			root = root.getParentFile();
-		System.out.println(root);
 		f.getParentFile().mkdir();
 		f.createNewFile();
 		in = new FileInputStream(f);
@@ -154,14 +188,14 @@ public abstract class Configuration {
 		return currentFile.exists() ? currentFile.getName() : "Defaults";
 	}
 
-	public static String getSundayString(String average, String times) {
-		return "Name: " + getName() + "\n" +
-		"Email: " + getUserEmail() + "\n" +
-		"Country: " + getCountry() + "\n" +
-		"Average: " + average + "\n" +
-		"Individual Solving Times: " + times + "\n" +
-		"Quote: " + getSundayQuote();
-	}
+//	public static String getSundayString(String average, String times) {
+//		return "Name: " + getName() + "\n" +
+//		"Email: " + getUserEmail() + "\n" +
+//		"Country: " + getCountry() + "\n" +
+//		"Average: " + average + "\n" +
+//		"Individual Solving Times: " + times + "\n" +
+//		"Quote: " + getSundayQuote();
+//	}
 	public static Dimension getScrambleViewDimensions() {
 		try {
 			return new Dimension(Integer.parseInt(props.getProperty("gui_ScrambleView_Width")),
@@ -685,7 +719,8 @@ public abstract class Configuration {
 //			e.printStackTrace();
 		}
 		try {
-			return (Integer) puzzle.getPuzzleClass().getMethod("getDefaultScrambleLength", String.class).invoke(null, puzzle.getVariation());
+			if(puzzle != null)
+				return (Integer) puzzle.getPuzzleClass().getMethod("getDefaultScrambleLength", String.class).invoke(null, puzzle.getVariation());
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
@@ -695,8 +730,6 @@ public abstract class Configuration {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
 		return 10;
@@ -732,29 +765,30 @@ public abstract class Configuration {
 	public static Class<?>[] getScrambleClasses() {
 		if(scrambleClasses == null) {
 			// Create a File object on the root of the directory containing the class files
-			File file = new File(System.getProperty("user.dir") + "/scramblePlugins");
-			try {
-				URL url = file.toURI().toURL();
-				URL[] urls = new URL[]{url};
-				ClassLoader cl = new URLClassLoader(urls);
-
-				ArrayList<Class<?>> temp = new ArrayList<Class<?>>();
-				for(String child : file.list()) {
-					if(!child.endsWith(".class"))
-						continue;
-					try {
-						Class<?> cls = cl.loadClass(child.substring(0, child.indexOf(".")));
-						if(cls.getSuperclass().equals(Scramble.class))
-							temp.add(cls);
-					} catch(NoClassDefFoundError ee) {
-						ee.printStackTrace();
+			ArrayList<Class<?>> temp = new ArrayList<Class<?>>();
+			if(scramblePluginsFolder.isDirectory()) {
+				try {
+					URL url = scramblePluginsFolder.toURI().toURL();
+					URL[] urls = new URL[]{url};
+					ClassLoader cl = new URLClassLoader(urls);
+	
+					for(String child : scramblePluginsFolder.list()) {
+						if(!child.endsWith(".class"))
+							continue;
+						try {
+							Class<?> cls = cl.loadClass(child.substring(0, child.indexOf(".")));
+							if(cls.getSuperclass().equals(Scramble.class))
+								temp.add(cls);
+						} catch(NoClassDefFoundError ee) {
+							ee.printStackTrace();
+						}
 					}
+				} catch(Exception e) {
+					e.printStackTrace();
 				}
-				scrambleClasses = new Class[temp.size()];
-				scrambleClasses = temp.toArray(scrambleClasses);
-			} catch(Exception e) {
-				e.printStackTrace();
 			}
+			scrambleClasses = new Class[temp.size()];
+			scrambleClasses = temp.toArray(scrambleClasses);
 		}
 		return scrambleClasses;
 	}
@@ -921,32 +955,35 @@ public abstract class Configuration {
 	//otherwise, returns default.xml, if available
 	//otherwise, returns any available layout
 	//otherwise, returns null
-	public static String getXMLGUILayout() {
-		boolean defaultAvailable = false;
-		for(String file : getXMLLayoutsAvailable()) {
-			if(file.equals(props.getProperty("gui_XMLlayout")))
+	public static File getXMLGUILayout() {
+		File defaultGUI = null;
+		for(File file : getXMLLayoutsAvailable()) {
+			if(file.getName().equalsIgnoreCase(props.getProperty("gui_XMLlayout")))
 				return file;
-			defaultAvailable |= file.equals("default.xml");
+			if(file.getName().equalsIgnoreCase("default.xml"))
+				defaultGUI = file;
 		}
 		if(getXMLLayoutsAvailable() == null)
 			return null;
-		else if(defaultAvailable)
-			return "default.xml";
+		else if(defaultGUI != null)
+			return defaultGUI;
 		else return getXMLLayoutsAvailable()[0];
 	}
-	private static String[] availableLayouts;
-	public static String[] getXMLLayoutsAvailable() {
+	public static File getXMLFile(String xmlGUIName) {
+		for(File f : getXMLLayoutsAvailable()) {
+			if(f.getName().equalsIgnoreCase(xmlGUIName))
+				return f;
+		}
+		return null;
+	}
+	private static File[] availableLayouts;
+	public static File[] getXMLLayoutsAvailable() {
 		if(availableLayouts == null) {
-			File file = new File(System.getProperty("user.dir") + "/guiLayouts");
-			availableLayouts = file.list();
-			ArrayList<String> fs = new ArrayList<String>();
-			for(int ch = 0; ch < availableLayouts.length; ch++) {
-				if(availableLayouts[ch].endsWith(".xml")) {
-					fs.add(availableLayouts[ch]);
+			availableLayouts = guiLayoutsFolder.listFiles(new FilenameFilter() {
+				public boolean accept(File dir, String name) {
+					return name.endsWith(".xml");
 				}
-			}
-			availableLayouts = new String[fs.size()];
-			fs.toArray(availableLayouts);
+			});
 		}
 		return availableLayouts;
 	}
@@ -993,7 +1030,7 @@ public abstract class Configuration {
 	}
 	
 	public static Profile[] getProfiles() {
-		String[] profDirs = new File("./profiles").list(new FilenameFilter() {
+		String[] profDirs = profilesFolder.list(new FilenameFilter() {
 			public boolean accept(File f, String s) {
 				File temp = new File(f, s);
 				return !temp.isHidden() && temp.isDirectory();
