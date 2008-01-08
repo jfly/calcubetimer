@@ -313,7 +313,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		splits = new JCheckBox("Detect splits.");
 		splits.addActionListener(this);
 
-		keySelector = new JTextArea(); //TODO - is working?
+		keySelector = new JTextArea();
 		keySelector.setColumns(10);
 		keySelector.setEditable(false);
 		keySelector.setToolTipText("Click here to set key");
