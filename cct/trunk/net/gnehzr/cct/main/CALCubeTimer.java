@@ -1262,7 +1262,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 
 	public void showDocumentation(){
 		try {
-			URI uri = new File(Configuration.documentationFolder, "readme.html").toURI();
+			URI uri = Configuration.documentationFile.toURI();
 			Desktop.getDesktop().browse(uri);
 		} catch(Exception error) {
 			JOptionPane.showMessageDialog(this,

@@ -78,7 +78,7 @@ public abstract class Configuration {
 	private static final File guiLayoutsFolder = new File(getRootDirectory(), "guiLayouts/");
 	public static final File profilesFolder = new File(getRootDirectory(), "profiles/");
 	private static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/");
-	public static final File documentationFolder = new File(getRootDirectory(), "documentation/");
+	public static final File documentationFile = new File(getRootDirectory(), "documentation/readme.html");
 	public static final String newLine = System.getProperty("line.separator");
 	
 	//we will notify any listeners of serious errors so they can message the user and close gracefully
