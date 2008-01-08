@@ -141,7 +141,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		} else if(keyboardTimer.isRunning()) {
 			keyboardTimer.stop();
 			thingToListenTo.setKeysDownState();
-		} else if(!ignoreKey(e)) {
+		} else if(!ignoreKey(e, Configuration.isSpacebarOnly())) {
 			thingToListenTo.setKeysDownState();
 		}
 	}
@@ -154,7 +154,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 				if(!keyboardTimer.isReset()) {
 					keyboardTimer.fireStop();
 					thingToListenTo.setStateText("Start Timer");
-				} else if(!ignoreKey(e)) {
+				} else if(!ignoreKey(e, Configuration.isSpacebarOnly())) {
 					if(keyboardTimer.startTimer()) {
 						thingToListenTo.setStateText("Stop Timer");
 					}
@@ -163,9 +163,9 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		}
 	}
 
-	public static boolean ignoreKey(KeyEvent e) {
+	public static boolean ignoreKey(KeyEvent e, boolean spaceBarOnly) {
 		int key = e.getKeyCode();
-		if(Configuration.isSpacebarOnly())
+		if(spaceBarOnly)
 			return key != KeyEvent.VK_SPACE;
 		return key > 123 || key < 23 || e.isAltDown() || e.isControlDown() || key == KeyEvent.VK_ESCAPE;
 	}

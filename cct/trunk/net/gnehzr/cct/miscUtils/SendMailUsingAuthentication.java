@@ -71,6 +71,7 @@ public class SendMailUsingAuthentication {
 		props.setProperty("mail.smtp.host", Configuration.getSMTPHost());
 		props.setProperty("mail.smtp.port", Configuration.getPort());
 		props.setProperty("mail.smtp.auth", Boolean.toString(Configuration.isSMTPauth()));
+		props.put("mail.smtp.starttls.enable", "true");
 
 		Session session = null;
 		if(Configuration.isSMTPauth()) {
@@ -85,9 +86,9 @@ public class SendMailUsingAuthentication {
 		Message msg = new MimeMessage(session);
 
 		// set the from and to address
-		InternetAddress addressFrom = new InternetAddress(Configuration.getUserEmail());
+		InternetAddress addressFrom = new InternetAddress(Configuration.getSMTPEmailAddress());
 		msg.setFrom(addressFrom);
-		InternetAddress[] addressTo = new InternetAddress[recipients.length];;
+		InternetAddress[] addressTo = new InternetAddress[recipients.length];
 		for (int i = 0; i < recipients.length; i++) {
 			addressTo[i] = new InternetAddress(recipients[i]);
 		}
@@ -97,10 +98,6 @@ public class SendMailUsingAuthentication {
 		msg.setSubject(subject);
 		msg.setContent(message, "text/plain");
 		Transport.send(msg);
-	}
-
-	public static boolean isNotSetup() {
-		return Configuration.getSMTPHost().equals("") || Configuration.getUsername().equals("") || Configuration.getUserEmail().equals("") || Configuration.getPort().equals("");
 	}
 
 	/**

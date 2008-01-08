@@ -79,7 +79,6 @@ public abstract class Configuration {
 	public static final File profilesFolder = new File(getRootDirectory(), "profiles/");
 	private static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/");
 	public static final File documentationFile = new File(getRootDirectory(), "documentation/readme.html");
-	public static final String newLine = System.getProperty("line.separator");
 	
 	//we will notify any listeners of serious errors so they can message the user and close gracefully
 	private static String seriousError = "";
@@ -123,8 +122,8 @@ public abstract class Configuration {
 		defaults = new SortedProperties();
 		defaults.load(in);
 		in.close();
-		defaults.setProperty("statistics_string_Average", defaults.getProperty("statistics_string_Average").replaceAll("\n", newLine));
-		defaults.setProperty("statistics_string_Session", defaults.getProperty("statistics_string_Session").replaceAll("\n", newLine));
+		defaults.setProperty("statistics_string_Average", defaults.getProperty("statistics_string_Average"));
+		defaults.setProperty("statistics_string_Session", defaults.getProperty("statistics_string_Session"));
 		props = new SortedProperties(defaults);
 		
 		currentFile = f;
@@ -188,14 +187,6 @@ public abstract class Configuration {
 		return currentFile.exists() ? currentFile.getName() : "Defaults";
 	}
 
-//	public static String getSundayString(String average, String times) {
-//		return "Name: " + getName() + "\n" +
-//		"Email: " + getUserEmail() + "\n" +
-//		"Country: " + getCountry() + "\n" +
-//		"Average: " + average + "\n" +
-//		"Individual Solving Times: " + times + "\n" +
-//		"Quote: " + getSundayQuote();
-//	}
 	public static Dimension getScrambleViewDimensions() {
 		try {
 			return new Dimension(Integer.parseInt(props.getProperty("gui_ScrambleView_Width")),
@@ -351,18 +342,6 @@ public abstract class Configuration {
 	public static void setName(String name) {
 		props.setProperty("sunday_Name", name);
 	}
-	public static char[] getPassword() {
-		return props.getProperty("sunday_email_Password").toCharArray();
-	}
-	public static void setPassword(char[] password) {
-		props.setProperty("sunday_email_Password", new String(password));
-	}
-	public static String getPort() {
-		return props.getProperty("sunday_email_Port");
-	}
-	public static void setPort(String port) {
-		props.setProperty("sunday_email_Port", port);
-	}
 	public static boolean isPromptForNewTime() {
 		return isPromptForNewTime(props);
 	}
@@ -389,19 +368,51 @@ public abstract class Configuration {
 	public static void setRASize(int size) {
 		props.setProperty("statistics_RASize", "" + size);
 	}
+
+	public static String getSMTPEmailAddress() {
+		return props.getProperty("SMTP_fromAddress");
+	}
+	public static void setSMTPEmailAddress(String fromAddress) {
+		props.setProperty("SMTP_fromAddress", fromAddress);
+	}
+	public static boolean isSMTPEnabled() {
+		return Boolean.parseBoolean(props.getProperty("SMTP_enabled"));
+	}
+	public static void setSMTPEnabled(boolean enabled) {
+		props.setProperty("SMTP_enabled", Boolean.toString(enabled));
+	}
+	public static char[] getPassword() {
+		return props.getProperty("SMTP_password").toCharArray();
+	}
+	public static void setPassword(char[] password) {
+		props.setProperty("SMTP_password", new String(password));
+	}
+	public static String getPort() {
+		return props.getProperty("SMTP_port");
+	}
+	public static void setPort(String port) {
+		props.setProperty("SMTP_port", port);
+	}
 	public static String getSMTPHost() {
-		return props.getProperty("sunday_email_SMTPHost");
+		return props.getProperty("SMTP_smtpHost");
 	}
 	public static void setSMTPHost(String host) {
-		props.setProperty("sunday_email_SMTPHost", host);
+		props.setProperty("SMTP_smtpHost", host);
 	}
 	public static boolean isSMTPauth() {
 		return Boolean.parseBoolean(
-				props.getProperty("sunday_email_SMTPauth"));
+				props.getProperty("SMTP_smtpAuth"));
 	}
 	public static void setSMTPauth(boolean SMTPauth) {
-		props.setProperty("sunday_email_SMTPauth", "" + SMTPauth);
+		props.setProperty("SMTP_smtpAuth", "" + SMTPauth);
 	}
+	public static String getUsername() {
+		return props.getProperty("SMTP_username");
+	}
+	public static void setUsername(String username) {
+		props.setProperty("SMTP_username", username);
+	}
+	
 	public static int getSwitchThreshold() {
 		return Integer.parseInt(
 				props.getProperty("stackmat_SwitchThreshold"));
@@ -414,12 +425,6 @@ public abstract class Configuration {
 	}
 	public static void setUserEmail(String userEmail) {
 		props.setProperty("sunday_email_Address", userEmail);
-	}
-	public static String getUsername() {
-		return props.getProperty("sunday_email_Username");
-	}
-	public static void setUsername(String username) {
-		props.setProperty("sunday_email_Username", username);
 	}
 	public static Color getWorstTimeColor() {
 		return getWorstTimeColor(props);

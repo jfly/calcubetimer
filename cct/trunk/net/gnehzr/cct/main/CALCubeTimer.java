@@ -146,7 +146,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 					e.getLocalizedMessage(),
 					"Can't start CCT!",
 					JOptionPane.ERROR_MESSAGE);
-			// TODO this is where we will know about any "serious errors" that will
+			// this is where we will know about any "serious errors" that will
 			// prevent us from starting cct
 			System.exit(1);
 		}
@@ -156,11 +156,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		stackmatTimer.execute();
 		Configuration.addConfigurationChangeListener(stackmatTimer);
 
+		stats = new Statistics();
+		stats.addListDataListener(this);
+		
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				timeListener = new TimerHandler();
 				createActions();
-				createAndShowGUI();
+				initializeGUIComponents();
 				stackmatTimer.addPropertyChangeListener(timeListener);
 			}
 		});
@@ -244,11 +247,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		resetAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
 		actionMap.put("reset", resetAction);
 
-		currentAverageAction = new StatisticsAction(this, Statistics.averageType.CURRENT);
+		currentAverageAction = new StatisticsAction(this, stats, Statistics.averageType.CURRENT);
 		actionMap.put("currentaverage", currentAverageAction);
-		rollingAverageAction = new StatisticsAction(this, Statistics.averageType.RA);
+		rollingAverageAction = new StatisticsAction(this, stats, Statistics.averageType.RA);
 		actionMap.put("bestaverage", rollingAverageAction);
-		sessionAverageAction = new StatisticsAction(this, Statistics.averageType.SESSION);
+		sessionAverageAction = new StatisticsAction(this, stats, Statistics.averageType.SESSION);
 		actionMap.put("sessionaverage", sessionAverageAction);
 
 		flipFullScreenAction = new FlipFullScreenAction(this);
@@ -346,7 +349,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	private JButton maximize;
 	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Changed";
 	private JMenu customGUIMenu;
-	private void createAndShowGUI() {
+	private void initializeGUIComponents() {
 		addWindowFocusListener(this);
 		tickTock = new Timer(0, null);
 		configurationDialog = new ConfigurationDialog(this, true, stackmatTimer, tickTock);
@@ -386,9 +389,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 
 		onLabel = new JLabel("Timer is OFF");
 		onLabel.setFont(onLabel.getFont().deriveFont(AffineTransform.getScaleInstance(2, 2)));
-
-		stats = new Statistics();
-		stats.addListDataListener(this);
 		
 		tf = new JTextField();
         tf.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -1489,42 +1489,17 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 			return true;
 		}
 	}
-
-	public ConfigurationDialog getConfigurationDialog(){
-		return configurationDialog;
-	}
-	public Statistics getStatistics(){
-		return stats;
-	}
 }
 
 @SuppressWarnings("serial")
 class StatisticsAction extends AbstractAction{
-	private static String[] statsChoices = new String[] {"Save Statistics", "Back"};
-	private CALCubeTimer cct;
-	private Statistics.averageType type;
-	private String s = null;
-
-	public StatisticsAction(CALCubeTimer cct, Statistics.averageType type){
-		this.cct = cct;
-		this.type = type;
-		if(type == Statistics.averageType.RA) s = "Rolling Average";
-		else if(type == Statistics.averageType.CURRENT) s = "Current Average";
-		else if(type == Statistics.averageType.SESSION) s = "Entire Session";
+	private StatsDialogHandler statsHandler;
+	public StatisticsAction(CALCubeTimer cct, Statistics stats, Statistics.averageType type){
+		statsHandler = new StatsDialogHandler(cct, stats, type);
 	}
 
 	public void actionPerformed(ActionEvent e){
-		StatsDialogHandler statsHandler = new StatsDialogHandler(cct.getConfigurationDialog(), cct.getStatistics(), type, true);
-		int choice = JOptionPane.showOptionDialog(cct,
-				statsHandler,
-				"Detailed Statistics for " + s,
-				JOptionPane.YES_NO_OPTION,
-				JOptionPane.PLAIN_MESSAGE,
-				null,
-				statsChoices,
-				statsChoices[1]);
-		if(choice == JOptionPane.YES_OPTION)
-			statsHandler.promptToSaveStats();
+		statsHandler.setVisible(true);
 	}
 }
 @SuppressWarnings("serial")

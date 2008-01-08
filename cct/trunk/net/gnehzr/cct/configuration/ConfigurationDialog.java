@@ -12,12 +12,15 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -26,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -61,6 +65,7 @@ import net.gnehzr.cct.miscUtils.ComboRenderer;
 import net.gnehzr.cct.miscUtils.ImageFilter;
 import net.gnehzr.cct.miscUtils.ImagePreview;
 import net.gnehzr.cct.miscUtils.JListMutable;
+import net.gnehzr.cct.miscUtils.JTextAreaWithHistory;
 import net.gnehzr.cct.miscUtils.MutableListModel;
 import net.gnehzr.cct.miscUtils.PuzzleTypeCellRenderer;
 import net.gnehzr.cct.scrambles.Scramble;
@@ -70,7 +75,7 @@ import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
 
 @SuppressWarnings("serial")
 public class ConfigurationDialog extends JDialog implements KeyListener,
-		MouseListener, ActionListener, ColorListener {
+		MouseListener, ActionListener, ColorListener, ItemListener {
 	private ComboItem[] items;
 	private StackmatInterpreter stackmat;
 	private Timer tickTock;
@@ -84,7 +89,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		setLocationRelativeTo(parent);
 	}
 
-	private int mailTab = 0;
 	private JTabbedPane tabbedPane;
 	private JButton applyButton, saveButton = null;
 	// private JButton loadButton, saveAsButton = null; This has been removed
@@ -121,8 +125,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		tabbedPane.addTab("Stackmat Settings", tab);
 
 		tab = makeSundaySetupPanel();
-		tabbedPane.addTab("Sunday Contest", tab);
-		mailTab = tabbedPane.getTabCount() - 1;
+		tabbedPane.addTab("Sunday Contest/Email settings", tab);
 
 		tab = makeSessionSetupPanel();
 		tabbedPane.addTab("Session Stats", tab);
@@ -310,7 +313,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		splits = new JCheckBox("Detect splits.");
 		splits.addActionListener(this);
 
-		keySelector = new JTextArea();
+		keySelector = new JTextArea(); //TODO - is working?
 		keySelector.setColumns(10);
 		keySelector.setEditable(false);
 		keySelector.setToolTipText("Click here to set key");
@@ -548,14 +551,18 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 	private JTextField name, country = null;
 	private JTextField sundayQuote = null;
 	private JTextField userEmail = null;
+	private JTextField emailAddress = null;
 	private JTextField host, port = null;
 	private JTextField username = null;
 	private JCheckBox SMTPauth = null;
 	private JPasswordField password = null;
-
+	private JCheckBox useSMTPServer = null;
+	private JPanel emailOptions;
 	private JPanel makeSundaySetupPanel() {
-		JPanel options = new JPanel(new GridBagLayout());
+		JPanel sundayOptions = new JPanel(new GridBagLayout());
+		sundayOptions.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Sunday Contest"));
 		GridBagConstraints c = new GridBagConstraints();
+		c.insets = new Insets(2, 2, 2, 2);
 		c.fill = GridBagConstraints.BOTH;
 		c.ipady = 5;
 
@@ -564,114 +571,166 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 0;
-		options.add(new JLabel("Name: "), c);
+		sundayOptions.add(new JLabel("Name: "), c);
 		c.weightx = 1;
 		c.gridwidth = 2;
 		c.gridx = 1;
 		c.gridy = 0;
-		options.add(name, c);
+		sundayOptions.add(name, c);
 
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 4;
 		c.gridy = 0;
-		options.add(new JLabel("Country: "), c);
+		sundayOptions.add(new JLabel("Country: "), c);
 		country = new JTextField(5);
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 5;
 		c.gridy = 0;
-		options.add(country, c);
+		sundayOptions.add(country, c);
 
 		sundayQuote = new JTextField();
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 1;
-		options.add(new JLabel("Default Quote: "), c);
+		sundayOptions.add(new JLabel("Default Quote: "), c);
 		c.weightx = 1;
 		c.gridwidth = 5;
 		c.gridx = 1;
 		c.gridy = 1;
-		options.add(sundayQuote, c);
+		sundayOptions.add(sundayQuote, c);
 
 		userEmail = new JTextField();
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 2;
-		options.add(new JLabel("Your email: "), c);
+		sundayOptions.add(new JLabel("Your email: "), c);
 		c.weightx = 1;
-		c.gridwidth = 5;
+		c.gridwidth = 3;
 		c.gridx = 1;
 		c.gridy = 2;
-		options.add(userEmail, c);
+		sundayOptions.add(userEmail, c);
+		c.weightx = 0;
+		c.gridwidth = 2;
+		c.gridx = 4;
+		c.gridy = 2;
+		sundayOptions.add(new JCheckBox("Show address?"), c);
+		
 
+		emailOptions = new JPanel(new GridBagLayout());
+		emailOptions.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Email setup"));
+		c = new GridBagConstraints();
+		c.insets = new Insets(2, 2, 2, 2);
+		c.fill = GridBagConstraints.BOTH;
+		c.ipady = 5;
+		
+		useSMTPServer = new JCheckBox("Check here to setup a SMTP server to use. Otherwise, CCT will attempt to use your default mailto: link handler.");
+		useSMTPServer.addItemListener(this);
+		
+		c.weightx = 0;
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.gridx = 0;
+		c.gridy = 1;
+		emailOptions.add(useSMTPServer, c);
+		
+		emailAddress = new JTextField();
+		c.weightx = 0;
+		c.gridwidth = 1;
+		c.gridx = 0;
+		c.gridy = 2;
+		emailOptions.add(new JLabel("Email address"), c);
+		c.weightx = 1;
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.gridx = 1;
+		c.gridy = 2;
+		emailOptions.add(emailAddress, c);
+		
 		host = new JTextField();
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 3;
-		options.add(new JLabel("SMTP Host: "), c);
+		emailOptions.add(new JLabel("SMTP Host: "), c);
 		c.weightx = 1;
-		c.gridwidth = 2;
+		c.gridwidth = 3;
 		c.gridx = 1;
 		c.gridy = 3;
-		options.add(host, c);
+		emailOptions.add(host, c);
 
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 4;
 		c.gridy = 3;
-		options.add(new JLabel("Port: "), c);
+		emailOptions.add(new JLabel("Port: "), c);
 		port = new JTextField(3);
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 5;
 		c.gridy = 3;
-		options.add(port, c);
+		emailOptions.add(port, c);
 
 		username = new JTextField();
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 4;
-		options.add(new JLabel("Username: "), c);
+		emailOptions.add(new JLabel("Username: "), c);
 		c.weightx = 1;
-		c.gridwidth = 5;
+		c.gridwidth = 2;
 		c.gridx = 1;
 		c.gridy = 4;
-		options.add(username, c);
+		emailOptions.add(username, c);
 
 		SMTPauth = new JCheckBox("SMTP authentication?");
-		SMTPauth.addActionListener(this);
+		SMTPauth.addItemListener(this);
 		c.weightx = 0;
 		c.gridwidth = 1;
-		c.gridx = 0;
-		c.gridy = 5;
-		options.add(SMTPauth, c);
+		c.gridx = 3;
+		c.gridy = 4;
+		emailOptions.add(SMTPauth, c);
 
 		c.weightx = 0;
 		c.gridwidth = 1;
-		c.gridx = 1;
-		c.gridy = 5;
-		options.add(new JLabel("Password: "), c);
+		c.gridx = 4;
+		c.gridy = 4;
+		emailOptions.add(new JLabel("Password: "), c);
 
-		c.gridx = 2;
-		c.gridwidth = 4;
+		c.weightx = 1;
+		c.gridx = 5;
+		c.gridwidth = GridBagConstraints.REMAINDER;
 		password = new JPasswordField();
 		password
 				.setToolTipText("If your SMTP server requires authentication, type your password here.");
-		options.add(password, c);
+		emailOptions.add(password, c);
+		useSMTPServer.setSelected(true);
+		useSMTPServer.setSelected(false); //need both to ensure that an itemStateChanged event is fired
 
-		return options;
+		JPanel sundayEmail = new JPanel(new GridLayout(0, 1));
+		sundayEmail.add(sundayOptions);
+		sundayEmail.add(emailOptions);
+		return sundayEmail;
+	}
+	public void itemStateChanged(ItemEvent e) {
+		boolean useSMTP = useSMTPServer.isSelected();
+		Object source = e.getSource();
+		if (source == useSMTPServer) {
+			for(Component c : emailOptions.getComponents()) {
+				if(c != useSMTPServer)
+					c.setEnabled(useSMTP);
+			}
+		} else if (source == SMTPauth) {
+			password.setEnabled(useSMTP && SMTPauth.isSelected());
+		}
 	}
 
-	private JTextArea sessionStats = null;
+	private JTextAreaWithHistory sessionStats = null;
 
 	private JPanel makeSessionSetupPanel() {
 		JPanel options = new JPanel(new BorderLayout(10, 0));
-		sessionStats = new JTextArea();
+		sessionStats = new JTextAreaWithHistory();
 		JScrollPane scroller = new JScrollPane(sessionStats);
 		options.add(scroller, BorderLayout.CENTER);
 		options.add(new JLabel("<html><body>"
@@ -686,11 +745,11 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		return options;
 	}
 
-	private JTextArea averageStats = null;
+	private JTextAreaWithHistory averageStats = null;
 
 	private JPanel makeAverageSetupPanel() {
 		JPanel options = new JPanel(new BorderLayout());
-		averageStats = new JTextArea();
+		averageStats = new JTextAreaWithHistory();
 		JScrollPane scroller = new JScrollPane(averageStats);
 		options.add(scroller, BorderLayout.CENTER);
 		options.add(new JLabel("<html><body>"
@@ -732,8 +791,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 			options.add(solvedPuzzles[ch]);
 		}
 		options.add(Box.createHorizontalGlue());
-		scroller.setPreferredSize(new Dimension(700, 300)); // TODO - this isn't
-		// scrolling-savvy
+		scroller.setPreferredSize(new Dimension(700, 300)); // TODO - this isn't scrolling-savvy
 		return scroller;
 	}
 
@@ -781,8 +839,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 							"Warning!", JOptionPane.YES_NO_OPTION);
 			if (choice == JOptionPane.YES_OPTION)
 				resetAllButEmail();
-		} else if (source == SMTPauth) {
-			password.setEnabled(SMTPauth.isSelected());
 		}/*
 			 * else if(source == saveAsButton) { JFileChooser fc = new
 			 * JFileChooser("."); int choice = fc.showDialog(this, "Save
@@ -900,6 +956,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		invertedHundredths.setSelected(Configuration.isInvertedHundredths());
 
 		// makeSundaySetupPanel
+		useSMTPServer.setSelected(Configuration.isSMTPEnabled());
+		emailAddress.setText(Configuration.getSMTPEmailAddress());
 		name.setText(Configuration.getName());
 		country.setText(Configuration.getCountry());
 		sundayQuote.setText(Configuration.getSundayQuote());
@@ -980,12 +1038,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		sundayQuote.setText(Configuration.getSundayQuoteDefault());
 	}
 
-	public void showSundayOptions() {
-		syncGUIwithConfig();
-		tabbedPane.setSelectedIndex(mailTab);
-		super.setVisible(true);
-	}
-
 	public void setVisible(boolean visible) {
 		if (visible && tabbedPane == null)
 			createGUI();
@@ -993,10 +1045,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 			syncGUIwithConfig();
 		super.setVisible(visible);
 	}
-
-	// private void saveConfigurationToFile(File saveFile) throws IOException {
-	// Configuration.saveConfigurationToFile(saveFile);
-	// }
 
 	private void applyConfiguration() {
 		Configuration.setBestAndCurrentColor(currentAndRA.getBackground());
@@ -1026,7 +1074,9 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		Configuration.setUsername(username.getText());
 		Configuration.setSMTPauth(SMTPauth.isSelected());
 		Configuration.setPassword(password.getPassword());
-
+		Configuration.setSMTPEnabled(useSMTPServer.isSelected());
+		Configuration.setSMTPEmailAddress(emailAddress.getText());
+		
 		Configuration.setSessionString(sessionStats.getText());
 		Configuration.setAverageString(averageStats.getText());
 
@@ -1065,7 +1115,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 	}
 
 	public void keyPressed(KeyEvent e) {
-		if (!KeyboardTimerPanel.ignoreKey(e)) {
+		if (!KeyboardTimerPanel.ignoreKey(e, false)) {
 			splitkey = e.getKeyCode();
 			keySelector.setText(KeyEvent.getKeyText(splitkey));
 		}

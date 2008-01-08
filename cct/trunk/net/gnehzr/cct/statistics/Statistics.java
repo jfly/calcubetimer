@@ -22,7 +22,19 @@ import net.gnehzr.cct.miscUtils.Utils;
 public class Statistics implements MutableListModel<SolveTime>,
 		ConfigurationChangeListener, ActionListener {
 	public enum averageType {
-		CURRENT, RA, SESSION
+		CURRENT {
+			public String toString() {
+				return "Current Average";
+			}
+		}, RA {
+			public String toString() {
+				return "Best Rolling Average";
+			}
+		}, SESSION {
+			public String toString() {
+				return "Session Average";
+			}
+		}
 	}
 
 	private ArrayList<SolveTime> times;
@@ -452,10 +464,11 @@ public class Statistics implements MutableListModel<SolveTime>,
 		boolean parens = false;
 		if (next == best || next == worst)
 			parens = true;
-		return "\r\n" + times.nextIndex() + ".\t" + (parens ? "(" : "")
+		return times.nextIndex() + ".\t" + (parens ? "(" : "")
 				+ next.toString() + (parens ? ")" : "") + "\t"
 				+ next.getScramble()
 				+ (showSplits ? next.toSplitsString() : "")
+				+ "\n"
 				+ toStatsStringHelper(times, best, worst, showSplits);
 	}
 

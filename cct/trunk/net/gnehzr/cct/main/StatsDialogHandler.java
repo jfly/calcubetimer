@@ -1,77 +1,50 @@
 package net.gnehzr.cct.main;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.Dimension;
 import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
-import javax.mail.MessagingException;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 import net.gnehzr.cct.configuration.Configuration;
-import net.gnehzr.cct.configuration.ConfigurationDialog;
-import net.gnehzr.cct.miscUtils.SendMailUsingAuthentication;
-import net.gnehzr.cct.miscUtils.Utils;
+import net.gnehzr.cct.miscUtils.JTextAreaWithHistory;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
 
 @SuppressWarnings("serial")
-public class StatsDialogHandler extends JPanel implements ActionListener, ClipboardOwner {
-	private static Clipboard clipBoard = null;
-
+public class StatsDialogHandler extends JDialog implements ActionListener {
 	private static final SimpleDateFormat SDF = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 	private Calendar cal = Calendar.getInstance(TimeZone.getDefault());
 
-	private JButton copyButton = null;
 	private JButton emailButton = null;
 	private JButton submitButton = null;
-	private JTextArea textArea = null;
-	private JTextField toAddress, subject = null;
+	private JButton saveButton = null;
+	private JButton doneButton = null;
+	private JTextAreaWithHistory textArea = null;
 	private Statistics times = null;
 	private Statistics.averageType type;
-	private ConfigurationDialog configurationDialog;
 
-	public StatsDialogHandler(ConfigurationDialog cd, Statistics times, Statistics.averageType type, boolean toEmailButton) {
-		super(new BorderLayout());
-		this.configurationDialog = cd;
+	public StatsDialogHandler(JFrame owner, Statistics times, Statistics.averageType type) {
+		super(owner, "Detailed statistics for " + type.toString(), true);
 		this.times = times;
 		this.type = type;
-		clipBoard = getToolkit().getSystemClipboard();
 
-		textArea = new JTextArea();
-		textArea.setEditable(!toEmailButton);
-		textArea.setRows(20);
-		textArea.setColumns(70);
-
+		textArea = new JTextAreaWithHistory();
 		JScrollPane textScroller = new JScrollPane(textArea);
-
-		copyButton = new JButton("Copy");
-		copyButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		copyButton.addActionListener(this);
 
 		emailButton = new JButton("Email");
 		emailButton.addActionListener(this);
@@ -79,45 +52,30 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 		submitButton = new JButton("Sunday Contest");
 		submitButton.addActionListener(this);
 
-		JPanel rightPanel = new JPanel();
-		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+		saveButton = new JButton("Save");
+		saveButton.addActionListener(this);
+		
+		doneButton = new JButton("Done");
+		doneButton.addActionListener(this);
+		
+		JPanel bottomPanel = new JPanel();
+		bottomPanel.add(emailButton);
+		bottomPanel.add(submitButton);
+		bottomPanel.add(saveButton);
+		bottomPanel.add(doneButton);
+		
+		getContentPane().add(textScroller, BorderLayout.CENTER);
+		getContentPane().add(bottomPanel, BorderLayout.PAGE_END);
 
-		if(!toEmailButton) {
-			JPanel emailStuff = new JPanel(new GridBagLayout());
-			GridBagConstraints c = new GridBagConstraints();
-
-			c.fill = GridBagConstraints.HORIZONTAL;
-			c.gridx = 0;
-			c.gridy = 0;
-			emailStuff.add(new JLabel("Destination address: "), c);
-
-			toAddress = new JTextField(50);
-			toAddress.setToolTipText("Separate multiple addresses with commas");
-			c.gridx = 1;
-			c.gridy = 0;
-			emailStuff.add(toAddress, c);
-
-			c.gridx = 0;
-			c.gridy = 1;
-			emailStuff.add(new JLabel("Subject: "), c);
-
-			c.gridx = 1;
-			c.gridy = 1;
-			subject = new JTextField("Sunday Contest");
-			emailStuff.add(subject, c);
-			add(emailStuff, BorderLayout.PAGE_START);
-		} else {
-			emailButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-			rightPanel.add(emailButton);
-			submitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-			rightPanel.add(submitButton);
-		}
-		rightPanel.add(copyButton);
-
-		add(textScroller, BorderLayout.CENTER);
-		add(rightPanel, BorderLayout.LINE_END);
-
+		setPreferredSize(new Dimension(600, 400));
+		setResizable(false);
+		pack();
+		setLocationRelativeTo(null);
+	}
+	
+	public void setVisible(boolean b) {
 		updateStats();
+		super.setVisible(b);
 	}
 
 	private void updateStats() {
@@ -139,12 +97,6 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 
 	public String getText() {
 		return textArea.getText();
-	}
-	public String[] getToAddresses() {
-		return toAddress.getText().split("[,;]");
-	}
-	public String getSubject() {
-		return subject.getText();
 	}
 
 	public void promptToSaveStats() {
@@ -178,7 +130,12 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 					out.println();
 					out.println();
 				}
-				out.println(textArea.getText().replaceAll("\n", Configuration.newLine));
+				out.print(textArea.getText().replaceAll("\n", System.getProperty("line.separator")));
+				JOptionPane.showMessageDialog(this,
+						"Successfully saved statistics to\n" +
+						outputFile.getAbsolutePath(),
+						"Success!",
+						JOptionPane.WARNING_MESSAGE);
 			} catch(Exception e) {
 				JOptionPane.showMessageDialog(this,
 						"Error!\n" + e.getMessage(),
@@ -190,135 +147,23 @@ public class StatsDialogHandler extends JPanel implements ActionListener, Clipbo
 		}
 	}
 
-	private static String[] sendBack = new String[] {"Send", "Back"};
+	public void lostOwnership(Clipboard arg0, Transferable arg1) {}
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
-		if(source == copyButton) {
-			clipBoard.setContents(new StringSelection(textArea.getText()), this);
-		} else if(source == emailButton) {
-			if(SendMailUsingAuthentication.isNotSetup()) {
-				int choice = JOptionPane.showConfirmDialog(
-						this,
-						"It appears you have not yet configured CCT to send emails!\n" +
-						"Would you like to do so now?",
-						"I don't know how to do that yet!",
-						JOptionPane.YES_NO_OPTION);
-				if(choice == JOptionPane.YES_OPTION)
-					configurationDialog.showSundayOptions();
-				if(choice == JOptionPane.CLOSED_OPTION)
-					return;
-				if(SendMailUsingAuthentication.isNotSetup())
-					JOptionPane.showMessageDialog(this,
-							"Ok, but you won't be able to send any emails\n" +
-							"until you configure your SMTP settings.",
-							"Warning!",
-							JOptionPane.WARNING_MESSAGE);
-			}
-
-			StatsDialogHandler emailIt = new StatsDialogHandler(configurationDialog, times, type, false);
-			int choice = JOptionPane.showOptionDialog(this,
-					emailIt,
-					"Submit times",
-					JOptionPane.YES_NO_OPTION,
-					JOptionPane.PLAIN_MESSAGE,
-					null,
-					sendBack,
-					sendBack[1]);
-			if(choice == JOptionPane.YES_OPTION) {
-				try {
-					SendMailUsingAuthentication smtpMailSender = new SendMailUsingAuthentication();
-					if(Configuration.isSMTPauth() && Configuration.getPassword().length == 0) {
-						PasswordPrompt prompt = new PasswordPrompt(JOptionPane.getRootFrame());
-						prompt.setVisible(true);
-						if(prompt.isCanceled()) {
-							return;
-						} else {
-							smtpMailSender.setPassword(prompt.getPassword());
-						}
-					}
-					String[] recievers = emailIt.getToAddresses();
-					smtpMailSender.postMail(recievers, emailIt.getSubject(), emailIt.getText());
-					JOptionPane.showMessageDialog(this,
-							"Email successfully sent to " + toPrettyString(recievers) + "!",
-							"Great success!",
-							JOptionPane.INFORMATION_MESSAGE);
-				} catch(MessagingException e1) {
-					JOptionPane.showMessageDialog(this,
-							"Failed to send email.\nError:" + e1.toString(),
-							"Error!",
-							JOptionPane.INFORMATION_MESSAGE);
-				}
-			}
+		if(source == saveButton) {
+			promptToSaveStats();
 		} else if (source == submitButton) {
-//			stats = Configuration.getSundayString(times.average(type), times.toTerseString(type));
-			try {
-				System.out.println(Utils.submitSundayContest(
-						Configuration.getName(),
-						Configuration.getCountry(),
-						Configuration.getUserEmail(),
-						times.average(type), times.toTerseString(type),
-						Configuration.getSundayQuote(), true));
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			new SundayContestDialog(this,
+					Configuration.getName(),
+					Configuration.getCountry(),
+					Configuration.getUserEmail(),
+					times.average(type), times.toTerseString(type),
+					Configuration.getSundayQuote(), true);
+		} else if (source == doneButton) {
+			this.setVisible(false);
+		} else if(source == emailButton) {
+			new EmailDialog(this, textArea.getText()).setVisible(true);
 		}
 	}
 
-	private static String toPrettyString(String[] recievers) {
-		String result = "";
-		if(recievers.length == 1)
-			return recievers[0];
-		for(int ch = 0; ch < recievers.length; ch ++) {
-			if(ch == recievers.length - 1)
-				result += "and " + recievers[ch];
-			else
-				result += recievers[ch] + ", ";
-		}
-		return result;
-	}
-
-	public void lostOwnership(Clipboard arg0, Transferable arg1) {}
-
-	@SuppressWarnings("serial")
-	private class PasswordPrompt extends JDialog implements ActionListener {
-		private boolean canceled = true;
-		private JPasswordField pass = null;
-		private JButton ok, cancel = null;
-		public PasswordPrompt(Frame parent) {
-			super(parent, "Enter Password", true);
-			Container pane = getContentPane();
-
-			pass = new JPasswordField(20);
-			ok = new JButton("Ok");
-			ok.addActionListener(this);
-			getRootPane().setDefaultButton(ok);
-			cancel = new JButton("Cancel");
-			cancel.addActionListener(this);
-			JPanel okCancel = new JPanel();
-			okCancel.add(ok);
-			okCancel.add(cancel);
-
-			pane.add(pass, BorderLayout.CENTER);
-			pane.add(okCancel, BorderLayout.PAGE_END);
-			pack();
-			setResizable(false);
-			setLocationRelativeTo(parent);
-		}
-		public void actionPerformed(ActionEvent e) {
-			Object source = e.getSource();
-			if(source == ok) {
-				canceled = false;
-				setVisible(false);
-			} else if(source == cancel) {
-				canceled = true;
-				setVisible(false);
-			}
-		}
-		public boolean isCanceled() {
-			return canceled;
-		}
-		public char[] getPassword() {
-			return pass.getPassword();
-		}
-	}
 }
