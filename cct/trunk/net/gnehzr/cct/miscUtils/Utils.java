@@ -13,8 +13,11 @@ import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class Utils{
+public class Utils{
 	private static final DecimalFormat DF = new DecimalFormat("0.00");
+
+	private Utils(){
+	}
 
 	public static String format(double seconds){
 		if(seconds == Double.MAX_VALUE) return "N/A";
