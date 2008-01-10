@@ -15,10 +15,13 @@ public class MegaminxScramble extends Scramble {
 	public static final String[] FACE_NAMES = {"A", "B", "C", "D", "E", "F", "a",
 		"b", "c", "d", "e", "f"};
 	public static final String PUZZLE_NAME = "Megaminx";
+	public static final String[] ATTRIBUTES = {"Pochmann Notation"};
+	public static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
 	private int[][] image;
 	public static final int DEFAULT_UNIT_SIZE = 30;
 	public static final double UNFOLDHEIGHT = 2 + 3 * Math.sin(.3 * Math.PI) + Math.sin(.1 * Math.PI);
 	public static final double UNFOLDWIDTH = 4 * Math.cos(.1 * Math.PI) + 2 * Math.cos(.3 * Math.PI);
+	private int pochmann = -1;
 
 	public static int getDefaultScrambleLength(String variation) {
 		return 60;
@@ -57,13 +60,30 @@ public class MegaminxScramble extends Scramble {
 	public MegaminxScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
 		super(s);
 		initializeImage();
+		setAttributes(attrs);
 		if(!validateScramble()) throw new InvalidScrambleException();
 	}
 
 	public MegaminxScramble(String variation, int length, String... attrs) {
 		this.length = length;
 		initializeImage();
+		setAttributes(attrs);
 		generateScramble();
+	}
+
+	public void setAttributes(String... attributes){
+		int temp = pochmann;
+		pochmann = 1;
+		for(String attr : attributes){
+			if(attr.equals(ATTRIBUTES[0])){
+				pochmann = 0;
+			}
+		}
+		if(temp != -1 && temp != pochmann){
+			scramble = "";
+			initializeImage();
+			generateScramble();
+		}
 	}
 
 	private void initializeImage() {
@@ -83,6 +103,7 @@ public class MegaminxScramble extends Scramble {
 		return validateScramble();
 	}
 	private static String regexp = "^[ABCDEFabcdef][234]?$";
+	private static String regexp1 = "^[RDY]([+-])\\1$";
 	private boolean validateScramble() {
 		String[] strs = scramble.split(" ");
 		length = strs.length;
@@ -99,20 +120,38 @@ public class MegaminxScramble extends Scramble {
 		}
 
 		for(int i = 0; i < cstrs.length; i++){
-			if(!cstrs[i].matches(regexp)) return false;
+			if(pochmann == 1 && !cstrs[i].matches(regexp)) return false;
+			else if(pochmann == 0 && !cstrs[i].matches(regexp1)) return false;
 		}
 
 		try{
-			for(int i = 0; i < cstrs.length; i++){
-				int face = -1;
-				for(int ch = 0; ch < FACE_NAMES.length; ch++) {
-					if(FACE_NAMES[ch].equals(""+cstrs[i].charAt(0))) {
-						face = ch;
-						break;
+			if(pochmann == 1){
+				for(int i = 0; i < cstrs.length; i++){
+					int face = -1;
+					for(int ch = 0; ch < FACE_NAMES.length; ch++) {
+						if(FACE_NAMES[ch].equals(""+cstrs[i].charAt(0))) {
+							face = ch;
+							break;
+						}
+					}
+					int dir = (cstrs[i].length() == 1 ? 1 : Integer.parseInt(cstrs[i].substring(1)));
+					turn(face, dir);
+				}
+			}
+			else{
+				for(int i = 0; i < cstrs.length; i++){
+					int dir = cstrs[i].charAt(1) == '+' ? 2 : 3;
+					if(cstrs[i].charAt(0) == 'R'){
+						bigTurn(0, dir);
+					}
+					else if(cstrs[i].charAt(0) == 'D'){
+						bigTurn(1, dir);
+					}
+					else{
+						bigTurn(1, dir);
+						turn(0, (-dir+5)%5);
 					}
 				}
-				int dir = (cstrs[i].length() == 1 ? 1 : Integer.parseInt(cstrs[i].substring(1)));
-				turn(face, dir);
 			}
 		} catch(Exception e){
 			e.printStackTrace();
@@ -137,17 +176,36 @@ public class MegaminxScramble extends Scramble {
 		{0,0,0,0,0,0, 0,0,0,0,0,1}};
 
 	private void generateScramble(){
-		int last = -1;
-		for(int i = 0; i < length; i++){
-			int side;
-			do{
-				side = random(12);
-			} while(last >= 0 && comm[side][last] != 0);
-			last = side;
-			int dir = random(4) + 1;
-			scramble = scramble + FACE_NAMES[side] + (dir != 1 ? dir : "") + " ";
+		if(pochmann == 1){
+			int last = -1;
+			for(int i = 0; i < length; i++){
+				int side;
+				do{
+					side = random(12);
+				} while(last >= 0 && comm[side][last] != 0);
+				last = side;
+				int dir = random(4) + 1;
+				scramble = scramble + FACE_NAMES[side] + (dir != 1 ? dir : "") + " ";
 
-			turn(side, dir);
+				turn(side, dir);
+			}
+		}
+		else{
+			for(int i = 0; i < length; ){ 
+				int dir;
+				for(int j = 0; i < length && j < 14; i++, j++){
+					int side = j % 2;
+					dir = random(2);
+					scramble += ((side == 0) ? "R" : "D") + ((dir == 0) ? "++ " : "-- ");
+					bigTurn(side, (dir == 0) ? 2 : 3);
+				}
+				if(i != length){
+					dir = random(2);
+					scramble += "Y" + ((dir == 0) ? "++ " : "-- ");
+					bigTurn(1, (dir == 0) ? 2 : 3);
+					turn(0, (dir == 0) ? 3 : 2);
+				}
+			}
 		}
 	}
 	
@@ -157,22 +215,27 @@ public class MegaminxScramble extends Scramble {
 		}
 	}
 
+	private void bigTurn(int side, int dir){
+		for(int i = 0; i < dir; i++){
+			bigTurn(side);
+		}
+	}
+
 	private void turn(int s){
 		int b = (s >= 6 ? 6 : 0);
 		switch(s % 6){
-			case 0: swap(b, 1, 6, 5, 4, 4, 2, 3, 0, 2, 8); break;
-			case 1: swap(b, 0, 0, 2, 0, 9, 6, 10, 6, 5, 2); break;
-			case 2: swap(b, 0, 2, 3, 2, 8, 4, 9, 4, 1, 4); break;
-			case 3: swap(b, 0, 4, 4, 4, 7, 2, 8, 2, 2, 6); break;
-			case 4: swap(b, 0, 6, 5, 6, 11, 0, 7, 0, 3, 8); break;
-			case 5: swap(b, 0, 8, 1, 8, 10, 8, 11, 8, 4, 0); break;
+			case 0: swapOnSide(b, 1, 6, 5, 4, 4, 2, 3, 0, 2, 8); break;
+			case 1: swapOnSide(b, 0, 0, 2, 0, 9, 6, 10, 6, 5, 2); break;
+			case 2: swapOnSide(b, 0, 2, 3, 2, 8, 4, 9, 4, 1, 4); break;
+			case 3: swapOnSide(b, 0, 4, 4, 4, 7, 2, 8, 2, 2, 6); break;
+			case 4: swapOnSide(b, 0, 6, 5, 6, 11, 0, 7, 0, 3, 8); break;
+			case 5: swapOnSide(b, 0, 8, 1, 8, 10, 8, 11, 8, 4, 0); break;
 		}
 
-		swap(s, 0, 8, 6, 4, 2);
-		swap(s, 1, 9, 7, 5, 3);
+		rotateFace(s);
 	}
 
-	private void swap(int b, int f1, int s1, int f2, int s2, int f3, int s3, int f4, int s4, int f5, int s5){
+	private void swapOnSide(int b, int f1, int s1, int f2, int s2, int f3, int s3, int f4, int s4, int f5, int s5){
 		for(int i = 0; i < 3; i++){
 			int temp = image[(f1+b)%12][(s1+i)%10];
 			image[(f1+b)%12][(s1+i)%10] = image[(f2+b)%12][(s2+i)%10];
@@ -183,7 +246,7 @@ public class MegaminxScramble extends Scramble {
 		}
 	}
 
-	private void swap(int f, int s1, int s2, int s3, int s4, int s5){
+	private void swapOnFace(int f, int s1, int s2, int s3, int s4, int s5){
 		int temp = image[f][s1];
 		image[f][s1] = image[f][s2];
 		image[f][s2] = image[f][s3];
@@ -191,7 +254,60 @@ public class MegaminxScramble extends Scramble {
 		image[f][s4] = image[f][s5];
 		image[f][s5] = temp;
 	}
-	
+
+	private void rotateFace(int f){
+		swapOnFace(f, 0, 8, 6, 4, 2);
+		swapOnFace(f, 1, 9, 7, 5, 3);
+	}
+
+	private void bigTurn(int s){
+		if(s == 0){
+			for(int i = 0; i < 7; i++){
+				swap(0, (1+i)%10, 4, (3+i)%10, 11, (1+i)%10, 10, (1+i)%10, 1, (1+i)%10);
+			}
+			swapCenters(0, 4, 11, 10, 1);
+
+			swapWholeFace(2, 0, 3, 0, 7, 0, 6, 8, 9, 8);
+
+			rotateFace(8);
+		}
+		else{
+			for(int i = 0; i < 7; i ++){
+				swap(1, (9+i)%10, 2, (1+i)%10, 3, (3+i)%10, 4, (5+i)%10, 5, (7+i)%10);
+			}
+			swapCenters(1, 2, 3, 4, 5);
+
+			swapWholeFace(11, 0, 10, 8, 9, 6, 8, 4, 7, 2);
+
+			rotateFace(6);
+		}
+	}
+
+	private void swap(int f1, int s1, int f2, int s2, int f3, int s3, int f4, int s4, int f5, int s5){
+		int temp = image[f1][s1];
+		image[f1][s1] = image[f2][s2];
+		image[f2][s2] = image[f3][s3];
+		image[f3][s3] = image[f4][s4];
+		image[f4][s4] = image[f5][s5];
+		image[f5][s5] = temp;
+	}
+
+	private void swapCenters(int f1, int f2, int f3, int f4, int f5){
+		swap(f1, 10, f2, 10, f3, 10, f4, 10, f5, 10);
+	}
+
+	private void swapWholeFace(int f1, int s1, int f2, int s2, int f3, int s3, int f4, int s4, int f5, int s5){
+		for(int i = 0; i < 10; i++){
+			int temp = image[(f1)%12][(s1+i)%10];
+			image[(f1)%12][(s1+i)%10] = image[(f2)%12][(s2+i)%10];
+			image[(f2)%12][(s2+i)%10] = image[(f3)%12][(s3+i)%10];
+			image[(f3)%12][(s3+i)%10] = image[(f4)%12][(s4+i)%10];
+			image[(f4)%12][(s4+i)%10] = image[(f5)%12][(s5+i)%10];
+			image[(f5)%12][(s5+i)%10] = temp;
+		}
+		swapCenters(f1, f2, f3, f4, f5);
+	}
+
 	public BufferedImage getScrambleImage(int gap, int minxRad, HashMap<String, Color> colorScheme) {
 		BufferedImage buffer = new BufferedImage(getMegaminxViewWidth(gap, minxRad), getMegaminxViewHeight(gap, minxRad), BufferedImage.TYPE_INT_ARGB);
 		drawMinx(buffer.createGraphics(), gap, minxRad, colorScheme);
