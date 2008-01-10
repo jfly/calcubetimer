@@ -24,6 +24,7 @@ public class SquareOneScramble extends Scramble {
 	private char[][] state;
 	private boolean even_parity = true; //this is the state of the middle pieces
 	public static final int DEFAULT_UNIT_SIZE = 35;
+	private boolean easyRead;
 
 	public static int getDefaultScrambleLength(String variation) {
 		return 40;
@@ -67,7 +68,6 @@ public class SquareOneScramble extends Scramble {
 		if(!validateScramble())	throw new InvalidScrambleException();
 	}
 
-	private boolean easyRead;
 	public void setAttributes(String... attributes) {
 		easyRead = false;
 		for(String attr : attributes) {
@@ -146,8 +146,11 @@ public class SquareOneScramble extends Scramble {
 	}
 	private int u = 0, d = 0;
 	private void finalizeScramble() {
+		/*
 		if(u + d == 0)
 			return;
+			*/
+		if(u == 0 && d == 0) return;
 		if(u > 6)
 			u -= 12;
 		if(d > 6)
@@ -207,8 +210,9 @@ public class SquareOneScramble extends Scramble {
 		}
 	}
 
-	private final Pattern regexp = Pattern.compile("^[ ]*[(]?([-]?[0-9]+),([-]?[0-9]+)[)]?[ ]*$");
+	private final Pattern regexp = Pattern.compile("^ *[(]?(-?[0-6]+) *, *(-?[0-6]+)[)]? *$");
 	private boolean validateScramble() {
+		even_parity = true;
 		length = 0;
 		String[] trns = scramble.split("/", -1);
 		scramble = "";
