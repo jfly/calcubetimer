@@ -17,11 +17,13 @@ import javax.mail.MessagingException;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
@@ -110,34 +112,97 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		return result;
 	}
 	
+	private class EmailWorker extends SwingWorker<Void, Void> {
+		private SendMailUsingAuthentication smtpMailSender;
+		private String[] receivers;
+		private WaitingDialog waiting;
+		private Exception error;
+		public EmailWorker(JDialog owner, char[] pass, String[] receivers) {
+			smtpMailSender = new SendMailUsingAuthentication(pass);
+			this.receivers = receivers;
+
+			waiting = new WaitingDialog(owner, true, this);
+			waiting.setResizable(false);
+			waiting.setTitle("Working");
+			waiting.setText("Sending...");
+			waiting.setButtonText("Cancel");
+		}
+		protected Void doInBackground() {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					waiting.setVisible(true);
+				}
+			});
+			try {
+//				System.out.print("Sending...");
+				smtpMailSender.postMail(receivers, subject.getText(), body.getText());
+//				System.out.println("done!");
+			} catch (MessagingException e) {
+				error = e;
+				e.printStackTrace();
+			}
+			return null;
+		}
+		protected void done() {
+			waiting.setButtonText("Ok");
+			if(error == null) {
+				waiting.setTitle("Great success!");
+				waiting.setText("Email successfully sent to " + toPrettyString(receivers) + "!");
+			} else {
+				waiting.setTitle("Error!");
+				waiting.setText("Failed to send email.\nError: " + error.getLocalizedMessage());
+			}
+		}
+	}
+	
+	private class WaitingDialog extends JDialog {
+		private JTextArea message;
+		private JButton button;
+		public WaitingDialog(JDialog owner, boolean modal, final SwingWorker<?, ?> worker) {
+			super(owner, modal);
+			message = new JTextArea();
+			message.setEditable(false);
+			message.setLineWrap(true);
+			message.setWrapStyleWord(true);
+			button = new JButton();
+			button.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					setVisible(false);
+					//TODO - this is apparently not interrupting the call to postMail, I have
+					//no idea how to fix it though.
+					worker.cancel(true);
+				}
+			});
+			getContentPane().add(message, BorderLayout.CENTER);
+			getContentPane().add(button, BorderLayout.PAGE_END);
+			setPreferredSize(new Dimension(200, 150));
+			pack();
+			setLocationRelativeTo(owner);
+		}
+		public void setText(String text) {
+			message.setText(text);
+		}
+		public void setButtonText(String text) {
+			button.setText(text);
+		}
+	}
+	
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if (source == sendButton) {
 			if(Configuration.isSMTPEnabled()) {
-				try {
-					SendMailUsingAuthentication smtpMailSender = new SendMailUsingAuthentication();
-					if(Configuration.isSMTPauth() && Configuration.getPassword().length == 0) {
-						PasswordPrompt prompt = new PasswordPrompt(this);
-						prompt.setVisible(true);
-						if(prompt.isCanceled()) {
-							return;
-						} else {
-							smtpMailSender.setPassword(prompt.getPassword());
-						}
+				char[] pass = null;
+				if(Configuration.isSMTPauth() && Configuration.getPassword().length == 0) {
+					PasswordPrompt prompt = new PasswordPrompt(this);
+					prompt.setVisible(true);
+					if(prompt.isCanceled()) {
+						return;
 					}
-					String[] recievers = toAddress.getText().split("[,;]");
-					smtpMailSender.postMail(recievers, subject.getText(), body.getText());
-					JOptionPane.showMessageDialog(this,
-							"Email successfully sent to " + toPrettyString(recievers) + "!",
-							"Great success!",
-							JOptionPane.INFORMATION_MESSAGE);
-				} catch(MessagingException e1) {
-					e1.printStackTrace();
-					JOptionPane.showMessageDialog(this,
-							"Failed to send email.\nError:" + e1.toString(),
-							"Error!",
-							JOptionPane.INFORMATION_MESSAGE);
+					pass = prompt.getPassword();
 				}
+
+				SwingWorker<Void, Void> sendEmail = new EmailWorker(this, pass, toAddress.getText().split("[,;]"));
+				sendEmail.execute();
 			} else {
 				try {
 					URI mailTo = new URI("mailto",
