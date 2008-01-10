@@ -8,10 +8,10 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -24,11 +24,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.html.HTML;
-import javax.swing.text.html.HTML.Tag;
-import javax.swing.text.html.HTMLEditorKit.ParserCallback;
-import javax.swing.text.html.parser.ParserDelegator;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import net.gnehzr.cct.miscUtils.JTextAreaWithHistory;
 
@@ -132,36 +135,32 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		setVisible(true);
 	}
 	
-	private static class LookForResultsDiv extends ParserCallback {
-		private int level = -1;
-		private int resultsLevel;
-		private int start, end;
-		public void handleStartTag(Tag t, MutableAttributeSet a, int pos) {
-			level++;
-			if(t.equals(HTML.Tag.DIV) && a.containsAttribute(HTML.Attribute.ID, "results")) {
+	private static class FindResultsHandler extends DefaultHandler {
+		private int level = 0;
+		private int resultsLevel = -1;
+		private String results = "";
+		public void startElement(String uri, String localName, String name,
+				Attributes attributes) throws SAXException {
+			if(resultsLevel != -1)
+				results += "<" + name + ">";
+			if(name.equals("div") && attributes.getValue("id").equals("results")) {
 				resultsLevel = level;
-				start = pos;
 			}
-			if(done) {
-				end = pos;
-				done = false;
-			}
+			level++;
 		}
-		private boolean done;
-		public void handleEndTag(Tag t, int pos) {
-			if(done) {
-				end = pos;
-				done = false;
-			}
-			done = level == resultsLevel && t.equals(HTML.Tag.DIV);
+		
+		public void endElement(String uri, String localName, String name)
+				throws SAXException {
 			level--;
+			if(name.equals("div") && level == resultsLevel)
+				resultsLevel = -1;
+			if(resultsLevel != -1)
+				results += "</" + name + ">";
 		}
-		public void handleSimpleTag(Tag t, MutableAttributeSet a, int pos) {
-			if(done) {
-				end = pos;
-				done = false;
-			}
-			//we have to ignore this because of stuff like <br />
+		public void characters(char[] ch, int start, int length)
+				throws SAXException {
+			if(resultsLevel != -1)
+				results += new String(ch, start, length);
 		}
 	}
 	
@@ -184,7 +183,8 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		data += "&" + URLEncoder.encode("submit", "UTF-8") + "="
 		+ URLEncoder.encode("submit times", "UTF-8");
 
-		URL url = new URL("http://nascarjon.us/submit.php");
+//		URL url = new URL("http://nascarjon.us/submit.php");
+		URL url = new URL("http://localhost/sunday/submit2.php");
 		URLConnection urlConn = url.openConnection();
 		urlConn.setDoOutput(true);
 		urlConn.setUseCaches(false);
@@ -200,11 +200,31 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		while (null != ((temp = rd.readLine()))) {
 			str += temp;
 		}
-		LookForResultsDiv cb = new LookForResultsDiv();
-		new ParserDelegator().parse(new StringReader(str), cb, false);
+		
+		FindResultsHandler handler = new FindResultsHandler();
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		try {
+			SAXParser saxParser = factory.newSAXParser();
+			saxParser.parse(new ByteArrayInputStream(str.getBytes()), handler);
+		} catch(SAXParseException spe) {
+			System.err.println(spe.getSystemId() + ":" + spe.getLineNumber() + ": parse error: " + spe.getMessage());
 
-		str = "<html>" + str.substring(cb.start, cb.end) + "</html>";
-		str = str.replaceAll("<br[ ]*/>", "<br>"); //converting to html 3.2 or whatever java uses
+			Exception x = spe;
+			if(spe.getException() != null)
+				x = spe.getException();
+			x.printStackTrace();
+		} catch(SAXException se) {
+			Exception x = se;
+			if(se.getException() != null)
+				x = se.getException();
+			x.printStackTrace();
+		} catch(ParserConfigurationException pce) {
+			pce.printStackTrace();
+		} catch(IOException ioe) {
+			ioe.printStackTrace();
+		}
+
+		str = "<html>" + handler.results + "</html>";
 		return str;
 	}
 

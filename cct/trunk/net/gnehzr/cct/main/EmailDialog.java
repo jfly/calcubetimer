@@ -33,7 +33,7 @@ import net.gnehzr.cct.miscUtils.SendMailUsingAuthentication;
 public class EmailDialog extends JDialog implements ActionListener, CaretListener {
 	private JTextField toAddress, subject = null;
 	private JTextAreaWithHistory body = null;
-	private JButton sendButton, cancelButton = null;
+	private JButton sendButton, doneButton = null;
 	public EmailDialog(JDialog owner, String bodyText) {
 		super(owner, true);
 		Container pane = getContentPane();
@@ -83,9 +83,9 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		sendButton = new JButton("Send");
 		sendButton.addActionListener(this);
 		horiz.add(sendButton);		
-		cancelButton = new JButton("Cancel");
-		cancelButton.addActionListener(this);
-		horiz.add(cancelButton);
+		doneButton = new JButton("Done");
+		doneButton.addActionListener(this);
+		horiz.add(doneButton);
 		c.weightx = 0;
 		c.weighty = 0;
 		c.gridx = 0;
@@ -151,7 +151,7 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 					e1.printStackTrace();
 				}
 			}
-		} else if (source == cancelButton) {
+		} else if (source == doneButton) {
 			setVisible(false);
 		}
 	}
