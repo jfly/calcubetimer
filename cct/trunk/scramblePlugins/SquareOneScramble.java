@@ -210,7 +210,7 @@ public class SquareOneScramble extends Scramble {
 		}
 	}
 
-	private final Pattern regexp = Pattern.compile("^ *[(]?(-?[0-6]+) *, *(-?[0-6]+)[)]? *$");
+	private final Pattern regexp = Pattern.compile("^ *[(]?(-?[0-6]) *, *(-?[0-6])[)]? *$");
 	private boolean validateScramble() {
 		even_parity = true;
 		length = 0;
