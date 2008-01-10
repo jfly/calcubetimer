@@ -11,11 +11,10 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -25,6 +24,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTML.Tag;
+import javax.swing.text.html.HTMLEditorKit.ParserCallback;
+import javax.swing.text.html.parser.ParserDelegator;
 
 import net.gnehzr.cct.miscUtils.JTextAreaWithHistory;
 
@@ -128,6 +132,39 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		setVisible(true);
 	}
 	
+	private static class LookForResultsDiv extends ParserCallback {
+		private int level = -1;
+		private int resultsLevel;
+		private int start, end;
+		public void handleStartTag(Tag t, MutableAttributeSet a, int pos) {
+			level++;
+			if(t.equals(HTML.Tag.DIV) && a.containsAttribute(HTML.Attribute.ID, "results")) {
+				resultsLevel = level;
+				start = pos;
+			}
+			if(done) {
+				end = pos;
+				done = false;
+			}
+		}
+		private boolean done;
+		public void handleEndTag(Tag t, int pos) {
+			if(done) {
+				end = pos;
+				done = false;
+			}
+			done = level == resultsLevel && t.equals(HTML.Tag.DIV);
+			level--;
+		}
+		public void handleSimpleTag(Tag t, MutableAttributeSet a, int pos) {
+			if(done) {
+				end = pos;
+				done = false;
+			}
+			//we have to ignore this because of stuff like <br />
+		}
+	}
+	
 	private static String submitSundayContest(String name, String country, String email,
 			String average, String times, String quote, boolean showemail) throws IOException {
 		String data = URLEncoder.encode("name", "UTF-8") + "="
@@ -163,14 +200,12 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		while (null != ((temp = rd.readLine()))) {
 			str += temp;
 		}
-		System.out.println(str); //TODO test output when successful - ask jon morris for help
-		rd.close();
-		final Pattern regexp = Pattern.compile("([^>]+\\.)<br />");
-		Matcher match = regexp.matcher(str);
-		temp = "";
-		while (match.find())
-			temp += match.group(1) + "\n";
-		return temp;
+		LookForResultsDiv cb = new LookForResultsDiv();
+		new ParserDelegator().parse(new StringReader(str), cb, false);
+
+		str = "<html>" + str.substring(cb.start, cb.end) + "</html>";
+		str = str.replaceAll("<br[ ]*/>", "<br>"); //converting to html 3.2 or whatever java uses
+		return str;
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -184,7 +219,10 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 						timesField.getText(),
 						quoteArea.getText(),
 						showEmailBox.isSelected());
-				JOptionPane.showMessageDialog(this, result, "Submission results", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(this,
+						"The server responded with:\n" + result,
+						"Submission results",
+						JOptionPane.INFORMATION_MESSAGE);
 			} catch (IOException e1) {
 				JOptionPane.showMessageDialog(this, e1.getLocalizedMessage(), "Submission failure", JOptionPane.ERROR_MESSAGE);
 				e1.printStackTrace();
