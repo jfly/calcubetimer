@@ -1323,7 +1323,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	}
 
 	public void scrambleChooserAction(){
-		safeSetValue(scrambleLength, Configuration.getScrambleLength(Configuration.getScrambleType((String)scrambleChooser.getSelectedItem())));
+		safeSetValue(scrambleLength, Configuration.getScrambleType((String)scrambleChooser.getSelectedItem()).getLength());
 		updateScramble();
 	}
 
