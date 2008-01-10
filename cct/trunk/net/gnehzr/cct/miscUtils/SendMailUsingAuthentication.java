@@ -57,8 +57,8 @@ public class SendMailUsingAuthentication {
 		System.out.println("Sucessfully sent mail to All Users");
 	}*/
 
-	private char[] pass;
-	public void setPassword(char[] pass){
+	private char[] pass = null;
+	public SendMailUsingAuthentication(char[] pass) {
 		this.pass = pass;
 	}
 
