@@ -29,7 +29,7 @@
 								<button action="sessionAverage">Session Average: $$sessionAverage</button>
 							</panel>
 						</panel>
-						<selectablelabel alignmentX=".5"><![CDATA[<html><center>$$solves$$/$$attempts$$ (solves/attempts)</center></html>]]></selectablelabel>
+						<label alignmentX=".5">$$solves$$/$$attempts$$ (solves/attempts)</label>
 					</panel>
 				</page_end>
 			</panel>
@@ -60,7 +60,7 @@
 			</menu>
 			<component type="customGUIMenu"/>
 		</menu>
-		<glue orientation="horizontal" />
+		<glue orientation="horizontal"/>
 		<component type="profilecombobox"/>
 		<menu mnemonic="h">Help
 			<menuitem action="showDocumentation">View Documentation</menuitem>

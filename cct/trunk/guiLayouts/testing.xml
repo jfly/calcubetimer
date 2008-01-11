@@ -18,11 +18,9 @@
 							<component type="scrambleAttributes"/>
 							<checkbox action="serverScrambles"/>
 						</panel>
+						<component alignmentX=".5" type="startStopPanel"/>
 						<panel layout="flow" hgap="5" vgap="5">
 							<panel layout="grid" cols="3">
-								<panel />
-								<component type="startStopPanel"/>
-								<panel />
 								<button action="addTime">Add Time</button>
 								<checkbox action="keyboardTiming"/>
 								<button action="reset">Reset</button>
@@ -122,6 +120,8 @@
 			</menu>
 			<component type="customGUIMenu"/>
 		</menu>
+		<glue orientation="horizontal"/>
+		<component type="profilecombobox"/>
 		<menu mnemonic="h">Help
 			<menuitem action="showDocumentation">View Documentation</menuitem>
 			<menuitem action="showAbout">About</menuitem>
