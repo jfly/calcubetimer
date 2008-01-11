@@ -84,9 +84,6 @@ public class ServerUserThread extends Thread{
 			case Protocol.COMMAND_EXIT:
 				connected = false;
 				break;
-			case Protocol.DATA_SCRAMBLE:
-				server.processScramble(client.getUsername(), s);
-				break;
 			case Protocol.MESSAGE_NORMAL:
 				if(s.toLowerCase().startsWith("/exit")){
 					connected = false;

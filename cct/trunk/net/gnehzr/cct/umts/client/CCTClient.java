@@ -3,7 +3,6 @@ package net.gnehzr.cct.umts.client;
 import javax.swing.*;
 
 import net.gnehzr.cct.main.CALCubeTimer;
-import net.gnehzr.cct.scrambles.ScrambleType;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
 import net.gnehzr.cct.umts.Protocol;
@@ -26,12 +25,12 @@ public class CCTClient {
 	private String userName;
 	private boolean connected = false;
 
-	private int scrambleIndex = 0;
-
 	private CALCubeTimer cct;
 
 	private UserTable users;
 	private CCTClientGUI gui;
+
+	private AbstractAction enableDisable = null;
 
 	public static void main(String[] args) throws UnsupportedLookAndFeelException{
 		UIManager.setLookAndFeel(new SubstanceLookAndFeel());
@@ -52,25 +51,10 @@ public class CCTClient {
 		}
 	}
 
-	private AbstractAction disableEnable = null;
-	private AbstractAction enableDisable = null;
 	public void enableAndDisable(AbstractAction enableAndDisableMe) {
 		enableDisable = enableAndDisableMe;
 		if(gui.getFrame().isVisible())
 			enableDisable.setEnabled(false);
-	}
-
-	public void disableAndEnable(AbstractAction disableAndEnableMe) {
-		disableEnable = disableAndEnableMe;
-		if(gui.getFrame().isVisible())
-			disableEnable.setEnabled(true);
-	}
-
-	public int getScrambleIndex(){
-		return scrambleIndex;
-	}
-	public void setScrambleIndex(int i){
-		scrambleIndex = i;
 	}
 
 	public UserTable getUsers() {
@@ -80,10 +64,6 @@ public class CCTClient {
 	private void cleanupGUIActions(){
 		if(enableDisable != null)
 			enableDisable.setEnabled(true);
-		if(disableEnable != null){
-			disableEnable.setEnabled(false);
-			disableEnable.putValue(Action.SELECTED_KEY, false);
-		}
 	}
 
 	public void cleanup(){
@@ -192,19 +172,6 @@ public class CCTClient {
 				s,
 				"Error!",
 				JOptionPane.ERROR_MESSAGE);
-	}
-
-	public void requestNextScramble(ScrambleType t){
-		requestSameScramble(t);
-		scrambleIndex++;
-	}
-
-	public void requestSameScramble(ScrambleType t){
-		try{
-			write(Protocol.DATA_SCRAMBLE + "" + scrambleIndex + Protocol.DELIMITER + 1); //TODO Configuration.getPuzzleIndex(t.getType())
-		} catch(IOException e){
-			System.out.println("Error getting server scramble.");
-		}
 	}
 
 	public void sendMessage(String s){
@@ -351,12 +318,6 @@ public class CCTClient {
 				from = users.getUser(strs[0]);
 				strs[1] = stripHTML(strs[1]);
 				printToLog("<span class='" + from.getName() + "'>" + strs[0] + "</span> " + strs[1]);
-				break;
-			case Protocol.DATA_SCRAMBLE:
-				cct.setScramble(s);
-				break;
-			case Protocol.DATA_SCRAMBLE_NUMBER:
-				scrambleIndex = Integer.parseInt(s);
 				break;
 			case Protocol.MESSAGE_ERROR:
 			case Protocol.COMMAND_HELP:

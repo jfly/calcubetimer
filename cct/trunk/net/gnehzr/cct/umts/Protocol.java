@@ -24,8 +24,8 @@ public class Protocol{
 	public final static char DATA_TIME = 'c';
 	public final static char DATA_AVERAGE = 'd';
 	public final static char DATA_NAME = 'e';
-	public final static char DATA_SCRAMBLE = 'f';
-	public final static char DATA_SCRAMBLE_NUMBER = 'g';
+	//public final static char DATA_SCRAMBLE = 'f';
+	//public final static char DATA_SCRAMBLE_NUMBER = 'g';
 	public final static char DATA_BEST_AVERAGE = 'h';
 
 	public final static char COMMAND_HELP = '!';

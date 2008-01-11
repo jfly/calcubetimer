@@ -213,7 +213,6 @@ public class CCTServer implements Runnable{
 				c.writeSpec(b);
 				if(sendUsernames(c)){
 					data.addClient(c);
-					sendScrambleIndex(c);
 				}
 				else{
 					b = Protocol.LOGIN_FAILED;
@@ -244,16 +243,6 @@ public class CCTServer implements Runnable{
 		return true;
 	}
 
-	private void sendScrambleIndex(Client c){
-		try{
-			int x = scrambles.getMaxIndex();
-			if(x < 0) x = 0;
-			c.writeSpec(Protocol.DATA_SCRAMBLE_NUMBER, "" + x);
-		} catch(IOException e){
-			println("Error sending scramble number to " + c.getUsername() + ".");
-		}
-	}
-
 	public Client getClient(String name){
 		return data.getClient(name);
 	}
@@ -268,20 +257,6 @@ public class CCTServer implements Runnable{
 
 	private static String getDate(){
 		return SDF.format(new Date());
-	}
-
-	public void processScramble(String name, String s){
-		String[] strs = s.split(Protocol.DELIMITER);
-		if(strs.length != 2) return;
-		try{
-			int i = Integer.parseInt(strs[0]);
-			int t = Integer.parseInt(strs[1]);
-			Scramble scr = scrambles.getScramble(i, t);
-
-			sendAnnouncementTo(Protocol.DATA_SCRAMBLE, name, scr.toString());
-		} catch(Exception e){
-			println("Invalid scramble request from " + name + ".");
-		}
 	}
 
 	public void processExit(Client c, String s){

@@ -16,7 +16,6 @@
 							<component type="scrambleLength"/>
 							<component type="scrambleNumber"/>
 							<component type="scrambleAttributes"/>
-							<checkbox action="serverScrambles"/>
 						</panel>
 						<component alignmentX=".5" type="startStopPanel"/>
 						<panel layout="flow" hgap="5" vgap="5">

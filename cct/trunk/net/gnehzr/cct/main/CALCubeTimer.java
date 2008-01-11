@@ -211,7 +211,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	private DocumentationAction documentationAction;
 	private ShowConfigurationDialogAction showConfigurationDialogAction;
 	private ConnectToServerAction connectToServerAction;
-	private ServerScramblesAction serverScramblesAction;
 	private FlipFullScreenAction flipFullScreenAction;
 	private KeyboardTimingAction keyboardTimingAction;
 	private SpacebarOptionAction spacebarOptionAction;
@@ -229,13 +228,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		keyboardTimingAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_K);
 		keyboardTimingAction.putValue(Action.SHORT_DESCRIPTION, "NOTE: will disable Stackmat!");
 		actionMap.put("keyboardtiming", keyboardTimingAction);
-
-		serverScramblesAction = new ServerScramblesAction(this);
-		serverScramblesAction.putValue(Action.SELECTED_KEY, false);
-		serverScramblesAction.putValue(Action.NAME, "Server Scrambles");
-		serverScramblesAction.setEnabled(false);
-		serverScramblesAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
-		actionMap.put("serverscrambles", serverScramblesAction);
 
 		addTimeAction = new AddTimeAction(this);
 		addTimeAction.putValue(Action.NAME, "Add time");
@@ -959,7 +951,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		ScrambleType newScrambleChoice = Configuration.getScrambleType(newPuzzleChoice);
 		if(scrambleChoice != newScrambleChoice || scrambleChoice.getLength() != newLength) {
 			int choice = JOptionPane.YES_OPTION;
-			if(scrambleChoice != null && scrambles.getCurrent().isImported() && !(Boolean)serverScramblesAction.getValue(Action.SELECTED_KEY)) {
+			if(scrambleChoice != null && scrambles.getCurrent().isImported()){
 				choice = JOptionPane.showOptionDialog(this,
 						"Do you want to discard the imported scrambles?",
 						"Discard scrambles?",
@@ -986,10 +978,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 				scrambleChoice = newScrambleChoice;
 				createScrambleAttributes();
 				validate();
-				if((Boolean)serverScramblesAction.getValue(Action.SELECTED_KEY))
-					client.requestNextScramble(scrambleChoice);
-				else
-					scrambles = new ScrambleList(scrambleChoice);
+				scrambles = new ScrambleList(scrambleChoice);
 			}
 		} else
 			puzzleChoice = newPuzzleChoice;
@@ -1002,9 +991,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		if((Integer)scrambleNumber.getValue() != scrambles.getScrambleNumber())
 			safeSetValue(scrambleNumber, scrambles.getScrambleNumber());
 
-		if((Boolean)serverScramblesAction.getValue(Action.SELECTED_KEY))
-			scrambleText.setText("Server scramble " + client.getScrambleIndex() + ": " + scrambles.getCurrent().toFormattedString());
-		else scrambleText.setText(scrambles.getCurrent());
+		scrambleText.setText(scrambles.getCurrent());
 		scramblePopup.setScramble(scrambles.getCurrent());
 		scramblePopup.pack();
 	}
@@ -1038,11 +1025,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	public void contentsChanged(ListDataEvent e) {
 		if(e != null && e.getType() == ListDataEvent.INTERVAL_ADDED) {
 			Scramble curr = scrambles.getCurrent();
-			if(curr != null)
+			if(curr != null){
 				stats.get(stats.getSize() - 1).setScramble(scrambles.getCurrent().toString());
-			if((Boolean)serverScramblesAction.getValue(Action.SELECTED_KEY)) {
-				client.requestNextScramble(Configuration.getScrambleType(puzzleChoice));
-			} else if(curr != null) {
 				boolean outOfScrambles = curr.isImported(); //This is tricky, think before you change it
 				outOfScrambles = !scrambles.getNext().isImported() && outOfScrambles;
 				if(outOfScrambles)
@@ -1210,40 +1194,26 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		if(choice == JOptionPane.YES_OPTION) {
 			timeLabel.reset();
 			ScrambleType scrambleChoice = Configuration.getScrambleType(puzzleChoice);
-			if((Boolean)serverScramblesAction.getValue(Action.SELECTED_KEY)) {
-				client.requestNextScramble(scrambleChoice);
-			} else {
-				scrambles = new ScrambleList(scrambleChoice);
-			}
+			scrambles = new ScrambleList(scrambleChoice);
 			updateScramble();
 			stats.clear();
 		}
 	}
 
 	public void importScramblesAction(){
-		int choice = JOptionPane.YES_OPTION;
-		if((Boolean)serverScramblesAction.getValue(Action.SELECTED_KEY))
-			choice = JOptionPane.showConfirmDialog(
-					this,
-					"Do you wish to disable server scrambles?",
-					"Are you sure?",
-					JOptionPane.YES_NO_OPTION);
-		if(choice == JOptionPane.YES_OPTION) {
-			serverScramblesAction.putValue(Action.SELECTED_KEY, false);
-			ScrambleImportExportDialog scrambleImporter = new ScrambleImportExportDialog(true, Configuration.getScrambleType(puzzleChoice));
-			choice = JOptionPane.showOptionDialog(this,
-					scrambleImporter,
-					"Import Scrambles",
-					JOptionPane.YES_NO_OPTION,
-					JOptionPane.QUESTION_MESSAGE,
-					cube,
-					okCancel,
-					okCancel[0]);
-			if(choice == JOptionPane.OK_OPTION) {
-				URL file = scrambleImporter.getURL();
-				if(file != null)
-					readScramblesFile(scrambleImporter.getURL(), scrambleImporter.getType());
-			}
+		ScrambleImportExportDialog scrambleImporter = new ScrambleImportExportDialog(true, Configuration.getScrambleType(puzzleChoice));
+		int choice = JOptionPane.showOptionDialog(this,
+				scrambleImporter,
+				"Import Scrambles",
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.QUESTION_MESSAGE,
+				cube,
+				okCancel,
+				okCancel[0]);
+		if(choice == JOptionPane.OK_OPTION) {
+			URL file = scrambleImporter.getURL();
+			if(file != null)
+				readScramblesFile(scrambleImporter.getURL(), scrambleImporter.getType());
 		}
 	}
 
@@ -1288,20 +1258,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	public void connectToServer(){
 		client = new CCTClient(this, cube);
 		client.enableAndDisable(connectToServerAction);
-		client.disableAndEnable(serverScramblesAction);
-	}
-
-	public void serverScramblesAction(){
-		boolean b = (Boolean)serverScramblesAction.getValue(Action.SELECTED_KEY);
-		scrambleNumber.setEnabled(!b);
-		scrambleLength.setEnabled(!b);
-		ScrambleType scrambleChoice = Configuration.getScrambleType(puzzleChoice);
-		if(b) {
-			client.requestNextScramble(scrambleChoice);
-		} else {
-			scrambles = new ScrambleList(scrambleChoice);
-		}
-		updateScramble();
 	}
 
 	public void flipFullScreen(){
@@ -1599,17 +1555,6 @@ class ConnectToServerAction extends AbstractAction{
 
 	public void actionPerformed(ActionEvent e){
 		cct.connectToServer();
-	}
-}
-@SuppressWarnings("serial")
-class ServerScramblesAction extends AbstractAction{
-	private CALCubeTimer cct;
-	public ServerScramblesAction(CALCubeTimer cct){
-		this.cct = cct;
-	}
-
-	public void actionPerformed(ActionEvent e){
-		cct.serverScramblesAction();
 	}
 }
 @SuppressWarnings("serial")
