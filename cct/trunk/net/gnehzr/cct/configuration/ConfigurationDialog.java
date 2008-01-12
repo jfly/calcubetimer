@@ -749,7 +749,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 	private JTextAreaWithHistory averageStats = null;
 
 	private JPanel makeAverageSetupPanel() {
-		JPanel options = new JPanel(new BorderLayout());
+		JPanel options = new JPanel(new BorderLayout(10, 0));
 		averageStats = new JTextAreaWithHistory();
 		JScrollPane scroller = new JScrollPane(averageStats);
 		options.add(scroller, BorderLayout.CENTER);
@@ -776,6 +776,9 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		scroller.getHorizontalScrollBar().setUnitIncrement(10);
 		Class<?>[] scrambles = Configuration.getScrambleClasses();
 		solvedPuzzles = new ScrambleViewComponent[scrambles.length];
+		
+		Dimension preferred = new Dimension(0, 0);
+		
 		for (int ch = 0; ch < scrambles.length; ch++) {
 			Class<?> scrambleType = scrambles[ch];
 			solvedPuzzles[ch] = new ScrambleViewComponent();
@@ -787,12 +790,15 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			Dimension newDim = solvedPuzzles[ch].getPreferredSize();
+			if(newDim.height > preferred.height)
+				preferred = newDim;
 			solvedPuzzles[ch].setColorListener(this);
 			solvedPuzzles[ch].setAlignmentY(Component.CENTER_ALIGNMENT);
 			options.add(solvedPuzzles[ch]);
 		}
 		options.add(Box.createHorizontalGlue());
-		scroller.setPreferredSize(new Dimension(700, 300)); // TODO - this isn't scrolling-savvy
+		scroller.setPreferredSize(preferred);
 		return scroller;
 	}
 
