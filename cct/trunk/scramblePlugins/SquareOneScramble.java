@@ -56,29 +56,28 @@ public class SquareOneScramble extends Scramble {
 	private SquareOneScramble(int length, String... attrs) {
 		this.length = length;
 		setAttributes(attrs);
-		initializeImage();
-		generateScramble();
 	}
 
 	public SquareOneScramble(String variation, String s, String... attrs)
 			throws InvalidScrambleException {
 		super(s);
-		setAttributes(attrs);
-		initializeImage();
-		if(!validateScramble())	throw new InvalidScrambleException();
+		if(!setAttributes(attrs))
+			throw new InvalidScrambleException();
 	}
 
-	public void setAttributes(String... attributes) {
+	public boolean setAttributes(String... attributes) {
 		easyRead = false;
 		for(String attr : attributes) {
 			if(attr.equals(ATTRIBUTES[0]))
 				easyRead = true;
 		}
-	}
-
-	public void refreshImage() {
 		initializeImage();
-		validateScramble();
+		if(scramble != null) {
+			return validateScramble();
+		}
+		scramble = "";
+		generateScramble();
+		return true;
 	}
 
 	private int wedges(char piece) {

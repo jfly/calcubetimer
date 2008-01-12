@@ -15,15 +15,17 @@ public class MegaminxScramble extends Scramble {
 	public static final String[] FACE_NAMES = {"A", "B", "C", "D", "E", "F", "a",
 		"b", "c", "d", "e", "f"};
 	public static final String PUZZLE_NAME = "Megaminx";
-	public static final String[] ATTRIBUTES = {"Pochmann Notation"};
+	public static final String[] VARIATIONS = {"Megaminx", "Megaminx Pochmann"};
 	public static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
 	private int[][] image;
 	public static final int DEFAULT_UNIT_SIZE = 30;
 	public static final double UNFOLDHEIGHT = 2 + 3 * Math.sin(.3 * Math.PI) + Math.sin(.1 * Math.PI);
 	public static final double UNFOLDWIDTH = 4 * Math.cos(.1 * Math.PI) + 2 * Math.cos(.3 * Math.PI);
-	private int pochmann = -1;
+	private boolean pochmann = false;
 
 	public static int getDefaultScrambleLength(String variation) {
+		if(variation.equals(VARIATIONS[1]))
+			return 100;
 		return 60;
 	}
 	public static String getDefaultFaceColor(String face) {
@@ -59,31 +61,24 @@ public class MegaminxScramble extends Scramble {
 	
 	public MegaminxScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
 		super(s);
-		initializeImage();
-		setAttributes(attrs);
-		if(!validateScramble()) throw new InvalidScrambleException();
+		pochmann = variation.equals(VARIATIONS[1]);
+		if(!setAttributes(attrs)) throw new InvalidScrambleException();
 	}
 
 	public MegaminxScramble(String variation, int length, String... attrs) {
 		this.length = length;
-		initializeImage();
+		pochmann = variation.equals(VARIATIONS[1]);
 		setAttributes(attrs);
-		generateScramble();
 	}
 
-	public void setAttributes(String... attributes){
-		int temp = pochmann;
-		pochmann = 1;
-		for(String attr : attributes){
-			if(attr.equals(ATTRIBUTES[0])){
-				pochmann = 0;
-			}
+	public boolean setAttributes(String... attributes){
+		initializeImage();
+		if(scramble != null) {
+			return validateScramble();
 		}
-		if(temp != -1 && temp != pochmann){
-			scramble = "";
-			initializeImage();
-			generateScramble();
-		}
+		scramble = "";
+		generateScramble();
+		return true;
 	}
 
 	private void initializeImage() {
@@ -120,12 +115,12 @@ public class MegaminxScramble extends Scramble {
 		}
 
 		for(int i = 0; i < cstrs.length; i++){
-			if(pochmann == 1 && !cstrs[i].matches(regexp)) return false;
-			else if(pochmann == 0 && !cstrs[i].matches(regexp1)) return false;
+			if(pochmann && !cstrs[i].matches(regexp)) return false;
+			else if(!cstrs[i].matches(regexp1)) return false;
 		}
 
 		try{
-			if(pochmann == 1){
+			if(!pochmann){
 				for(int i = 0; i < cstrs.length; i++){
 					int face = -1;
 					for(int ch = 0; ch < FACE_NAMES.length; ch++) {
@@ -176,7 +171,7 @@ public class MegaminxScramble extends Scramble {
 		{0,0,0,0,0,0, 0,0,0,0,0,1}};
 
 	private void generateScramble(){
-		if(pochmann == 1){
+		if(!pochmann){
 			int last = -1;
 			for(int i = 0; i < length; i++){
 				int side;

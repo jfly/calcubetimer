@@ -71,37 +71,35 @@ public class CubeScramble extends Scramble {
 		this(variation.equals("") ? 3 : Integer.parseInt(variation.split("x")[0]), length, attrs);
 	}
 
-	public CubeScramble(int size, int length, String... attrs) {
+	private CubeScramble(int size, int length, String... attrs) {
 		this.size = size;
 		super.length = length;
 		setAttributes(attrs);
-		initializeImage();
-		generateScramble();
 	}
 	
 	public CubeScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
 		super(s);
 		this.size = Integer.parseInt(variation.split("x")[0]);
-		setAttributes(attrs);
-		initializeImage();
-		if(!validateScramble()) throw new InvalidScrambleException();
+		if(!setAttributes(attrs))
+			throw new InvalidScrambleException();
 	}
 
 	private boolean multislice;
-	public void setAttributes(String... attributes) {
+	public boolean setAttributes(String... attributes) {
 		multislice = false;
 		for(String attr : attributes) {
 			if(attr.equals(ATTRIBUTES[0]))
 				multislice = true;
 		}
-	}
-	
-	public void refreshImage() {
 		initializeImage();
-		validateScramble();		
+		if(scramble != null)
+			return validateScramble();
+		generateScramble();
+		return true;
 	}
 	
 	private void generateScramble(){
+		scramble = "";
 		int lastAxis = -1;
 		int axis = 0;
 		int slices = size - ((multislice || size % 2 == 1) ? 1 : 0);

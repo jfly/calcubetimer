@@ -868,7 +868,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 			Configuration.setPuzzleAttributes(Configuration.getScrambleType(puzzleChoice), attributes);
 			Scramble curr = scrambles.getCurrent();
 			curr.setAttributes(attributes);
-			curr.refreshImage();
 			updateScramble();
 		} else if(e.getActionCommand().equals(GUI_LAYOUT_CHANGED)) {
 			String layout = ((JRadioButtonMenuItem) source).getText();

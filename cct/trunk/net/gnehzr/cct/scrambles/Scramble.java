@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
 public abstract class Scramble {
-	protected String scramble = "";
+	protected String scramble = null;
 	private boolean imported = false;
 	protected int length = 0;
 
@@ -63,8 +63,12 @@ public abstract class Scramble {
 	//without coding a special case.
 	public static final String[] ATTRIBUTES = new String[0]; //OPTIONAL, this may come in useful for other puzzles. MAY NOT contain commas!
 	public static final String[] DEFAULT_ATTRIBUTES = new String[0]; //OPTIONAL, this is an array of the default attributes for a puzzle
-	public void setAttributes(String... attributes) {}
-	public void refreshImage() {}
+	//this method should parse the attributes, and then generate a scramble (if scramble == null)
+	//or validate the current one (if scramble != null)
+	//returns false if the scramble could not be validated
+	public boolean setAttributes(String... attributes) {
+		return false;
+	}
 	@SuppressWarnings("serial")
 	public class InvalidScrambleException extends Exception {
 		public InvalidScrambleException() {}
