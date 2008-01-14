@@ -2,7 +2,6 @@ package net.gnehzr.cct.umts.client;
 
 import javax.swing.*;
 
-import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
 import net.gnehzr.cct.umts.Protocol;
@@ -25,8 +24,6 @@ public class CCTClient {
 	private String userName;
 	private boolean connected = false;
 
-	private CALCubeTimer cct;
-
 	private UserTable users;
 	private CCTClientGUI gui;
 
@@ -35,11 +32,10 @@ public class CCTClient {
 	public static void main(String[] args) throws UnsupportedLookAndFeelException{
 		UIManager.setLookAndFeel(new SubstanceLookAndFeel());
 		JDialog.setDefaultLookAndFeelDecorated(true);
-		new CCTClient(null, CALCubeTimer.createImageIcon("cube.png", "Cube"));
+		new CCTClient(new ImageIcon());
 	}
 
-	public CCTClient(CALCubeTimer cct, ImageIcon icon){
-		this.cct = cct;
+	public CCTClient(ImageIcon icon){
 		users = new UserTable();
 		gui = new CCTClientGUI(this, icon.getImage(), "CCTClient v" + VERSION + ": not connected");
 

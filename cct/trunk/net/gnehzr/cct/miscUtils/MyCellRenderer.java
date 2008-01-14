@@ -7,6 +7,7 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
 
@@ -31,9 +32,9 @@ public class MyCellRenderer extends JLabel implements ListCellRenderer {
 		SolveTime[] bestAndWorst = times
 				.getBestAndWorstTimes(Statistics.averageType.SESSION);
 		if (bestAndWorst[0] == value) {
-			foreground = Configuration.getBestTimeColor();
+			foreground = Configuration.getColor(VariableKey.BEST_TIME, false);
 		} else if (bestAndWorst[1] == value) {
-			foreground = Configuration.getWorstTimeColor();
+			foreground = Configuration.getColor(VariableKey.WORST_TIME, false);;
 		}
 
 		if (value instanceof SolveTime) {
@@ -43,11 +44,11 @@ public class MyCellRenderer extends JLabel implements ListCellRenderer {
 					(SolveTime) value, Statistics.averageType.CURRENT);
 
 			if (memberOfBestRA && memberOfCurrentAverage)
-				background = Configuration.getBestAndCurrentColor();
+				background = Configuration.getColor(VariableKey.BEST_AND_CURRENT, false);
 			else if (memberOfCurrentAverage)
-				background = Configuration.getCurrentAverageColor();
+				background = Configuration.getColor(VariableKey.CURRENT_AVERAGE, false);
 			else if (memberOfBestRA)
-				background = Configuration.getBestRAColor();
+				background = Configuration.getColor(VariableKey.BEST_RA, false);
 		}
 		if (isSelected) {
 			if (background == null)

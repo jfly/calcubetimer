@@ -15,6 +15,7 @@ import javax.swing.JComponent;
 import javax.swing.Timer;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
 
 public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseListener {
@@ -136,12 +137,13 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 	private void keyReallyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
 		if(key == 0) {
-		} else if(Configuration.isSplits() && key == Configuration.getSplitkey()) {
+		} else if(Configuration.getBoolean(VariableKey.TIMING_SPLITS, false) &&
+				key == Configuration.getInt(VariableKey.SPLIT_KEY, false)) {
 			keyboardTimer.split();
 		} else if(keyboardTimer.isRunning()) {
 			keyboardTimer.stop();
 			thingToListenTo.setKeysDownState();
-		} else if(!ignoreKey(e, Configuration.isSpacebarOnly())) {
+		} else if(!ignoreKey(e, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false))) {
 			thingToListenTo.setKeysDownState();
 		}
 	}
@@ -154,7 +156,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 				if(!keyboardTimer.isReset()) {
 					keyboardTimer.fireStop();
 					thingToListenTo.setStateText("Start Timer");
-				} else if(!ignoreKey(e, Configuration.isSpacebarOnly())) {
+				} else if(!ignoreKey(e, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false))) {
 					if(keyboardTimer.startTimer()) {
 						thingToListenTo.setStateText("Stop Timer");
 					}

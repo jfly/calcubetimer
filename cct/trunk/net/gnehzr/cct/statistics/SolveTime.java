@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
 import net.gnehzr.cct.miscUtils.Utils;
 
@@ -94,7 +95,7 @@ public class SolveTime implements Comparable<SolveTime> {
 		if(isDNF) return "DNF";
 		else if(isPop) return "POP";
 		else if(hundredths == Integer.MAX_VALUE) return "N/A";
-		else return Utils.clockFormat(secondsValue(), Configuration.isClockFormat()) + (isPlusTwo ? "+" : "");
+		else return Utils.clockFormat(secondsValue(), Configuration.getBoolean(VariableKey.CLOCK_FORMAT, false)) + (isPlusTwo ? "+" : "");
 	}
 
 	public String toSplitsString() {

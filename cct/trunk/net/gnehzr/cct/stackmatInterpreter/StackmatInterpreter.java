@@ -4,7 +4,8 @@ import javax.sound.sampled.*;
 import javax.swing.SwingWorker;
 
 import net.gnehzr.cct.configuration.Configuration;
-import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
+import net.gnehzr.cct.configuration.ConfigurationChangeListener;
+import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.miscUtils.ComboItem;
 
 public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implements ConfigurationChangeListener {
@@ -44,8 +45,9 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 		format = new AudioFormat(samplingRate, QUALITY * 8, 1, true, false);
 		info = new DataLine.Info(TargetDataLine.class, format);
 
-		if(Configuration.getMixerNumber() >= 0){
-			changeLine(Configuration.getMixerNumber());
+		int mixerNum = Configuration.getInt(VariableKey.MIXER_NUMBER, false);
+		if(mixerNum >= 0){
+			changeLine(mixerNum);
 		}
 		else{
 			try{
@@ -57,9 +59,9 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 			} catch(IllegalArgumentException e) {
 				//This is thrown when there is no configuration file
 			}
-			Configuration.setMixerNumber(getSelectedMixerIndex());
+			Configuration.setInt(VariableKey.MIXER_NUMBER, getSelectedMixerIndex());
 		}
-		enabled = !Configuration.isKeyboardTimer();
+		enabled = Configuration.getBoolean(VariableKey.STACKAMT_ENABLED, false);
 	}
 
 	private void cleanup(){
@@ -85,7 +87,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 			if(line != null){
 				cleanup();
 			}
-			Configuration.setMixerNumber(getSelectedMixerIndex());
+			Configuration.setInt(VariableKey.MIXER_NUMBER, getSelectedMixerIndex());
 			return;
 		}
 
@@ -103,7 +105,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 			cleanup();
 		}
 
-		Configuration.setMixerNumber(getSelectedMixerIndex());
+		Configuration.setInt(VariableKey.MIXER_NUMBER, getSelectedMixerIndex());
 		synchronized(this){
 			notify();
 		}
@@ -166,7 +168,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 						firePropertyChange("Off", null, null);
 					}
 
-					if(Math.abs(lastSample - currentSample) > (Configuration.getSwitchThreshold() << (QUALITY * 4)) && timeSinceLastFlip > noiseSpikeThreshold) {
+					if(Math.abs(lastSample - currentSample) > (Configuration.getInt(VariableKey.SWITCH_THRESHOLD, false) << (QUALITY * 4)) && timeSinceLastFlip > noiseSpikeThreshold) {
 //						System.out.println(counter);
 						if(timeSinceLastFlip > newPeriod) {
 							if(currentPeriod.size() < 1) {
@@ -219,7 +221,8 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 	}
 
 	public void configurationChanged() {
-		if(Configuration.getMixerNumber() != getSelectedMixerIndex())
-			changeLine(Configuration.getMixerNumber());
+		int mixNum = Configuration.getInt(VariableKey.MIXER_NUMBER, false);
+		if(mixNum != getSelectedMixerIndex())
+			changeLine(mixNum);
 	}
 }

@@ -14,7 +14,8 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import net.gnehzr.cct.configuration.Configuration;
-import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
+import net.gnehzr.cct.configuration.ConfigurationChangeListener;
+import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.miscUtils.JListMutable;
 import net.gnehzr.cct.miscUtils.MutableListModel;
 import net.gnehzr.cct.miscUtils.Utils;
@@ -60,7 +61,7 @@ public class Statistics implements MutableListModel<SolveTime>,
 
 	public Statistics() {
 		Configuration.addConfigurationChangeListener(this);
-		curRASize = Configuration.getRASize();
+		curRASize = Configuration.getInt(VariableKey.RA_SIZE, false);
 		initialize();
 	}
 
@@ -327,8 +328,9 @@ public class Statistics implements MutableListModel<SolveTime>,
 	}
 
 	public void configurationChanged() {
-		if (Configuration.getRASize() != curRASize) {
-			curRASize = Configuration.getRASize();
+		int raSize = Configuration.getInt(VariableKey.RA_SIZE, false);
+		if (raSize != curRASize) {
+			curRASize = raSize;
 			refresh();
 		}
 	}
@@ -354,7 +356,7 @@ public class Statistics implements MutableListModel<SolveTime>,
 		if (average == Double.MAX_VALUE)
 			return "Invalid";
 
-		return Utils.clockFormat(average, Configuration.isClockFormat());
+		return Utils.clockFormat(average, Configuration.getBoolean(VariableKey.CLOCK_FORMAT, false));
 	}
 
 	public boolean isValid(averageType type) {

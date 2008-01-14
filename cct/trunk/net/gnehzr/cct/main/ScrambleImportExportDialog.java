@@ -16,6 +16,7 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.miscUtils.JSpinnerWithText;
 import net.gnehzr.cct.scrambles.ScrambleType;
 
@@ -28,7 +29,7 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 	private JSpinnerWithText scrambleLength, numberOfScrambles;
 	public ScrambleImportExportDialog(boolean importing, ScrambleType selected) {
 		this.importing = importing;
-		urlField = new JTextField(importing ? Configuration.getDefaultScrambleURL() : "", 20);
+		urlField = new JTextField(importing ? Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_URL, false) : "", 20);
 		urlField.setToolTipText(importing ? "Browse for file or type URL of desired scrambles." : "Choose file to export scrambles to.");
 		browse = new JButton("Browse");
 		browse.addActionListener(this);
@@ -53,7 +54,7 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 
 		if(!importing) { //Exporting, so length of scramble and number of scrambles are needed
 			scrambleLength = new JSpinnerWithText(selected.getLength(), 1, "Length of scrambles");
-			numberOfScrambles = new JSpinnerWithText(Configuration.getRASize(), 1, "Number of scrambles");
+			numberOfScrambles = new JSpinnerWithText(Configuration.getInt(VariableKey.RA_SIZE, false), 1, "Number of scrambles");
 			subPanel.add(scrambleLength);
 			subPanel.add(numberOfScrambles);
 		}
@@ -95,7 +96,8 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 				}
 			}
 		} else if(source == scrambleChooser && scrambleLength != null) {
-			scrambleLength.setValue(Configuration.getScrambleLength((ScrambleType) scrambleChooser.getSelectedItem()));
+			ScrambleType curr = (ScrambleType) scrambleChooser.getSelectedItem();
+			scrambleLength.setValue(Configuration.getInt(VariableKey.SCRAMBLE_LENGTH(curr.getPuzzleName(), curr.getVariation()), false));
 		}
 	}
 

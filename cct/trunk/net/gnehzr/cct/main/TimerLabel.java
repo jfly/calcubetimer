@@ -20,6 +20,7 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.main.KeyboardTimerPanel.KeyboardTimerComponent;
 
 @SuppressWarnings("serial")
@@ -114,7 +115,7 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 		if(keyboard && scrambles != null)
 			scrambles.setHidden(true);
 //		thingToListenTo.setBorder(BorderFactory.createEmptyBorder());
-		if(Configuration.isIntegratedTimerDisplay())
+		if(Configuration.getBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, false))
 			setBorder(BorderFactory.createTitledBorder(
 					BorderFactory.createRaisedBevelBorder(),
 					keyboard ? "Click to focus" : "Keyboard disabled"));
@@ -155,7 +156,7 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 		repaint();
 	}
 	public void paint(Graphics g) {
-		if(Configuration.isLessAnnoyingDisplay())
+		if(Configuration.getBoolean(VariableKey.LESS_ANNOYING_DISPLAY, false))
 			g.drawImage(curr, 10, 20, null);
 		super.paint(g);
 	}

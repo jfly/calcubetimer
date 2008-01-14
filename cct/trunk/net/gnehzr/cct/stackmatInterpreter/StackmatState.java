@@ -3,6 +3,7 @@ package net.gnehzr.cct.stackmatInterpreter;
 import java.util.*;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
 
 public class StackmatState extends TimerState {
 	private boolean rightHand = false;
@@ -40,9 +41,12 @@ public class StackmatState extends TimerState {
 
 	private int parseTime(ArrayList<Integer> periodData){
 		parseHeader(periodData);
-		minutes = parseDigit(periodData, 1, Configuration.isInvertedMinutes());
-		seconds = parseDigit(periodData, 2, Configuration.isInvertedSeconds()) * 10 + parseDigit(periodData, 3, Configuration.isInvertedSeconds());
-		hundredths = parseDigit(periodData, 4, Configuration.isInvertedHundredths()) * 10 + parseDigit(periodData, 5, Configuration.isInvertedHundredths());
+		boolean invertedMin = Configuration.getBoolean(VariableKey.INVERTED_MINUTES, false);
+		boolean invertedSec = Configuration.getBoolean(VariableKey.INVERTED_SECONDS, false);
+		boolean invertedHun = Configuration.getBoolean(VariableKey.INVERTED_HUNDREDTHS, false);
+		minutes = parseDigit(periodData, 1, invertedMin);
+		seconds = parseDigit(periodData, 2, invertedSec) * 10 + parseDigit(periodData, 3, invertedSec);
+		hundredths = parseDigit(periodData, 4, invertedHun) * 10 + parseDigit(periodData, 5, invertedHun);
 		return 6000 * minutes + 100 * seconds + hundredths;
 	}
 

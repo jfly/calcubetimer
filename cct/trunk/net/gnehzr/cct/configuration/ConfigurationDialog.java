@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -59,6 +60,7 @@ import org.jvnet.lafwidget.LafWidget;
 import say.swing.JFontChooser;
 
 import net.gnehzr.cct.main.KeyboardTimerPanel;
+import net.gnehzr.cct.main.Profile;
 import net.gnehzr.cct.miscUtils.ComboItem;
 import net.gnehzr.cct.miscUtils.ComboListener;
 import net.gnehzr.cct.miscUtils.ComboRenderer;
@@ -76,6 +78,14 @@ import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
 @SuppressWarnings("serial")
 public class ConfigurationDialog extends JDialog implements KeyListener,
 		MouseListener, ActionListener, ColorListener, ItemListener {
+	private final static float DISPLAY_FONT_SIZE = 20;
+	private final static String[] FONT_SIZES = { "8", "9", "10",
+		"11", "12", "14", "16", "18", "20", "22", "24", "26", "28",
+		"36" };
+	private final int MAX_FONT_SIZE() {
+		return Configuration.getInt(VariableKey.MAX_FONTSIZE, false);
+	}
+	
 	private ComboItem[] items;
 	private StackmatInterpreter stackmat;
 	private Timer tickTock;
@@ -91,8 +101,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 
 	private JTabbedPane tabbedPane;
 	private JButton applyButton, saveButton = null;
-	// private JButton loadButton, saveAsButton = null; This has been removed
-	// because profiles provide the same functionality
 	private JButton cancelButton = null;
 	private JButton resetButton = null;
 
@@ -100,8 +108,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		JPanel pane = new JPanel(new BorderLayout());
 		setContentPane(pane);
 
-		tabbedPane = new JTabbedPane() { // this will automatically give tab
-			// numeric mnemonics
+		tabbedPane = new JTabbedPane() { // this will automatically give tabs numeric mnemonics
 			public void addTab(String title, Component component) {
 				int currTab = this.getTabCount();
 				super.addTab((currTab + 1) + " " + title, component);
@@ -144,13 +151,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		saveButton.setMnemonic(KeyEvent.VK_S);
 		saveButton.addActionListener(this);
 
-		// saveAsButton = new JButton("Save As");
-		// saveAsButton.addActionListener(this);
-
-		// loadButton = new JButton("Load");
-		// loadButton.setMnemonic(KeyEvent.VK_L);
-		// loadButton.addActionListener(this);
-
 		cancelButton = new JButton("Cancel");
 		cancelButton.setMnemonic(KeyEvent.VK_C);
 		cancelButton.addActionListener(this);
@@ -164,13 +164,9 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		sideBySide.add(Box.createRigidArea(new Dimension(30, 0)));
 		sideBySide.add(applyButton);
 		sideBySide.add(saveButton);
-		// sideBySide.add(saveAsButton);
-		// sideBySide.add(loadButton);
 		sideBySide.add(cancelButton);
 		pane.add(sideBySide, BorderLayout.PAGE_END);
 
-		refreshTitle();
-		syncGUIwithConfig();
 		setResizable(false);
 		pack();
 	}
@@ -238,10 +234,11 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		rightPanel.add(scramblePopup);
 
 		JPanel sideBySide = new JPanel();
-		SpinnerNumberModel model = new SpinnerNumberModel(Configuration
-				.getRASizeDefault(), 3, // min
-				null, // max
-				1); // step
+		SpinnerNumberModel model = new SpinnerNumberModel(
+				3,
+				3,
+				null,
+				1);
 		RASize = new JSpinner(model);
 		((JSpinner.DefaultEditor) RASize.getEditor()).getTextField()
 				.setColumns(3);
@@ -258,7 +255,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		colorPanel.add(currentAndRA);
 
 		bestTime = new JColorComponent("Best time");
-		// bestTime.setPreferredSize(new Dimension(0, 20));
 		bestTime.addMouseListener(this);
 		colorPanel.add(bestTime);
 
@@ -299,10 +295,11 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		JPanel sideBySide = new JPanel();
-		SpinnerNumberModel model = new SpinnerNumberModel(Configuration
-				.getMinSplitDifferenceDefault(), 0.0, // min
-				null, // max
-				.01); // step
+		SpinnerNumberModel model = new SpinnerNumberModel(
+				0.0,
+				0.0,
+				null,
+				.01);
 		minSplitTime = new JSpinner(model);
 		JSpinner.NumberEditor doubleModel = new JSpinner.NumberEditor(
 				minSplitTime, "0.00");
@@ -344,8 +341,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		panel.add(sideBySide);
 
 		sideBySide = new JPanel();
-		opacity = new JSlider(JSlider.HORIZONTAL, 0, 10,
-				(int) (10 * Configuration.getOpacityDefault()));
+		opacity = new JSlider(JSlider.HORIZONTAL, 0, 10, 0);
 		sideBySide.add(new JLabel("Opacity:"));
 		sideBySide.add(opacity);
 		panel.add(sideBySide);
@@ -363,92 +359,19 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		return panel;
 	}
 
-	private class PuzzleListModel implements MutableListModel<String> {
-		private ArrayList<String> contents;
-
-		public void setContents(ArrayList<String> contents) {
-			this.contents = contents;
-			fireContentsChanged();
-		}
-
-		public boolean isCellEditable(int index) {
-			if (index == contents.size()
-					|| ((String) contents.get(index)).indexOf(":") != -1)
-				return true;
-			return false;
-		}
-
-		public void setValueAt(String newPuzzle, int index) throws Exception {
-			if (Configuration.getScrambleType(newPuzzle) == null)
-				throw new Exception(
-						"Invalid puzzle type. See right hand side of screen for details.");
-			if (contents.contains(newPuzzle))
-				throw new Exception("Can't have duplicate puzzle types!");
-			String[] split = newPuzzle.split(":", -1);
-			if (split.length != 2 || newPuzzle.indexOf(';') != -1)
-				throw new Exception("Invalid character (: OR ;) in puzzle name!");
-			if (split[1].equals(""))
-				throw new Exception("You must type in a puzzle type!");
-			if (index == contents.size()) {
-				contents.add(newPuzzle);
-			} else {
-				contents.set(index, newPuzzle);
-			}
-			fireContentsChanged();
-		}
-
-		public String getElementAt(int index) {
-			return contents.get(index);
-		}
-
-		public int getSize() {
-			return (contents == null) ? 0 : contents.size();
-		}
-
-		private void fireContentsChanged() {
-			for (ListDataListener l : listeners)
-				l.contentsChanged(null);
-		}
-
-		private CopyOnWriteArrayList<ListDataListener> listeners = new CopyOnWriteArrayList<ListDataListener>();
-
-		public void addListDataListener(ListDataListener l) {
-			listeners.add(l);
-		}
-
-		public void removeListDataListener(ListDataListener l) {
-			listeners.remove(l);
-		}
-
-		public boolean remove(String value) {
-			boolean temp = contents.remove(value);
-			fireContentsChanged();
-			return temp;
-		}
-
-		public void insertValueAt(String value, int index) {
-			contents.add(index, value);
-			fireContentsChanged();
-		}
-
-		public ArrayList<String> getContents() {
-			return contents;
-		}
-
-		public boolean isCellDeletable(int index) {
-			return index != contents.size() && isCellEditable(index);
-		}
-
-		public void showPopup(MouseEvent e, JListMutable<String> source) {
-		}
-	}
-
 	private PuzzleListModel puzzles = new PuzzleListModel();
+	private ProfileListModel profilesModel = new ProfileListModel();
 
 	private JPanel makeScrambleTypeOptionsPanel() {
 		JPanel panel = new JPanel(new BorderLayout(10, 10));
 
 		JTextField tf = new JTextField();
+		JListMutable<Profile> profiles = new JListMutable<Profile>(profilesModel, tf,
+				true, "Type the name of the new profile here.",
+				"Add new profile...");
+		panel.add(new JScrollPane(profiles), BorderLayout.LINE_START);
+		
+		tf = new JTextField();
 		tf.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 		tf.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent e) {
@@ -550,8 +473,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 
 	private JTextField name, country = null;
 	private JTextField sundayQuote = null;
-	private JTextField userEmail = null;
-	private JTextField emailAddress = null;
+	private JTextField sundayEmailAddress = null;
+	private JTextField smtpEmailAddress = null;
 	private JTextField host, port = null;
 	private JTextField username = null;
 	private JCheckBox SMTPauth = null;
@@ -602,7 +525,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		c.gridy = 1;
 		sundayOptions.add(sundayQuote, c);
 
-		userEmail = new JTextField();
+		sundayEmailAddress = new JTextField();
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 0;
@@ -612,7 +535,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		c.gridwidth = 3;
 		c.gridx = 1;
 		c.gridy = 2;
-		sundayOptions.add(userEmail, c);
+		sundayOptions.add(sundayEmailAddress, c);
 		c.weightx = 0;
 		c.gridwidth = 2;
 		c.gridx = 4;
@@ -637,7 +560,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		c.gridy = 1;
 		emailOptions.add(useSMTPServer, c);
 		
-		emailAddress = new JTextField();
+		smtpEmailAddress = new JTextField();
 		c.weightx = 0;
 		c.gridwidth = 1;
 		c.gridx = 0;
@@ -647,7 +570,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.gridx = 1;
 		c.gridy = 2;
-		emailOptions.add(emailAddress, c);
+		emailOptions.add(smtpEmailAddress, c);
 		
 		host = new JTextField();
 		c.weightx = 0;
@@ -774,13 +697,13 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 				JScrollPane.VERTICAL_SCROLLBAR_NEVER,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scroller.getHorizontalScrollBar().setUnitIncrement(10);
-		Class<?>[] scrambles = Configuration.getScrambleClasses();
-		solvedPuzzles = new ScrambleViewComponent[scrambles.length];
+		ArrayList<Class<? extends Scramble>> scrambles = Configuration.getScrambleClasses();
+		solvedPuzzles = new ScrambleViewComponent[scrambles.size()];
 		
 		Dimension preferred = new Dimension(0, 0);
 		
-		for (int ch = 0; ch < scrambles.length; ch++) {
-			Class<?> scrambleType = scrambles[ch];
+		for (int ch = 0; ch < scrambles.size(); ch++) {
+			Class<? extends Scramble> scrambleType = scrambles.get(ch);
 			solvedPuzzles[ch] = new ScrambleViewComponent();
 			try {
 				solvedPuzzles[ch]
@@ -812,29 +735,26 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 				label.setBackground(selected);
 		}
 	}
-
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	public void mouseExited(MouseEvent e) {
-	}
-
-	public void mousePressed(MouseEvent e) {
-	}
-
-	public void mouseReleased(MouseEvent e) {
+	public void mouseEntered(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {}
+	public void mousePressed(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {}
+	
+	private void applyAndSave() {
+		applyConfiguration();
+		try {
+			Configuration.saveConfigurationToFile(currProfile.getConfigurationFile());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if (source == applyButton) {
-			applyConfiguration();
-			Configuration.saveConfigurationToFile();
-			refreshTitle();
+			applyAndSave();
 		} else if (source == saveButton) {
-			applyConfiguration();
-			Configuration.saveConfigurationToFile();
-			refreshTitle();
+			applyAndSave();
 			setVisible(false);
 		} else if (source == cancelButton) {
 			setVisible(false);
@@ -845,36 +765,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 							"Do you really want to reset everything but your email settings?",
 							"Warning!", JOptionPane.YES_NO_OPTION);
 			if (choice == JOptionPane.YES_OPTION)
-				resetAllButEmail();
-		}/*
-			 * else if(source == saveAsButton) { JFileChooser fc = new
-			 * JFileChooser("."); int choice = fc.showDialog(this, "Save
-			 * Configuration"); File outputFile = null; if (choice ==
-			 * JFileChooser.APPROVE_OPTION) { outputFile = fc.getSelectedFile();
-			 * if(outputFile.exists()) { int choiceOverwrite =
-			 * JOptionPane.showConfirmDialog( fc, outputFile.getName() + "
-			 * already exists. Do you wish to overwrite?", "File exists",
-			 * JOptionPane.YES_NO_OPTION); if(choiceOverwrite !=
-			 * JOptionPane.YES_OPTION) return; } try { applyConfiguration();
-			 * saveConfigurationToFile(outputFile); } catch (Exception e1) {
-			 * e1.printStackTrace(); JOptionPane.showMessageDialog(this,
-			 * "Error!\n" + e1.getMessage(), "Hmmm...",
-			 * JOptionPane.WARNING_MESSAGE); } refreshTitle();
-			 * this.setVisible(false); } } else if(source == loadButton) {
-			 * JFileChooser fc = new JFileChooser("."); int choice =
-			 * fc.showDialog(this, "Load Configuration"); File inputFile = null;
-			 * if (choice == JFileChooser.APPROVE_OPTION) { inputFile =
-			 * fc.getSelectedFile();
-			 * if(inputFile.getAbsolutePath().equals(Configuration.getDefaultFile().getAbsolutePath()))
-			 * JOptionPane.showMessageDialog(this, "You cannot load the default
-			 * properties.\n" + "If you want to restore the defaults, just
-			 * delete cct.properties.", "Sorry", JOptionPane.WARNING_MESSAGE);
-			 * else { try { Configuration.loadConfiguration(inputFile);
-			 * syncGUIwithConfig(); applyConfiguration(); } catch (Exception e1) {
-			 * e1.printStackTrace(); JOptionPane.showMessageDialog(this,
-			 * "Error!\n" + e1.getMessage(), "Hmmm...",
-			 * JOptionPane.WARNING_MESSAGE); } refreshTitle(); } } }
-			 */else if (source == splits) {
+				syncGUIwithConfig(true);
+		} else if (source == splits) {
 			minSplitTime.setEnabled(splits.isSelected());
 			keySelector.setEnabled(splits.isSelected());
 		} else if (source == browse) {
@@ -889,16 +781,21 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 			browse.setEnabled(isBackground.isSelected());
 			opacity.setEnabled(isBackground.isSelected());
 		} else if (source == timerFontButton || source == scrambleFontButton) {
-			JFontChooser font = new JFontChooser(new String[] { "8", "9", "10",
-					"11", "12", "14", "16", "18", "20", "22", "24", "26", "28",
-					"36" }, (source == timerFontButton) ? Configuration
-					.getTimerFontDefault() : Configuration
-					.getScrambleFontDefault(), source == scrambleFontButton, 40);
+			String toDisplay = null;
+			Font f;
+			if(source == timerFontButton) {
+				f = Configuration.getFont(VariableKey.TIMER_FONT, true).deriveFont((float) DISPLAY_FONT_SIZE);
+				toDisplay = "0123456789:.";
+			} else {
+				f = Configuration.getFont(VariableKey.SCRAMBLE_FONT, true);
+			}
+			
+			JFontChooser font = new JFontChooser(FONT_SIZES, f, source == scrambleFontButton, MAX_FONT_SIZE(), toDisplay);
 			font.setSelectedFont(((JButton) source).getFont());
 			if (font.showDialog(this) == JFontChooser.OK_OPTION) {
 				Font selected = font.getSelectedFont();
-				if (selected.getSize() > 40) {
-					selected = selected.deriveFont(40f);
+				if (selected.getSize() > MAX_FONT_SIZE()) {
+					selected = selected.deriveFont((float)MAX_FONT_SIZE());
 				}
 				((JButton) source).setFont(selected);
 				pack();
@@ -919,69 +816,70 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		}
 	}
 
-	private void syncGUIwithConfig() {
+	private void syncGUIwithConfig(boolean defaults) {
 		// makeStandardOptionsPanel1
-		clockFormat.setSelected(Configuration.isClockFormat());
-		promptForNewTime.setSelected(Configuration.isPromptForNewTime());
-		scramblePopup.setSelected(Configuration.isScramblePopup());
-		bestRA.setBackground(Configuration.getBestRAColor());
-		currentAndRA.setBackground(Configuration.getBestAndCurrentColor());
-		bestTime.setBackground(Configuration.getBestTimeColor());
-		worstTime.setBackground(Configuration.getWorstTimeColor());
-		currentAverage.setBackground(Configuration.getCurrentAverageColor());
-		RASize.setValue(Configuration.getRASize());
-		metronome.setSelected(Configuration.isMetronome());
-		metronomeDelay.setDelayBounds(Configuration.getMetronomeDelayMinimum(),
-				Configuration.getMetronomeDelayMaximum(), Configuration
-						.getMetronomeDelay());
+		clockFormat.setSelected(Configuration.getBoolean(VariableKey.CLOCK_FORMAT, defaults));
+		promptForNewTime.setSelected(Configuration.getBoolean(VariableKey.PROMPT_FOR_NEW_TIME, defaults));
+		scramblePopup.setSelected(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, defaults));
+		bestRA.setBackground(Configuration.getColor(VariableKey.BEST_RA, defaults));
+		currentAndRA.setBackground(Configuration.getColor(VariableKey.BEST_AND_CURRENT, defaults));
+		bestTime.setBackground(Configuration.getColor(VariableKey.BEST_TIME, defaults));
+		worstTime.setBackground(Configuration.getColor(VariableKey.WORST_TIME, defaults));
+		currentAverage.setBackground(Configuration.getColor(VariableKey.CURRENT_AVERAGE, defaults));
+		RASize.setValue(Configuration.getInt(VariableKey.RA_SIZE, defaults));
+		metronome.setSelected(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, defaults));
+		metronomeDelay.setDelayBounds(
+				Configuration.getInt(VariableKey.METRONOME_DELAY_MIN, defaults),
+				Configuration.getInt(VariableKey.METRONOME_DELAY_MAX, defaults),
+				Configuration.getInt(VariableKey.METRONOME_DELAY, defaults));
 		metronomeDelay.setEnabled(metronome.isSelected());
 
 		// makeStandardOptionsPanel2
-		minSplitTime.setValue(Configuration.getMinSplitDifference());
-		splits.setSelected(Configuration.isSplits());
-		splitkey = Configuration.getSplitkey();
+		minSplitTime.setValue(Configuration.getDouble(VariableKey.MIN_SPLIT_DIFFERENCE, defaults));
+		splits.setSelected(Configuration.getBoolean(VariableKey.TIMING_SPLITS, defaults));
+		splitkey = Configuration.getInt(VariableKey.SPLIT_KEY, defaults);
 		keySelector.setText(KeyEvent.getKeyText(splitkey));
 		keySelector.setEnabled(splits.isSelected());
-		flashyWindow.setSelected(Configuration.isFlashWindow());
-		isBackground.setSelected(Configuration.isBackground());
-		backgroundFile.setText(Configuration.getBackground());
-		opacity.setValue((int) (10 * Configuration.getOpacity()));
+		flashyWindow.setSelected(Configuration.getBoolean(VariableKey.CHAT_WINDOW_FLASH, defaults));
+		isBackground.setSelected(Configuration.getBoolean(VariableKey.WATERMARK_ENABLED, defaults));
+		backgroundFile.setText(Configuration.getString(VariableKey.WATERMARK_FILE, defaults));
+		opacity.setValue((int) (10 * Configuration.getFloat(VariableKey.OPACITY, defaults)));
 		backgroundFile.setEnabled(isBackground.isSelected());
 		browse.setEnabled(isBackground.isSelected());
 		opacity.setEnabled(isBackground.isSelected());
-		scrambleFontButton.setFont(Configuration.getScrambleFont());
-		timerFontButton.setFont(Configuration.getTimerFont());
+		scrambleFontButton.setFont(Configuration.getFont(VariableKey.SCRAMBLE_FONT, defaults));
+		timerFontButton.setFont(Configuration.getFont(VariableKey.TIMER_FONT, defaults).deriveFont(DISPLAY_FONT_SIZE));
 		minSplitTime.setEnabled(splits.isSelected());
 
 		// makeScrambleTypeOptionsPanel
-		puzzles.setContents(Configuration.getCustomScrambleTypes());
+		puzzles.setContents(Configuration.getCustomScrambleTypes(defaults));
 
 		// makeStackmatOptionsPanel
-		stackmatValue.setValue(Configuration.getSwitchThreshold());
-		invertedMinutes.setSelected(Configuration.isInvertedMinutes());
-		invertedSeconds.setSelected(Configuration.isInvertedSeconds());
-		invertedHundredths.setSelected(Configuration.isInvertedHundredths());
+		stackmatValue.setValue(Configuration.getInt(VariableKey.SWITCH_THRESHOLD, defaults));
+		invertedMinutes.setSelected(Configuration.getBoolean(VariableKey.INVERTED_MINUTES, defaults));
+		invertedSeconds.setSelected(Configuration.getBoolean(VariableKey.INVERTED_SECONDS, defaults));
+		invertedHundredths.setSelected(Configuration.getBoolean(VariableKey.INVERTED_HUNDREDTHS, defaults));
 
 		// makeSundaySetupPanel
-		useSMTPServer.setSelected(Configuration.isSMTPEnabled());
-		emailAddress.setText(Configuration.getSMTPEmailAddress());
-		name.setText(Configuration.getName());
-		country.setText(Configuration.getCountry());
-		sundayQuote.setText(Configuration.getSundayQuote());
-		userEmail.setText(Configuration.getUserEmail());
-		host.setText(Configuration.getSMTPHost());
-		port.setText(Configuration.getPort());
-		username.setText(Configuration.getUsername());
-		SMTPauth.setSelected(Configuration.isSMTPauth());
-		password.setText(new String(Configuration.getPassword()));
+		useSMTPServer.setSelected(Configuration.getBoolean(VariableKey.SMTP_ENABLED, defaults));
+		smtpEmailAddress.setText(Configuration.getString(VariableKey.SMTP_FROM_ADDRESS, defaults));
+		name.setText(Configuration.getString(VariableKey.SUNDAY_NAME, defaults));
+		country.setText(Configuration.getString(VariableKey.SUNDAY_COUNTRY, defaults));
+		sundayQuote.setText(Configuration.getString(VariableKey.SUNDAY_QUOTE, defaults));
+		sundayEmailAddress.setText(Configuration.getString(VariableKey.SUNDAY_EMAIL_ADDRESS, defaults));
+		host.setText(Configuration.getString(VariableKey.SMTP_HOST, defaults));
+		port.setText(Configuration.getString(VariableKey.SMTP_PORT, defaults));
+		username.setText(Configuration.getString(VariableKey.SMTP_USERNAME, defaults));
+		SMTPauth.setSelected(Configuration.getBoolean(VariableKey.SMTP_AUTHENTICATION, defaults));
+		password.setText(Configuration.getString(VariableKey.SMTP_PASSWORD, defaults));
 		password.setEnabled(SMTPauth.isSelected());
-		showEmail.setSelected(Configuration.isShowEmail());
+		showEmail.setSelected(Configuration.getBoolean(VariableKey.SHOW_EMAIL, defaults));
 
 		// makeSessionSetupPanel
-		sessionStats.setText(Configuration.getSessionString());
+		sessionStats.setText(Configuration.getString(VariableKey.SESSION_STATISTICS, defaults));
 
 		// makeAverageSetupPanel
-		averageStats.setText(Configuration.getAverageString());
+		averageStats.setText(Configuration.getString(VariableKey.AVERAGE_STATISTICS, defaults));
 
 		// makePuzzleColorsPanel
 		for (ScrambleViewComponent puzzle : solvedPuzzles) {
@@ -990,137 +888,134 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 	}
 
 	// TODO MERGE ABOVE METHOD AND BELOW METHOD!!!
-	private void resetAllButEmail() {
-		currentAndRA.setBackground(Configuration
-				.getBestAndCurrentColorDefault());
-		currentAverage.setBackground(Configuration
-				.getCurrentAverageColorDefault());
-		bestRA.setBackground(Configuration.getBestRAColorDefault());
-		bestTime.setBackground(Configuration.getBestTimeColorDefault());
-		worstTime.setBackground(Configuration.getWorstTimeColorDefault());
-		clockFormat.setSelected(Configuration.isClockFormatDefault());
-		promptForNewTime.setSelected(Configuration.isPromptForNewTimeDefault());
-		RASize.setValue(Configuration.getRASizeDefault());
-		metronome.setSelected(Configuration.isMetronomeDefault());
-		metronomeDelay.setDelayBounds(Configuration.getMetronomeDelayMinimum(),
-				Configuration.getMetronomeDelayMaximum(), Configuration
-						.getMetronomeDelayDefault());
-		metronomeDelay.setEnabled(metronome.isSelected());
+//	private void resetAllButEmail() {
+//		currentAndRA.setBackground(Configuration
+//				.getBestAndCurrentColorDefault());
+//		currentAverage.setBackground(Configuration
+//				.getCurrentAverageColorDefault());
+//		bestRA.setBackground(Configuration.getBestRAColorDefault());
+//		bestTime.setBackground(Configuration.getBestTimeColorDefault());
+//		worstTime.setBackground(Configuration.getWorstTimeColorDefault());
+//		clockFormat.setSelected(Configuration.isClockFormatDefault());
+//		promptForNewTime.setSelected(Configuration.isPromptForNewTimeDefault());
+//		RASize.setValue(Configuration.getRASizeDefault());
+//		metronome.setSelected(Configuration.isMetronomeDefault());
+//		metronomeDelay.setDelayBounds(Configuration.getMetronomeDelayMinimum(),
+//				Configuration.getMetronomeDelayMaximum(), Configuration
+//						.getMetronomeDelayDefault());
+//		metronomeDelay.setEnabled(metronome.isSelected());
+//
+//		stackmatValue.setValue(Configuration.getSwitchThreshold());
+//		invertedMinutes.setSelected(Configuration.isInvertedMinutesDefault());
+//		invertedSeconds.setSelected(Configuration.isInvertedSecondsDefault());
+//		invertedHundredths.setSelected(Configuration
+//				.isInvertedHundredthsDefault());
+//
+//		puzzles.setContents(Configuration.getCustomScrambleTypesDefaults());
+//
+//		sundayQuote.setText(Configuration.getSundayQuoteDefault());
+//
+//		for (ScrambleViewComponent puzzle : solvedPuzzles) {
+//			Class<?> puzzleType = puzzle.getScramble().getClass();
+//			puzzle.setColorScheme(puzzleType, Configuration
+//					.getPuzzleColorSchemeDefaults(puzzleType));
+//		}
+//
+//		sessionStats.setText(Configuration.getSessionStringDefault());
+//		averageStats.setText(Configuration.getAverageStringDefault());
+//
+//		splits.setSelected(Configuration.isSplitsDefault());
+//		minSplitTime.setEnabled(splits.isEnabled());
+//		minSplitTime.setValue(Configuration.getMinSplitDifferenceDefault());
+//		splitkey = Configuration.getSplitkeyDefault();
+//		keySelector.setText(KeyEvent.getKeyText(splitkey));
+//		keySelector.setEnabled(splits.isEnabled());
+//
+//		isBackground.setSelected(Configuration.isBackgroundDefault());
+//		backgroundFile.setText(Configuration.getBackgroundDefault());
+//		opacity.setValue((int) (10 * Configuration.getOpacityDefault()));
+//		backgroundFile.setEnabled(isBackground.isSelected());
+//		browse.setEnabled(isBackground.isSelected());
+//		opacity.setEnabled(isBackground.isSelected());
+//
+//		scrambleFontButton.setFont(Configuration.getScrambleFontDefault());
+//		timerFontButton.setFont(Configuration.getTimerFontDefault());
+//
+//		sundayQuote.setText(Configuration.getSundayQuoteDefault());
+//	}
 
-		stackmatValue.setValue(Configuration.getSwitchThreshold());
-		invertedMinutes.setSelected(Configuration.isInvertedMinutesDefault());
-		invertedSeconds.setSelected(Configuration.isInvertedSecondsDefault());
-		invertedHundredths.setSelected(Configuration
-				.isInvertedHundredthsDefault());
-
-		puzzles.setContents(Configuration.getCustomScrambleTypesDefaults());
-
-		sundayQuote.setText(Configuration.getSundayQuoteDefault());
-
-		for (ScrambleViewComponent puzzle : solvedPuzzles) {
-			Class<?> puzzleType = puzzle.getScramble().getClass();
-			puzzle.setColorScheme(puzzleType, Configuration
-					.getPuzzleColorSchemeDefaults(puzzleType));
-		}
-
-		sessionStats.setText(Configuration.getSessionStringDefault());
-		averageStats.setText(Configuration.getAverageStringDefault());
-
-		splits.setSelected(Configuration.isSplitsDefault());
-		minSplitTime.setEnabled(splits.isEnabled());
-		minSplitTime.setValue(Configuration.getMinSplitDifferenceDefault());
-		splitkey = Configuration.getSplitkeyDefault();
-		keySelector.setText(KeyEvent.getKeyText(splitkey));
-		keySelector.setEnabled(splits.isEnabled());
-
-		isBackground.setSelected(Configuration.isBackgroundDefault());
-		backgroundFile.setText(Configuration.getBackgroundDefault());
-		opacity.setValue((int) (10 * Configuration.getOpacityDefault()));
-		backgroundFile.setEnabled(isBackground.isSelected());
-		browse.setEnabled(isBackground.isSelected());
-		opacity.setEnabled(isBackground.isSelected());
-
-		scrambleFontButton.setFont(Configuration.getScrambleFontDefault());
-		timerFontButton.setFont(Configuration.getTimerFontDefault());
-
-		sundayQuote.setText(Configuration.getSundayQuoteDefault());
-	}
-
-	public void setVisible(boolean visible) {
-		if (visible && tabbedPane == null)
+	private Profile currProfile;
+	public void setVisible(boolean visible, Profile currProfile) {
+		setTitle("CCT Options for " + currProfile.getName());
+		this.currProfile = currProfile;
+		/*if (visible && tabbedPane == null)
 			createGUI();
-		else if (visible)
-			syncGUIwithConfig();
+		else */if (visible)
+			syncGUIwithConfig(false);
 		super.setVisible(visible);
 	}
 
 	private void applyConfiguration() {
-		Configuration.setBestAndCurrentColor(currentAndRA.getBackground());
-		Configuration.setCurrentAverageColor(currentAverage.getBackground());
-		Configuration.setBestRAColor(bestRA.getBackground());
-		Configuration.setBestTimeColor(bestTime.getBackground());
-		Configuration.setWorstTimeColor(worstTime.getBackground());
-		Configuration.setClockFormat(clockFormat.isSelected());
-		Configuration.setPromptForNewTime(promptForNewTime.isSelected());
-		Configuration.setScramblePopup(scramblePopup.isSelected());
-		Configuration.setRASize((Integer) RASize.getValue());
-		Configuration.setMetronome(metronome.isSelected());
-		Configuration.setMetronomeDelay(metronomeDelay.getMilliSecondsDelay());
+		Configuration.setColor(VariableKey.BEST_AND_CURRENT, currentAndRA.getBackground());
+		Configuration.setColor(VariableKey.CURRENT_AVERAGE, currentAverage.getBackground());
+		Configuration.setColor(VariableKey.BEST_RA, bestRA.getBackground());
+		Configuration.setColor(VariableKey.BEST_TIME, bestTime.getBackground());
+		Configuration.setColor(VariableKey.WORST_TIME, worstTime.getBackground());
+		Configuration.setBoolean(VariableKey.CLOCK_FORMAT, clockFormat.isSelected());
+		Configuration.setBoolean(VariableKey.PROMPT_FOR_NEW_TIME, promptForNewTime.isSelected());
+		Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, scramblePopup.isSelected());
+		Configuration.setInt(VariableKey.RA_SIZE, (Integer) RASize.getValue());
+		Configuration.setBoolean(VariableKey.METRONOME_ENABLED, metronome.isSelected());
+		Configuration.setInt(VariableKey.METRONOME_DELAY, metronomeDelay.getMilliSecondsDelay());
 
-		Configuration.setSwitchThreshold((Integer) stackmatValue.getValue());
-		Configuration.setInvertedMinutes(invertedMinutes.isSelected());
-		Configuration.setInvertedSeconds(invertedSeconds.isSelected());
-		Configuration.setInvertedHundredths(invertedHundredths.isSelected());
-		Configuration.setMixerNumber(lines.getSelectedIndex());
+		Configuration.setInt(VariableKey.SWITCH_THRESHOLD, (Integer) stackmatValue.getValue());
+		Configuration.setBoolean(VariableKey.INVERTED_MINUTES, invertedMinutes.isSelected());
+		Configuration.setBoolean(VariableKey.INVERTED_SECONDS, invertedSeconds.isSelected());
+		Configuration.setBoolean(VariableKey.INVERTED_HUNDREDTHS, invertedHundredths.isSelected());
+		Configuration.setInt(VariableKey.MIXER_NUMBER, lines.getSelectedIndex());
 
-		Configuration.setShowEmail(showEmail.isSelected());
-		Configuration.setName(name.getText());
-		Configuration.setCountry(country.getText());
-		Configuration.setSundayQuote(sundayQuote.getText());
-		Configuration.setUserEmail(userEmail.getText());
-		Configuration.setSMTPHost(host.getText());
-		Configuration.setPort(port.getText());
-		Configuration.setUsername(username.getText());
-		Configuration.setSMTPauth(SMTPauth.isSelected());
-		Configuration.setPassword(password.getPassword());
-		Configuration.setSMTPEnabled(useSMTPServer.isSelected());
-		Configuration.setSMTPEmailAddress(emailAddress.getText());
+		Configuration.setBoolean(VariableKey.SHOW_EMAIL, showEmail.isSelected());
+		Configuration.setString(VariableKey.SUNDAY_NAME, name.getText());
+		Configuration.setString(VariableKey.SUNDAY_COUNTRY, country.getText());
+		Configuration.setString(VariableKey.SUNDAY_QUOTE, sundayQuote.getText());
+		Configuration.setString(VariableKey.SUNDAY_EMAIL_ADDRESS, sundayEmailAddress.getText());
+		Configuration.setString(VariableKey.SMTP_HOST, host.getText());
+		Configuration.setString(VariableKey.SMTP_PORT, port.getText());
+		Configuration.setString(VariableKey.SMTP_USERNAME, username.getText());
+		Configuration.setBoolean(VariableKey.SMTP_AUTHENTICATION, SMTPauth.isSelected());
+		Configuration.setString(VariableKey.SMTP_PASSWORD, new String(password.getPassword()));
+		Configuration.setBoolean(VariableKey.SMTP_ENABLED, useSMTPServer.isSelected());
+		Configuration.setString(VariableKey.SMTP_FROM_ADDRESS, smtpEmailAddress.getText());
 		
-		Configuration.setSessionString(sessionStats.getText());
-		Configuration.setAverageString(averageStats.getText());
+		Configuration.setString(VariableKey.SESSION_STATISTICS, sessionStats.getText());
+		Configuration.setString(VariableKey.SESSION_STATISTICS, averageStats.getText());
 
 		for (ScrambleViewComponent puzzle : solvedPuzzles) {
-			Class<?> type = puzzle.getScramble().getClass();
-			Configuration.setPuzzleColorScheme(type, puzzle
-					.getColorScheme(type));
+			Class<? extends Scramble> type = puzzle.getScramble().getClass();
+			Configuration.setPuzzleColorScheme(type, puzzle.getColorScheme(type));
 		}
 
-		Configuration.setSplits(splits.isSelected());
-		Configuration.setMinSplitDifference((Double) minSplitTime.getValue());
-		Configuration.setSplitkey(splitkey);
+		Configuration.setBoolean(VariableKey.TIMING_SPLITS, splits.isSelected());
+		Configuration.setDouble(VariableKey.MIN_SPLIT_DIFFERENCE, (Double) minSplitTime.getValue());
+		Configuration.setInt(VariableKey.SPLIT_KEY, splitkey);
 
-		Configuration.setFlashWindow(flashyWindow.isSelected());
+		Configuration.setBoolean(VariableKey.CHAT_WINDOW_FLASH, flashyWindow.isSelected());
 
-		Configuration.setBackground(isBackground.isSelected());
-		Configuration.setBackground(backgroundFile.getText());
-		Configuration.setOpacity((float) (opacity.getValue() / 10.));
+		Configuration.setBoolean(VariableKey.WATERMARK_ENABLED, isBackground.isSelected());
+		Configuration.setString(VariableKey.WATERMARK_FILE, backgroundFile.getText());
+		Configuration.setFloat(VariableKey.OPACITY, (float) (opacity.getValue() / 10.));
 
-		Configuration.setScrambleFont(scrambleFontButton.getFont());
-		Configuration.setTimerFont(timerFontButton.getFont());
+		Configuration.setFont(VariableKey.SCRAMBLE_FONT, scrambleFontButton.getFont());
+		Configuration.setFont(VariableKey.TIMER_FONT, timerFontButton.getFont());
 
-		Configuration.setCustomScrambleTypes(puzzles.getContents().toArray(
-				new String[0]));
+		Configuration.setCustomScrambleTypes(puzzles.getContents().toArray(new String[0]));
 
 		Configuration.apply();
 
 		for (int i = 0; i < items.length; i++) {
 			items[i].setInUse(false);
 		}
-		items[Configuration.getMixerNumber()].setInUse(true);
-	}
-
-	private void refreshTitle() {
-		setTitle("CALCubeTimer Options File: " + Configuration.getFileName());
+		items[Configuration.getInt(VariableKey.MIXER_NUMBER, false)].setInUse(true);
 	}
 
 	public void keyPressed(KeyEvent e) {
@@ -1129,12 +1024,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 			keySelector.setText(KeyEvent.getKeyText(splitkey));
 		}
 	}
-
-	public void keyReleased(KeyEvent e) {
-	}
-
-	public void keyTyped(KeyEvent e) {
-	}
+	public void keyReleased(KeyEvent e) {}
+	public void keyTyped(KeyEvent e) {}
 
 	public void colorClicked(ScrambleViewComponent source, String face,
 			HashMap<String, Color> colorScheme) {

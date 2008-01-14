@@ -3,7 +3,7 @@ package net.gnehzr.cct.miscUtils;
 import javax.swing.JCheckBox;
 
 import net.gnehzr.cct.configuration.Configuration;
-import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
+import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
 @SuppressWarnings("serial")

@@ -32,7 +32,7 @@ public class TickerSlider extends JPanel implements ChangeListener {
 	public TickerSlider(Timer ticker) {
 		this.tickTock = ticker;
 		try {
-			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(TickerSlider.class.getResourceAsStream(Configuration.getTickFilename()));
+			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(TickerSlider.class.getResourceAsStream(Configuration.getString(VariableKey.METRONOME_CLICK_FILE, false)));
 			DataLine.Info info = new DataLine.Info(Clip.class, audioInputStream.getFormat());
 			clip = (Clip) AudioSystem.getLine(info);
 			clip.open(audioInputStream);

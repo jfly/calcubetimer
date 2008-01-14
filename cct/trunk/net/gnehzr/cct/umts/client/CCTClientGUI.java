@@ -42,6 +42,7 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.stackmatInterpreter.StackmatState;
 import net.gnehzr.cct.statistics.SolveTime;
@@ -228,7 +229,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		if(!isFocused && Configuration.isFlashWindow()) flasher.start();
+		if(!isFocused && Configuration.getBoolean(VariableKey.CHAT_WINDOW_FLASH, false)) flasher.start();
 //		messageBuffer += "<font color=Red>" + getDate() + "</font> " + s + "</font><br>";
 	}
 

@@ -17,6 +17,7 @@ import javax.mail.*;
 import javax.mail.internet.*;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
 
 import java.util.*;
 
@@ -68,13 +69,13 @@ public class SendMailUsingAuthentication {
 		// Set the host smtp address
 		Properties props = new Properties();
 
-		props.setProperty("mail.smtp.host", Configuration.getSMTPHost());
-		props.setProperty("mail.smtp.port", Configuration.getPort());
-		props.setProperty("mail.smtp.auth", Boolean.toString(Configuration.isSMTPauth()));
+		props.setProperty("mail.smtp.host", Configuration.getString(VariableKey.SMTP_HOST, false));
+		props.setProperty("mail.smtp.port", Configuration.getString(VariableKey.SMTP_PORT, false));
+		props.setProperty("mail.smtp.auth", Boolean.toString(Configuration.getBoolean(VariableKey.SMTP_AUTHENTICATION, false)));
 		props.put("mail.smtp.starttls.enable", "true");
 
 		Session session = null;
-		if(Configuration.isSMTPauth()) {
+		if(Configuration.getBoolean(VariableKey.SMTP_AUTHENTICATION, false)) {
 			Authenticator auth = new SMTPAuthenticator();
 			session = Session.getInstance(props, auth);
 		} else {
@@ -86,7 +87,7 @@ public class SendMailUsingAuthentication {
 		Message msg = new MimeMessage(session);
 
 		// set the from and to address
-		InternetAddress addressFrom = new InternetAddress(Configuration.getSMTPEmailAddress());
+		InternetAddress addressFrom = new InternetAddress(Configuration.getString(VariableKey.SMTP_FROM_ADDRESS, false));
 		msg.setFrom(addressFrom);
 		InternetAddress[] addressTo = new InternetAddress[recipients.length];
 		for (int i = 0; i < recipients.length; i++) {
@@ -107,8 +108,8 @@ public class SendMailUsingAuthentication {
 	private class SMTPAuthenticator extends javax.mail.Authenticator {
 
 		public PasswordAuthentication getPasswordAuthentication() {
-			String username = Configuration.getUsername();
-			String password = new String(pass == null ? Configuration.getPassword() : pass);
+			String username = Configuration.getString(VariableKey.SMTP_USERNAME, false);
+			String password = pass == null ? Configuration.getString(VariableKey.SMTP_PASSWORD, false) : new String(pass);
 			PasswordAuthentication p = new PasswordAuthentication(username, password);
 			if(pass != null){
 				for(int i = 0; i < pass.length; i++){

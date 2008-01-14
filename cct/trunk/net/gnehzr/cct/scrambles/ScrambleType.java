@@ -6,14 +6,14 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.scrambles.Scramble.InvalidScrambleException;
 
 public class ScrambleType {
-	private Class<?> puzzleType;
+	private Class<? extends Scramble> puzzleType;
 	public String getPuzzleName() {
 		try {
 			return (String) puzzleType.getField("PUZZLE_NAME").get(null);
 		} catch (Exception e) {	}
 		return "";
 	}
-	public Class<?> getPuzzleClass() {
+	public Class<? extends Scramble> getPuzzleClass() {
 		return puzzleType;
 	}
 	private String variation;
@@ -28,7 +28,7 @@ public class ScrambleType {
 		return length;
 	}
 	
-	public ScrambleType(Class<?> puzzleType, String variation, int length) {
+	public ScrambleType(Class<? extends Scramble> puzzleType, String variation, int length) {
 		this.puzzleType = puzzleType;
 		this.variation = variation;
 		this.length = length;

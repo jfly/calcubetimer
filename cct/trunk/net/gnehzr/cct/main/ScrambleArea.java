@@ -13,6 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.text.BadLocationException;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.scrambles.Scramble;
 
 @SuppressWarnings("serial")
@@ -35,7 +36,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener {
 	private Object latest;
 	public void setText(String string) {
 		latest = string;
-		Font temp = Configuration.getScrambleFont();
+		Font temp = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
 		string = doReplacement(string);
 		scramble.setText("<span style = \"font-family: " + temp.getFamily() + "; font-size: " + temp.getSize() + (temp.isItalic() ? "; font-style: italic" : "") + "\">" + string + "</span>");
 
@@ -56,7 +57,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener {
 	}
 
 	private String doReplacement(String s){
-		Font temp = Configuration.getScrambleFont();
+		Font temp = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
 		s = s.replaceAll("INSERT_SIZE", "" + temp.getSize());
 		s = s.replaceAll("INSERT_SUBSIZE", "" + (temp.getSize() / 2 + 1));
 		s = s.replaceAll("INSERT_FAMILY", temp.getFamily());
@@ -75,7 +76,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener {
 	}
 	public void setHidden(boolean hidden) {
 		hid = hidden;
-		setBackground(hid && Configuration.isHideScrambles() ? Color.BLACK: Color.WHITE);
+		setBackground(hid && Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false) ? Color.BLACK: Color.WHITE);
 	}
 
 	private void setProperSize() {

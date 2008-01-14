@@ -23,7 +23,7 @@ public class SquareOneScramble extends Scramble {
 	public static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
 	private char[][] state;
 	private boolean even_parity = true; //this is the state of the middle pieces
-	public static final int DEFAULT_UNIT_SIZE = 35;
+	public static final int DEFAULT_UNIT_SIZE = 32;
 	private boolean easyRead;
 
 	public static int getDefaultScrambleLength(String variation) {

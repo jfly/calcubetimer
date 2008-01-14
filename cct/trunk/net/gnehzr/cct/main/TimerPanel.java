@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JLabel;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.main.KeyboardTimerPanel.KeyboardTimerComponent;
 
 
@@ -24,7 +25,7 @@ public class TimerPanel extends JLabel implements KeyboardTimerComponent {
 		timer = new KeyboardTimerPanel(this, timeListener, scrambles);
 		this.setToolTipText("Just click here to request focus");
 		
-		Dimension size = Configuration.getKeyboardTimerPanelSize();
+		Dimension size = Configuration.getDimension(VariableKey.KEYBOARD_TIMER_DIMENSION, false);
 		setPreferredSize(size);
 		setMinimumSize(size);
 		setMaximumSize(size);
@@ -63,7 +64,7 @@ public class TimerPanel extends JLabel implements KeyboardTimerComponent {
 		setBackground(Color.GREEN);
 	}
 	public void setUnfocusedState() {
-		if(keyboard && Configuration.isHideScrambles())
+		if(keyboard && Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false))
 			scrambles.setHidden(true);
 		setBackground(Color.GRAY);
 		timerDisplay.setRedButton();

@@ -130,14 +130,16 @@ public class JFontChooser extends JComponent {
 	}
 
 	public JFontChooser(Font defaultFont, boolean sizing, Integer max) {
-		this(DEFAULT_FONT_SIZE_STRINGS, defaultFont, sizing, max);
+		this(DEFAULT_FONT_SIZE_STRINGS, defaultFont, sizing, max, null);
 	}
 
 	private Font defaultFont;
 	private Integer maxSize;
-	public JFontChooser(String[] fontSizeStrings, Font defaultFont, boolean sizingEnabled, Integer max) {
+	private String toDisplay;
+	public JFontChooser(String[] fontSizeStrings, Font defaultFont, boolean sizingEnabled, Integer max, String toDisplay) {
 		this.defaultFont = defaultFont;
 		this.fontSizeStrings = fontSizeStrings;
+		this.toDisplay = toDisplay;
 		maxSize = max;
 
 		JPanel selectPanel = new JPanel();
@@ -268,7 +270,7 @@ public class JFontChooser extends JComponent {
 					fontSize = maxSize;
 					getFontSizeTextField().setText(maxSize.toString());
 				} else if(fontSize == 0) {
-					fontSize = 1;;
+					fontSize = 1;
 					getFontSizeTextField().setText("1");
 				}
 				break;
@@ -685,7 +687,7 @@ public class JFontChooser extends JComponent {
 		if (sampleText == null) {
 			Border lowered = BorderFactory.createLoweredBevelBorder();
 
-			sampleText = new JTextField(_("SampleString"));
+			sampleText = new JTextField((toDisplay == null) ? _("SampleString") : toDisplay);
 			sampleText.setBorder(lowered);
 			sampleText.setPreferredSize(new Dimension(300, 100));
 		}

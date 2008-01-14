@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.miscUtils.JTextAreaWithHistory;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
@@ -80,7 +81,9 @@ public class StatsDialogHandler extends JDialog implements ActionListener {
 
 	private void updateStats() {
 		SolveTime[] bestAndWorst = times.getBestAndWorstTimes(type);
-		String stats = ((type == Statistics.averageType.SESSION) ? Configuration.getSessionString() : Configuration.getAverageString());
+		String stats = (type == Statistics.averageType.SESSION) ?
+				Configuration.getString(VariableKey.SESSION_STATISTICS, false) :
+				Configuration.getString(VariableKey.AVERAGE_STATISTICS, false);
 		stats = stats.replaceAll("\\$D", SDF.format(cal.getTime()));
 		stats = stats.replaceAll("\\$C", "" + times.getNumSolves());
 		stats = stats.replaceAll("\\$P", "" + times.getNumPops());
@@ -90,7 +93,7 @@ public class StatsDialogHandler extends JDialog implements ActionListener {
 		stats = stats.replaceAll("\\$W", bestAndWorst[1].toString());
 		stats = stats.replaceAll("\\$T", times.toTerseString(type));
 		stats = stats.replaceAll("\\$I", times.toStatsString(type, false));
-		stats = stats.replaceAll("\\$i", times.toStatsString(type, Configuration.isSplits()));
+		stats = stats.replaceAll("\\$i", times.toStatsString(type, Configuration.getBoolean(VariableKey.TIMING_SPLITS, false)));
 
 		textArea.setText(stats);
 	}
@@ -154,12 +157,13 @@ public class StatsDialogHandler extends JDialog implements ActionListener {
 			promptToSaveStats();
 		} else if (source == submitButton) {
 			new SundayContestDialog(this,
-					Configuration.getName(),
-					Configuration.getCountry(),
-					Configuration.getUserEmail(),
-					times.average(type), times.toTerseString(type),
-					Configuration.getSundayQuote(),
-					Configuration.isShowEmail());
+					Configuration.getString(VariableKey.SUNDAY_NAME, false),
+					Configuration.getString(VariableKey.SUNDAY_COUNTRY, false),
+					Configuration.getString(VariableKey.SUNDAY_EMAIL_ADDRESS, false),
+					times.average(type),
+					times.toTerseString(type),
+					Configuration.getString(VariableKey.SUNDAY_QUOTE, false),
+					Configuration.getBoolean(VariableKey.SHOW_EMAIL, false));
 		} else if (source == doneButton) {
 			this.setVisible(false);
 		} else if(source == emailButton) {

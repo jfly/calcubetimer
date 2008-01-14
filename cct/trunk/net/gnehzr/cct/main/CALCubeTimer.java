@@ -10,8 +10,11 @@ import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
@@ -20,9 +23,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ConnectException;
@@ -58,7 +63,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
@@ -75,9 +79,9 @@ import javax.xml.parsers.SAXParserFactory;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationDialog;
-import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
-import net.gnehzr.cct.help.FunScrollPane;
-import net.gnehzr.cct.main.EditableProfileList.EditableProfileListListener;
+import net.gnehzr.cct.configuration.ConfigurationChangeListener;
+import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.help.AboutScrollFrame;
 import net.gnehzr.cct.miscUtils.DynamicButton;
 import net.gnehzr.cct.miscUtils.DynamicCheckBox;
 import net.gnehzr.cct.miscUtils.DynamicCheckBoxMenuItem;
@@ -104,6 +108,8 @@ import net.gnehzr.cct.umts.client.CCTClient;
 import org.jvnet.lafwidget.LafWidget;
 import org.jvnet.lafwidget.utils.LafConstants;
 import org.jvnet.substance.SubstanceLookAndFeel;
+import org.jvnet.substance.utils.SubstanceConstants;
+import org.jvnet.substance.watermark.SubstanceImageWatermark;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -111,9 +117,8 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 @SuppressWarnings("serial")
-public class CALCubeTimer extends JFrame implements ActionListener, ListDataListener, ChangeListener, ConfigurationChangeListener, WindowFocusListener, EditableProfileListListener {
+public class CALCubeTimer extends JFrame implements ActionListener, ListDataListener, ChangeListener, ConfigurationChangeListener, ItemListener {
 	public static final String CCT_VERSION = "0.3 beta";
-	private static JFrame ab = null;
 	private JScrollPane timesScroller = null;
 	private TimerLabel timeLabel = null;
 	private JLabel onLabel = null;
@@ -128,75 +133,31 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	private JPanel scrambleAttributes = null;
 	private JSpinner scrambleNumber, scrambleLength = null;
 	private ScrambleList scrambles = null;
-	private EditableProfileList profiles = null;
+	private JComboBox profiles = null;
 	private Statistics stats = null;
 	private StackmatInterpreter stackmatTimer = null;
 	private TimerHandler timeListener = null;
 	private CCTClient client;
 	private ConfigurationDialog configurationDialog;
-	public static final ImageIcon cube = createImageIcon("cube.png", "Cube");
-
-	public CALCubeTimer() throws Exception {
-		try {
-			Configuration.addMainConfigurationChangeListener(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(
-					this,
-					e.getLocalizedMessage(),
-					"Can't start CCT!",
-					JOptionPane.ERROR_MESSAGE);
-			// this is where we will know about any "serious errors" that will
-			// prevent us from starting cct
-			System.exit(1);
-		}
-		this.setUndecorated(true);
-
+	
+	public static final ImageIcon cube = new ImageIcon(CALCubeTimer.class.getResource("cube.png"));
+	
+	public CALCubeTimer() {
 		stackmatTimer = new StackmatInterpreter();
-		stackmatTimer.execute();
 		Configuration.addConfigurationChangeListener(stackmatTimer);
-
 		stats = new Statistics();
 		stats.addListDataListener(this);
-		
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				timeListener = new TimerHandler();
-				createActions();
-				initializeGUIComponents();
-				stackmatTimer.addPropertyChangeListener(timeListener);
-			}
-		});
+		timeListener = new TimerHandler();
+		stackmatTimer.addPropertyChangeListener(timeListener);
+
+		this.setUndecorated(true);
+		createActions();
+		initializeGUIComponents();
 	}
-
-	private static void initializeAbout(){
-		ab = new JFrame("About CCT " + CCT_VERSION);
-		ab.setIconImage(cube.getImage());
-		ab.setAlwaysOnTop(true);
-		JTextPane pane = new JTextPane();
-		pane.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
-		pane.setOpaque(false);
-		pane.setEditable(false);
-		URL helpURL = CALCubeTimer.class.getResource("about.html");
-		if(helpURL != null) {
-			try {
-				pane.setPage(helpURL);
-			} catch (IOException e) {
-				System.err.println("Attempted to read a bad URL: " + helpURL);
-			}
-		} else {
-			System.err.println("Couldn't find help file (about.html)");
-		}
-
-		FunScrollPane editorScrollPane = new FunScrollPane(pane);
-		editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		editorScrollPane.setPreferredSize(new Dimension(250, 145));
-		editorScrollPane.setMinimumSize(new Dimension(10, 10));
-		ab.addWindowListener(editorScrollPane);
-		ab.add(editorScrollPane);
-		ab.setSize(600, 300);
-		ab.setResizable(false);
-		ab.setLocationRelativeTo(null);
+	
+	public void setVisible(boolean b) {
+		stackmatTimer.execute();
+		super.setVisible(b);
 	}
 
 	private HashMap<String, AbstractAction> actionMap;
@@ -331,27 +292,54 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		documentationAction.putValue(Action.NAME, "View Documentation");
 		actionMap.put("showdocumentation", documentationAction);
 
-		aboutAction = new AboutAction(this);
+		aboutAction = new AboutAction(new AboutScrollFrame("About CCT " + CCT_VERSION,
+						CALCubeTimer.class.getResource("about.html"),
+						cube.getImage()));
 		aboutAction.putValue(Action.NAME, "About");
 		actionMap.put("showabout", aboutAction);
 	}
 
+	public void actionPerformed(ActionEvent e) {
+		Object source = e.getSource();
+		if(e.getActionCommand().equals(SCRAMBLE_ATTRIBUTE_CHANGED)) {
+			ArrayList<String> attrs = new ArrayList<String>();
+			for(JCheckBox attr : attributes) {
+				if(attr.isSelected())
+					attrs.add(attr.getText());
+			}
+			String[] attributes = new String[attrs.size()];
+			attributes = attrs.toArray(attributes);
+			Configuration.setPuzzleAttributes(Configuration.getScrambleType(puzzleChoice), attributes);
+			scrambles.getCurrent().setAttributes(attributes);
+			updateScramble();
+		} else if(e.getActionCommand().equals(GUI_LAYOUT_CHANGED)) {
+			String layout = ((JRadioButtonMenuItem) source).getText();
+			parseXML_GUI(Configuration.getXMLFile(layout));
+			Configuration.setString(VariableKey.XML_LAYOUT, layout);
+			this.pack();
+		}
+	}
+	
 	private Timer tickTock;
 	private JTextField tf;
 	private JButton maximize;
 	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Changed";
 	private JMenu customGUIMenu;
 	private void initializeGUIComponents() {
-		addWindowFocusListener(this);
+		addWindowFocusListener(new WindowFocusListener() {
+			public void windowGainedFocus(WindowEvent e){
+				timeLabel.refreshFocus();
+			}
+			public void windowLostFocus(WindowEvent e){
+				timeLabel.refreshFocus();
+			}
+		});
 		tickTock = new Timer(0, null);
 		configurationDialog = new ConfigurationDialog(this, true, stackmatTimer, tickTock);
 
-		scrambles = new ScrambleList(Configuration.getScrambleType(puzzleChoice));
-
-		scrambleChooser = new JComboBox(Configuration.getCustomScrambleTypes().toArray(new String[0]));
-		scrambleChooser.setMaximumRowCount(12);
-		scrambleChooser.addActionListener(this);
+		scrambleChooser = new JComboBox();
 		scrambleChooser.setRenderer(new PuzzleTypeCellRenderer());
+		scrambleChooser.addItemListener(this);
 
 		SpinnerNumberModel model = new SpinnerNumberModel(1, //initial value
 				1,					//min
@@ -390,8 +378,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		timesList.setCellRenderer(new MyCellRenderer(stats));
 		timesScroller = new JScrollPane(timesList);
 
-		repaintTimes();
-
 		scrambleText = new ScrambleArea();
 		scrambleText.setAlignmentX(.5f);
 		timeLabel = new TimerLabel(timeListener, scrambleText);
@@ -423,10 +409,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		fullscreenFrame.setSize(screenSize.width, screenSize.height);
 		fullscreenFrame.validate();
 
-		this.setTitle("CCT " + CCT_VERSION);
-		this.setIconImage(cube.getImage());
-		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
 		customGUIMenu = new JMenu("Load custom GUI");
 
 		ButtonGroup group = new ButtonGroup();
@@ -443,49 +425,39 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		maximize.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE);
 
 
-		profiles = new EditableProfileList("Add new profile", new Profile("Default"));
-		for(Profile prof : Configuration.getProfiles()) {
-			profiles.addProfile(prof);
-		}
-		profiles.setMaximumSize(new Dimension(1000, 100));
-		
-		profiles.setEditableProfileListListener(this);
-		//this will fire a change in the selected profile, thereby firing a configuration change
-		profiles.setSelectedProfile(Configuration.getSelectedProfile());
+		profiles = new JComboBox();
+		profiles.addItemListener(this);
+//		profiles.setMaximumSize(new Dimension(1000, 100));
 	}
-	public void profileChanged(Profile outWithOld, Profile inWithNew) {
-		if(outWithOld == null) { //Item added
-			inWithNew.createProfileDirectory();
-			profileSelected(inWithNew);
-		} else { //Item changed
-			outWithOld.renameTo(inWithNew);
-		}
-	}
-	public void profileDeleted(Profile deleted) {
-		if(!deleted.delete()) {
-			//TODO - message box since delete failed?
-		}
-	}
-	private Profile previouslySelected;
-	public void profileSelected(Profile selected) {
-		if(previouslySelected != null && profiles.containsProfile(previouslySelected)) {
-			saveToConfiguration();
-			Configuration.saveConfigurationToFile();
-		}
-		previouslySelected = selected;
-		try {
-			Configuration.loadConfiguration(selected.getConfigurationFile());
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-		//the following is necessary to updae the gui when the profile changes
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				Configuration.apply();
+	
+	public void itemStateChanged(ItemEvent e) {
+		Object source = e.getSource();
+		if(source == scrambleChooser) {
+			scrambleChooserAction();
+		} else if(source == profiles) {
+			Profile affected = (Profile)e.getItem();
+			if(e.getStateChange() == ItemEvent.DESELECTED) {
+				saveToConfiguration();
+				try {
+					Configuration.saveConfigurationToFile(affected.getConfigurationFile());
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			} else if(e.getStateChange() == ItemEvent.SELECTED) {
+				Configuration.setSelectedProfile(affected);
+				try {
+					Configuration.loadConfiguration(affected.getConfigurationFile());
+					Configuration.apply();
+				} catch (IOException err) {
+					err.printStackTrace();
+				} catch (URISyntaxException err) {
+					err.printStackTrace();
+				}
 			}
-		});
+		}
+	}
+	private Profile getSelectedProfile() {
+		return (Profile) profiles.getSelectedItem();
 	}
 
 	private void parseXML_GUI(File xmlGUIfile) {
@@ -512,17 +484,18 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 			ioe.printStackTrace();
 		}
 	}
-
-	public Dimension getMinimumSize() { //This is a more appropriate way of doing gui's, to prevent weird resizing issues
+	
+	//This is a more appropriate way of doing gui's, to prevent weird resizing issues
+	public Dimension getMinimumSize() {
 		return new Dimension(235, 30);
 	}
 
 	private JCheckBox[] attributes;
 	private static final String SCRAMBLE_ATTRIBUTE_CHANGED = "Scramble Attribute Changed";
 	private void createScrambleAttributes() {
-		scrambleAttributes.removeAll();
 		if(puzzleChoice == null) //this happens when we are initializing cct, before a profile is selected
 			return;
+		scrambleAttributes.removeAll();
 		ScrambleType curr = Configuration.getScrambleType(puzzleChoice);
 		String[] attrs = Configuration.getPuzzleAttributes(curr.getPuzzleClass());
 		attributes = new JCheckBox[attrs.length];
@@ -826,57 +799,50 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		timesList.ensureIndexIsVisible(stats.getSize());
 	}
 
-	/** Returns an ImageIcon, or null if the path was invalid. */
-	public static ImageIcon createImageIcon(String path, String description) {
-		URL imgURL = CALCubeTimer.class.getResource(path);
-		if(imgURL != null) {
-			return new ImageIcon(imgURL, description);
-		} else {
-			System.err.println("Couldn't find file: " + path);
-			return null;
-		}
-	}
-
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		JDialog.setDefaultLookAndFeelDecorated(true);
 		JFrame.setDefaultLookAndFeelDecorated(true);
 
-		UIManager.setLookAndFeel(new SubstanceLookAndFeel());
-//		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//		UIManager.setLookAndFeel(new SubstanceModerateLookAndFeel());
+		try {
+			UIManager.setLookAndFeel(new SubstanceLookAndFeel());
+//			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//			UIManager.setLookAndFeel(new SubstanceModerateLookAndFeel());
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 
 		UIManager.put(LafWidget.TEXT_EDIT_CONTEXT_MENU, Boolean.TRUE);
 		UIManager.put(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.TRUE);
 		UIManager.put(LafWidget.ANIMATION_KIND, LafConstants.AnimationKind.NONE);
 //		UIManager.put(SubstanceLookAndFeel.WATERMARK_TO_BLEED, Boolean.TRUE);
 
-		initializeAbout();
-		new CALCubeTimer();
-	}
-
-	private static String[] okCancel = new String[] {"OK", "Cancel"};
-	public void actionPerformed(ActionEvent e) {
-		Object source = e.getSource();
-		if(e.getActionCommand().equals(SCRAMBLE_ATTRIBUTE_CHANGED)) {
-			ArrayList<String> attrs = new ArrayList<String>();
-			for(JCheckBox attr : attributes) {
-				if(attr.isSelected())
-					attrs.add(attr.getText());
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				String errors = Configuration.getStartupErrors();
+				if(!errors.equals("")) {
+					JOptionPane.showMessageDialog(
+							null,
+							errors,
+							"Can't start CCT!",
+							JOptionPane.ERROR_MESSAGE);
+					System.exit(1);
+				}
+				try {
+					Configuration.loadConfiguration(Configuration.getSelectedProfile().getConfigurationFile());
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
+				CALCubeTimer main = new CALCubeTimer();
+				Configuration.addConfigurationChangeListener(main);
+				main.setTitle("CCT " + CCT_VERSION);
+				main.setIconImage(cube.getImage());
+				main.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				Configuration.apply();
+				main.setVisible(true);
 			}
-			String[] attributes = new String[attrs.size()];
-			attributes = attrs.toArray(attributes);
-			Configuration.setPuzzleAttributes(Configuration.getScrambleType(puzzleChoice), attributes);
-			Scramble curr = scrambles.getCurrent();
-			curr.setAttributes(attributes);
-			updateScramble();
-		} else if(e.getActionCommand().equals(GUI_LAYOUT_CHANGED)) {
-			String layout = ((JRadioButtonMenuItem) source).getText();
-			parseXML_GUI(Configuration.getXMLFile(layout));
-			Configuration.setXMLGUILayout(layout);
-			this.pack();
-		} else if(source == scrambleChooser) {
-			scrambleChooserAction();
-		}
+		});
 	}
 
 	private void exportScrambles(URL outputFile, int numberOfScrambles, ScrambleType scrambleChoice) {
@@ -930,10 +896,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		test.setValue(val);
 		test.addChangeListener(this);
 	}
-	private void safeSelectItem(JComboBox test, String item) {
-		test.removeActionListener(this);
+	private void safeSelectItem(JComboBox test, Object item) {
+		test.removeItemListener(this);
 		test.setSelectedItem(item);
-		test.addActionListener(this);
+		test.addItemListener(this);
 	}
 	private void safeSetScrambleNumberMax(int max) {
 		scrambleNumber.removeChangeListener(this);
@@ -960,7 +926,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 						null,
 						null);
 			} else {
-				if(scrambles.size() > 1)
+				if(scrambles != null && scrambles.size() > 1)
 					choice = JOptionPane.showOptionDialog(this,
 							"Do you really wish to switch the type of scramble?\n" +
 							"All previous scrambles will be lost. Your times, however, will be saved.",
@@ -997,18 +963,21 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 
 	public void dispose() {
 		saveToConfiguration();
-		Configuration.saveConfigurationToFile();
+		try {
+			Configuration.saveConfigurationToFile(getSelectedProfile().getConfigurationFile());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		super.dispose();
 		System.exit(0);
 	}
 	private void saveToConfiguration() {
-		Configuration.setKeyboardTimer((Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
+		Configuration.setBoolean(VariableKey.STACKAMT_ENABLED, !(Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
 		Configuration.setPuzzle(puzzleChoice);
-		Configuration.setScrambleViewDimensions(scramblePopup.getSize());
-		Configuration.setScrambleViewLocation(scramblePopup.getLocation());
-		Configuration.setMainFrameDimensions(this.getSize());
-		Configuration.setMainFrameLocation(this.getLocation());
-		Configuration.setSelectedProfile(profiles.getSelectedProfile());
+		Configuration.setDimension(VariableKey.SCRAMBLE_VIEW_DIMENSION, scramblePopup.getSize());
+		Configuration.setPoint(VariableKey.SCRAMBLE_VIEW_LOCATION, scramblePopup.getLocation());
+		Configuration.setDimension(VariableKey.MAIN_FRAME_DIMENSION, this.getSize());
+		Configuration.setPoint(VariableKey.MAIN_FRAME_LOCATION, this.getLocation());
 	}
 
 	private boolean isFullScreen = false;
@@ -1044,13 +1013,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	public void intervalAdded(ListDataEvent e) {}
 	public void intervalRemoved(ListDataEvent e) {}
 
-	public void windowGainedFocus(WindowEvent e){
-		timeLabel.refreshFocus();
-	}
-	public void windowLostFocus(WindowEvent e){
-		timeLabel.refreshFocus();
-	}
-
 	private void sendCurrentTime(String s){
 		if(client != null && client.isConnected()){
 			client.sendCurrentTime(s);
@@ -1075,20 +1037,21 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		}
 	}
 
-	public void setScramble(String s) { //this is only called by cctclient
-		try {
-			ScrambleType scrambleChoice = Configuration.getScrambleType(puzzleChoice);
-			scrambles = new ScrambleList(scrambleChoice, scrambleChoice.generateScramble(s));
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					updateScramble();
-				}
-			});
-		} catch(Exception e) {
-			scrambleText.setText("Error in scramble from server.");
-			e.printStackTrace();
-		}
-	}
+	//this is only called by cctclient
+//	public void setScramble(String s) {
+//		try {
+//			ScrambleType scrambleChoice = Configuration.getScrambleType(puzzleChoice);
+//			scrambles = new ScrambleList(scrambleChoice, scrambleChoice.generateScramble(s));
+//			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+//				public void run() {
+//					updateScramble();
+//				}
+//			});
+//		} catch(Exception e) {
+//			scrambleText.setText("Error in scramble from server.");
+//			e.printStackTrace();
+//		}
+//	}
 
 	public void stateChanged(ChangeEvent e) {
 		Object source = e.getSource();
@@ -1101,51 +1064,70 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		}
 	}
 
+	public static void updateWatermark() {
+		if(Configuration.getBoolean(VariableKey.WATERMARK_ENABLED, false)) {
+			SubstanceLookAndFeel.setImageWatermarkKind(SubstanceConstants.ImageWatermarkKind.APP_CENTER);
+			SubstanceLookAndFeel.setImageWatermarkOpacity(Configuration.getFloat(VariableKey.OPACITY, false));
+			InputStream in = CALCubeTimer.class.getResourceAsStream(Configuration.getString(VariableKey.WATERMARK_FILE, true));
+			try {
+				in = new FileInputStream(Configuration.getString(VariableKey.WATERMARK_FILE, false));
+			} catch (FileNotFoundException e) {}
+			SubstanceLookAndFeel.setCurrentWatermark(new SubstanceImageWatermark(in));
+		} else
+			SubstanceLookAndFeel.setCurrentWatermark(new org.jvnet.substance.watermark.SubstanceNoneWatermark());
+
+		Window[] frames = JFrame.getWindows();
+		for(int ch = 0; ch < frames.length; ch++) {
+			frames[ch].repaint();
+		}
+	}
+	
 	public void configurationChanged() {
-		keyboardTimingAction.putValue(Action.SELECTED_KEY, Configuration.isKeyboardTimer());
-		integratedTimerAction.putValue(Action.SELECTED_KEY, Configuration.isIntegratedTimerDisplay());
-		annoyingDisplayAction.putValue(Action.SELECTED_KEY, Configuration.isAnnoyingDisplay());
-		lessAnnoyingDisplayAction.putValue(Action.SELECTED_KEY, Configuration.isLessAnnoyingDisplay());
-		hideScramblesAction.putValue(Action.SELECTED_KEY, Configuration.isHideScrambles());
-		spacebarOptionAction.putValue(Action.SELECTED_KEY, Configuration.isSpacebarOnly());
-		fullScreenTimingAction.putValue(Action.SELECTED_KEY, Configuration.isFullScreenWhileTiming());
-		scrambleChooser.setModel(new DefaultComboBoxModel(Configuration.getCustomScrambleTypes().toArray(new String[0])));
+		updateWatermark();
+		boolean stackmatEnabled = Configuration.getBoolean(VariableKey.STACKAMT_ENABLED, false);
+		keyboardTimingAction.putValue(Action.SELECTED_KEY, !stackmatEnabled);
+		integratedTimerAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, false));
+		annoyingDisplayAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.ANNOYING_DISPLAY, false));
+		lessAnnoyingDisplayAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.LESS_ANNOYING_DISPLAY, false));
+		hideScramblesAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false));
+		spacebarOptionAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false));
+		fullScreenTimingAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false));
+		scrambleChooser.setModel(new DefaultComboBoxModel(Configuration.getCustomScrambleTypes(false).toArray(new String[0])));
+		profiles.setModel(new DefaultComboBoxModel(Configuration.getProfiles()));
+		safeSelectItem(profiles, Configuration.getSelectedProfile());
 		scrambleChooser.setSelectedItem(Configuration.getPuzzle());
-		keyboardTimingAction.putValue(Action.SELECTED_KEY, Configuration.isKeyboardTimer());		
-		timeLabel.setKeyboard(Configuration.isKeyboardTimer());
-		timeLabel.setEnabledTiming(Configuration.isIntegratedTimerDisplay());
-		timeLabel.setOpaque(Configuration.isAnnoyingDisplay());
-		timeLabel.setFont(Configuration.getTimerFont());
-		bigTimersDisplay.setFont(Configuration.getTimerFont());
+		timeLabel.setKeyboard(!stackmatEnabled);
+		timeLabel.setEnabledTiming(Configuration.getBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, false));
+		timeLabel.setOpaque(Configuration.getBoolean(VariableKey.ANNOYING_DISPLAY, false));
+		timeLabel.setFont(Configuration.getFont(VariableKey.TIMER_FONT, false));
+		bigTimersDisplay.setFont(Configuration.getFont(VariableKey.TIMER_FONT, false));
 		startStopPanel.setEnabled((Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
-		startStopPanel.setVisible(!Configuration.isIntegratedTimerDisplay());
-		bigTimersDisplay.setKeyboard((Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
+		startStopPanel.setVisible(!Configuration.getBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, false));
+		bigTimersDisplay.setKeyboard(!stackmatEnabled);
+		scrambleChooser.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
 		
 		updateScramble();
 		parseXML_GUI(Configuration.getXMLGUILayout());
-		Dimension size = Configuration.getMainFrameDimensions();
+		Dimension size = Configuration.getDimension(VariableKey.MAIN_FRAME_DIMENSION, false);
 		if(size == null) {
 			this.pack();
 		} else
 			this.setSize(size);
-		Point location = Configuration.getMainFrameLocation();
+		Point location = Configuration.getPoint(VariableKey.MAIN_FRAME_LOCATION, false);
 		if(location == null)
 			this.setLocationRelativeTo(null);
 		else
 			this.setLocation(location);
-		if(!this.isVisible()) {
-			this.setVisible(true);
-		}
 
 		scramblePopup.syncColorScheme();
 		scramblePopup.pack();
-		size = Configuration.getScrambleViewDimensions();
+		size = Configuration.getDimension(VariableKey.SCRAMBLE_VIEW_DIMENSION, false);
 		if(size != null)
 			scramblePopup.setSize(size);
-		location = Configuration.getScrambleViewLocation();
+		location = Configuration.getPoint(VariableKey.SCRAMBLE_VIEW_LOCATION, false);
 		if(location != null)
 			scramblePopup.setLocation(location);
-		scramblePopup.setVisible(Configuration.isScramblePopup());
+		scramblePopup.setVisible(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false));
 		
 		if((Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY)) { //This is to ensure that the keyboard is focused
 			timeLabel.requestFocusInWindow();
@@ -1154,33 +1136,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 			scrambleText.requestFocusInWindow();
 		timeLabel.componentResized(null);
 	}
-
-//	public static SolveTime promptForTime(JFrame frame, String scramble) {
-//	String input = null;
-//	SolveTime newTime = null;
-//	try {
-//		input = ((String) JOptionPane.showInputDialog(
-//				frame,
-//				"Type in new time (in seconds), POP, or DNF",
-//				"Input New Time",
-//				JOptionPane.PLAIN_MESSAGE,
-//				cube,
-//				null,
-//				"")).trim();
-//		newTime = new SolveTime(input, scramble);
-//	} catch (Exception error) {
-//		if (input != null)
-//			JOptionPane.showMessageDialog(frame,
-//					"Not a legal time.\n" + error.getMessage(),
-//					"Invalid time: " + input,
-//					JOptionPane.WARNING_MESSAGE);
-//	}
-//	return newTime;
-//}
 	
 	// Actions section {{{
 	public void addTimeAction() {
-//		SolveTime newTime = promptForTime(this, scrambles.getCurrent().toString());
 		timesList.promptForNewItem();
 	}
 
@@ -1199,6 +1157,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		}
 	}
 
+	private static String[] okCancel = new String[] {"OK", "Cancel"};
 	public void importScramblesAction(){
 		ScrambleImportExportDialog scrambleImporter = new ScrambleImportExportDialog(true, Configuration.getScrambleType(puzzleChoice));
 		int choice = JOptionPane.showOptionDialog(this,
@@ -1233,10 +1192,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		}
 	}
 
-	public void showAbout(){
-		ab.setVisible(true);
-	}
-
 	public void showDocumentation(){
 		try {
 			URI uri = Configuration.documentationFile.toURI();
@@ -1251,11 +1206,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 
 	public void showConfigurationDialog(){
 		saveToConfiguration();
-		configurationDialog.setVisible(true);
+		configurationDialog.setVisible(true, (Profile) profiles.getSelectedItem());
 	}
 
 	public void connectToServer(){
-		client = new CCTClient(this, cube);
+		client = new CCTClient(cube);
 		client.enableAndDisable(connectToServerAction);
 	}
 
@@ -1283,13 +1238,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	}
 
 	public void lessAnnoyingDisplayAction(){
-		Configuration.setLessAnnoyingDisplay((Boolean)lessAnnoyingDisplayAction.getValue(Action.SELECTED_KEY));
+		Configuration.setBoolean(VariableKey.LESS_ANNOYING_DISPLAY, (Boolean)lessAnnoyingDisplayAction.getValue(Action.SELECTED_KEY));
 		timeLabel.repaint();
 	}
 
 	public void integratedTimerAction(){
 		boolean isIntegrated = (Boolean)integratedTimerAction.getValue(Action.SELECTED_KEY);
-		Configuration.setIntegratedTimerDisplay(isIntegrated);
+		Configuration.setBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, isIntegrated);
 		startStopPanel.setVisible(!isIntegrated);
 		timeLabel.setEnabledTiming(isIntegrated);
 		if(isIntegrated)
@@ -1299,20 +1254,20 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	}
 
 	public void hideScramblesAction(){
-		Configuration.setHideScrambles((Boolean)hideScramblesAction.getValue(Action.SELECTED_KEY));
+		Configuration.setBoolean(VariableKey.HIDE_SCRAMBLES, (Boolean)hideScramblesAction.getValue(Action.SELECTED_KEY));
 		scrambleText.refresh();
 	}
 
 	public void annoyingDisplayAction(){
 		boolean b = (Boolean)annoyingDisplayAction.getValue(Action.SELECTED_KEY);
 		timeLabel.setOpaque(b);
-		Configuration.setAnnoyingDisplay(b);
+		Configuration.setBoolean(VariableKey.ANNOYING_DISPLAY, b);
 		timeLabel.repaint();
 	}
 	// End actions section }}}
 
 	private void startMetronome() {
-		tickTock.setDelay(Configuration.getMetronomeDelay());
+		tickTock.setDelay(Configuration.getInt(VariableKey.METRONOME_DELAY, false));
 		tickTock.start();
 	}
 	
@@ -1333,15 +1288,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 				onLabel.setText("Timer is ON");
 			else
 				onLabel.setText("Timer is OFF");
-			if(Configuration.isKeyboardTimer())
+			if(!Configuration.getBoolean(VariableKey.STACKAMT_ENABLED, false))
 				return;
 
 			if(evt.getNewValue() instanceof StackmatState){
 				StackmatState current = (StackmatState) evt.getNewValue();
 				timeLabel.setStackmatHands(current.bothHands());
 				if(event.equals("TimeChange")) {
-					if(Configuration.isFullScreenWhileTiming()) setFullScreen(true);
-					if(Configuration.isMetronome()) startMetronome();
+					if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false)) setFullScreen(true);
+					if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false)) startMetronome();
 					reset = false;
 					updateTime(current.toString());
 				} else if(event.equals("Split")) {
@@ -1350,8 +1305,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 					updateTime("0:00.00");
 					reset = true;
 				} else if(event.equals("New Time")) {
-					if(Configuration.isFullScreenWhileTiming()) setFullScreen(false);
-					if(Configuration.isMetronome()) stopMetronome();
+					if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false)) setFullScreen(false);
+					if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false)) stopMetronome();
 					updateTime(current.toString());
 					if(addTime(current))
 						lastAccepted = current;
@@ -1375,15 +1330,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 			TimerState newTime = (TimerState) e.getSource();
 			updateTime(newTime.toString());
 			if(command.equals("Started")) {
-				if(Configuration.isFullScreenWhileTiming())
+				if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false))
 					setFullScreen(true);
-				if(Configuration.isMetronome())
+				if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false))
 					startMetronome();
 			} else if(command.equals("Stopped")) {
 				addTime(newTime);
-				if(Configuration.isFullScreenWhileTiming())
+				if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false))
 					setFullScreen(false);
-				if(Configuration.isMetronome())
+				if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false))
 					stopMetronome();
 			} else if(command.equals("Split"))
 				addSplit(newTime);
@@ -1392,7 +1347,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		private long lastSplit;
 		private void addSplit(TimerState state) {
 			long currentTime = System.currentTimeMillis();
-			if((currentTime - lastSplit) / 1000. > Configuration.getMinSplitDifference()) {
+			if((currentTime - lastSplit) / 1000. > Configuration.getDouble(VariableKey.MIN_SPLIT_DIFFERENCE, false)) {
 				String hands = "";
 				if(state instanceof StackmatState) {
 					hands += ((StackmatState) state).leftHand() ? " Left Hand" : " Right Hand";
@@ -1419,7 +1374,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 					return false;
 			}
 			int choice = JOptionPane.YES_OPTION;
-			if(Configuration.isPromptForNewTime() && !sameAsLast) {
+			if(Configuration.getBoolean(VariableKey.PROMPT_FOR_NEW_TIME, false) && !sameAsLast) {
 				choice = JOptionPane.showOptionDialog(null,
 						"Your time: " + protect.toString() + "\n Hit esc or close dialog to discard.",
 						"Confirm Time",
@@ -1514,13 +1469,13 @@ class ExitAction extends AbstractAction{
 }
 @SuppressWarnings("serial")
 class AboutAction extends AbstractAction{
-	private CALCubeTimer cct;
-	public AboutAction(CALCubeTimer cct){
-		this.cct = cct;
+	private JFrame makeMeVisible;
+	public AboutAction(JFrame makeMeVisible){
+		this.makeMeVisible = makeMeVisible;
 	}
 
 	public void actionPerformed(ActionEvent e){
-		cct.showAbout();
+		makeMeVisible.setVisible(true);
 	}
 }
 @SuppressWarnings("serial")
@@ -1584,7 +1539,7 @@ class SpacebarOptionAction extends AbstractAction{
 	}
 
 	public void actionPerformed(ActionEvent e){
-		Configuration.setSpacebarOnly(((AbstractButton)e.getSource()).isSelected());
+		Configuration.setBoolean(VariableKey.SPACEBAR_ONLY, ((AbstractButton)e.getSource()).isSelected());
 	}
 }
 @SuppressWarnings("serial")
@@ -1593,7 +1548,7 @@ class FullScreenTimingAction extends AbstractAction{
 	}
 
 	public void actionPerformed(ActionEvent e){
-		Configuration.setFullScreenWhileTiming(((AbstractButton)e.getSource()).isSelected());
+		Configuration.setBoolean(VariableKey.FULLSCREEN_TIMING, ((AbstractButton)e.getSource()).isSelected());
 	}
 }
 @SuppressWarnings("serial")

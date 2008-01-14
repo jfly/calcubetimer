@@ -7,6 +7,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 
@@ -26,7 +27,7 @@ public class ScrambleFrame extends JDialog {
 	}
 
 	public void setVisible(boolean visible) {
-		Configuration.setScramblePopup(visible);
+		Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, visible);
 //		if(!visible) {
 //			scrambleView.resetSize();
 //		}

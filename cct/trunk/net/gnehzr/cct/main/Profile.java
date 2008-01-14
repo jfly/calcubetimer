@@ -10,6 +10,7 @@ public class Profile {
 	public Profile(String name) {
 		this.name = name;
 		directory = new File(Configuration.profilesFolder, name+"/");
+		directory.mkdir();
 		configuration = new File(Configuration.profilesFolder, name+"/"+name+".properties");
 	}
 	public String getName() {
@@ -18,19 +19,17 @@ public class Profile {
 	public File getConfigurationFile() {
 		return configuration;
 	}
-	public void createProfileDirectory() {
-		directory.mkdir();
-	}
-	public void renameTo(Profile newProfile) {
-		this.directory.renameTo(newProfile.directory);
-		new File(newProfile.directory, name + ".properties").renameTo(newProfile.configuration);
-		Configuration.setCurrentFile(newProfile.configuration);
+	public boolean renameTo(Profile newProfile) {
+		return this.directory.renameTo(newProfile.directory) &&
+			new File(newProfile.directory, name + ".properties").renameTo(newProfile.configuration);
 	}
 	public boolean delete() {
 		configuration.delete();
 		return directory.delete();
 	}
 	public boolean equals(Object o) {
+		if(o == null)
+			return false;
 		return this.toString().equalsIgnoreCase(o.toString());
 	}
 	public String toString() {

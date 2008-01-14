@@ -3,7 +3,7 @@ package net.gnehzr.cct.miscUtils;
 import javax.swing.JMenu;
 
 import net.gnehzr.cct.configuration.Configuration;
-import net.gnehzr.cct.configuration.Configuration.ConfigurationChangeListener;
+import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
 @SuppressWarnings("serial")

@@ -28,6 +28,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.miscUtils.JTextAreaWithHistory;
 import net.gnehzr.cct.miscUtils.SendMailUsingAuthentication;
 
@@ -190,9 +191,10 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if (source == sendButton) {
-			if(Configuration.isSMTPEnabled()) {
+			if(Configuration.getBoolean(VariableKey.SMTP_ENABLED, false)) {
 				char[] pass = null;
-				if(Configuration.isSMTPauth() && Configuration.getPassword().length == 0) {
+				if(Configuration.getBoolean(VariableKey.SMTP_ENABLED, false) &&
+						Configuration.getString(VariableKey.SMTP_PASSWORD, false).equals("")) {
 					PasswordPrompt prompt = new PasswordPrompt(this);
 					prompt.setVisible(true);
 					if(prompt.isCanceled()) {

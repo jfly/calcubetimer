@@ -11,12 +11,15 @@ import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
 
 import java.util.HashMap;
 
 @SuppressWarnings("serial")
 public class ScrambleViewComponent extends JComponent implements ComponentListener, MouseListener {
-	private static final int GAP = Configuration.getScrambleGap();
+	private static final int GAP() {
+		return Configuration.getInt(VariableKey.POPUP_GAP, false);
+	}
 
 	public ScrambleViewComponent() {
 		this.addComponentListener(this);
@@ -31,8 +34,8 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	public void setScramble(Scramble scramble) {
 		if(scramble != null) {
 			currentScram = scramble;
-			Class<?> puzzleType = currentScram.getClass();
-			buffer = currentScram.getScrambleImage(GAP, getUnitSize(puzzleType), getColorScheme(puzzleType));
+			Class<? extends Scramble> puzzleType = currentScram.getClass();
+			buffer = currentScram.getScrambleImage(GAP(), getUnitSize(puzzleType), getColorScheme(puzzleType));
 			repaint();
 		}
 	}
@@ -46,7 +49,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 
 	public Dimension getMinimumSize() {
 		if(currentScram != null)
-			return currentScram.getMinimumSize(GAP, Configuration.getPuzzleUnitSizeDefault(currentScram.getClass()));
+			return currentScram.getMinimumSize(GAP(), Configuration.getPuzzleUnitSize(currentScram.getClass(), true));
 		else return new Dimension(buffer.getWidth(), buffer.getHeight());
 	}
 	
@@ -72,7 +75,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	public void componentShown(ComponentEvent e) {}
 	public void componentResized(ComponentEvent e) {
 		if(currentScram != null) {
-			setUnitSize(currentScram.getClass(), currentScram.getNewUnitSize(getWidth(), getHeight(), GAP));
+			setUnitSize(currentScram.getClass(), currentScram.getNewUnitSize(getWidth(), getHeight(), GAP()));
 			redo();
 		}
 	}
@@ -83,7 +86,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		this.listener = listener;
 	}
 	public void mouseClicked(MouseEvent e) {
-		String faceClicked = currentScram.getFaceClicked(e.getX(), e.getY(), GAP, unitSizes.get(currentScram.getClass()));
+		String faceClicked = currentScram.getFaceClicked(e.getX(), e.getY(), GAP(), unitSizes.get(currentScram.getClass()));
 		if(faceClicked != null)
 			listener.colorClicked(this, faceClicked, getColorScheme(currentScram.getClass()));
 	}
@@ -98,7 +101,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	}
 	
 	private HashMap<Class<?>, HashMap<String, Color>> colorSchemes = new HashMap<Class<?>, HashMap<String, Color>>();
-	public HashMap<String, Color> getColorScheme(Class<?> puzzleType) {
+	public HashMap<String, Color> getColorScheme(Class<? extends Scramble> puzzleType) {
 		HashMap<String, Color> scheme = colorSchemes.get(puzzleType);
 		if(scheme == null) {
 			scheme = Configuration.getPuzzleColorScheme(puzzleType);
@@ -116,10 +119,10 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	}
 	
 	private HashMap<Class<?>, Integer> unitSizes = new HashMap<Class<?>, Integer>();
-	private int getUnitSize(Class<?> puzzleType) {
+	private int getUnitSize(Class<? extends Scramble> puzzleType) {
 		Integer unitSize = unitSizes.get(puzzleType);
 		if(unitSize == null) {
-			unitSize = Configuration.getPuzzleUnitSize(puzzleType);
+			unitSize = Configuration.getPuzzleUnitSize(puzzleType, false);
 			unitSizes.put(puzzleType, unitSize);
 		}
 		return unitSize;

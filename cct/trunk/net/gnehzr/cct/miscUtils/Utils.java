@@ -1,6 +1,7 @@
 package net.gnehzr.cct.miscUtils;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
@@ -60,5 +61,18 @@ public class Utils{
 		} catch(Exception e) {
 			return Color.WHITE;
 		}
+	}
+	
+	public static String fontToString(Font f) {
+		String style = "";
+		if(f.isPlain())
+			style = "plain";
+		else {
+			if(f.isBold())
+				style += "bold";
+			if(f.isItalic())
+				style += "italic";
+		}
+		return f.getFontName() + "-" + style + "-" + f.getSize();
 	}
 }

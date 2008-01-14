@@ -28,7 +28,8 @@ public class ScrambleList extends ArrayList<Scramble>{
 		return temp;
 	}
 
-	public void setType(ScrambleType newType) {
+	//TODO - is this necessary?, maybe it would be best to allow the scramble list to hold anything
+	private void setType(ScrambleType newType) {
 		type = newType;
 	}
 
