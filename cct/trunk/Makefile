@@ -26,7 +26,7 @@ clean:
 	rm -rf dist
 
 rclean: clean
-	rm -f profiles/Default/Default.properties
+	rm -rf profiles/Guest/*
 
 cycle: compile all rclean
 
