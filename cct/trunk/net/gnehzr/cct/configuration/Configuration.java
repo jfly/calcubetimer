@@ -25,7 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.main.Profile;
-import net.gnehzr.cct.miscUtils.Utils;
+import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleType;
 
@@ -413,8 +413,6 @@ public final class Configuration {
 		}
 	}
 	public static void setPuzzle(String puzzle) {
-		if(getScrambleType(puzzle) == null)
-			return;
 		setString(VariableKey.DEFAULT_PUZZLE, puzzle);
 	}
 	private static int getScrambleLength(ScrambleType puzzle, boolean defaultValue) {

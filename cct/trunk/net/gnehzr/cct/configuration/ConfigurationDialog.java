@@ -41,6 +41,7 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -50,6 +51,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ListCellRenderer;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.Timer;
 
@@ -59,14 +61,14 @@ import say.swing.JFontChooser;
 
 import net.gnehzr.cct.main.KeyboardTimerPanel;
 import net.gnehzr.cct.main.Profile;
-import net.gnehzr.cct.miscUtils.ComboItem;
-import net.gnehzr.cct.miscUtils.ComboListener;
-import net.gnehzr.cct.miscUtils.ComboRenderer;
-import net.gnehzr.cct.miscUtils.ImageFilter;
-import net.gnehzr.cct.miscUtils.ImagePreview;
-import net.gnehzr.cct.miscUtils.JListMutable;
-import net.gnehzr.cct.miscUtils.JTextAreaWithHistory;
-import net.gnehzr.cct.miscUtils.PuzzleTypeCellRenderer;
+import net.gnehzr.cct.misc.ComboItem;
+import net.gnehzr.cct.misc.ComboListener;
+import net.gnehzr.cct.misc.ComboRenderer;
+import net.gnehzr.cct.misc.ImageFilter;
+import net.gnehzr.cct.misc.ImagePreview;
+import net.gnehzr.cct.misc.JTextAreaWithHistory;
+import net.gnehzr.cct.misc.customJTable.JListMutable;
+import net.gnehzr.cct.misc.customJTable.PuzzleTypeCellRenderer;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent.ColorListener;
@@ -356,13 +358,26 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		return panel;
 	}
 
+	private class ScrambleTypeWithLengthRenderer extends JPanel implements ListCellRenderer {
+		private PuzzleTypeCellRenderer r;
+		public ScrambleTypeWithLengthRenderer() {
+			r = new PuzzleTypeCellRenderer();
+		}
+		public Component getListCellRendererComponent(JList list, Object value,
+				int index, boolean isSelected, boolean cellHasFocus) {
+			this.removeAll();
+			this.add(r.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus));
+			this.add(new JSpinner());
+			return this;
+		}
+	}
+	
 	private PuzzleListModel puzzlesModel = new PuzzleListModel();
 	private ProfileListModel profilesModel = new ProfileListModel();
 
 	private JPanel makeScrambleTypeOptionsPanel() {
 		JPanel panel = new JPanel(new BorderLayout(10, 10));
 
-		//TODO - dragging of profile names would be cool
 		JTextField tf = new JTextField();
 		JListMutable<Profile> profiles = new JListMutable<Profile>(profilesModel, tf,
 				true, "Type the name of the new profile here.",
@@ -388,8 +403,9 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		JListMutable<String> scramType = new JListMutable<String>(puzzlesModel, tf,
 				true, "Type the name of the new puzzle here.",
 				"Add new puzzle...");
-		scramType.setCellRenderer(new PuzzleTypeCellRenderer());
-
+//		scramType.setCellRenderer(new PuzzleTypeCellRenderer());
+		scramType.setCellRenderer(new ScrambleTypeWithLengthRenderer());
+		
 		JScrollPane scroller = new JScrollPane(scramType);
 		panel.add(scroller, BorderLayout.CENTER);
 

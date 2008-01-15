@@ -29,8 +29,8 @@ import javax.swing.event.CaretListener;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
-import net.gnehzr.cct.miscUtils.JTextAreaWithHistory;
-import net.gnehzr.cct.miscUtils.SendMailUsingAuthentication;
+import net.gnehzr.cct.misc.JTextAreaWithHistory;
+import net.gnehzr.cct.misc.SendMailUsingAuthentication;
 
 @SuppressWarnings("serial")
 public class EmailDialog extends JDialog implements ActionListener, CaretListener {

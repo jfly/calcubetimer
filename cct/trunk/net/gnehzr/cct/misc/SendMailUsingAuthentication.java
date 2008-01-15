@@ -1,4 +1,4 @@
-package net.gnehzr.cct.miscUtils;
+package net.gnehzr.cct.misc;
 /*
  Some SMTP servers require a username and password authentication before you
  can use their Server for Sending mail. This is most common with couple

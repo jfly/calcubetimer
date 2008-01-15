@@ -1,21 +1,21 @@
-package net.gnehzr.cct.miscUtils;
+package net.gnehzr.cct.misc.dynamicGUI;
 
-import javax.swing.JMenuItem;
+import javax.swing.JMenu;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
 @SuppressWarnings("serial")
-public class DynamicMenuItem extends JMenuItem implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener{
+public class DynamicMenu extends JMenu implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener{
 	private DynamicString s;
 
-	public DynamicMenuItem(){
+	public DynamicMenu(){
 		s = null;
 		Configuration.addConfigurationChangeListener(this);
 	}
 
-	public DynamicMenuItem(DynamicString s){
+	public DynamicMenu(DynamicString s){
 		setDynamicString(s);
 	}
 

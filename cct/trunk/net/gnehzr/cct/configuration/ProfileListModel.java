@@ -7,8 +7,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.event.ListDataListener;
 
 import net.gnehzr.cct.main.Profile;
-import net.gnehzr.cct.miscUtils.JListMutable;
-import net.gnehzr.cct.miscUtils.MutableListModel;
+import net.gnehzr.cct.misc.customJTable.JListMutable;
+import net.gnehzr.cct.misc.customJTable.MutableListModel;
 
 public class ProfileListModel implements MutableListModel<Profile> {
 	private ArrayList<Profile> contents;
@@ -25,18 +25,19 @@ public class ProfileListModel implements MutableListModel<Profile> {
 	}
 
 	public void setValueAt(String newProfileName, int index) throws Exception {
+		Profile oldProfile = contents.get(index);
 		Profile newProfile = new Profile(newProfileName);
-		for(Profile p : contents) {
-			if(p.equals(newProfile))
-				throw new Exception("Profile already exists!");
-		}
+		if(oldProfile.equals(newProfile))
+			return;
+		if(contents.contains(newProfile))
+			throw new Exception("Profile already exists!");
 		if (index == contents.size()) {
 			if(newProfile.createProfileDirectory())
 				contents.add(newProfile);
 			else
 				throw new Exception("Couldn't create profile directory.");
 		} else {
-			if(!contents.get(index).renameTo(newProfile))
+			if(!oldProfile.renameTo(newProfile))
 				throw new Exception("Couldn't rename profile directory.");
 		}
 		fireContentsChanged();

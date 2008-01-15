@@ -6,8 +6,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.event.ListDataListener;
 
-import net.gnehzr.cct.miscUtils.JListMutable;
-import net.gnehzr.cct.miscUtils.MutableListModel;
+import net.gnehzr.cct.misc.customJTable.JListMutable;
+import net.gnehzr.cct.misc.customJTable.MutableListModel;
 
 public class PuzzleListModel implements MutableListModel<String> {
 	private ArrayList<String> contents;
@@ -25,6 +25,8 @@ public class PuzzleListModel implements MutableListModel<String> {
 	}
 
 	public void setValueAt(String newPuzzle, int index) throws Exception {
+		if (contents.get(index).equals(newPuzzle))
+			return;
 		if (Configuration.getScrambleType(newPuzzle) == null)
 			throw new Exception(
 					"Invalid puzzle type. See right hand side of screen for details.");

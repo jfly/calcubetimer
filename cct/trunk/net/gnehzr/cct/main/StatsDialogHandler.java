@@ -22,7 +22,7 @@ import javax.swing.JScrollPane;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
-import net.gnehzr.cct.miscUtils.JTextAreaWithHistory;
+import net.gnehzr.cct.misc.JTextAreaWithHistory;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
 

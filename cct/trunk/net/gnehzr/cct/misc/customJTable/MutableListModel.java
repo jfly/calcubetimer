@@ -1,7 +1,8 @@
-package net.gnehzr.cct.miscUtils;
+package net.gnehzr.cct.misc.customJTable;
 import java.awt.event.MouseEvent;
 
 import javax.swing.ListModel;
+
 
 // @author Santhosh Kumar T - santhosh@in.fiorano.com 
 public interface MutableListModel<E> extends ListModel {

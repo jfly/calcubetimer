@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import net.gnehzr.cct.miscUtils.JTextAreaWithHistory;
+import net.gnehzr.cct.misc.JTextAreaWithHistory;
 
 @SuppressWarnings("serial")
 public class SundayContestDialog extends JDialog implements ActionListener {

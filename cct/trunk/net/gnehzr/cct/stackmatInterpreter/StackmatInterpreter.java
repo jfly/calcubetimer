@@ -6,7 +6,7 @@ import javax.swing.SwingWorker;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
-import net.gnehzr.cct.miscUtils.ComboItem;
+import net.gnehzr.cct.misc.ComboItem;
 
 public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implements ConfigurationChangeListener {
 	private static final int QUALITY = 2;

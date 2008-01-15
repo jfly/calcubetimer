@@ -1,4 +1,4 @@
-package net.gnehzr.cct.miscUtils;
+package net.gnehzr.cct.misc.customJTable;
 
 import java.applet.Applet;
 import java.awt.Component;
@@ -21,6 +21,7 @@ import javax.swing.*;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListDataListener;
+
 
 // @author Santhosh Kumar T - santhosh@in.fiorano.com 
 @SuppressWarnings("serial")

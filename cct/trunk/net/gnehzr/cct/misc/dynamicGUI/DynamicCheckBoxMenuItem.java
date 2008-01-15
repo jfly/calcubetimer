@@ -1,21 +1,21 @@
-package net.gnehzr.cct.miscUtils;
+package net.gnehzr.cct.misc.dynamicGUI;
 
-import javax.swing.JMenu;
+import javax.swing.JCheckBoxMenuItem;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
 @SuppressWarnings("serial")
-public class DynamicMenu extends JMenu implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener{
+public class DynamicCheckBoxMenuItem extends JCheckBoxMenuItem implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener{
 	private DynamicString s;
 
-	public DynamicMenu(){
+	public DynamicCheckBoxMenuItem(){
 		s = null;
 		Configuration.addConfigurationChangeListener(this);
 	}
 
-	public DynamicMenu(DynamicString s){
+	public DynamicCheckBoxMenuItem(DynamicString s){
 		setDynamicString(s);
 	}
 

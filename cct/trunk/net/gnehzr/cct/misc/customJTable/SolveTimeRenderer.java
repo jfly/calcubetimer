@@ -1,10 +1,12 @@
-package net.gnehzr.cct.miscUtils;
+package net.gnehzr.cct.misc.customJTable;
 
 import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JTable;
 import javax.swing.ListCellRenderer;
+import javax.swing.table.TableCellRenderer;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
@@ -12,18 +14,19 @@ import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
 
 @SuppressWarnings("serial")
-public class MyCellRenderer extends JLabel implements ListCellRenderer {
+public class SolveTimeRenderer extends JLabel implements TableCellRenderer {
 	// Will highlight times from current average and from best rolling average
 	private Statistics times;
-	public MyCellRenderer(Statistics times) {
+	public SolveTimeRenderer(Statistics times) {
 		this.times = times;
 		setOpaque(true);
 	}
 
-	public Component getListCellRendererComponent(JList list, Object value,
-			int index, boolean isSelected, boolean cellHasFocus) {
-		setEnabled(list.isEnabled());
-		setFont(list.getFont());
+	public Component getTableCellRendererComponent(JTable table, Object value,
+			boolean isSelected, boolean hasFocus, int row, int column) {
+
+		setEnabled(table.isEnabled());
+		setFont(table.getFont());
 		setText("  " + value.toString() + "  ");
 
 		Color foreground = null;

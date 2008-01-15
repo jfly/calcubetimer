@@ -9,6 +9,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -53,7 +54,6 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
@@ -71,8 +71,8 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -82,19 +82,20 @@ import net.gnehzr.cct.configuration.ConfigurationDialog;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.help.AboutScrollFrame;
-import net.gnehzr.cct.miscUtils.DynamicButton;
-import net.gnehzr.cct.miscUtils.DynamicCheckBox;
-import net.gnehzr.cct.miscUtils.DynamicCheckBoxMenuItem;
-import net.gnehzr.cct.miscUtils.DynamicLabel;
-import net.gnehzr.cct.miscUtils.DynamicMenu;
-import net.gnehzr.cct.miscUtils.DynamicMenuItem;
-import net.gnehzr.cct.miscUtils.DynamicSelectableLabel;
-import net.gnehzr.cct.miscUtils.DynamicString;
-import net.gnehzr.cct.miscUtils.DynamicStringSettable;
-import net.gnehzr.cct.miscUtils.JListMutable;
-import net.gnehzr.cct.miscUtils.MyCellRenderer;
-import net.gnehzr.cct.miscUtils.PuzzleTypeCellRenderer;
-import net.gnehzr.cct.miscUtils.Utils;
+import net.gnehzr.cct.misc.customJTable.DraggableJTable;
+import net.gnehzr.cct.misc.customJTable.PuzzleTypeCellRenderer;
+import net.gnehzr.cct.misc.customJTable.SolveTimeEditor;
+import net.gnehzr.cct.misc.customJTable.SolveTimeRenderer;
+import net.gnehzr.cct.misc.dynamicGUI.DynamicButton;
+import net.gnehzr.cct.misc.dynamicGUI.DynamicCheckBox;
+import net.gnehzr.cct.misc.dynamicGUI.DynamicCheckBoxMenuItem;
+import net.gnehzr.cct.misc.dynamicGUI.DynamicLabel;
+import net.gnehzr.cct.misc.dynamicGUI.DynamicMenu;
+import net.gnehzr.cct.misc.dynamicGUI.DynamicMenuItem;
+import net.gnehzr.cct.misc.dynamicGUI.DynamicSelectableLabel;
+import net.gnehzr.cct.misc.dynamicGUI.DynamicString;
+import net.gnehzr.cct.misc.dynamicGUI.DynamicStringSettable;
+import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleList;
 import net.gnehzr.cct.scrambles.ScrambleType;
@@ -117,12 +118,12 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 @SuppressWarnings("serial")
-public class CALCubeTimer extends JFrame implements ActionListener, ListDataListener, ChangeListener, ConfigurationChangeListener, ItemListener {
+public class CALCubeTimer extends JFrame implements ActionListener, TableModelListener, ChangeListener, ConfigurationChangeListener, ItemListener {
 	public static final String CCT_VERSION = "0.3 beta";
 	private JScrollPane timesScroller = null;
 	private TimerLabel timeLabel = null;
 	private JLabel onLabel = null;
-	private JListMutable<SolveTime> timesList = null;
+	private DraggableJTable timesList = null;
 	private TimerPanel startStopPanel = null;
 	private JFrame fullscreenFrame = null;
 	private TimerLabel bigTimersDisplay = null;
@@ -146,7 +147,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		stackmatTimer = new StackmatInterpreter();
 		Configuration.addConfigurationChangeListener(stackmatTimer);
 		stats = new Statistics();
-		stats.addListDataListener(this);
+		stats.addTableModelListener(this);
 		timeListener = new TimerHandler();
 		stackmatTimer.addPropertyChangeListener(timeListener);
 
@@ -372,10 +373,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		
 		tf = new JTextField();
         tf.setBorder(BorderFactory.createLineBorder(Color.black));
-		timesList = new JListMutable<SolveTime>(stats, tf, false, "Type new time here", "Add time...");
+		timesList = new DraggableJTable("Add time...", false);
+		timesList.setDefaultEditor(SolveTime.class, new SolveTimeEditor("Type new time here."));
+		timesList.setTableHeader(null);
 		timesList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		timesList.setLayoutOrientation(JList.VERTICAL);
-		timesList.setCellRenderer(new MyCellRenderer(stats));
+		timesList.setModel(stats);
+		timesList.setDefaultRenderer(SolveTime.class, new SolveTimeRenderer(stats));
 		timesScroller = new JScrollPane(timesList);
 
 		scrambleText = new ScrambleArea();
@@ -799,7 +802,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		currentAverageAction.setEnabled(stats.isValid(Statistics.averageType.CURRENT));
 		rollingAverageAction.setEnabled(stats.isValid(Statistics.averageType.RA));
 		sessionAverageAction.setEnabled(stats.isValid(Statistics.averageType.SESSION));
-		timesList.ensureIndexIsVisible(stats.getSize());
+		
+		//make the new time visible
+		Rectangle newTimeRect = timesList.getCellRect(stats.getRowCount() - 1, 0, true);
+		timesList.scrollRectToVisible(newTimeRect);
 	}
 
 	public static void main(String[] args) {
@@ -977,6 +983,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	private void saveToConfiguration() {
 		Configuration.setBoolean(VariableKey.STACKAMT_ENABLED, !(Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
 		Configuration.setPuzzle(puzzleChoice);
+		for(String custom : Configuration.getCustomScrambleTypes(false)) {
+			ScrambleType t = Configuration.getScrambleType(custom);
+			Configuration.setInt(VariableKey.SCRAMBLE_LENGTH(t.getPuzzleName(), t.getVariation()), t.getLength());
+		}
 		Configuration.setDimension(VariableKey.SCRAMBLE_VIEW_DIMENSION, scramblePopup.getSize());
 		Configuration.setPoint(VariableKey.SCRAMBLE_VIEW_LOCATION, scramblePopup.getLocation());
 		Configuration.setDimension(VariableKey.MAIN_FRAME_DIMENSION, this.getSize());
@@ -993,8 +1003,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		}
 	}
 
-	public void contentsChanged(ListDataEvent e) {
-		if(e != null && e.getType() == ListDataEvent.INTERVAL_ADDED) {
+	public void tableChanged(TableModelEvent e) {
+		if(e != null && e.getType() == TableModelEvent.INSERT) {
 			Scramble curr = scrambles.getCurrent();
 			if(curr != null){
 				stats.get(stats.getSize() - 1).setScramble(scrambles.getCurrent().toString());
@@ -1013,9 +1023,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 			sendTime(stats.get(-1));
 		repaintTimes();
 	}
-	public void intervalAdded(ListDataEvent e) {}
-	public void intervalRemoved(ListDataEvent e) {}
-
+	
 	private void sendCurrentTime(String s){
 		if(client != null && client.isConnected()){
 			client.sendCurrentTime(s);
@@ -1145,7 +1153,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	
 	// Actions section {{{
 	public void addTimeAction() {
-		timesList.promptForNewItem();
+//		timesList.promptForNewItem();
 	}
 
 	public void resetAction(){
@@ -1401,7 +1409,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 			} else {
 				return false;
 			}
-			repaintTimes(); //needed here too
+//			repaintTimes(); //needed here too TODO - are we sure about this?
 			return true;
 		}
 	}

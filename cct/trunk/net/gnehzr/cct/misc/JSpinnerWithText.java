@@ -1,4 +1,4 @@
-package net.gnehzr.cct.miscUtils;
+package net.gnehzr.cct.misc;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;

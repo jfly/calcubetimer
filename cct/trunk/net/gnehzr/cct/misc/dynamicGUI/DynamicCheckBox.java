@@ -1,4 +1,4 @@
-package net.gnehzr.cct.miscUtils;
+package net.gnehzr.cct.misc.dynamicGUI;
 
 import javax.swing.JCheckBox;
 

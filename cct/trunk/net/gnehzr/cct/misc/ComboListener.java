@@ -1,4 +1,4 @@
-package net.gnehzr.cct.miscUtils;
+package net.gnehzr.cct.misc;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JComboBox;

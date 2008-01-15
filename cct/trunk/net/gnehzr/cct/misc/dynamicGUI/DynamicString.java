@@ -1,7 +1,8 @@
-package net.gnehzr.cct.miscUtils;
+package net.gnehzr.cct.misc.dynamicGUI;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.statistics.Statistics;
 
 public class DynamicString{

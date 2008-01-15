@@ -6,7 +6,7 @@ import java.util.ListIterator;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
-import net.gnehzr.cct.miscUtils.Utils;
+import net.gnehzr.cct.misc.Utils;
 
 public class SolveTime implements Comparable<SolveTime> {
 	public static final SolveTime BEST = new SolveTime(0, null);
@@ -162,11 +162,6 @@ public class SolveTime implements Comparable<SolveTime> {
 
 	public void setPlusTwo(boolean plustwo) {
 		isPlusTwo = plustwo;
-//		if(!isPlusTwo && plustwo)
-//			hundredths += 200;
-//		else if(isPlusTwo && !plustwo)
-//			hundredths -= 200;
-//		isPlusTwo = plustwo;
 	}
 
 	public ArrayList<SolveTime> getSplits() {

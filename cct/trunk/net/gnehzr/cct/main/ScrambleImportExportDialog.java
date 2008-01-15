@@ -17,7 +17,7 @@ import javax.swing.event.AncestorListener;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
-import net.gnehzr.cct.miscUtils.JSpinnerWithText;
+import net.gnehzr.cct.misc.JSpinnerWithText;
 import net.gnehzr.cct.scrambles.ScrambleType;
 
 @SuppressWarnings("serial")

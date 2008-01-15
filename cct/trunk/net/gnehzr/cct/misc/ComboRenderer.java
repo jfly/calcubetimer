@@ -1,4 +1,4 @@
-package net.gnehzr.cct.miscUtils;
+package net.gnehzr.cct.misc;
 import java.awt.Component;
 import java.awt.Color;
 import javax.swing.JLabel;

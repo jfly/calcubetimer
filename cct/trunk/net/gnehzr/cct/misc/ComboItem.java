@@ -1,4 +1,4 @@
-package net.gnehzr.cct.miscUtils;
+package net.gnehzr.cct.misc;
 
 public class ComboItem {
 	private Object obj;

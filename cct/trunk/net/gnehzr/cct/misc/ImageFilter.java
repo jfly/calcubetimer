@@ -1,4 +1,4 @@
-package net.gnehzr.cct.miscUtils;
+package net.gnehzr.cct.misc;
 
 import java.io.File;
 import javax.swing.filechooser.*;

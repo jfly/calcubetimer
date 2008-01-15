@@ -10,18 +10,16 @@ import javax.swing.ButtonGroup;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
-import net.gnehzr.cct.miscUtils.JListMutable;
-import net.gnehzr.cct.miscUtils.MutableListModel;
-import net.gnehzr.cct.miscUtils.Utils;
+import net.gnehzr.cct.misc.Utils;
+import net.gnehzr.cct.misc.customJTable.DraggableJTable;
+import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 
-public class Statistics implements MutableListModel<SolveTime>,
-		ConfigurationChangeListener, ActionListener {
+@SuppressWarnings("serial")
+public class Statistics extends DraggableJTableModel implements ConfigurationChangeListener {
 	public enum averageType {
 		CURRENT {
 			public String toString() {
@@ -81,7 +79,7 @@ public class Statistics implements MutableListModel<SolveTime>,
 
 	public void clear() {
 		initialize();
-		contentsChanged(null);
+		fireTableDataChanged();
 		notifyStrings();
 	}
 
@@ -102,8 +100,8 @@ public class Statistics implements MutableListModel<SolveTime>,
 
 	public void add(SolveTime s) {
 		addHelper(s);
-		contentsChanged(new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED,
-				times.size() - 1, times.size() - 1));
+		int newRow = times.size() - 1;
+		fireTableRowsInserted(newRow, newRow);
 		notifyStrings();
 	}
 
@@ -215,7 +213,7 @@ public class Statistics implements MutableListModel<SolveTime>,
 			for (SolveTime t : temp) {
 				addHelper(t);
 			}
-			contentsChanged(null);
+			fireTableDataChanged();
 			notifyStrings();
 		}
 	}
@@ -232,99 +230,6 @@ public class Statistics implements MutableListModel<SolveTime>,
 
 	public int getRASize() {
 		return curRASize;
-	}
-
-	private JRadioButtonMenuItem none, plusTwo, pop, dnf;
-	private JListMutable<SolveTime> timesList;
-
-	public void showPopup(MouseEvent e, JListMutable<SolveTime> src) {
-		this.timesList = src;
-		JPopupMenu jpopup = new JPopupMenu();
-		Object[] selectedSolves = timesList.getSelectedValues();
-		switch (selectedSolves.length) {
-		case 0:
-			return;
-		case 1:
-			SolveTime selectedSolve = (SolveTime) selectedSolves[0];
-			JMenuItem rawTime = new JMenuItem("Raw Time: "
-					+ Utils.format(selectedSolve.rawSecondsValue()));
-			rawTime.setEnabled(false);
-			jpopup.add(rawTime);
-
-			ArrayList<SolveTime> split = selectedSolve.getSplits();
-			if (split != null) {
-				ListIterator<SolveTime> splits = split.listIterator();
-				while (splits.hasNext()) {
-					SolveTime next = splits.next();
-					rawTime = new JMenuItem("Split " + splits.nextIndex()
-							+ ": " + next + "\t" + next.getScramble());
-					rawTime.setEnabled(false);
-					jpopup.add(rawTime);
-				}
-			}
-
-			jpopup.addSeparator();
-
-			ButtonGroup group = new ButtonGroup();
-
-			none = new JRadioButtonMenuItem("None", selectedSolve.isNormal());
-			group.add(none);
-			none.addActionListener(this);
-			jpopup.add(none);
-			none.setEnabled(!selectedSolve.isTrueWorstTime());
-
-			plusTwo = new JRadioButtonMenuItem("+2", selectedSolve.isPlusTwo());
-			group.add(plusTwo);
-			plusTwo.addActionListener(this);
-			jpopup.add(plusTwo);
-			plusTwo.setEnabled(!selectedSolve.isTrueWorstTime());
-
-			pop = new JRadioButtonMenuItem("POP", selectedSolve.isPop());
-			group.add(pop);
-			pop.addActionListener(this);
-			jpopup.add(pop);
-			pop.setEnabled(!selectedSolve.isTrueWorstTime());
-
-			dnf = new JRadioButtonMenuItem("DNF", selectedSolve.isDNF());
-			group.add(dnf);
-			dnf.addActionListener(this);
-			jpopup.add(dnf);
-			dnf.setEnabled(!selectedSolve.isTrueWorstTime());
-
-			jpopup.addSeparator();
-
-			JMenuItem edit = new JMenuItem("Edit time");
-			edit.addActionListener(this);
-			jpopup.add(edit);
-
-			jpopup.addSeparator();
-		}
-
-		JMenuItem discard = new JMenuItem("Discard");
-		discard.addActionListener(this);
-		jpopup.add(discard);
-		timesList.requestFocusInWindow();
-		jpopup.show(e.getComponent(), e.getX(), e.getY());
-	}
-
-	public void actionPerformed(ActionEvent e) {
-		String command = e.getActionCommand();
-		Object source = e.getSource();
-		SolveTime selectedSolve = (SolveTime) timesList.getSelectedValue();
-
-		if (source == plusTwo || source == dnf || source == pop
-				|| source == none) {
-			selectedSolve.setPlusTwo(plusTwo.isSelected());
-			selectedSolve.setDNF(dnf.isSelected());
-			selectedSolve.setPop(pop.isSelected());
-		}
-
-		if (command.equals("Discard")) {
-			timesList.deleteSelectedElements(false);
-		} else if (command.equals("Edit time")) {
-			timesList.editCellAt(timesList.getSelectedIndex(), null);
-		}
-		refresh();
 	}
 
 	public void configurationChanged() {
@@ -787,77 +692,137 @@ public class Statistics implements MutableListModel<SolveTime>,
 			return toTerseString(averageType.RA);
 	}
 
-	// ListModel
-	private ArrayList<ListDataListener> listeners = new ArrayList<ListDataListener>(
-			2);
-
-	public void addListDataListener(ListDataListener listener) {
-		listeners.add(listener);
+//	TableModel
+	@Override
+	public int getColumnCount() {
+		return 1;
 	}
-
-	public void removeListDataListener(ListDataListener listener) {
-		listeners.remove(listener);
+	public Class<?> getColumnClass(int columnIndex) {
+		return SolveTime.class;
 	}
-
-	public SolveTime getElementAt(int index) {
-		try {
-			return times.get(index);
-		} catch (IndexOutOfBoundsException e) {
-			return null;
-		}
-	}
-
 	public int getSize() {
-		return times.size();
+		return getRowCount();
 	}
-
-	private void contentsChanged(ListDataEvent e) {
-		for(ListDataListener l : listeners)
-			l.contentsChanged(e);
+	public int getRowCount() {
+		return times == null ? 0 : times.size();
 	}
-
-	public boolean isCellEditable(int index) {
+	public Object getValueAt(int rowIndex, int columnIndex) {
+		return times.get(rowIndex);
+	}
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
 		return true;
 	}
-
-	public void setValueAt(String value, int index) throws Exception {
-		boolean newTime = index == times.size();
-		SolveTime val = newTime ? new SolveTime(0, "") : times.get(index);
-		val.setTime((String) value); // this could throw an error up to
-		// JListMutable
-		if (newTime) {
-			add(val);
+	public boolean isRowDeletable(int rowIndex) {
+		return true;
+	}
+	public void setValueAt(Object value, int rowIndex, int columnIndex) {
+		SolveTime val = (SolveTime) value;
+		if(rowIndex == getRowCount()) {
+			times.add(val);
 		} else {
-			refresh();
-			contentsChanged(new ListDataEvent(this,
-					ListDataEvent.CONTENTS_CHANGED, index, index));
-			notifyStrings();
+			val.setScramble(times.get(rowIndex).getScramble());
+			times.set(rowIndex, val);
 		}
+		fireTableRowsInserted(rowIndex, rowIndex);
 	}
-
-	public void insertValueAt(SolveTime value, int index) {
-		times.add(index, value);
+	public boolean deleteRowWithElement(Object row) {
+		return removeRowWithElement(row);
 	}
-
-	public boolean remove(SolveTime o) {
-		if (times.remove(o)) {
+	public boolean removeRowWithElement(Object row) {
+		if(times.remove(row)) {
 			refresh();
 			return true;
 		}
 		return false;
 	}
-	public boolean delete(SolveTime value) {
-		return remove(value);
-	}
-
-	public void remove(Object[] o) {
-		for (int i = 0; i < o.length; i++) {
-			times.remove(o[i]);
-		}
-		refresh();
-	}
 	
-	public boolean isCellDeletable(int index) {
-		return index != times.size();
+	private JRadioButtonMenuItem none, plusTwo, pop, dnf;
+	public void showPopup(MouseEvent e, final DraggableJTable timesTable) {
+		ActionListener al = new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String command = e.getActionCommand();
+				Object source = e.getSource();
+				int selectedRow = timesTable.getSelectedRow();
+				SolveTime selectedSolve = times.get(selectedRow);
+
+				if (source == plusTwo || source == dnf || source == pop || source == none) {
+					selectedSolve.setPlusTwo(plusTwo.isSelected());
+					selectedSolve.setDNF(dnf.isSelected());
+					selectedSolve.setPop(pop.isSelected());
+				}
+
+				if (command.equals("Discard")) {
+					timesTable.deleteSelectedRows(false);
+				} else if (command.equals("Edit time")) {
+					timesTable.editCellAt(selectedRow, 0);
+				}
+				refresh();
+			}
+		};
+		JPopupMenu jpopup = new JPopupMenu();
+		int[] selectedSolves = timesTable.getSelectedRows();
+		if(selectedSolves.length == 0)
+			return;
+		else if(selectedSolves.length == 1) {
+			SolveTime selectedSolve = times.get(timesTable.getSelectedRow());
+			JMenuItem rawTime = new JMenuItem("Raw Time: "
+					+ Utils.format(selectedSolve.rawSecondsValue()));
+			rawTime.setEnabled(false);
+			jpopup.add(rawTime);
+
+			ArrayList<SolveTime> split = selectedSolve.getSplits();
+			if (split != null) {
+				ListIterator<SolveTime> splits = split.listIterator();
+				while (splits.hasNext()) {
+					SolveTime next = splits.next();
+					rawTime = new JMenuItem("Split " + splits.nextIndex()
+							+ ": " + next + "\t" + next.getScramble());
+					rawTime.setEnabled(false);
+					jpopup.add(rawTime);
+				}
+			}
+
+			jpopup.addSeparator();
+
+			ButtonGroup group = new ButtonGroup();
+
+			none = new JRadioButtonMenuItem("None", selectedSolve.isNormal());
+			group.add(none);
+			none.addActionListener(al);
+			jpopup.add(none);
+			none.setEnabled(!selectedSolve.isTrueWorstTime());
+
+			plusTwo = new JRadioButtonMenuItem("+2", selectedSolve.isPlusTwo());
+			group.add(plusTwo);
+			plusTwo.addActionListener(al);
+			jpopup.add(plusTwo);
+			plusTwo.setEnabled(!selectedSolve.isTrueWorstTime());
+
+			pop = new JRadioButtonMenuItem("POP", selectedSolve.isPop());
+			group.add(pop);
+			pop.addActionListener(al);
+			jpopup.add(pop);
+			pop.setEnabled(!selectedSolve.isTrueWorstTime());
+
+			dnf = new JRadioButtonMenuItem("DNF", selectedSolve.isDNF());
+			group.add(dnf);
+			dnf.addActionListener(al);
+			jpopup.add(dnf);
+			dnf.setEnabled(!selectedSolve.isTrueWorstTime());
+
+			jpopup.addSeparator();
+
+			JMenuItem edit = new JMenuItem("Edit time");
+			edit.addActionListener(al);
+			jpopup.add(edit);
+
+			jpopup.addSeparator();
+		}
+
+		JMenuItem discard = new JMenuItem("Discard");
+		discard.addActionListener(al);
+		jpopup.add(discard);
+		timesTable.requestFocusInWindow();
+		jpopup.show(e.getComponent(), e.getX(), e.getY());
 	}
 }

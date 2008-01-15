@@ -1,4 +1,4 @@
-package net.gnehzr.cct.miscUtils;
+package net.gnehzr.cct.misc.dynamicGUI;
 
 public interface DynamicStringSettable{
 	public void setDynamicString(DynamicString s);
