@@ -693,7 +693,6 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 	}
 
 //	TableModel
-	@Override
 	public int getColumnCount() {
 		return 1;
 	}

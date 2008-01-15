@@ -83,9 +83,9 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		}
 	}
 	
-	@Override
-	public Dimension getPreferredScrollableViewportSize() {
-		return super.getPreferredScrollableViewportSize();
+	public void promptForNewRow() {
+		editCellAt(model.getRowCount() - 1, 0);
+		getEditorComponent().requestFocusInWindow();
 	}
 	
 	private DraggableJTableModel model;
@@ -175,10 +175,10 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 					model.deleteRowWithElement(deleteMe);
 			if (selectedRows.length > 1) {
 				clearSelection();
-			} else if(selectedRows[0] < model.getRowCount()) {
+			} else if(selectedRows[0] < model.getRowCount() - 1) {
 				setRowSelectionInterval(selectedRows[0], selectedRows[0]);
 			} else if(selectedRows[0] != 0) {
-				int newRow = model.getRowCount() - 1;
+				int newRow = model.getRowCount() - 2;
 				setRowSelectionInterval(newRow, newRow);
 			}
 		}

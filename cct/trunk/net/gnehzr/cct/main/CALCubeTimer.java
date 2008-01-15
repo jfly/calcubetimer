@@ -322,7 +322,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 	
 	private Timer tickTock;
-	private JTextField tf;
 	private JButton maximize;
 	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Changed";
 	private JMenu customGUIMenu;
@@ -371,8 +370,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		onLabel = new JLabel("Timer is OFF");
 		onLabel.setFont(onLabel.getFont().deriveFont(AffineTransform.getScaleInstance(2, 2)));
 		
-		tf = new JTextField();
-        tf.setBorder(BorderFactory.createLineBorder(Color.black));
 		timesList = new DraggableJTable("Add time...", false);
 		timesList.setDefaultEditor(SolveTime.class, new SolveTimeEditor("Type new time here."));
 		timesList.setTableHeader(null);
@@ -1153,7 +1150,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	
 	// Actions section {{{
 	public void addTimeAction() {
-//		timesList.promptForNewItem();
+		timesList.promptForNewRow();
 	}
 
 	public void resetAction(){
