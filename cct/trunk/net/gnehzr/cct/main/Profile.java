@@ -10,7 +10,6 @@ public class Profile {
 	public Profile(String name) {
 		this.name = name;
 		directory = new File(Configuration.profilesFolder, name+"/");
-		directory.mkdir();
 		configuration = new File(Configuration.profilesFolder, name+"/"+name+".properties");
 	}
 	public String getName() {
@@ -19,9 +18,18 @@ public class Profile {
 	public File getConfigurationFile() {
 		return configuration;
 	}
+	public boolean createProfileDirectory() {
+		return directory.mkdir();
+	}
 	public boolean renameTo(Profile newProfile) {
-		return this.directory.renameTo(newProfile.directory) &&
-			new File(newProfile.directory, name + ".properties").renameTo(newProfile.configuration);
+		boolean success = this.directory.renameTo(newProfile.directory);
+		//the properties file may not exist, so there's no reason to fail if it doesn't
+		new File(newProfile.directory, name + ".properties").renameTo(newProfile.configuration);
+		if(success) {
+			this.name = newProfile.name;
+			System.out.println(this.name);
+		}
+		return success;
 	}
 	public boolean delete() {
 		configuration.delete();

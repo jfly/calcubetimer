@@ -28,7 +28,6 @@ import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -53,7 +52,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.Timer;
-import javax.swing.event.ListDataListener;
 
 import org.jvnet.lafwidget.LafWidget;
 
@@ -68,7 +66,6 @@ import net.gnehzr.cct.miscUtils.ImageFilter;
 import net.gnehzr.cct.miscUtils.ImagePreview;
 import net.gnehzr.cct.miscUtils.JListMutable;
 import net.gnehzr.cct.miscUtils.JTextAreaWithHistory;
-import net.gnehzr.cct.miscUtils.MutableListModel;
 import net.gnehzr.cct.miscUtils.PuzzleTypeCellRenderer;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
@@ -126,7 +123,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		tabbedPane.addTab("Options (cont.)", tab);
 
 		tab = makeScrambleTypeOptionsPanel();
-		tabbedPane.addTab("Scramble Types", tab);
+		tabbedPane.addTab("Profile Settings", tab);
 
 		tab = makeStackmatOptionsPanel();
 		tabbedPane.addTab("Stackmat Settings", tab);
@@ -359,17 +356,22 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		return panel;
 	}
 
-	private PuzzleListModel puzzles = new PuzzleListModel();
+	private PuzzleListModel puzzlesModel = new PuzzleListModel();
 	private ProfileListModel profilesModel = new ProfileListModel();
 
 	private JPanel makeScrambleTypeOptionsPanel() {
 		JPanel panel = new JPanel(new BorderLayout(10, 10));
 
+		//TODO - dragging of profile names would be cool
 		JTextField tf = new JTextField();
 		JListMutable<Profile> profiles = new JListMutable<Profile>(profilesModel, tf,
 				true, "Type the name of the new profile here.",
 				"Add new profile...");
-		panel.add(new JScrollPane(profiles), BorderLayout.LINE_START);
+		JPanel horiz = new JPanel(new BorderLayout(10, 10));
+		horiz.add(new JLabel("<html><b>Note: Changes made here<br>" +
+									  "take effect immediately!</b></html>"), BorderLayout.PAGE_START);
+		horiz.add(new JScrollPane(profiles), BorderLayout.CENTER);
+		panel.add(horiz, BorderLayout.LINE_START);
 		
 		tf = new JTextField();
 		tf.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
@@ -383,7 +385,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 			}
 		});
 
-		JListMutable<String> scramType = new JListMutable<String>(puzzles, tf,
+		JListMutable<String> scramType = new JListMutable<String>(puzzlesModel, tf,
 				true, "Type the name of the new puzzle here.",
 				"Add new puzzle...");
 		scramType.setCellRenderer(new PuzzleTypeCellRenderer());
@@ -762,7 +764,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 			int choice = JOptionPane
 					.showConfirmDialog(
 							this,
-							"Do you really want to reset everything but your email settings?",
+							"Do you really want to reset everything?",
 							"Warning!", JOptionPane.YES_NO_OPTION);
 			if (choice == JOptionPane.YES_OPTION)
 				syncGUIwithConfig(true);
@@ -852,7 +854,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		minSplitTime.setEnabled(splits.isSelected());
 
 		// makeScrambleTypeOptionsPanel
-		puzzles.setContents(Configuration.getCustomScrambleTypes(defaults));
+		puzzlesModel.setContents(Configuration.getCustomScrambleTypes(defaults));
+		profilesModel.setContents(Configuration.getProfiles());
 
 		// makeStackmatOptionsPanel
 		stackmatValue.setValue(Configuration.getInt(VariableKey.SWITCH_THRESHOLD, defaults));
@@ -886,64 +889,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 			puzzle.syncColorScheme();
 		}
 	}
-
-	// TODO MERGE ABOVE METHOD AND BELOW METHOD!!!
-//	private void resetAllButEmail() {
-//		currentAndRA.setBackground(Configuration
-//				.getBestAndCurrentColorDefault());
-//		currentAverage.setBackground(Configuration
-//				.getCurrentAverageColorDefault());
-//		bestRA.setBackground(Configuration.getBestRAColorDefault());
-//		bestTime.setBackground(Configuration.getBestTimeColorDefault());
-//		worstTime.setBackground(Configuration.getWorstTimeColorDefault());
-//		clockFormat.setSelected(Configuration.isClockFormatDefault());
-//		promptForNewTime.setSelected(Configuration.isPromptForNewTimeDefault());
-//		RASize.setValue(Configuration.getRASizeDefault());
-//		metronome.setSelected(Configuration.isMetronomeDefault());
-//		metronomeDelay.setDelayBounds(Configuration.getMetronomeDelayMinimum(),
-//				Configuration.getMetronomeDelayMaximum(), Configuration
-//						.getMetronomeDelayDefault());
-//		metronomeDelay.setEnabled(metronome.isSelected());
-//
-//		stackmatValue.setValue(Configuration.getSwitchThreshold());
-//		invertedMinutes.setSelected(Configuration.isInvertedMinutesDefault());
-//		invertedSeconds.setSelected(Configuration.isInvertedSecondsDefault());
-//		invertedHundredths.setSelected(Configuration
-//				.isInvertedHundredthsDefault());
-//
-//		puzzles.setContents(Configuration.getCustomScrambleTypesDefaults());
-//
-//		sundayQuote.setText(Configuration.getSundayQuoteDefault());
-//
-//		for (ScrambleViewComponent puzzle : solvedPuzzles) {
-//			Class<?> puzzleType = puzzle.getScramble().getClass();
-//			puzzle.setColorScheme(puzzleType, Configuration
-//					.getPuzzleColorSchemeDefaults(puzzleType));
-//		}
-//
-//		sessionStats.setText(Configuration.getSessionStringDefault());
-//		averageStats.setText(Configuration.getAverageStringDefault());
-//
-//		splits.setSelected(Configuration.isSplitsDefault());
-//		minSplitTime.setEnabled(splits.isEnabled());
-//		minSplitTime.setValue(Configuration.getMinSplitDifferenceDefault());
-//		splitkey = Configuration.getSplitkeyDefault();
-//		keySelector.setText(KeyEvent.getKeyText(splitkey));
-//		keySelector.setEnabled(splits.isEnabled());
-//
-//		isBackground.setSelected(Configuration.isBackgroundDefault());
-//		backgroundFile.setText(Configuration.getBackgroundDefault());
-//		opacity.setValue((int) (10 * Configuration.getOpacityDefault()));
-//		backgroundFile.setEnabled(isBackground.isSelected());
-//		browse.setEnabled(isBackground.isSelected());
-//		opacity.setEnabled(isBackground.isSelected());
-//
-//		scrambleFontButton.setFont(Configuration.getScrambleFontDefault());
-//		timerFontButton.setFont(Configuration.getTimerFontDefault());
-//
-//		sundayQuote.setText(Configuration.getSundayQuoteDefault());
-//	}
-
+	
 	private Profile currProfile;
 	public void setVisible(boolean visible, Profile currProfile) {
 		setTitle("CCT Options for " + currProfile.getName());
@@ -988,7 +934,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		Configuration.setString(VariableKey.SMTP_FROM_ADDRESS, smtpEmailAddress.getText());
 		
 		Configuration.setString(VariableKey.SESSION_STATISTICS, sessionStats.getText());
-		Configuration.setString(VariableKey.SESSION_STATISTICS, averageStats.getText());
+		Configuration.setString(VariableKey.AVERAGE_STATISTICS, averageStats.getText());
 
 		for (ScrambleViewComponent puzzle : solvedPuzzles) {
 			Class<? extends Scramble> type = puzzle.getScramble().getClass();
@@ -1008,7 +954,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		Configuration.setFont(VariableKey.SCRAMBLE_FONT, scrambleFontButton.getFont());
 		Configuration.setFont(VariableKey.TIMER_FONT, timerFontButton.getFont());
 
-		Configuration.setCustomScrambleTypes(puzzles.getContents().toArray(new String[0]));
+		Configuration.setCustomScrambleTypes(puzzlesModel.getContents().toArray(new String[0]));
 
 		Configuration.apply();
 

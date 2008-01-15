@@ -37,7 +37,12 @@ public final class Configuration {
 	private static final File startupProfileFile = new File(profilesFolder, "startup");
 	
 	private static final String guestName = "Guest";
-	private static final Profile guestProfile = new Profile(guestName);
+	public static final Profile guestProfile = createGuestProfile();
+	private static Profile createGuestProfile() {
+		Profile temp = new Profile(guestName);
+		temp.createProfileDirectory();
+		return temp;
+	}
 	private static final String DEFAULT_XML_GUI = "default.xml";
 	
 	private static File defaultsFile = new File(profilesFolder, "defaults.properties");
@@ -193,6 +198,7 @@ public final class Configuration {
 		in.close();
 		props = new SortedProperties(defaults);
 		
+		f.createNewFile();
 		in = new FileInputStream(f);
 		props.load(in);
 		in.close();
@@ -214,17 +220,21 @@ public final class Configuration {
 
 	//********* Start of specialized methods ***************//
 	
-	public static Profile[] getProfiles() {
+	public static ArrayList<Profile> getProfiles() {
 		String[] profDirs = profilesFolder.list(new FilenameFilter() {
 			public boolean accept(File f, String s) {
 				File temp = new File(f, s);
 				return !temp.isHidden() && temp.isDirectory() && !s.equalsIgnoreCase(guestName);
 			}
 		});
-		Profile[] profs = new Profile[profDirs.length + 1];
-		profs[profDirs.length] = guestProfile;
-		for(int ch = 0; ch < profDirs.length; ch++) {
-			profs[ch] = new Profile(profDirs[ch]);
+		ArrayList<Profile> profs = new ArrayList<Profile>(profDirs.length + 1);
+		profs.add(guestProfile);
+		for(String profDir : profDirs) {
+			try {
+				profs.add(new Profile(profDir));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return profs;
 	}
@@ -246,8 +256,7 @@ public final class Configuration {
 		return profileCache;
 	}
 	private static Profile getProfile(String profileName) {
-		Profile[] profiles = getProfiles();
-		for(Profile p : profiles) {
+		for(Profile p : getProfiles()) {
 			if(p.getName().equalsIgnoreCase(profileName))
 				return p;
 		}
@@ -408,7 +417,7 @@ public final class Configuration {
 			return;
 		setString(VariableKey.DEFAULT_PUZZLE, puzzle);
 	}
-	public static int getScrambleLength(ScrambleType puzzle, boolean defaultValue) {
+	private static int getScrambleLength(ScrambleType puzzle, boolean defaultValue) {
 		try {
 			return getInt(VariableKey.SCRAMBLE_LENGTH(puzzle.getPuzzleName(), puzzle.getVariation()),
 					defaultValue);

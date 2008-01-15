@@ -69,6 +69,9 @@ public class JListMutable<E> extends JList implements CellEditorListener,
 				return true;
 			return wrapped.isCellEditable(index);
 		}
+		public boolean delete(E value) {
+			return wrapped.delete(value);
+		}
 		public boolean remove(E value) {
 			return wrapped.remove(value);
 		}
@@ -182,12 +185,12 @@ public class JListMutable<E> extends JList implements CellEditorListener,
 		
 		int choice = JOptionPane.YES_OPTION;
 		if(prompt)
-			JOptionPane.showConfirmDialog(null,
+			choice = JOptionPane.showConfirmDialog(null,
 				"Are you sure you wish to remove " + temp + "?", "Confirm",
 				JOptionPane.YES_NO_OPTION);
 		if (choice == JOptionPane.YES_OPTION) {
 			for (E deleteMe : toDelete) {
-				model.remove(deleteMe);
+				model.delete(deleteMe);
 			}
 			if (selectedIndices.length > 1)
 				clearSelection();

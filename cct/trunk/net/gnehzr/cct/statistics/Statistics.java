@@ -846,6 +846,9 @@ public class Statistics implements MutableListModel<SolveTime>,
 		}
 		return false;
 	}
+	public boolean delete(SolveTime value) {
+		return remove(value);
+	}
 
 	public void remove(Object[] o) {
 		for (int i = 0; i < o.length; i++) {

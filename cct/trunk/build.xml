@@ -29,7 +29,7 @@
 			<fileset dir=".">
 				<include name="guiLayouts/*" />
 				<include name="scramblePlugins/*.class" />
-				<include name="profiles/initial.properties" />
+				<include name="profiles/defaults.properties" />
 				<include name="documentation/*" />
 			</fileset>
 		</copy>

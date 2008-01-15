@@ -30,8 +30,11 @@ public class ScrambleArea extends JScrollPane implements ComponentListener {
 		setOpaque(true);
 		setBorder(null);
 		getViewport().setOpaque(false);
-		setPreferredSize(new Dimension(0, 100));
+		resetPreferredSize();
 		addComponentListener(this);
+	}
+	public void resetPreferredSize() {
+		setPreferredSize(new Dimension(0, 100));
 	}
 	private Object latest;
 	public void setText(String string) {

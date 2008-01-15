@@ -19,28 +19,28 @@ public class ProfileListModel implements MutableListModel<Profile> {
 	}
 
 	public boolean isCellEditable(int index) {
-		if (index == contents.size())
-			return true;
-		return false;
+		if(contents.get(index).equals(Configuration.guestProfile))
+			return false;
+		return true;
 	}
 
-	public void setValueAt(String newProfile, int index) throws Exception {
-//		if (Configuration.getScrambleType(newPuzzle) == null)
-//			throw new Exception(
-//					"Invalid puzzle type. See right hand side of screen for details.");
-//		if (contents.contains(newPuzzle))
-//			throw new Exception("Can't have duplicate puzzle types!");
-//		String[] split = newPuzzle.split(":", -1);
-//		if (split.length != 2 || newPuzzle.indexOf(';') != -1)
-//			throw new Exception("Invalid character (: OR ;) in puzzle name!");
-//		if (split[1].equals(""))
-//			throw new Exception("You must type in a puzzle type!");
-//		if (index == contents.size()) {
-//			contents.add(newPuzzle);
-//		} else {
-//			contents.set(index, newPuzzle);
-//		}
+	public void setValueAt(String newProfileName, int index) throws Exception {
+		Profile newProfile = new Profile(newProfileName);
+		for(Profile p : contents) {
+			if(p.equals(newProfile))
+				throw new Exception("Profile already exists!");
+		}
+		if (index == contents.size()) {
+			if(newProfile.createProfileDirectory())
+				contents.add(newProfile);
+			else
+				throw new Exception("Couldn't create profile directory.");
+		} else {
+			if(!contents.get(index).renameTo(newProfile))
+				throw new Exception("Couldn't rename profile directory.");
+		}
 		fireContentsChanged();
+		Configuration.apply();
 	}
 
 	public Profile getElementAt(int index) {
@@ -66,6 +66,13 @@ public class ProfileListModel implements MutableListModel<Profile> {
 		listeners.remove(l);
 	}
 
+	public boolean delete(Profile value) {
+		if(value.delete()) {
+			Configuration.apply();
+			return remove(value);
+		}
+		return false;
+	}
 	public boolean remove(Profile value) {
 		boolean temp = contents.remove(value);
 		fireContentsChanged();

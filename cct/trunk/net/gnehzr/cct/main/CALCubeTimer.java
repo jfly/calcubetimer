@@ -461,6 +461,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 	}
 
 	private void parseXML_GUI(File xmlGUIfile) {
+		//this is needed to compute the size of the gui correctly
+		scrambleText.resetPreferredSize();
+		
 		DefaultHandler handler = new GUIParser(this);
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		try {
@@ -1093,7 +1096,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		spacebarOptionAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false));
 		fullScreenTimingAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false));
 		scrambleChooser.setModel(new DefaultComboBoxModel(Configuration.getCustomScrambleTypes(false).toArray(new String[0])));
-		profiles.setModel(new DefaultComboBoxModel(Configuration.getProfiles()));
+		profiles.setModel(new DefaultComboBoxModel(Configuration.getProfiles().toArray(new Profile[0])));
 		safeSelectItem(profiles, Configuration.getSelectedProfile());
 		scrambleChooser.setSelectedItem(Configuration.getPuzzle());
 		timeLabel.setKeyboard(!stackmatEnabled);
@@ -1107,6 +1110,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 		scrambleChooser.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
 		
 		updateScramble();
+		Component focusedComponent = this.getFocusOwner();
 		parseXML_GUI(Configuration.getXMLGUILayout());
 		Dimension size = Configuration.getDimension(VariableKey.MAIN_FRAME_DIMENSION, false);
 		if(size == null) {
@@ -1129,9 +1133,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, ListDataList
 			scramblePopup.setLocation(location);
 		scramblePopup.setVisible(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false));
 		
-		if((Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY)) { //This is to ensure that the keyboard is focused
+		if(!stackmatEnabled) { //This is to ensure that the keyboard is focused
 			timeLabel.requestFocusInWindow();
 			startStopPanel.requestFocusInWindow();
+		} else if(focusedComponent != null) {
+			focusedComponent.requestFocusInWindow();
 		} else
 			scrambleText.requestFocusInWindow();
 		timeLabel.componentResized(null);

@@ -71,6 +71,9 @@ public class PuzzleListModel implements MutableListModel<String> {
 		fireContentsChanged();
 		return temp;
 	}
+	public boolean delete(String value) {
+		return remove(value);
+	}
 
 	public void insertValueAt(String value, int index) {
 		contents.add(index, value);
