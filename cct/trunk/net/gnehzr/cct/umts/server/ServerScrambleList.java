@@ -3,11 +3,11 @@ package net.gnehzr.cct.umts.server;
 import java.util.ArrayList;
 
 import net.gnehzr.cct.scrambles.Scramble;
-import net.gnehzr.cct.scrambles.ScrambleType;
+import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 @SuppressWarnings("serial")
 public class ServerScrambleList extends ArrayList<Scramble[]>{
-	private ScrambleType[] types;
+	private ScrambleVariation[] types;
 	private static final String[] puzzles = {
 		"2x2x2",
 		"3x3x3",
@@ -35,9 +35,9 @@ public class ServerScrambleList extends ArrayList<Scramble[]>{
 		60}; //megaminx
 
 	public ServerScrambleList(){
-		types = new ScrambleType[puzzles.length];
+		types = new ScrambleVariation[puzzles.length];
 		for(int i = 0; i < types.length; i++){
-//			types[i] = new ScrambleType(puzzles[i], LENGTHS[i]); TODO fix server scrambles!!!
+//			types[i] = new ScrambleVariation(puzzles[i], LENGTHS[i]); TODO fix server scrambles!!!
 		}
 	}
 

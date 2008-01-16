@@ -2,94 +2,76 @@ package net.gnehzr.cct.configuration;
 
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.swing.JButton;
 import javax.swing.event.ListDataListener;
 
-import net.gnehzr.cct.misc.customJTable.JListMutable;
-import net.gnehzr.cct.misc.customJTable.MutableListModel;
+import net.gnehzr.cct.misc.customJTable.DraggableJTable;
+import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
+import net.gnehzr.cct.scrambles.ScrambleVariation;
 
-public class PuzzleListModel implements MutableListModel<String> {
-	private ArrayList<String> contents;
-
+@SuppressWarnings("serial")
+public class PuzzleListModel extends DraggableJTableModel {
+	private static final String[] COLUMN_NAMES = new String[] {"Scramble Variation", "Customization", "Scramble Length", "Reset Length"};
+	public static final Class<?>[] COLUMN_CLASSES = new Class[] { ScrambleVariation.class, String.class, Integer.class, JButton.class };
+	
+	private ArrayList<String> customizations;
 	public void setContents(ArrayList<String> contents) {
-		this.contents = contents;
-		fireContentsChanged();
+		this.customizations = contents;
+		fireTableDataChanged();
+	}
+	public ArrayList<String> getContents() {
+		return customizations;
 	}
 
-	public boolean isCellEditable(int index) {
-		if (index == contents.size()
-				|| contents.get(index).indexOf(":") != -1)
+	public boolean deleteRowWithElement(Object element) {
+		return removeRowWithElement(element);
+	}
+	public Class<?> getColumnClass(int columnIndex) {
+		return COLUMN_CLASSES[columnIndex];
+	}
+	public int getColumnCount() {
+		return COLUMN_NAMES.length;
+	}
+	public String getColumnName(int column) {
+		return COLUMN_NAMES[column];
+	}
+	public int getRowCount() {
+		return customizations == null ? 0 : customizations.size();
+	}
+	public Object getValueAt(int rowIndex, int columnIndex) {
+		if(columnIndex == 3)
+			return new JButton("reset");
+		return customizations.get(rowIndex);
+	}
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		if(columnIndex == 3)
+			return true;
+		return isRowDeletable(rowIndex);
+	}
+	public boolean isRowDeletable(int rowIndex) {
+		if(customizations.get(rowIndex).indexOf(":") != -1)
 			return true;
 		return false;
 	}
-
-	public void setValueAt(String newPuzzle, int index) throws Exception {
-		if (contents.get(index).equals(newPuzzle))
-			return;
-		if (Configuration.getScrambleType(newPuzzle) == null)
-			throw new Exception(
-					"Invalid puzzle type. See right hand side of screen for details.");
-		if (contents.contains(newPuzzle))
-			throw new Exception("Can't have duplicate puzzle types!");
-		String[] split = newPuzzle.split(":", -1);
-		if (split.length != 2 || newPuzzle.indexOf(';') != -1)
-			throw new Exception("Invalid character (: OR ;) in puzzle name!");
-		if (split[1].equals(""))
-			throw new Exception("You must type in a puzzle type!");
-		if (index == contents.size()) {
-			contents.add(newPuzzle);
-		} else {
-			contents.set(index, newPuzzle);
-		}
-		fireContentsChanged();
-	}
-
-	public String getElementAt(int index) {
-		return contents.get(index);
-	}
-
-	public int getSize() {
-		return (contents == null) ? 0 : contents.size();
-	}
-
-	private void fireContentsChanged() {
-		for (ListDataListener l : listeners)
-			l.contentsChanged(null);
-	}
-
-	private CopyOnWriteArrayList<ListDataListener> listeners = new CopyOnWriteArrayList<ListDataListener>();
-
-	public void addListDataListener(ListDataListener l) {
-		listeners.add(l);
-	}
-
-	public void removeListDataListener(ListDataListener l) {
-		listeners.remove(l);
-	}
-
-	public boolean remove(String value) {
-		boolean temp = contents.remove(value);
-		fireContentsChanged();
+	public boolean removeRowWithElement(Object element) {
+		boolean temp = customizations.remove(element);
+		fireTableDataChanged();
 		return temp;
 	}
-	public boolean delete(String value) {
-		return remove(value);
+	public void insertValueAt(Object value, int rowIndex) {
+		customizations.add(rowIndex, (String)value);
+		fireTableRowsInserted(rowIndex, rowIndex);
 	}
-
-	public void insertValueAt(String value, int index) {
-		contents.add(index, value);
-		fireContentsChanged();
+	public void setValueAt(Object value, int rowIndex, int columnIndex) {
+		String newVal = (String)value;
+		if(rowIndex == customizations.size()) {
+			customizations.add(rowIndex, newVal);
+			fireTableRowsInserted(rowIndex, rowIndex);
+		} else {
+			customizations.set(rowIndex, newVal);
+			fireTableRowsUpdated(rowIndex, rowIndex);
+		}
 	}
-
-	public ArrayList<String> getContents() {
-		return contents;
-	}
-
-	public boolean isCellDeletable(int index) {
-		return index != contents.size() && isCellEditable(index);
-	}
-
-	public void showPopup(MouseEvent e, JListMutable<String> source) {
-	}
+	public void showPopup(MouseEvent e, DraggableJTable source) {}
 }

@@ -27,7 +27,7 @@ import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.main.Profile;
 import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.scrambles.Scramble;
-import net.gnehzr.cct.scrambles.ScrambleType;
+import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 public final class Configuration {
 	public static final File documentationFile = new File(getRootDirectory(), "documentation/readme.html");
@@ -230,11 +230,7 @@ public final class Configuration {
 		ArrayList<Profile> profs = new ArrayList<Profile>(profDirs.length + 1);
 		profs.add(guestProfile);
 		for(String profDir : profDirs) {
-			try {
-				profs.add(new Profile(profDir));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			profs.add(new Profile(profDir));
 		}
 		return profs;
 	}
@@ -262,6 +258,7 @@ public final class Configuration {
 		}
 		return guestProfile;
 	}
+	
 	
 	//returns file stored in props file, if available
 	//otherwise, returns default.xml, if available
@@ -329,16 +326,16 @@ public final class Configuration {
 		return attr;
 	}
 	
-	public static HashMap<String, Color> getPuzzleColorScheme(Class<? extends Scramble> scrambleType) {
+	public static HashMap<String, Color> getPuzzleColorScheme(Class<? extends Scramble> scrambleVariation) {
 		HashMap<String, Color> scheme = null;
 		try {
-			String[] faceNames = (String[]) scrambleType.getField("FACE_NAMES").get(null);
-			String puzzleName = (String) scrambleType.getField("PUZZLE_NAME").get(null);
+			String[] faceNames = (String[]) scrambleVariation.getField("FACE_NAMES").get(null);
+			String puzzleName = (String) scrambleVariation.getField("PUZZLE_NAME").get(null);
 			scheme = new HashMap<String, Color>(faceNames.length);
 			for(String face : faceNames) {
 				String col = getString(VariableKey.PUZZLE_COLOR(puzzleName, face), false);
 				if(col == null) {
-					col = (String) scrambleType.getMethod("getDefaultFaceColor", String.class).invoke(null, face);
+					col = (String) scrambleVariation.getMethod("getDefaultFaceColor", String.class).invoke(null, face);
 				}
 				scheme.put(face, Utils.stringToColor(col));
 			}
@@ -357,10 +354,10 @@ public final class Configuration {
 		}
 		return scheme;
 	}
-	public static void setPuzzleColorScheme(Class<?> scrambleType, HashMap<String, Color> colorScheme) {
+	public static void setPuzzleColorScheme(Class<?> scrambleVariation, HashMap<String, Color> colorScheme) {
 		try {
-			String[] faceNames = (String[]) scrambleType.getField("FACE_NAMES").get(null);
-			String puzzleName = (String) scrambleType.getField("PUZZLE_NAME").get(null);
+			String[] faceNames = (String[]) scrambleVariation.getField("FACE_NAMES").get(null);
+			String puzzleName = (String) scrambleVariation.getField("PUZZLE_NAME").get(null);
 			for(String face : faceNames) {
 				setString(VariableKey.PUZZLE_COLOR(puzzleName, face), Utils.colorToString(colorScheme.get(face)));
 			}
@@ -376,9 +373,9 @@ public final class Configuration {
 	}
 	
 	//TODO - escape characters to deal with anything
-	public static ArrayList<String> getCustomScrambleTypes(boolean defaults) {
+	public static ArrayList<String> getCustomScrambleVariations(boolean defaults) {
 		ArrayList<String> scramType = new ArrayList<String>();
-		for(ScrambleType t : getScrambleTypes()) {
+		for(ScrambleVariation t : getScrambleVariations()) {
 			scramType.add(t.toString());
 		}
 		
@@ -393,7 +390,7 @@ public final class Configuration {
 		}
 		return scramType;
 	}
-	public static void setCustomScrambleTypes(String[] customTypes) {
+	public static void setCustomScrambleVariations(String[] customTypes) {
 		String types = "";
 		for(String t : customTypes) {
 			types += t + ";";
@@ -403,11 +400,11 @@ public final class Configuration {
 
 	public static String getPuzzle() {
 		String lastPuzzle = getString(VariableKey.DEFAULT_PUZZLE, false);
-		ScrambleType type = getScrambleType(lastPuzzle);
+		ScrambleVariation type = getScrambleVariation(lastPuzzle);
 		if(type != null)
 			return lastPuzzle;
 		try {
-			return getCustomScrambleTypes(false).get(0);
+			return getCustomScrambleVariations(false).get(0);
 		} catch(IndexOutOfBoundsException e) {
 			return null;
 		}
@@ -415,7 +412,7 @@ public final class Configuration {
 	public static void setPuzzle(String puzzle) {
 		setString(VariableKey.DEFAULT_PUZZLE, puzzle);
 	}
-	private static int getScrambleLength(ScrambleType puzzle, boolean defaultValue) {
+	private static int getScrambleLength(ScrambleVariation puzzle, boolean defaultValue) {
 		try {
 			return getInt(VariableKey.SCRAMBLE_LENGTH(puzzle.getPuzzleName(), puzzle.getVariation()),
 					defaultValue);
@@ -440,7 +437,7 @@ public final class Configuration {
 	}
 	
 
-	public static String[] getPuzzleAttributes(ScrambleType puzzle) {
+	public static String[] getPuzzleAttributes(ScrambleVariation puzzle) {
 		String attrs = getString(VariableKey.PUZZLE_ATTRIBUTES(puzzle.getPuzzleName()), false);
 		if(attrs != null) return attrs.split(",");
 		try {
@@ -457,7 +454,7 @@ public final class Configuration {
 		return new String[0];
 	}
 	
-	public static void setPuzzleAttributes(ScrambleType puzzle, String[] attributes) {
+	public static void setPuzzleAttributes(ScrambleVariation puzzle, String[] attributes) {
 		String attrs = "";
 		for(int ch = 0; ch < attributes.length; ch++) {
 			attrs += attributes[ch] + (ch == attributes.length - 1 ? "" : ",");
@@ -494,15 +491,15 @@ public final class Configuration {
 		}
 		return scrambleClasses;
 	}
-	private static ScrambleType[] scrambleTypes;
-	public static ScrambleType[] getScrambleTypes() {
-		if(scrambleTypes == null) {
+	private static ScrambleVariation[] scrambleVariations;
+	public static ScrambleVariation[] getScrambleVariations() {
+		if(scrambleVariations == null) {
 			ArrayList<Class<? extends Scramble>> scrambles = getScrambleClasses();
-			ArrayList<ScrambleType> types = new ArrayList<ScrambleType>(scrambles.size());
+			ArrayList<ScrambleVariation> types = new ArrayList<ScrambleVariation>(scrambles.size());
 			for(Class<? extends Scramble> scramble : scrambles) {
 				try {
 					for(String var : (String[]) scramble.getField("VARIATIONS").get(null)) {
-						ScrambleType temp = new ScrambleType(scramble, var, 0);
+						ScrambleVariation temp = new ScrambleVariation(scramble, var, 0);
 						temp.setLength(getScrambleLength(temp, false));
 						types.add(temp);
 					}
@@ -510,17 +507,17 @@ public final class Configuration {
 					e.printStackTrace();
 				}
 			}
-			scrambleTypes = new ScrambleType[types.size()];
-			types.toArray(scrambleTypes);
+			scrambleVariations = new ScrambleVariation[types.size()];
+			types.toArray(scrambleVariations);
 		}
-		return scrambleTypes;
+		return scrambleVariations;
 	}
 	
-	public static ScrambleType getScrambleType(String puzzleName) {
+	public static ScrambleVariation getScrambleVariation(String puzzleName) {
 		if(puzzleName == null)
 			return null;
 		String puzz = puzzleName.split(":")[0];
-		for(ScrambleType type : getScrambleTypes()) {
+		for(ScrambleVariation type : getScrambleVariations()) {
 			if(type.toString().equals(puzz))
 				return type;
 		}

@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.scrambles.Scramble.InvalidScrambleException;
 
-public class ScrambleType {
+public class ScrambleVariation {
 	private Class<? extends Scramble> puzzleType;
 	public String getPuzzleName() {
 		try {
@@ -28,7 +28,7 @@ public class ScrambleType {
 		return length;
 	}
 	
-	public ScrambleType(Class<? extends Scramble> puzzleType, String variation, int length) {
+	public ScrambleVariation(Class<? extends Scramble> puzzleType, String variation, int length) {
 		this.puzzleType = puzzleType;
 		this.variation = variation;
 		this.length = length;
@@ -67,7 +67,7 @@ public class ScrambleType {
 	
 	public boolean equals(Object o) {
 		try {
-			ScrambleType other = (ScrambleType) o;
+			ScrambleVariation other = (ScrambleVariation) o;
 			return this.puzzleType.equals(other.puzzleType) && this.variation == other.variation && this.length == other.length;
 		} catch(Exception e) {
 			return false;

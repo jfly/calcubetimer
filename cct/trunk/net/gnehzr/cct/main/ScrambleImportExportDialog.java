@@ -18,7 +18,7 @@ import javax.swing.event.AncestorListener;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.JSpinnerWithText;
-import net.gnehzr.cct.scrambles.ScrambleType;
+import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 @SuppressWarnings("serial")
 public class ScrambleImportExportDialog extends JPanel implements ActionListener, AncestorListener {
@@ -27,14 +27,14 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 	private JButton browse;
 	private JComboBox scrambleChooser;
 	private JSpinnerWithText scrambleLength, numberOfScrambles;
-	public ScrambleImportExportDialog(boolean importing, ScrambleType selected) {
+	public ScrambleImportExportDialog(boolean importing, ScrambleVariation selected) {
 		this.importing = importing;
 		urlField = new JTextField(importing ? Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_URL, false) : "", 20);
 		urlField.setToolTipText(importing ? "Browse for file or type URL of desired scrambles." : "Choose file to export scrambles to.");
 		browse = new JButton("Browse");
 		browse.addActionListener(this);
 
-		scrambleChooser = new JComboBox(Configuration.getScrambleTypes());
+		scrambleChooser = new JComboBox(Configuration.getScrambleVariations());
 		scrambleChooser.setSelectedItem(selected);
 		scrambleChooser.addActionListener(this);
 
@@ -96,7 +96,7 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 				}
 			}
 		} else if(source == scrambleChooser && scrambleLength != null) {
-			ScrambleType curr = (ScrambleType) scrambleChooser.getSelectedItem();
+			ScrambleVariation curr = (ScrambleVariation) scrambleChooser.getSelectedItem();
 			scrambleLength.setValue(Configuration.getInt(VariableKey.SCRAMBLE_LENGTH(curr.getPuzzleName(), curr.getVariation()), false));
 		}
 	}
@@ -105,8 +105,8 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 		return numberOfScrambles.getSpinnerValue();
 	}
 
-	public ScrambleType getType() {
-		ScrambleType temp = (ScrambleType) scrambleChooser.getSelectedItem();
+	public ScrambleVariation getType() {
+		ScrambleVariation temp = (ScrambleVariation) scrambleChooser.getSelectedItem();
 		if(scrambleLength != null)
 			temp.setLength(scrambleLength.getSpinnerValue());
 		return temp;

@@ -15,8 +15,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-import net.gnehzr.cct.statistics.SolveTime;
-
 @SuppressWarnings("serial")
 public class DraggableJTable extends JTable implements MouseListener, MouseMotionListener, KeyListener {
 	private String addText;
@@ -29,6 +27,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		}
 		this.addKeyListener(this);
 		this.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+		this.putClientProperty("JTable.autoStartsEdit", Boolean.FALSE);
 	}
 	
 	private class JTableModelWrapper extends DraggableJTableModel {
@@ -37,7 +36,17 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			this.wrapped = wrapped;
 			wrapped.addTableModelListener(new TableModelListener() {
 				public void tableChanged(TableModelEvent e) {
+					int[] rows = getSelectedRows();
+					//note that wrapped has already been updated
+					int lastRow = getRowCount() - 2;
+					//this is to prevent the selection from increasing when "add" is selected
+					//and something is added
+					boolean resetSelectedRows = rows.length == 1 && rows[0] == lastRow;
 					fireTableChanged(e);
+					if(resetSelectedRows) {
+						lastRow++;
+						setRowSelectionInterval(lastRow, lastRow);
+					}
 				}
 			});
 		}
@@ -79,13 +88,24 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 				wrapped.showPopup(e, source);
 		}
 		public Class<?> getColumnClass(int columnIndex) {
-			return SolveTime.class;
+			return wrapped.getColumnClass(columnIndex);
+		}
+		public String getColumnName(int column) {
+			return wrapped.getColumnName(column);
+		}
+		public void insertValueAt(Object value, int rowIndex) {
+			wrapped.insertValueAt(value, rowIndex);
 		}
 	}
 	
 	public void promptForNewRow() {
 		editCellAt(model.getRowCount() - 1, 0);
+	}
+	@Override
+	public boolean editCellAt(int row, int column) {
+		boolean temp = super.editCellAt(row, column);
 		getEditorComponent().requestFocusInWindow();
+		return temp;
 	}
 	
 	private DraggableJTableModel model;
@@ -123,7 +143,9 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		int toRow = this.getSelectedRow();
 		if (toRow == fromRow || fromRow == this.getRowCount() - 1 || toRow == this.getRowCount() - 1)
 			return;
-//		tableModel.swapRows(toRow, fromRow);
+		Object element = model.getValueAt(fromRow, 0);
+		model.removeRowWithElement(element);
+		model.insertValueAt(element, toRow);
 		fromRow = toRow;
 	}
 	public void mouseMoved(MouseEvent e) {}
@@ -151,18 +173,16 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 	public void deleteSelectedRows(boolean prompt) {
 		int[] selectedRows = this.getSelectedRows();
 		ArrayList<Object> toDelete = new ArrayList<Object>();
-		for (int ch = 0; ch < selectedRows.length; ch++) {
-			int index = selectedRows[ch];
-			if (model.isRowDeletable(index))
-				toDelete.add(model.getValueAt(ch, 0));
+		for(int row : selectedRows) {
+			if (model.isRowDeletable(row)) {
+				toDelete.add(model.getValueAt(row, 0));
+			}
 		}
 		if(toDelete.size() == 0) //nothing to delete
 			return;
 		String temp = "";
-		for (int currRow : selectedRows) {
-			if(currRow != -1) {
-				temp += ", " + model.getValueAt(currRow, 0);
-			}
+		for (Object deleteMe : toDelete) {
+			temp += ", " + deleteMe;
 		}
 		temp = temp.substring(2);
 		int choice = JOptionPane.YES_OPTION;

@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class ScrambleList extends ArrayList<Scramble>{
-	private ScrambleType type;
+	private ScrambleVariation type;
 	private int scrambleNumber = 0;
-	public ScrambleList(ScrambleType c){
+	public ScrambleList(ScrambleVariation c){
 		this.type = c;
 	}
 
-	public ScrambleList(ScrambleType c, Scramble s){
+	public ScrambleList(ScrambleVariation c, Scramble s){
 		this.type = c;
 		add(scrambleNumber, s);
 	}
@@ -29,7 +29,7 @@ public class ScrambleList extends ArrayList<Scramble>{
 	}
 
 	//TODO - is this necessary?, maybe it would be best to allow the scramble list to hold anything
-	private void setType(ScrambleType newType) {
+	private void setType(ScrambleVariation newType) {
 		type = newType;
 	}
 
@@ -46,7 +46,7 @@ public class ScrambleList extends ArrayList<Scramble>{
 		this.scrambleNumber = scrambleNumber - 1;
 	}
 
-	public static ScrambleList importScrambles(ScrambleType c, BufferedReader in) throws Exception{
+	public static ScrambleList importScrambles(ScrambleVariation c, BufferedReader in) throws Exception{
 		ScrambleList list = new ScrambleList(c);
 		String curr;
 		while((curr = in.readLine()) != null){

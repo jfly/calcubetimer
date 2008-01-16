@@ -27,11 +27,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
@@ -49,11 +51,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.Timer;
+import javax.swing.event.CellEditorListener;
+import javax.swing.table.TableCellEditor;
 
 import org.jvnet.lafwidget.LafWidget;
 
@@ -67,12 +72,16 @@ import net.gnehzr.cct.misc.ComboRenderer;
 import net.gnehzr.cct.misc.ImageFilter;
 import net.gnehzr.cct.misc.ImagePreview;
 import net.gnehzr.cct.misc.JTextAreaWithHistory;
-import net.gnehzr.cct.misc.customJTable.JListMutable;
-import net.gnehzr.cct.misc.customJTable.PuzzleTypeCellRenderer;
+import net.gnehzr.cct.misc.customJTable.DraggableJTable;
+import net.gnehzr.cct.misc.customJTable.ProfileEditor;
+import net.gnehzr.cct.misc.customJTable.PuzzleCustomizationCellRendererEditor;
+import net.gnehzr.cct.misc.customJTable.SolveTimeEditor;
 import net.gnehzr.cct.scrambles.Scramble;
+import net.gnehzr.cct.scrambles.ScrambleVariation;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent.ColorListener;
 import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
+import net.gnehzr.cct.statistics.SolveTime;
 
 @SuppressWarnings("serial")
 public class ConfigurationDialog extends JDialog implements KeyListener,
@@ -358,20 +367,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		return panel;
 	}
 
-	private class ScrambleTypeWithLengthRenderer extends JPanel implements ListCellRenderer {
-		private PuzzleTypeCellRenderer r;
-		public ScrambleTypeWithLengthRenderer() {
-			r = new PuzzleTypeCellRenderer();
-		}
-		public Component getListCellRendererComponent(JList list, Object value,
-				int index, boolean isSelected, boolean cellHasFocus) {
-			this.removeAll();
-			this.add(r.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus));
-			this.add(new JSpinner());
-			return this;
-		}
-	}
-	
 	private PuzzleListModel puzzlesModel = new PuzzleListModel();
 	private ProfileListModel profilesModel = new ProfileListModel();
 
@@ -379,14 +374,10 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		JPanel panel = new JPanel(new BorderLayout(10, 10));
 
 		JTextField tf = new JTextField();
-		JListMutable<Profile> profiles = new JListMutable<Profile>(profilesModel, tf,
-				true, "Type the name of the new profile here.",
-				"Add new profile...");
-		JPanel horiz = new JPanel(new BorderLayout(10, 10));
-		horiz.add(new JLabel("<html><b>Note: Changes made here<br>" +
-									  "take effect immediately!</b></html>"), BorderLayout.PAGE_START);
-		horiz.add(new JScrollPane(profiles), BorderLayout.CENTER);
-		panel.add(horiz, BorderLayout.LINE_START);
+		DraggableJTable profilesTable = new DraggableJTable("Add new profile...", true);
+		profilesTable.setModel(profilesModel);
+		profilesTable.setDefaultEditor(Profile.class, new ProfileEditor("Type new profile name here.", profilesModel));
+		panel.add(new JScrollPane(profilesTable), BorderLayout.LINE_START);
 		
 		tf = new JTextField();
 		tf.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
@@ -400,12 +391,12 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 			}
 		});
 
-		JListMutable<String> scramType = new JListMutable<String>(puzzlesModel, tf,
-				true, "Type the name of the new puzzle here.",
-				"Add new puzzle...");
-//		scramType.setCellRenderer(new PuzzleTypeCellRenderer());
-		scramType.setCellRenderer(new ScrambleTypeWithLengthRenderer());
-		
+		DraggableJTable scramType = new DraggableJTable("Add new puzzle...", true);
+		scramType.setModel(puzzlesModel); 
+		PuzzleCustomizationCellRendererEditor rendererEditor = new PuzzleCustomizationCellRendererEditor();
+		scramType.setDefaultEditor(JButton.class, rendererEditor);
+		for(Class<?> c : PuzzleListModel.COLUMN_CLASSES)
+			scramType.setDefaultRenderer(c, rendererEditor);
 		JScrollPane scroller = new JScrollPane(scramType);
 		panel.add(scroller, BorderLayout.CENTER);
 
@@ -440,11 +431,10 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 
 		sideBySide.add(new JLabel("Set stackmat value:"));
 
-		SpinnerNumberModel integerModel = new SpinnerNumberModel(1, // initial
-				// value
-				1, // min
-				256, // max
-				1); // step
+		SpinnerNumberModel integerModel = new SpinnerNumberModel(1,
+				1,
+				256,
+				1);
 		stackmatValue = new JSpinner(integerModel);
 		((JSpinner.DefaultEditor) stackmatValue.getEditor()).getTextField()
 				.setColumns(5);
@@ -870,7 +860,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		minSplitTime.setEnabled(splits.isSelected());
 
 		// makeScrambleTypeOptionsPanel
-		puzzlesModel.setContents(Configuration.getCustomScrambleTypes(defaults));
+		puzzlesModel.setContents(Configuration.getCustomScrambleVariations(defaults));
 		profilesModel.setContents(Configuration.getProfiles());
 
 		// makeStackmatOptionsPanel
@@ -970,8 +960,10 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		Configuration.setFont(VariableKey.SCRAMBLE_FONT, scrambleFontButton.getFont());
 		Configuration.setFont(VariableKey.TIMER_FONT, timerFontButton.getFont());
 
-		Configuration.setCustomScrambleTypes(puzzlesModel.getContents().toArray(new String[0]));
+		Configuration.setCustomScrambleVariations(puzzlesModel.getContents().toArray(new String[0]));
 
+		profilesModel.commitChanges();
+		
 		Configuration.apply();
 
 		for (int i = 0; i < items.length; i++) {

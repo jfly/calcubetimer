@@ -18,22 +18,20 @@ public class Profile {
 	public File getConfigurationFile() {
 		return configuration;
 	}
-	public boolean createProfileDirectory() {
-		return directory.mkdir();
+	public void createProfileDirectory() {
+		/*return */directory.mkdir();
 	}
-	public boolean renameTo(Profile newProfile) {
-		boolean success = this.directory.renameTo(newProfile.directory);
-		//the properties file may not exist, so there's no reason to fail if it doesn't
+	public void renameTo(String newName) {
+		this.name = newName;
+	}
+	public void renameTo(Profile newProfile) {
+		this.directory.renameTo(newProfile.directory);
 		new File(newProfile.directory, name + ".properties").renameTo(newProfile.configuration);
-		if(success) {
-			this.name = newProfile.name;
-			System.out.println(this.name);
-		}
-		return success;
+		this.name = newProfile.name;
 	}
-	public boolean delete() {
+	public void delete() {
 		configuration.delete();
-		return directory.delete();
+		/*return */directory.delete();
 	}
 	public boolean equals(Object o) {
 		if(o == null)

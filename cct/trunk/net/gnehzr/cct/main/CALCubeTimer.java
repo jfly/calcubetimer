@@ -83,7 +83,7 @@ import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.help.AboutScrollFrame;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
-import net.gnehzr.cct.misc.customJTable.PuzzleTypeCellRenderer;
+import net.gnehzr.cct.misc.customJTable.PuzzleCustomizationCellRendererEditor;
 import net.gnehzr.cct.misc.customJTable.SolveTimeEditor;
 import net.gnehzr.cct.misc.customJTable.SolveTimeRenderer;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicButton;
@@ -98,7 +98,7 @@ import net.gnehzr.cct.misc.dynamicGUI.DynamicStringSettable;
 import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleList;
-import net.gnehzr.cct.scrambles.ScrambleType;
+import net.gnehzr.cct.scrambles.ScrambleVariation;
 import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
 import net.gnehzr.cct.stackmatInterpreter.StackmatState;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
@@ -310,7 +310,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 			String[] attributes = new String[attrs.size()];
 			attributes = attrs.toArray(attributes);
-			Configuration.setPuzzleAttributes(Configuration.getScrambleType(puzzleChoice), attributes);
+			Configuration.setPuzzleAttributes(Configuration.getScrambleVariation(puzzleChoice), attributes);
 			scrambles.getCurrent().setAttributes(attributes);
 			updateScramble();
 		} else if(e.getActionCommand().equals(GUI_LAYOUT_CHANGED)) {
@@ -337,7 +337,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		tickTock = new Timer(0, null);
 
 		scrambleChooser = new JComboBox();
-		scrambleChooser.setRenderer(new PuzzleTypeCellRenderer());
+		scrambleChooser.setRenderer(new PuzzleCustomizationCellRendererEditor());
 		scrambleChooser.addItemListener(this);
 
 		SpinnerNumberModel model = new SpinnerNumberModel(1, //initial value
@@ -371,10 +371,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		
 		timesList = new DraggableJTable("Add time...", false);
 		timesList.setDefaultEditor(SolveTime.class, new SolveTimeEditor("Type new time here."));
+		timesList.setDefaultRenderer(SolveTime.class, new SolveTimeRenderer(stats));
 		timesList.setTableHeader(null);
 		timesList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		timesList.setModel(stats);
-		timesList.setDefaultRenderer(SolveTime.class, new SolveTimeRenderer(stats));
 		timesScroller = new JScrollPane(timesList);
 
 		scrambleText = new ScrambleArea();
@@ -422,7 +422,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		maximize = new JButton(flipFullScreenAction);
 		maximize.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE);
-
 
 		profiles = new JComboBox();
 		profiles.addItemListener(this);
@@ -498,7 +497,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if(puzzleChoice == null) //this happens when we are initializing cct, before a profile is selected
 			return;
 		scrambleAttributes.removeAll();
-		ScrambleType curr = Configuration.getScrambleType(puzzleChoice);
+		ScrambleVariation curr = Configuration.getScrambleVariation(puzzleChoice);
 		String[] attrs = Configuration.getPuzzleAttributes(curr.getPuzzleClass());
 		attributes = new JCheckBox[attrs.length];
 
@@ -850,7 +849,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		});
 	}
 
-	private void exportScrambles(URL outputFile, int numberOfScrambles, ScrambleType scrambleChoice) {
+	private void exportScrambles(URL outputFile, int numberOfScrambles, ScrambleVariation scrambleChoice) {
 		try {
 			PrintWriter out = new PrintWriter(new FileWriter(new File(outputFile.toURI())));
 			ScrambleList generatedScrambles = new ScrambleList(scrambleChoice);
@@ -867,7 +866,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 	}
 
-	private void readScramblesFile(URL inputFile, ScrambleType newType) {
+	private void readScramblesFile(URL inputFile, ScrambleVariation newType) {
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(inputFile.openStream()));
 			scrambles = ScrambleList.importScrambles(newType, in);
@@ -917,8 +916,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		String newPuzzleChoice = (String)scrambleChooser.getSelectedItem();
 		int newLength = (Integer) scrambleLength.getValue();
 		
-		ScrambleType scrambleChoice = Configuration.getScrambleType(puzzleChoice);
-		ScrambleType newScrambleChoice = Configuration.getScrambleType(newPuzzleChoice);
+		ScrambleVariation scrambleChoice = Configuration.getScrambleVariation(puzzleChoice);
+		ScrambleVariation newScrambleChoice = Configuration.getScrambleVariation(newPuzzleChoice);
 		if(scrambleChoice != newScrambleChoice || scrambleChoice.getLength() != newLength) {
 			int choice = JOptionPane.YES_OPTION;
 			if(scrambleChoice != null && scrambles.getCurrent().isImported()){
@@ -979,8 +978,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private void saveToConfiguration() {
 		Configuration.setBoolean(VariableKey.STACKAMT_ENABLED, !(Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
 		Configuration.setPuzzle(puzzleChoice);
-		for(String custom : Configuration.getCustomScrambleTypes(false)) {
-			ScrambleType t = Configuration.getScrambleType(custom);
+		for(String custom : Configuration.getCustomScrambleVariations(false)) {
+			ScrambleVariation t = Configuration.getScrambleVariation(custom);
 			Configuration.setInt(VariableKey.SCRAMBLE_LENGTH(t.getPuzzleName(), t.getVariation()), t.getLength());
 		}
 		Configuration.setDimension(VariableKey.SCRAMBLE_VIEW_DIMENSION, scramblePopup.getSize());
@@ -1047,7 +1046,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	//this is only called by cctclient
 //	public void setScramble(String s) {
 //		try {
-//			ScrambleType scrambleChoice = Configuration.getScrambleType(puzzleChoice);
+//			ScrambleVariation scrambleChoice = Configuration.getScrambleVariation(puzzleChoice);
 //			scrambles = new ScrambleList(scrambleChoice, scrambleChoice.generateScramble(s));
 //			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 //				public void run() {
@@ -1099,7 +1098,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		hideScramblesAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false));
 		spacebarOptionAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false));
 		fullScreenTimingAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false));
-		scrambleChooser.setModel(new DefaultComboBoxModel(Configuration.getCustomScrambleTypes(false).toArray(new String[0])));
+		scrambleChooser.setModel(new DefaultComboBoxModel(Configuration.getCustomScrambleVariations(false).toArray(new String[0])));
 		profiles.setModel(new DefaultComboBoxModel(Configuration.getProfiles().toArray(new Profile[0])));
 		safeSelectItem(profiles, Configuration.getSelectedProfile());
 		scrambleChooser.setSelectedItem(Configuration.getPuzzle());
@@ -1160,7 +1159,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				JOptionPane.YES_NO_OPTION);
 		if(choice == JOptionPane.YES_OPTION) {
 			timeLabel.reset();
-			ScrambleType scrambleChoice = Configuration.getScrambleType(puzzleChoice);
+			ScrambleVariation scrambleChoice = Configuration.getScrambleVariation(puzzleChoice);
 			scrambles = new ScrambleList(scrambleChoice);
 			updateScramble();
 			stats.clear();
@@ -1169,7 +1168,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	private static String[] okCancel = new String[] {"OK", "Cancel"};
 	public void importScramblesAction(){
-		ScrambleImportExportDialog scrambleImporter = new ScrambleImportExportDialog(true, Configuration.getScrambleType(puzzleChoice));
+		ScrambleImportExportDialog scrambleImporter = new ScrambleImportExportDialog(true, Configuration.getScrambleVariation(puzzleChoice));
 		int choice = JOptionPane.showOptionDialog(this,
 				scrambleImporter,
 				"Import Scrambles",
@@ -1186,7 +1185,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	public void exportScramblesAction(){
-		ScrambleImportExportDialog scrambleExporter = new ScrambleImportExportDialog(false, Configuration.getScrambleType(puzzleChoice));
+		ScrambleImportExportDialog scrambleExporter = new ScrambleImportExportDialog(false, Configuration.getScrambleVariation(puzzleChoice));
 		int choice = JOptionPane.showOptionDialog(this,
 				scrambleExporter,
 				"Export Scrambles",
@@ -1246,7 +1245,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	public void scrambleChooserAction(){
-		safeSetValue(scrambleLength, Configuration.getScrambleType((String)scrambleChooser.getSelectedItem()).getLength());
+		safeSetValue(scrambleLength, Configuration.getScrambleVariation((String)scrambleChooser.getSelectedItem()).getLength());
 		updateScramble();
 	}
 

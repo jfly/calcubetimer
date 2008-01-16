@@ -12,6 +12,7 @@ public abstract class DraggableJTableModel extends AbstractTableModel {
 	public abstract boolean isRowDeletable(int rowIndex);
 	//this should deal with the case where rowIndex == getRowCount by appending value
 	public abstract void setValueAt(Object value, int rowIndex, int columnIndex);
+	public abstract void insertValueAt(Object value, int rowIndex);
 	public abstract Class<?> getColumnClass(int columnIndex);
 	
 	//this is to just remove the element from the list

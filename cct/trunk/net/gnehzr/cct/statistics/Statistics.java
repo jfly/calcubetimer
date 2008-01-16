@@ -714,6 +714,10 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 	public boolean isRowDeletable(int rowIndex) {
 		return true;
 	}
+	public void insertValueAt(Object value, int rowIndex) {
+		times.add(rowIndex, (SolveTime) value);
+		fireTableRowsInserted(rowIndex, rowIndex);
+	}
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
 		SolveTime val = (SolveTime) value;
 		if(rowIndex == getRowCount()) {
