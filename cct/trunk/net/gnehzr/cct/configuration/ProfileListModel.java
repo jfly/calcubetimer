@@ -9,7 +9,6 @@ import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 
 @SuppressWarnings("serial")
 public class ProfileListModel extends DraggableJTableModel {
-//	TODO - save the ordering of the profiles
 	//this could probably be cleaned up, should strings or profiles be used as the type?
 	//they're kinda interchangeable
 	private enum editAction {ADDED, RENAMED, REMOVED};
@@ -59,7 +58,9 @@ public class ProfileListModel extends DraggableJTableModel {
 		actions.add(new ProfileEditAction(editAction.REMOVED, deleteMe.getName(), null));
 		return true;
 	}
-
+	public String getColumnName(int column) {
+		return "Profiles";
+	}
 	public Class<?> getColumnClass(int columnIndex) {
 		return Profile.class;
 	}

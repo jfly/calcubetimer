@@ -19,7 +19,7 @@ public class Profile {
 		return configuration;
 	}
 	public void createProfileDirectory() {
-		/*return */directory.mkdir();
+		directory.mkdir();
 	}
 	public void renameTo(String newName) {
 		this.name = newName;
@@ -31,7 +31,7 @@ public class Profile {
 	}
 	public void delete() {
 		configuration.delete();
-		/*return */directory.delete();
+		directory.delete();
 	}
 	public boolean equals(Object o) {
 		if(o == null)

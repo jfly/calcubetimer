@@ -232,8 +232,27 @@ public final class Configuration {
 		for(String profDir : profDirs) {
 			profs.add(new Profile(profDir));
 		}
+		if(props != null) {
+			String[] profiles = getString(VariableKey.PROFILES, false).split(";");
+			for(int ch = profiles.length - 1; ch >= 0; ch--) {
+				Profile temp = new Profile(profiles[ch]);
+				if(profs.contains(temp)) {
+					profs.remove(temp);
+					profs.add(0, temp);
+				}
+			}
+		}
 		return profs;
 	}
+	public static void setProfileOrdering(ArrayList<Profile> profiles) {
+		String types = "";
+		for(Profile p : profiles) {
+			types += p.getName() + ";";
+		}
+		setString(VariableKey.PROFILES, types);
+	}
+	
+	
 	private static Profile profileCache;
 	public static void setSelectedProfile(Profile p) {
 		profileCache = p;

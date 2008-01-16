@@ -45,6 +45,7 @@ public class VariableKey<H> {
 	public static final VariableKey<String> XML_LAYOUT = new VariableKey<String>("GUI_xmlLayoutFile");
 	public static final VariableKey<String> DEFAULT_PUZZLE = new VariableKey<String>("Scramble_Default_puzzle");
 	public static final VariableKey<String> SCRAMBLE_TYPES = new VariableKey<String>("Scramble_types");
+	public static final VariableKey<String> PROFILES = new VariableKey<String>("Profiles");//TODO - document
 	public static final VariableKey<String> PUZZLE_ATTRIBUTES(String puzzleName) {
 		return new VariableKey<String>("Puzzle_Attributes_" + puzzleName);
 	} //TODO - document

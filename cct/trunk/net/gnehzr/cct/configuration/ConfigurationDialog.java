@@ -375,6 +375,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 
 		JTextField tf = new JTextField();
 		DraggableJTable profilesTable = new DraggableJTable("Add new profile...", true);
+		profilesTable.getTableHeader().setReorderingAllowed(false);
 		profilesTable.setModel(profilesModel);
 		profilesTable.setDefaultEditor(Profile.class, new ProfileEditor("Type new profile name here.", profilesModel));
 		panel.add(new JScrollPane(profilesTable), BorderLayout.LINE_START);
@@ -902,9 +903,11 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		this.currProfile = currProfile;
 		/*if (visible && tabbedPane == null)
 			createGUI();
-		else */if (visible)
+		else */
+		if (visible) {
 			syncGUIwithConfig(false);
-		super.setVisible(visible);
+		}
+		this.setVisible(visible);
 	}
 
 	private void applyConfiguration() {
@@ -963,6 +966,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		Configuration.setCustomScrambleVariations(puzzlesModel.getContents().toArray(new String[0]));
 
 		profilesModel.commitChanges();
+		Configuration.setProfileOrdering(profilesModel.getContents());
 		
 		Configuration.apply();
 
