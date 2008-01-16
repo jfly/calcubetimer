@@ -1,267 +1,272 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-	<title>CCT Readme</title>
-	<style type="text/css">
-		table {
-			border: 1px outset black;
-			margin: 20px;
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+		<title>CCT Readme</title>
+		<style type="text/css">
+			table {
+				border: 1px outset black;
+				margin: 20px;
 			}
-		td {
-			padding: 0px 5px 2px 5px;
+			td {
+				padding: 0px 5px 2px 5px;
 			}
-		hr {
-			color: black;
+			hr {
+				color: black;
 			}
-		p {
-			margin: 20px;
+			p {
+				margin: 20px;
 			}
-		img {
-			text-align:center;
-			display:block;
+			img {
+				text-align:center;
+				display:block;
 			}
-		li {
-			padding: 0px 0px 0px 0px;
+			li {
+				padding: 0px 0px 0px 0px;
 			}
-	</style>
-</head>
+		</style>
+	</head>
 
-<body>
-	<h1>CCT Readme</h1>
-	<p>Note: An up to date version of this file can be found
-	<a href="http://gnehzr.net/cct/readme.html">here</a>.</p>
-	<h2>Table of Contents</h2>
-	<ul>
-		<li><a href="#faq">Frequently Asked Questions</a></li>
-		<li><a href="#java">Getting it running</a></li>
-		<li><a href="#setup">Setting up the Stackmat</a></li>
-		<li><a href="#stats">How the statistics work</a></li>
-		<li><a href="#gui">User Interface</a></li>
-		<li><a href="#sc">Sunday Contest</a></li>
-		<li><a href="#umts">What does UMTS stand for? (connecting to a server)</a></li>
-		<li><a href="#config">How do I customize my settings?</a></li>
-		<li><a href="#releases">Release history</a></li>
-		<li><a href="#bugs">I found a bug, help!</a></li>
-	</ul>
+	<body>
+		<h1>CCT Readme</h1>
+		<p>Note: An up to date version of this file can be found
+		<a href="http://gnehzr.net/cct/readme.html">here</a>.</p>
+		<h2>Table of Contents</h2>
+		<ul>
+			<li><a href="#faq">Frequently Asked Questions</a></li>
+			<li><a href="#java">Getting it running</a></li>
+			<li><a href="#setup">Setting up the Stackmat</a></li>
+			<li><a href="#stats">How the statistics work</a></li>
+			<li><a href="#gui">User Interface</a></li>
+			<li><a href="#sc">Sunday Contest</a></li>
+			<li><a href="#umts">Connecting to a Server</a></li>
+			<li><a href="#config">How do I customize my settings?</a></li>
+			<li><a href="#releases">Release history</a></li>
+			<li><a href="#bugs">I found a bug, help!</a></li>
+		</ul>
 
-	<div id="content">
-		<h2><a name="faq">FAQs</a></h2>
-			
-		<p>Q: Why does it say: "The jar file "CALCubeTimer.jar" couldn't be launched. Check the Console for possible error messages" or "The main class could not be found"?<br>
-		A: See <a href="#java">this</a>.</p>
-		
-		<p>Q: Does this program run on Mac OS X?<br>
-		A: Yes, but not without a little work, see <a href="#java">this</a>.</p>
-		
-		<p>Q: When using the keyboard, the program behaves as if I am starting and stopping the timer over and over again, giving me a bunch of 0.01 second times.<br>
-		A: This is a known issue with X in Linux. This problem should be solved in version 0.2.
-		One temporary workaround is to disable key repeat using the 
-		command "xset -r".</p>
-		
-		<p>Q: How do I start the server?<br>
-		A: If you are using Internet Explorer, the file may have downloaded as 
-		CCTServer.zip. First change the extension to CCTServer.jar.
-		Then, from the command line, cd into the folder you downloaded the jar to,
-		and type "java -jar CCTServer.jar [password]".</p>
-		
-		<p>Q: How do I get my Stackmat to work?<br>
-		Under File > Configuration > Stackmat Settings, make sure the correct mixer is
-		chosen. If necessary, read <a href="#invert">this</a> and <a href="#value">this</a>.
-		
-		<p><a name="invert">Q: When I plug my Stackmat in, CCT displays 15:165:165!</a><br>
-		A: This means that your soundcard is inverting the signal, or part of the signal is not being read correctly.
-		Go to File > Configuration > Stackmat Settings and experiment with checking
-		the three boxes. Most people have either all of them checked or none of them 
-		checked, however, it is possible that you may need some other combination
-		of the three.</p>
-		
-		<p><a name="value">Q: What is the stackmat value?</a><br>
-		A: This value is the key to how we convert the Stackmat signal into
-		the corresponding numerical time. We interpret the signal as a sound wave, and
-		it comes in looking something like this:
-		<br><img src="signal.jpg" alt="Stackmat signal"><br>
-		We need to discretize these peaks and troughs into 1's and 0's. This
-		should be pretty easy to conceptualize, but the programming is 
-		tricky because these peaks and troughs are not at all uniform.
-		The "stackmat value" is a value we use to chop off the peaks and
-		troughs and convert the signal to ones and zeroes.<br>
-		So it would make sense that if the value is too high, no peaks or
-		valleys will be detected, and the program will see nothing but
-		zeroes.<br>
-		However, If the value is too low, noise will be introduced when it shouldn't
-		be. This is due in part to the fact that the tops of the peaks are not flat.<br>
-		We've found that a value around 50 will work on most computers, but
-		some tweaking may be necessary to achieve the best performance with your specific
-		setup. Don't be afraid to change this value! We have
-		seen stackmat values from 29 up to 70. Some people have reported values as low as 1 to 7.<br>
-		A way to find your value is to find a value for which the timer changes times when it is being run.
-		If the times do not update as frequently as it should, then your value is too high. If the times
-		sometimes show very large times over 10 minutes, then your value is probably too low.<br>
-		A way to make sure that your value will work is if you run the timer with one hand on one
-		of the pads.</p>
-		
-		<p>Q: what's a calcube timer?<br>
-		A: urghh....</p>
-		
-		<h2><a name="java">Java 1.6</a></h2>
-		<p>You need the latest version of Java (SE 6) to run CCT.
-		Here's what you need to do to get the right version for your OS.</p>
-		
-		<ul>
-			<li><p>Windows and Linux users can find Java SE 6 
-			<a href="http://java.sun.com/javase/downloads/index.jsp">here</a>.
-			You want the Java Runtime Environment (JRE) 6.</p></li>
-			
-			<li><p>Macs however, are a little more complicated.
-			For some reason, Apple is developing SE 6 as opposed to Sun.
-			To get Java 6 for OSX, you need to go <a href="http://developer.apple.com/java/">here</a>
-			and click on Java SE 6.0 Release 1 Developer Preview 6. You'll have to sign
-			up, and then you can download Apple's latest version. It has been tested, and
-			seems to work fine.<br>
-			To verify that the installation was a success, go to the top right of your screen,
-			and click on the search button. Type "terminal" and open it. Once there,
-			type "java -version" and press enter.
-			You should get a result similar to this:
-			<br><br>
-			java version "1.6.0-dp"<br>
-			Java(TM) SE Runtime Environment (build 1.6.0-dp-b88-34)<br>
-			Java HotSpot(TM) Client VM (build 1.6.0-b88-17-release, mixed mode, sharing)<br><br>
-			
-			If it still says 1.5, then go to Finder > Applications >
-			Utilities > Java > Java SE 6 > Preferences.
-			Then in the Java launcher pane, drag Java 6 to the top of the list. Thanks to
-			Joey Gouly for this fix!</p>
-			</li>
-		</ul>
-		
-		<h2><a name="setup">Stackmat Support</a></h2>
-		<p>Hopefully, you are pretty excited about pluging your stackmat
-		into your computer (we were!) Here's what you need to get it working:</p>
-		
-		<ul>
-			<li>1 2.5mm to 3.5mm stereo plug adapter ~$2-3</li>
-			<li>1 male to male stereo cable ~$5</li>
-		</ul>
-		
-		<p>You should be able to get these from a local electronics shop, or online.
-		Here's a picture of our setup.</p>
-		<img id="centered" src="stackmat.jpg" alt="stackmat cable connection">
-		
-		<h2><a name="stats">Rolling Averages</a></h2>
-		<p>CCT provides you with complete control over times. If you accidentally 
-		enter an incorrect time, you can discard it, or simply change it to whatever
-		you meant for it. All these features can be accessed by right clicking on the 
-		time in question. Furthermore, you can scroll through all the scrambles
-		you've imported or done.</p>
-		<p>CCT does some automatic highlighting of your times according to two
-		categories. Times in the current average recieve one color, while times
-		in the best rolling average get another. These colors are fully configurable,
-		as is the color for any overlapping between the two.
-		<p>Under File > Configuration > Options, you can even specify the length of your
-		rolling average.</p>
-		<p>Finally, the details for Session Averages and Rolling/Current Averages can
-		be configured under File > Configuration, where there is a simple syntax for gettting
-		just what you want out of CCT.</p>
-		
-		<h2><a name="gui">User Interface</a></h2>
-		<p>There are many new user interface options in CCT v0.2. Most of these are related to
-		the keyboard timer. These options can be accessed in the View menu.
-		<ul>
-			<li>The first of these options
-			is Integrate Timer and Display. What this does is convert the display (0:00) to the button
-			that starts and stops the timer.</li>
-			<li>If the "integrate" option is selected, then the "Annoying status light" will
-			convert the entire display into a status color which tells you the status of the button.
-			If the status is green, then the button is held down and ready to start/stop. If the button is red,
-			then the button is focused but no key is pressed. If the button is gray, then the button is not focused.
-			This color behavior is by default the same as the start timer button (either integrated or not).</li>
-			<li>The less annoying status light behaves differently than the start timer color. This light will be
-			green if the button is focused, signalling that it is okay to start. It is red if the button is not focused.</li>
-			<li>The "hide scrambles when timer not focused" option will change the color of the scrambles so that
-			if the button is not focused, it is difficult to read the scrambles.</li>
-			<li>Now it is possible to select the length of the scramble with the spinner next to the scramble type.</li>
-			<li>The scramble number is next to the scramble length. This is used to control which scramble you are on.
-			One possible use is the following: Let's say you are in the middle of Sunday Contest and you have imported
-			the scrambles. You are on the 6th scramble, and the stackmat accepts a fake time. You finish your solve and
-			discard your fake time. CCT now believes you just finished the 7th solve and displays the 8th scramble. To
-			fix this problem, all you need to do is rewind one scramble to the 7th and you don't lose your 7th scramble.</li>
-			<li>A new option for scrambles is the multi-slice option. This affects nxnxn cubes where n >= 4. If multi-slice is
-			enabled (which is the default), then "r" means turn the outer 2 layers. If multi-slice is disabled, then "r" means
-			turn only the inside slice.</li>
-		</ul>
-		
-		<h2><a name="sc">Sunday Contest</a></h2>
-		<p>Not only is there support for importing scrambles from file,
-		there is an option to import times from url. This is perfect for
-		a situation such as the Sunday Contest.</p>
-		<p>In addition, CCT allows you to setup your email (SMTP) server, to allow
-		emailing of times. With this feature, you
-		can do the entire Sunday Contest without even leaving CCT!</p>
-		<p>This may not work if your ISP blocks port 25.</p>
-		<p>There might be some bugs for emailing, so copy your times down before attempting
-		to use the email feature.</p>
-		
-		<h2><a name="umts">UMTS</a></h2>
-		<p>UMTS stands for Ultimate Multiple Timer Support. There is a server
-		which you can start up and multiple people can connect to remotely. You can
-		see everybody's times, and people can choose to have the same scrambles. In
-		addition, if you have multiple soundcards (usb or otherwise) then you can
-		start up multiple instances of CCT and run them all with different stackmats
-		on the same computer!</p>
-		<p>When connected to a server, type in "/help" for an explanation of the commands available.</p>
-		<p>By typing "/#", where # is a number between 2 and 5 (inclusive), a client can request scrambles from a server.
-		This feature is new in CCTServer v0.2.</p>
-		<p>Under File > Configuration > Options (cont.), there is an option to enable flashing of the
-		chat window when a message is recieved. This causes your window's
-		title to flicker between caps and lowercase until you check the window.
-		<p>The server can be downloaded as an additional executable jar file.</p>
-		
-		<h2><a name="config">Configuration</a></h2>
-		<p>For version 0.2 of CCT, we overhauled the configuration system to make use of 
-		Java's properties files. As a result, configuration files from CCT v0.1 will not
-		function with CCT v0.2. One of the advantages of the new system is that settings
-		are now stored in plaintext, meaning that you can edit the "cct.properties" file 
-		with your favorite text editor. The format of the file is very simple, each setting
-		is on its own line, with a setting name followed by its value. See the
-		defaults.properties file for a description of each setting. There is no need to edit
-		the defaults.properties file, just edit cct.properties, as those settings take
-		precedence over that defaults. If at any point you mess up your cct.properties
-		file, you can just delete it, and the defaults will be restored.</p>
-		<p>In version ??? of CCT _________</p>
-		
-		<h2><a name="releases">Release History:</a></h2>
-		2007 Apr 15 - Version 0.1
-		<ul>
-			<li>Lots of configuration options! Just about every stupid feature we added can be disabled.</li>
-			<li>Fullscreen support turns your monitor into a big stackmat display.</li>
-			<li>Choose your own watermark.</li>
-			<li>Choose the font of your scrambles.</li>
-			<li>Choose to have times displayed in raw seconds or a clock (hour:minute:second) format</li>
-			<li>Support for big cube scrambles and viewing. Megaminx scrambles too!
-			Color schemes are fully configurable.</li>
-			<li>Splits are another cool feature we added. When using your stackmat, if
-			you tap one side of the timer, then the time of that split will get added
-			to the list. There are also configuration options to use a specific key
-			on the keyboard instead, if you aren't using a stackmat.</li>
-		</ul>
-		
-		2007 Jun 25 - Version 0.2
-		<ul>
-			<li>Various bugs addressed</li>
-			<li>GUI overhaul</li>
-			<li>Configuration overhaul</li>
-			<li>Scramble options added, including support for cubes up to 11x11x11</li>
-		</ul>
-		<h2><a name="bugs">Bugs and Feature Requests</a></h2>
-		<p>Please email us at <a href="mailto:cubetimer@gmail.com">cubetimer@gmail.com</a> for any bugs you encounter or features
-		you feel should be implemented.</p>
-	</div>
-	<hr>
-	<p>
-	<i>
-		Last updated 2007 Sep 18.
-	</i>
-	</p>
-</body>
+		<div id="content">
+			<h2><a name="faq">FAQs</a></h2>
+
+			<!-- TODO more faqs. also, fixes to old problems in emails, on the group, etc. -->
+			<p>Q: Why does it say: "The jar file "CALCubeTimer.jar" couldn't be launched. Check the Console for possible error messages" or "The main class could not be found"?<br>
+			A: See <a href="#java">this</a>.</p>
+
+			<p>Q: Does this program run on Mac OS X?<br>
+			A: Yes, but not without a little work, see <a href="#java">this</a>.</p>
+
+			<p>Q: When using the keyboard, the program behaves as if I am starting and stopping the timer over and over again, giving me a bunch of 0.01 second times.<br>
+			A: This is a known issue with X in Linux. This problem should be solved in version 0.2.
+			One temporary workaround is to disable key repeat using the 
+			command "xset -r".</p>
+
+			<p>Q: How do I start the server?<br>
+			A: If you are using Internet Explorer, the file may have downloaded as 
+			CCTServer.zip. First change the extension to CCTServer.jar.
+			Then, from the command line, cd into the folder you downloaded the jar to,
+			and type "java -jar CCTServer.jar [password]".</p>
+
+			<p>Q: How do I get my Stackmat to work?<br>
+			Under File > Configuration > Stackmat Settings, make sure the correct mixer is
+			chosen. If necessary, read <a href="#invert">this</a> and <a href="#value">this</a>.
+
+			<p><a name="invert">Q: When I plug my Stackmat in, CCT displays 15:165:165!</a><br>
+			A: This means that your soundcard is inverting the signal, or part of the signal is not being read correctly.
+			Go to File > Configuration > Stackmat Settings and experiment with checking
+			the three boxes. Most people have either all of them checked or none of them 
+			checked, however, it is possible that you may need some other combination
+			of the three.</p>
+
+			<p><a name="value">Q: What is the stackmat value?</a><br>
+			A: This value is the key to how we convert the Stackmat signal into
+			the corresponding numerical time. We interpret the signal as a sound wave, and
+			it comes in looking something like this:
+			<br><img src="signal.jpg" alt="Stackmat signal"><br>
+			We need to discretize these peaks and troughs into 1's and 0's. This
+			should be pretty easy to conceptualize, but the programming is 
+			tricky because these peaks and troughs are not at all uniform.
+			The "stackmat value" is a value we use to chop off the peaks and
+			troughs and convert the signal to ones and zeroes.<br>
+			So it would make sense that if the value is too high, no peaks or
+			valleys will be detected, and the program will see nothing but
+			zeroes.<br>
+			However, If the value is too low, noise will be introduced when it shouldn't
+			be. This is due in part to the fact that the tops of the peaks are not flat.<br>
+			We've found that a value around 50 will work on most computers, but
+			some tweaking may be necessary to achieve the best performance with your specific
+			setup. Don't be afraid to change this value! We have
+			seen stackmat values from 29 up to 70. Some people have reported values as low as 1 to 7.<br>
+			A way to find your value is to find a value for which the timer changes times when it is being run.
+			If the times do not update as frequently as it should, then your value is too high. If the times
+			sometimes show very large times over 10 minutes, then your value is probably too low.<br>
+			A way to make sure that your value will work is if you run the timer with one hand on one
+			of the pads.</p>
+			<!-- TODO better document this -->
+
+			<h2><a name="java">Java 1.6</a></h2>
+			<p>You need the latest version of Java (SE 6) to run CCT.
+			Here's what you need to do to get the right version for your OS.</p>
+
+			<ul>
+				<li><p>Windows and Linux users can find Java SE 6 
+				<a href="http://java.sun.com/javase/downloads/index.jsp">here</a>.
+				You want the Java Runtime Environment (JRE) 6.</p></li>
+
+				<li><p>Macs however, are a little more complicated.
+				For some reason, Apple is developing SE 6 as opposed to Sun.
+				To get Java 6 for OSX, you need to go <a href="http://developer.apple.com/java/">here</a>
+				and click on Java SE 6.0 Release 1 Developer Preview 6. You'll have to sign
+				up, and then you can download Apple's latest version. It has been tested, and
+				seems to work fine.<br>
+				To verify that the installation was a success, go to the top right of your screen,
+				and click on the search button. Type "terminal" and open it. Once there,
+				type "java -version" and press enter.
+				You should get a result similar to this:
+				<br><br>
+				java version "1.6.0-dp"<br>
+				Java(TM) SE Runtime Environment (build 1.6.0-dp-b88-34)<br>
+				Java HotSpot(TM) Client VM (build 1.6.0-b88-17-release, mixed mode, sharing)<br><br>
+
+				If it still says 1.5, then go to Finder > Applications >
+				Utilities > Java > Java SE 6 > Preferences.
+				Then in the Java launcher pane, drag Java 6 to the top of the list. Thanks to
+				Joey Gouly for this fix!</p>
+				</li>
+			</ul>
+
+			<h2><a name="setup">Stackmat Support</a></h2>
+			<p>Hopefully, you are pretty excited about pluging your stackmat
+			into your computer (we were!) Here's what you need to get it working:</p>
+
+			<ul>
+				<li>1 2.5mm to 3.5mm stereo plug adapter ~$2-3</li>
+				<li>1 male to male stereo cable ~$5</li>
+			</ul>
+
+			<p>You should be able to get these from a local electronics shop, or online.
+			Here's a picture of our setup.</p>
+			<img id="centered" src="stackmat.jpg" alt="stackmat cable connection">
+
+			<h2><a name="stats">Rolling Averages</a></h2>
+			<p>CCT provides you with complete control over times. If you accidentally 
+			enter an incorrect time, you can discard it, or simply change it to whatever
+			you meant for it. All these features can be accessed by right clicking on the 
+			time in question. Furthermore, you can scroll through all the scrambles
+			you've imported or done.</p>
+			<p>CCT does some automatic highlighting of your times according to two
+			categories. Times in the current average recieve one color, while times
+			in the best rolling average get another. These colors are fully configurable,
+			as is the color for any overlapping between the two.
+			<p>Under File > Configuration > Options, you can even specify the length of your
+			rolling average.</p>
+			<p>Finally, the details for Session Averages and Rolling/Current Averages can
+			be configured under File > Configuration, where there is a simple syntax for gettting
+			just what you want out of CCT.</p>
+
+			<h2><a name="gui">User Interface</a></h2>
+			<p>There are many new user interface options in CCT v0.2. Most of these are related to
+			the keyboard timer. These options can be accessed in the View menu.
+			<ul>
+				<li>The first of these options
+				is Integrate Timer and Display. What this does is convert the display (0:00) to the button
+				that starts and stops the timer.</li>
+				<li>If the "integrate" option is selected, then the "Annoying status light" will
+				convert the entire display into a status color which tells you the status of the button.
+				If the status is green, then the button is held down and ready to start/stop. If the button is red,
+				then the button is focused but no key is pressed. If the button is gray, then the button is not focused.
+				This color behavior is by default the same as the start timer button (either integrated or not).</li>
+				<li>The less annoying status light behaves differently than the start timer color. This light will be
+				green if the button is focused, signalling that it is okay to start. It is red if the button is not focused.</li>
+				<li>The "hide scrambles when timer not focused" option will change the color of the scrambles so that
+				if the button is not focused, it is difficult to read the scrambles.</li>
+				<li>Now it is possible to select the length of the scramble with the spinner next to the scramble type.</li>
+				<li>The scramble number is next to the scramble length. This is used to control which scramble you are on.
+				One possible use is the following: Let's say you are in the middle of Sunday Contest and you have imported
+				the scrambles. You are on the 6th scramble, and the stackmat accepts a fake time. You finish your solve and
+				discard your fake time. CCT now believes you just finished the 7th solve and displays the 8th scramble. To
+				fix this problem, all you need to do is rewind one scramble to the 7th and you don't lose your 7th scramble.</li>
+				<li>A new option for scrambles is the multi-slice option. This affects nxnxn cubes where n >= 4. If multi-slice is
+				enabled (which is the default), then "r" means turn the outer 2 layers. If multi-slice is disabled, then "r" means
+				turn only the inside slice.</li>
+			</ul>
+			<!-- TODO new xml gui stuff -->
+
+			<h2><a name="sc">Sunday Contest</a></h2>
+			<p>Not only is there support for importing scrambles from file,
+			there is an option to import times from url. This is perfect for
+			a situation such as the Sunday Contest.</p>
+			<p>In addition, CCT allows you to setup your email (SMTP) server, to allow
+			emailing of times. With this feature, you
+			can do the entire Sunday Contest without even leaving CCT!</p>
+			<p>This may not work if your ISP blocks port 25.</p>
+			<p>There might be some bugs for emailing, so copy your times down before attempting
+			to use the email feature.</p>
+			<!-- TODO update for email vs new sunday, also document email stuff, probably under a different heading -->
+
+			<h2><a name="umts">UMTS</a></h2> <p>A server can be created to
+			which you can start up and multiple people can connect to
+			remotely. You can see everybody's times, and people can choose
+			to have the same scrambles. In addition, if you have multiple
+			soundcards (usb or otherwise) then you can start up multiple
+			instances of CCT and run them all with different stackmats on
+			the same computer!</p> <p>When connected to a server, type in
+			"/help" for an explanation of the commands available.</p> <p>By
+			typing "/#", where # is a number between 2 and 11 (inclusive), megaminx or square1, a
+			client can request scrambles from a server.  This feature is
+			new in CCTServer v0.2.</p> <p>Under File > Configuration >
+			Options (cont.), there is an option to enable flashing of the
+			chat window when a message is recieved. This causes your
+			window's title to flicker between caps and lowercase until you
+			check the window.  <p>The server can be downloaded as an
+			additional executable jar file.</p>
+
+			<h2><a name="config">Configuration</a></h2>
+			<p>For version 0.2 of CCT, we overhauled the configuration system to make use of 
+			Java's properties files. As a result, configuration files from CCT v0.1 will not
+			function with CCT v0.2. One of the advantages of the new system is that settings
+			are now stored in plaintext, meaning that you can edit the "cct.properties" file 
+			with your favorite text editor. The format of the file is very simple, each setting
+			is on its own line, with a setting name followed by its value. See the
+			defaults.properties file for a description of each setting. There is no need to edit
+			the defaults.properties file, just edit cct.properties, as those settings take
+			precedence over that defaults. If at any point you mess up your cct.properties
+			file, you can just delete it, and the defaults will be restored.</p>
+			<p>In version ??? of CCT _________</p>
+
+			<!-- TODO add more stuff, including description of how to use EVERYTHING -->
+
+			<h2><a name="releases">Release History:</a></h2>
+			2007 Apr 15 - Version 0.1
+			<ul>
+				<li>Lots of configuration options! Just about every stupid feature we added can be disabled.</li>
+				<li>Fullscreen support turns your monitor into a big stackmat display.</li>
+				<li>Choose your own watermark.</li>
+				<li>Choose the font of your scrambles.</li>
+				<li>Choose to have times displayed in raw seconds or a clock (hour:minute:second) format</li>
+				<li>Support for big cube scrambles and viewing. Megaminx scrambles too!
+				Color schemes are fully configurable.</li>
+				<li>Splits are another cool feature we added. When using your stackmat, if
+				you tap one side of the timer, then the time of that split will get added
+				to the list. There are also configuration options to use a specific key
+				on the keyboard instead, if you aren't using a stackmat.</li>
+			</ul>
+
+			2007 Jun 25 - Version 0.2
+			<ul>
+				<li>Various bugs addressed</li>
+				<li>GUI overhaul</li>
+				<li>Configuration overhaul</li>
+				<li>Scramble options added, including support for cubes up to 11x11x11</li>
+			</ul>
+			<h2><a name="bugs">Bugs and Feature Requests</a></h2>
+			<p>Please email us at <a href="mailto:cubetimer@gmail.com">cubetimer@gmail.com</a> for any bugs you encounter or features
+			you feel should be implemented.</p>
+		</div>
+		<hr>
+		<p>
+		<i>
+			Last updated 2008 Jan 16.
+		</i>
+		</p>
+	</body>
 </html>
