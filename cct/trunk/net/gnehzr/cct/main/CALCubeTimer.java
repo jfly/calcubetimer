@@ -335,7 +335,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 		});
 		tickTock = new Timer(0, null);
-		configurationDialog = new ConfigurationDialog(this, true, stackmatTimer, tickTock);
 
 		scrambleChooser = new JComboBox();
 		scrambleChooser.setRenderer(new PuzzleTypeCellRenderer());
@@ -1217,6 +1216,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	public void showConfigurationDialog(){
 		saveToConfiguration();
+		if(configurationDialog == null){
+			configurationDialog = new ConfigurationDialog(this, true, stackmatTimer, tickTock);
+		}
 		configurationDialog.setVisible(true, (Profile) profiles.getSelectedItem());
 	}
 
