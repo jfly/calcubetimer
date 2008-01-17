@@ -142,7 +142,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private CCTClient client;
 	private ConfigurationDialog configurationDialog;
 	
-	public static final ImageIcon cube = new ImageIcon(CALCubeTimer.class.getResource("cube.png"));
+	public static final ImageIcon cubeIcon = new ImageIcon(CALCubeTimer.class.getResource("cube.png"));
 	
 	public CALCubeTimer() {
 		stackmatTimer = new StackmatInterpreter();
@@ -296,7 +296,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		aboutAction = new AboutAction(new AboutScrollFrame("About CCT " + CCT_VERSION,
 						CALCubeTimer.class.getResource("about.html"),
-						cube.getImage()));
+						cubeIcon.getImage()));
 		aboutAction.putValue(Action.NAME, "About");
 		actionMap.put("showabout", aboutAction);
 	}
@@ -364,7 +364,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		scramblePopup = new ScrambleFrame(this, "Scramble View");
 		scramblePopup.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-		scramblePopup.setIconImage(cube.getImage());
+		scramblePopup.setIconImage(cubeIcon.getImage());
 		scramblePopup.setFocusableWindowState(false);
 
 		onLabel = new JLabel("Timer is OFF");
@@ -841,7 +841,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				CALCubeTimer main = new CALCubeTimer();
 				Configuration.addConfigurationChangeListener(main);
 				main.setTitle("CCT " + CCT_VERSION);
-				main.setIconImage(cube.getImage());
+				main.setIconImage(cubeIcon.getImage());
 				main.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				Configuration.apply();
 				main.setVisible(true);
@@ -922,24 +922,18 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if(scramblesList == null || !scramCustomizationChoice.equals(newPuzzleChoice) || scramCustomizationChoice.getScrambleVariation().getLength() != newLength) {
 			int choice = JOptionPane.YES_OPTION;
 			if(scramblesList != null && scramblesList.getCurrent().isImported()) {
-				choice = JOptionPane.showOptionDialog(this,
+				choice = JOptionPane.showConfirmDialog(this,
 						"Do you want to discard the imported scrambles?",
 						"Discard scrambles?",
 						JOptionPane.YES_NO_OPTION,
-						JOptionPane.QUESTION_MESSAGE,
-						null,
-						null,
-						null);
+						JOptionPane.QUESTION_MESSAGE);
 			} else if(scramblesList != null && scramblesList.size() > 1) {
-				choice = JOptionPane.showOptionDialog(this,
+				choice = JOptionPane.showConfirmDialog(this,
 						"Do you really wish to switch the type of scramble?\n" +
 						"All previous scrambles will be lost. Your times, however, will be saved.",
 						"Discard scrambles?",
 						JOptionPane.YES_NO_OPTION,
-						JOptionPane.QUESTION_MESSAGE,
-						null,
-						null,
-						null);
+						JOptionPane.QUESTION_MESSAGE);
 			}
 			if(choice == JOptionPane.YES_OPTION) {
 				newPuzzleChoice.getScrambleVariation().setLength(newLength);
@@ -1017,7 +1011,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 							"All imported scrambles have been used.\n" +
 							"Generated scrambles will be used from now on.",
 							"All Out of Scrambles!",
-							JOptionPane.INFORMATION_MESSAGE, cube);
+							JOptionPane.INFORMATION_MESSAGE);
 				updateScramble();
 			}
 		}
@@ -1165,7 +1159,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				this,
 				"Do you really want to reset?",
 				"Warning!",
-				JOptionPane.YES_NO_OPTION);
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.WARNING_MESSAGE);
 		if(choice == JOptionPane.YES_OPTION) {
 			timeLabel.reset();
 			scramblesList = new ScrambleList(scramCustomizationChoice.getScrambleVariation());
@@ -1182,7 +1177,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				"Import Scrambles",
 				JOptionPane.YES_NO_OPTION,
 				JOptionPane.QUESTION_MESSAGE,
-				cube,
+				cubeIcon,
 				okCancel,
 				okCancel[0]);
 		if(choice == JOptionPane.OK_OPTION) {
@@ -1199,7 +1194,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				"Export Scrambles",
 				JOptionPane.YES_NO_OPTION,
 				JOptionPane.QUESTION_MESSAGE,
-				cube,
+				cubeIcon,
 				okCancel,
 				okCancel[0]);
 		if(choice == JOptionPane.OK_OPTION) {
@@ -1230,7 +1225,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	public void connectToServer(){
-		client = new CCTClient(cube);
+		client = new CCTClient(cubeIcon);
 		client.enableAndDisable(connectToServerAction);
 	}
 
