@@ -210,7 +210,7 @@ public final class Configuration {
 		propsOut.close();
 		try {
 			PrintWriter profileOut = new PrintWriter(new FileWriter(startupProfileFile));
-			profileOut.println(profileCache);
+			profileOut.print(profileCache);
 			profileOut.close();
 		} catch (IOException e) {
 			e.printStackTrace();
