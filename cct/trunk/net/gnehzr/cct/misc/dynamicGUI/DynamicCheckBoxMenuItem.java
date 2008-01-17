@@ -29,7 +29,7 @@ public class DynamicCheckBoxMenuItem extends JCheckBoxMenuItem implements Statis
 			update();
 		}
 	}
-	
+
 	public void update(){
 		if(s != null) setText(s.toString());
 	}

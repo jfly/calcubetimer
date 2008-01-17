@@ -76,7 +76,7 @@ public class CubeScramble extends Scramble {
 		super.length = length;
 		setAttributes(attrs);
 	}
-	
+
 	public CubeScramble(String variation, String s, String... attrs) throws Exception {
 		super(s);
 		this.size = Integer.parseInt(variation.split("x")[0]);
@@ -97,7 +97,7 @@ public class CubeScramble extends Scramble {
 		generateScramble();
 		return true;
 	}
-	
+
 	private void generateScramble(){
 		scramble = "";
 		int lastAxis = -1;
@@ -106,7 +106,7 @@ public class CubeScramble extends Scramble {
 		int[] slicesMoved = new int[slices];
 		int[] directionsMoved = new int[3];
 		int moved = 0;
-		
+
 		for(int i = 0; i < length; i += moved){
 			moved = 0;
 			do{
@@ -296,7 +296,7 @@ public class CubeScramble extends Scramble {
 			}
 		}
 	}
-	
+
 	public int getNewUnitSize(int width, int height, int gap) {
 		return (int) (Math.min((width - 5*gap) / 4. / size,
 				(height - 4*gap) / 3. / size));
@@ -307,7 +307,7 @@ public class CubeScramble extends Scramble {
 		drawCube(buffer.createGraphics(), image, gap, cubieSize, colorScheme);
 		return buffer;
 	}
-	
+
 	public Dimension getMinimumSize(int gap, int defaultCubieSize) {
 		return new Dimension(getCubeViewWidth(defaultCubieSize, gap), getCubeViewHeight(defaultCubieSize, gap));
 	}

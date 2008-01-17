@@ -51,7 +51,7 @@ public class PuzzleCustomizationCellRendererEditor extends SubstanceDefaultListC
 		} else
 			return new JLabel(value.toString());
 	}
-	
+
 	public Component getTableCellEditorComponent(JTable table,
 			Object value, boolean isSelected, int row, int column) {
 		// TODO Auto-generated method stub
@@ -66,11 +66,11 @@ public class PuzzleCustomizationCellRendererEditor extends SubstanceDefaultListC
 	}
 	public void addCellEditorListener(CellEditorListener arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public void cancelCellEditing() {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public Object getCellEditorValue() {
 		// TODO Auto-generated method stub
@@ -82,7 +82,7 @@ public class PuzzleCustomizationCellRendererEditor extends SubstanceDefaultListC
 	}
 	public void removeCellEditorListener(CellEditorListener arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public boolean shouldSelectCell(EventObject arg0) {
 		// TODO Auto-generated method stub

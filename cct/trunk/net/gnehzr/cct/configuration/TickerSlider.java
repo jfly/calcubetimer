@@ -71,11 +71,11 @@ public class TickerSlider extends JPanel implements ChangeListener {
 			}
 		});
 	}
-	
+
 	public int getMilliSecondsDelay() {
 		return slider.getValue();
 	}
-	public void setDelayBounds(int min, int max, int delay) {	
+	public void setDelayBounds(int min, int max, int delay) {
 		slider.setMinimum(min);
 		slider.setMaximum(max);
 		slider.setValue(delay);

@@ -24,7 +24,7 @@ public class ProfileEditor extends DefaultCellEditor {
 		this.model = model;
 		this.editText = editText;
 	}
-	
+
 	public boolean stopCellEditing() {
 		String s = (String) super.getCellEditorValue();
 		value = new Profile(s);

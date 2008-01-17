@@ -49,22 +49,22 @@ public class StatsDialogHandler extends JDialog implements ActionListener {
 
 		emailButton = new JButton("Email");
 		emailButton.addActionListener(this);
-		
+
 		submitButton = new JButton("Sunday Contest");
 		submitButton.addActionListener(this);
 
 		saveButton = new JButton("Save");
 		saveButton.addActionListener(this);
-		
+
 		doneButton = new JButton("Done");
 		doneButton.addActionListener(this);
-		
+
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.add(emailButton);
 		bottomPanel.add(submitButton);
 		bottomPanel.add(saveButton);
 		bottomPanel.add(doneButton);
-		
+
 		getContentPane().add(textScroller, BorderLayout.CENTER);
 		getContentPane().add(bottomPanel, BorderLayout.PAGE_END);
 
@@ -73,7 +73,7 @@ public class StatsDialogHandler extends JDialog implements ActionListener {
 		pack();
 		setLocationRelativeTo(null);
 	}
-	
+
 	public void setVisible(boolean b) {
 		updateStats();
 		super.setVisible(b);

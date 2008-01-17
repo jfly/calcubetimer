@@ -23,7 +23,6 @@ public class CCTServer implements Runnable{
 	private Semaphore semaphore;
 	private String password;
 	private String motd = "";
-	private ServerScrambleList scrambles;
 
 	public static void main(String[] args){
 		int port = DEFAULT_PORT;
@@ -60,7 +59,6 @@ public class CCTServer implements Runnable{
 
 		data = new ServerData(this);
 		semaphore = new Semaphore(1, true);
-		scrambles = new ServerScrambleList();
 
 		println("Server created.");
 	}

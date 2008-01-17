@@ -33,7 +33,7 @@ public class DynamicSelectableLabel extends JEditorPane implements StatisticsUpd
 			update();
 		}
 	}
-	
+
 	public void update(){
 		if(s != null) setText(s.toString());
 	}

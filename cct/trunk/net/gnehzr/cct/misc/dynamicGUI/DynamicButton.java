@@ -29,7 +29,7 @@ public class DynamicButton extends JButton implements StatisticsUpdateListener, 
 			update();
 		}
 	}
-	
+
 	public void update(){
 		if(s != null) setText(s.toString());
 	}

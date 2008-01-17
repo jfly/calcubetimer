@@ -217,7 +217,7 @@ public class SquareOneScramble extends Scramble {
 		for(int ch = 0; ch < trns.length; ch++) {
 			Matcher match;
 			if(trns[ch].matches("[ ]*")) {
-				
+
 			} else if((match = regexp.matcher(trns[ch])).matches()) {
 				int top = Integer.parseInt(match.group(1));
 				int bot = Integer.parseInt(match.group(2));
@@ -237,7 +237,7 @@ public class SquareOneScramble extends Scramble {
 		finalizeScramble();
 		return true;
 	}
-	
+
 	private void initializeImage() {
 		state = new char[2][10]; // the top and bottom can hold a maximum of 10 pieces
 		for(int ch = 0; ch < 4; ch++) {
@@ -254,7 +254,7 @@ public class SquareOneScramble extends Scramble {
 		int height = getHeight(gap, radius);
 		BufferedImage buffer = new BufferedImage(width, height,
 				BufferedImage.TYPE_INT_ARGB);
-		
+
 		Graphics2D g = buffer.createGraphics();
 		double half_square_width = (radius * RADIUS_MULTIPLIER * multiplier) / Math.sqrt(2);
 		double edge_width = 2 * radius * multiplier * Math.sin(Math.toRadians(15));
@@ -274,14 +274,14 @@ public class SquareOneScramble extends Scramble {
 		g.setColor(Color.BLACK);
 		g.draw(right_mid);
 		g.draw(left_mid);
-		
+
 		double x = width / 2.0;
 		double y = height / 4.0;
 		g.rotate(Math.toRadians(-90 + 15), x, y);
 		drawFace(g, state[0], x, y, gap,
 				radius, colorScheme);
 		g.dispose();
-		
+
 		y *= 3.0;
 		g = buffer.createGraphics();
 		g.rotate(Math.toRadians(-90 - 15), x, y);
@@ -341,7 +341,7 @@ public class SquareOneScramble extends Scramble {
 		p.lineTo(tempx, tempy);
 		p.closePath();
 		p.transform(trans);
-		
+
 		GeneralPath side = new GeneralPath();
 		side.moveTo(radius, 0);
 		side.lineTo(multiplier * radius, 0);
@@ -364,7 +364,7 @@ public class SquareOneScramble extends Scramble {
 		p.lineTo(tempX, tempY);
 		p.closePath();
 		p.transform(trans);
-		
+
 		GeneralPath side1 = new GeneralPath();
 		side1.moveTo(radius, 0);
 		side1.lineTo(multiplier * radius, 0);
@@ -372,7 +372,7 @@ public class SquareOneScramble extends Scramble {
 		side1.lineTo(tempx, tempy);
 		side1.closePath();
 		side1.transform(trans);
-		
+
 		GeneralPath side2 = new GeneralPath();
 		side2.moveTo(multiplier * tempx, multiplier * tempy);
 		side2.lineTo(tempx, tempy);

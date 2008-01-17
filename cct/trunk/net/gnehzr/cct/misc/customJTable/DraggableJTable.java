@@ -29,7 +29,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		this.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 		this.putClientProperty("JTable.autoStartsEdit", Boolean.FALSE);
 	}
-	
+
 	private class JTableModelWrapper extends DraggableJTableModel {
 		private DraggableJTableModel wrapped;
 		public JTableModelWrapper(DraggableJTableModel wrapped) {
@@ -97,7 +97,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			wrapped.insertValueAt(value, rowIndex);
 		}
 	}
-	
+
 	public void promptForNewRow() {
 		editCellAt(model.getRowCount() - 1, 0);
 	}
@@ -107,7 +107,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		getEditorComponent().requestFocusInWindow();
 		return temp;
 	}
-	
+
 	private DraggableJTableModel model;
 	public void setModel(TableModel tableModel) {
 		if (tableModel instanceof DraggableJTableModel) {
@@ -116,7 +116,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			super.setModel(model);
 
 			Dimension dim = getCellRenderer(0, 0).getTableCellRendererComponent(
-					this, 
+					this,
 					addText,
 					true,
 					true,
@@ -149,7 +149,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		fromRow = toRow;
 	}
 	public void mouseMoved(MouseEvent e) {}
-	
+
 	public void keyPressed(KeyEvent e) {
 		int keyCode = e.getKeyCode();
 		if(keyCode == KeyEvent.VK_DELETE || keyCode == KeyEvent.VK_BACK_SPACE) {
@@ -169,7 +169,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			model.showPopup(e, this);
 		}
 	}
-	
+
 	public void deleteSelectedRows(boolean prompt) {
 		int[] selectedRows = this.getSelectedRows();
 		ArrayList<Object> toDelete = new ArrayList<Object>();

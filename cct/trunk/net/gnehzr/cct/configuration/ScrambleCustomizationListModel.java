@@ -12,7 +12,7 @@ import net.gnehzr.cct.scrambles.ScrambleVariation;
 public class ScrambleCustomizationListModel extends DraggableJTableModel {
 	private static final String[] COLUMN_NAMES = new String[] {"Scramble Variation", "Customization", "Scramble Length", "Reset Length"};
 	public static final Class<?>[] COLUMN_CLASSES = new Class[] { ScrambleVariation.class, String.class, Integer.class, Double.class };
-	
+
 	private ArrayList<ScrambleCustomization> customizations;
 	public void setContents(ArrayList<ScrambleCustomization> contents) {
 		this.customizations = contents;

@@ -47,7 +47,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		Container pane = this.getContentPane();
 		pane.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-		
+
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 0;
 		c.weighty = 0;
@@ -60,7 +60,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.gridy = 0;
 		nameField = new JTextField(name);
 		pane.add(nameField, c);
-		
+
 		c.weightx = 0;
 		c.gridx = 0;
 		c.gridy = 1;
@@ -70,7 +70,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.gridy = 1;
 		countryField = new JTextField(country);
 		pane.add(countryField, c);
-		
+
 		c.weightx = 0;
 		c.gridx = 0;
 		c.gridy = 2;
@@ -80,7 +80,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.gridy = 2;
 		emailField = new JTextField(email);
 		pane.add(emailField, c);
-		
+
 		c.weightx = 0;
 		c.gridx = 0;
 		c.gridy = 3;
@@ -90,7 +90,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.gridy = 3;
 		averageField = new JTextField(average);
 		pane.add(averageField, c);
-		
+
 		c.weightx = 0;
 		c.gridx = 0;
 		c.gridy = 4;
@@ -100,7 +100,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.gridy = 4;
 		timesField = new JTextField(times);
 		pane.add(timesField, c);
-		
+
 		c.weightx = 0;
 		c.gridx = 0;
 		c.gridy = 5;
@@ -112,7 +112,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		quoteArea = new JTextAreaWithHistory();
 		quoteArea.setText(quote);
 		pane.add(new JScrollPane(quoteArea), c);
-		
+
 		c.weightx = 1;
 		c.weighty = 0;
 		c.gridwidth = GridBagConstraints.REMAINDER;
@@ -128,13 +128,13 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		doneButton.addActionListener(this);
 		sideBySide.add(doneButton);
 		pane.add(sideBySide, c);
-		
+
 		setPreferredSize(new Dimension(500, 300));
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
-	
+
 	private static class FindResultsHandler extends DefaultHandler {
 		private int level = 0;
 		private int resultsLevel = -1;
@@ -148,7 +148,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 			}
 			level++;
 		}
-		
+
 		public void endElement(String uri, String localName, String name)
 				throws SAXException {
 			level--;
@@ -163,7 +163,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 				results += new String(ch, start, length);
 		}
 	}
-	
+
 	private static String submitSundayContest(String name, String country, String email,
 			String average, String times, String quote, boolean showemail) throws IOException {
 		String data = URLEncoder.encode("name", "UTF-8") + "="
@@ -200,7 +200,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		while (null != ((temp = rd.readLine()))) {
 			str += temp;
 		}
-		
+
 		FindResultsHandler handler = new FindResultsHandler();
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		try {

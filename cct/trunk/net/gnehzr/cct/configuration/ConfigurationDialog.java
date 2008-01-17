@@ -84,7 +84,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 	private final int MAX_FONT_SIZE() {
 		return Configuration.getInt(VariableKey.MAX_FONTSIZE, false);
 	}
-	
+
 	private ComboItem[] items;
 	private StackmatInterpreter stackmat;
 	private Timer tickTock;
@@ -370,7 +370,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		profilesTable.setModel(profilesModel);
 		profilesTable.setDefaultEditor(Profile.class, new ProfileEditor("Type new profile name here.", profilesModel));
 		panel.add(new JScrollPane(profilesTable), BorderLayout.LINE_START);
-		
+
 		tf = new JTextField();
 		tf.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 		tf.addFocusListener(new FocusAdapter() {
@@ -384,7 +384,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		});
 
 		DraggableJTable scramType = new DraggableJTable("Add new puzzle...", true);
-		scramType.setModel(puzzlesModel); 
+		scramType.setModel(puzzlesModel);
 		PuzzleCustomizationCellRendererEditor rendererEditor = new PuzzleCustomizationCellRendererEditor();
 		for(Class<?> c : ScrambleCustomizationListModel.COLUMN_CLASSES) {
 			scramType.setDefaultRenderer(c, rendererEditor);
@@ -543,7 +543,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		c.gridy = 2;
 		showEmail = new JCheckBox("Show address?");
 		sundayOptions.add(showEmail, c);
-		
+
 
 		emailOptions = new JPanel(new GridBagLayout());
 		emailOptions.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Email setup"));
@@ -551,16 +551,16 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		c.insets = new Insets(2, 2, 2, 2);
 		c.fill = GridBagConstraints.BOTH;
 		c.ipady = 5;
-		
+
 		useSMTPServer = new JCheckBox("Check here to setup a SMTP server to use. Otherwise, CCT will attempt to use your default mailto: link handler.");
 		useSMTPServer.addItemListener(this);
-		
+
 		c.weightx = 0;
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.gridx = 0;
 		c.gridy = 1;
 		emailOptions.add(useSMTPServer, c);
-		
+
 		smtpEmailAddress = new JTextField();
 		c.weightx = 0;
 		c.gridwidth = 1;
@@ -572,7 +572,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		c.gridx = 1;
 		c.gridy = 2;
 		emailOptions.add(smtpEmailAddress, c);
-		
+
 		host = new JTextField();
 		c.weightx = 0;
 		c.gridwidth = 1;
@@ -732,7 +732,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 	public void mouseExited(MouseEvent e) {}
 	public void mousePressed(MouseEvent e) {}
 	public void mouseReleased(MouseEvent e) {}
-	
+
 	private void applyAndSave() {
 		applyConfiguration();
 		try {
@@ -782,7 +782,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 			} else {
 				f = Configuration.getFont(VariableKey.SCRAMBLE_FONT, true);
 			}
-			
+
 			JFontChooser font = new JFontChooser(FONT_SIZES, f, source == scrambleFontButton, MAX_FONT_SIZE(), toDisplay);
 			font.setSelectedFont(((JButton) source).getFont());
 			if (font.showDialog(this) == JFontChooser.OK_OPTION) {
@@ -880,7 +880,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 			puzzle.syncColorScheme(defaults);
 		}
 	}
-	
+
 	private Profile currProfile;
 	public void setVisible(boolean visible, Profile currProfile) {
 		setTitle("CCT Options for " + currProfile.getName());
@@ -925,7 +925,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		Configuration.setString(VariableKey.SMTP_PASSWORD, new String(password.getPassword()));
 		Configuration.setBoolean(VariableKey.SMTP_ENABLED, useSMTPServer.isSelected());
 		Configuration.setString(VariableKey.SMTP_FROM_ADDRESS, smtpEmailAddress.getText());
-		
+
 		Configuration.setString(VariableKey.SESSION_STATISTICS, sessionStats.getText());
 		Configuration.setString(VariableKey.AVERAGE_STATISTICS, averageStats.getText());
 
@@ -950,7 +950,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 
 		profilesModel.commitChanges();
 		Configuration.setProfileOrdering(profilesModel.getContents());
-		
+
 		Configuration.apply();
 
 		for (int i = 0; i < items.length; i++) {

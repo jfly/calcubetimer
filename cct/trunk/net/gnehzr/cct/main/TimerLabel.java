@@ -34,7 +34,7 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 		setGreenButton();
 		timer = new KeyboardTimerPanel(this, timeListener, scrambles);
 	}
-	
+
 	public void setEnabledTiming(boolean enabled) {
 		if(!enabled)
 			setBorder(BorderFactory.createEmptyBorder());
@@ -76,13 +76,13 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 	public void componentMoved(ComponentEvent arg0) {
 
 	}
-	
+
 	private Font font;
 	public void setFont(Font font) {
 		this.font = font;
 		super.setFont(font);
 	}
-	
+
 	public void componentResized(ComponentEvent e) {
 		if(font != null) { //this is to avoid an exception before showing the component
 			String newTime = getText();

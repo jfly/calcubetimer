@@ -23,25 +23,25 @@ import java.util.*;
 
 /*
  * To use this program, change values for the following three constants,
- * 
+ *
  * SMTP_HOST_NAME -- Has your SMTP Host Name SMTP_AUTH_USER -- Has your SMTP
  * Authentication UserName SMTP_AUTH_PWD -- Has your SMTP Authentication
  * Password
- * 
+ *
  * Next change values for fields
- * 
+ *
  * emailMsgTxt -- Message Text for the Email emailSubjectTxt -- Subject for
  * email emailFromAddress -- Email Address whose name will appears as "from"
  * address
- * 
+ *
  * Next change value for "emailList". This String array has List of all Email
  * Addresses to Email Email needs to be sent to.
- * 
- * 
+ *
+ *
  * Next to run the program, execute it as follows,
- * 
+ *
  * SendMailUsingAuthentication authProg = new SendMailUsingAuthentication();
- * 
+ *
  */
 
 public class SendMailUsingAuthentication {

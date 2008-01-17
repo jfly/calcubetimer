@@ -738,7 +738,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		}
 		return false;
 	}
-	
+
 	private JRadioButtonMenuItem none, plusTwo, pop, dnf;
 	public void showPopup(MouseEvent e, final DraggableJTable timesTable) {
 		ActionListener al = new ActionListener() {

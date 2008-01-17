@@ -3,7 +3,7 @@ package net.gnehzr.cct.scrambles;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 
-public class ScrambleVariation {	
+public class ScrambleVariation {
 	private String variation;
 	private int length = 0;
 	private ScramblePlugin scramblePlugin;
@@ -12,14 +12,14 @@ public class ScrambleVariation {
 		this.variation = variation;
 		this.length = getScrambleLength(false);
 	}
-	
+
 	private int getScrambleLength(boolean defaultValue) {
 		try {
 			return Configuration.getInt(VariableKey.SCRAMBLE_LENGTH(this),	defaultValue);
 		} catch (NumberFormatException e) {}
 		return scramblePlugin.getDefaultScrambleLength(this);
 	}
-	
+
 	public ScramblePlugin getScramblePlugin() {
 		return scramblePlugin;
 	}
@@ -40,7 +40,7 @@ public class ScrambleVariation {
 	public Scramble generateScramble(String scramble) {
 		return scramblePlugin.importScramble(variation, scramble, scramblePlugin.getEnabledPuzzleAttributes());
 	}
-	
+
 	public boolean equals(Object o) {
 		try {
 			ScrambleVariation other = (ScrambleVariation) o;

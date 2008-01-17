@@ -29,7 +29,7 @@ public class DynamicMenuItem extends JMenuItem implements StatisticsUpdateListen
 			update();
 		}
 	}
-	
+
 	public void update(){
 		if(s != null) setText(s.toString());
 	}

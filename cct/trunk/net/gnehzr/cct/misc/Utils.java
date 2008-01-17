@@ -62,7 +62,7 @@ public class Utils{
 			return Color.WHITE;
 		}
 	}
-	
+
 	public static String fontToString(Font f) {
 		String style = "";
 		if(f.isPlain())

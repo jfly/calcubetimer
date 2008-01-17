@@ -85,7 +85,7 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		JPanel horiz = new JPanel();
 		sendButton = new JButton("Send");
 		sendButton.addActionListener(this);
-		horiz.add(sendButton);		
+		horiz.add(sendButton);
 		doneButton = new JButton("Done");
 		doneButton.addActionListener(this);
 		horiz.add(doneButton);
@@ -94,12 +94,12 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		c.gridx = 0;
 		c.gridy = 3;
 		pane.add(horiz, c);
-		
+
 		setPreferredSize(new Dimension(550, 350));
 		pack();
 		setLocationRelativeTo(null);
 	}
-	
+
 	private static String toPrettyString(String[] recievers) {
 		String result = "";
 		if(recievers.length == 1)
@@ -112,7 +112,7 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		}
 		return result;
 	}
-	
+
 	private class EmailWorker extends SwingWorker<Void, Void> {
 		private SendMailUsingAuthentication smtpMailSender;
 		private String[] receivers;
@@ -155,7 +155,7 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 			}
 		}
 	}
-	
+
 	private class WaitingDialog extends JDialog {
 		private JTextArea message;
 		private JButton button;
@@ -187,7 +187,7 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 			button.setText(text);
 		}
 	}
-	
+
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if (source == sendButton) {
@@ -230,7 +230,7 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		public PasswordPrompt(JDialog parent) {
 			super(parent, "Enter Password", true);
 			Container pane = getContentPane();
-	
+
 			pass = new JPasswordField(20);
 			ok = new JButton("Ok");
 			ok.addActionListener(this);
@@ -240,7 +240,7 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 			JPanel okCancel = new JPanel();
 			okCancel.add(ok);
 			okCancel.add(cancel);
-	
+
 			pane.add(pass, BorderLayout.CENTER);
 			pane.add(okCancel, BorderLayout.PAGE_END);
 			pack();

@@ -29,7 +29,7 @@ public class DynamicLabel extends JLabel implements StatisticsUpdateListener, Dy
 			update();
 		}
 	}
-	
+
 	public void update(){
 		if(s != null) setText(s.toString());
 	}

@@ -29,7 +29,7 @@ public class DynamicMenu extends JMenu implements StatisticsUpdateListener, Dyna
 			update();
 		}
 	}
-	
+
 	public void update(){
 		if(s != null) setText(s.toString());
 	}

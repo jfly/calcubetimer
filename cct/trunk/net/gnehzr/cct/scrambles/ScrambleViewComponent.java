@@ -58,7 +58,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		}
 		else return new Dimension(buffer.getWidth(), buffer.getHeight());
 	}
-	
+
 	public Dimension getMaximumSize() {
 		return getMinimumSize();
 	}
@@ -105,7 +105,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	public interface ColorListener {
 		public void colorClicked(ScrambleViewComponent source, String face, HashMap<String, Color> colorScheme);
 	}
-	
+
 
 	public void commitColorSchemeToConfiguration() {
 		HashMap<String, Color> colorScheme = getColorScheme(currentPlugin);
@@ -138,7 +138,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 			colorSchemes.clear();
 		redo();
 	}
-	
+
 	private HashMap<ScramblePlugin, Integer> unitSizes = new HashMap<ScramblePlugin, Integer>();
 	private int getUnitSize(ScramblePlugin plugin) {
 		Integer unitSize = unitSizes.get(plugin);

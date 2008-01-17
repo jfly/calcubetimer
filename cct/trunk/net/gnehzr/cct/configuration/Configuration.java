@@ -29,7 +29,7 @@ public final class Configuration {
 	public static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/");
 	private static final File guiLayoutsFolder = new File(getRootDirectory(), "guiLayouts/");
 	private static final File startupProfileFile = new File(profilesFolder, "startup");
-	
+
 	private static final String guestName = "Guest";
 	public static final Profile guestProfile = createGuestProfile();
 	private static Profile createGuestProfile() {
@@ -38,13 +38,13 @@ public final class Configuration {
 		return temp;
 	}
 	private static final String DEFAULT_XML_GUI = "default.xml";
-	
+
 	private static File defaultsFile = new File(profilesFolder, "defaults.properties");
-	
+
 	private Configuration() {}
 
 	//********* Start getters and setters *****************//
-	
+
 	public static double getDouble(VariableKey<Double> key, boolean defaultValue) {
 		return getDouble(defaultValue ? defaults : props, key.toKey());
 	}
@@ -54,7 +54,7 @@ public final class Configuration {
 	public static void setDouble(VariableKey<Double> key, double value) {
 		props.setProperty(key.toKey(), Double.toString(value));
 	}
-	
+
 	public static float getFloat(VariableKey<Float> key, boolean defaultValue) {
 		return getFloat(defaultValue ? defaults : props, key.toKey());
 	}
@@ -64,7 +64,7 @@ public final class Configuration {
 	public static void setFloat(VariableKey<Float> key, float value) {
 		props.setProperty(key.toKey(), Float.toString(value));
 	}
-	
+
 	public static String getString(VariableKey<String> key, boolean defaultValue) {
 		return getString(defaultValue ? defaults : props, key.toKey());
 	}
@@ -74,7 +74,7 @@ public final class Configuration {
 	public static void setString(VariableKey<String> key, String value) {
 		props.setProperty(key.toKey(), value);
 	}
-	
+
 	public static int getInt(VariableKey<Integer> key, boolean defaultValue) {
 		return getInt(defaultValue ? defaults : props, key.toKey());
 	}
@@ -84,7 +84,7 @@ public final class Configuration {
 	public static void setInt(VariableKey<Integer> key, int value) {
 		props.setProperty(key.toKey(), Integer.toString(value));
 	}
-	
+
 	public static Font getFont(VariableKey<Font> key, boolean defaultValue) {
 		return getFont(defaultValue ? defaults : props, key.toKey());
 	}
@@ -94,7 +94,7 @@ public final class Configuration {
 	public static void setFont(VariableKey<Font> key, Font newFont) {
 		props.setProperty(key.toKey(), Utils.fontToString(newFont));
 	}
-	
+
 	public static boolean getBoolean(VariableKey<Boolean> key, boolean defaultValue) {
 		return getBoolean(defaultValue ? defaults : props, key.toKey());
 	}
@@ -104,7 +104,7 @@ public final class Configuration {
 	public static void setBoolean(VariableKey<Boolean> key, boolean newValue) {
 		props.setProperty(key.toKey(), Boolean.toString(newValue));
 	}
-	
+
 	public static Dimension getDimension(VariableKey<Dimension> key, boolean defaultValue) {
 		return getDimension(defaultValue ? defaults : props, key.toKey());
 	}
@@ -119,7 +119,7 @@ public final class Configuration {
 	public static void setDimension(VariableKey<Dimension> key, Dimension newValue) {
 		props.setProperty(key.toKey(), newValue.width + "x" + newValue.height);
 	}
-	
+
 	public static Point getPoint(VariableKey<Point> key, boolean defaultValue) {
 		return getPoint(defaultValue ? defaults : props, key.toKey());
 	}
@@ -134,7 +134,7 @@ public final class Configuration {
 	public static void setPoint(VariableKey<Point> key, Point newValue) {
 		props.setProperty(key.toKey(), newValue.x + "," + newValue.y);
 	}
-	
+
 	public static Color getColor(VariableKey<Color> key, boolean defaultValue) {
 		return getColor(defaultValue ? defaults : props, key.toKey());
 	}
@@ -144,9 +144,9 @@ public final class Configuration {
 	public static void setColor(VariableKey<Color> key, Color c) {
 		props.setProperty(key.toKey(), Utils.colorToString(c));
 	}
-	
+
 	//********* End getters and setters *****************//
-	
+
 	private static CopyOnWriteArrayList<ConfigurationChangeListener> listeners = new CopyOnWriteArrayList<ConfigurationChangeListener>();
 	public static void addConfigurationChangeListener(ConfigurationChangeListener listener) {
 		listeners.add(listener);
@@ -183,7 +183,7 @@ public final class Configuration {
 		}
 		return seriousError;
 	}
-	
+
 	private static SortedProperties defaults, props;
 	public static void loadConfiguration(File f) throws IOException, URISyntaxException {
 		InputStream in = new FileInputStream(defaultsFile);
@@ -191,7 +191,7 @@ public final class Configuration {
 		defaults.load(in);
 		in.close();
 		props = new SortedProperties(defaults);
-		
+
 		f.createNewFile();
 		in = new FileInputStream(f);
 		props.load(in);
@@ -210,10 +210,10 @@ public final class Configuration {
 			e.printStackTrace();
 		}
 	}
-	
+
 
 	//********* Start of specialized methods ***************//
-	
+
 	public static ArrayList<Profile> getProfiles() {
 		String[] profDirs = profilesFolder.list(new FilenameFilter() {
 			public boolean accept(File f, String s) {
@@ -245,8 +245,8 @@ public final class Configuration {
 		}
 		setString(VariableKey.PROFILES, types);
 	}
-	
-	
+
+
 	private static Profile profileCache;
 	public static void setSelectedProfile(Profile p) {
 		profileCache = p;
@@ -271,8 +271,8 @@ public final class Configuration {
 		}
 		return guestProfile;
 	}
-	
-	
+
+
 	//returns file stored in props file, if available
 	//otherwise, returns default.xml, if available
 	//otherwise, returns any available layout
@@ -309,6 +309,6 @@ public final class Configuration {
 		}
 		return availableLayouts;
 	}
-	
+
 	//********* End of specialized methods ***************//
 }

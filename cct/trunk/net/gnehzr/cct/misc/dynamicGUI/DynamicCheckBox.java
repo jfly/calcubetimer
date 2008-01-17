@@ -29,7 +29,7 @@ public class DynamicCheckBox extends JCheckBox implements StatisticsUpdateListen
 			update();
 		}
 	}
-	
+
 	public void update(){
 		if(s != null) setText(s.toString());
 	}

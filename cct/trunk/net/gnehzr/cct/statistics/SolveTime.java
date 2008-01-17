@@ -47,7 +47,7 @@ public class SolveTime implements Comparable<SolveTime> {
 		setTime(time);
 		setScramble(scramble);
 	}
-	
+
 	public void setTime(String time) throws Exception {
 		if(time != null) time = time.trim();
 		isDNF = time.equalsIgnoreCase("DNF");
@@ -82,7 +82,7 @@ public class SolveTime implements Comparable<SolveTime> {
 			this.hundredths = (int)(100 * seconds + .5);
 		}
 	}
-	
+
 	public void setScramble(String scramble) {
 		this.scramble = scramble;
 	}
@@ -110,7 +110,7 @@ public class SolveTime implements Comparable<SolveTime> {
 		}
 		return temp;
 	}
-	
+
 	public double rawSecondsValue() {
 		return hundredths / 100.;
 	}

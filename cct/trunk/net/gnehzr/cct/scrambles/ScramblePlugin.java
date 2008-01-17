@@ -34,7 +34,7 @@ public class ScramblePlugin {
 					}
 					URL[] urls = new URL[]{url};
 					ClassLoader cl = new URLClassLoader(urls);
-	
+
 					for(String child : pluginFolder.list(new FilenameFilter() {
 						public boolean accept(File dir, String name) {
 							if(new File(dir, name).isFile()) {
@@ -43,7 +43,7 @@ public class ScramblePlugin {
 							return false;
 						}
 					})) {
-						Class<?> cls = null;;
+						Class<?> cls = null;
 						try {
 							cls = cl.loadClass(child.substring(0, child.indexOf(".")));
 						} catch (ClassNotFoundException e) {
@@ -62,7 +62,7 @@ public class ScramblePlugin {
 		}
 		return scramblePlugins;
 	}
-	
+
 	private static ScrambleVariation[] scrambleVariations;
 	public static ScrambleVariation[] getScrambleVariations() {
 		if(scrambleVariations == null) {
@@ -75,7 +75,7 @@ public class ScramblePlugin {
 		}
 		return scrambleVariations;
 	}
-	
+
 
 	public static ScrambleCustomization getCurrentScrambleCustomization() {
 		String[] lastCustom = Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, false).split(":");
@@ -100,7 +100,7 @@ public class ScramblePlugin {
 			for(ScrambleVariation t : getScrambleVariations()) {
 				scrambleCustomizations.add(new ScrambleCustomization(t, ""));
 			}
-	
+
 			String[] customNames = Configuration.getString(VariableKey.SCRAMBLE_CUSTOMIZATIONS, defaults).split(";");
 			for(int ch = customNames.length - 1; ch >= 0; ch--) {
 				String[] name = customNames[ch].split(":");
@@ -120,7 +120,7 @@ public class ScramblePlugin {
 		}
 		return scrambleCustomizations;
 	}
-	
+
 
 
 //	public static void setCustomScrambleVariations(String[] customTypes) {
@@ -130,7 +130,7 @@ public class ScramblePlugin {
 //		}
 //		setString(VariableKey.SCRAMBLE_TYPES, types);
 //	}
-	
+
 	private String[] getDefaultPuzzleAttributes() {
 		String attrs = Configuration.getString(VariableKey.PUZZLE_ATTRIBUTES(this), false);
 		if(attrs != null)
@@ -150,51 +150,51 @@ public class ScramblePlugin {
 	public void setEnabledPuzzleAttributes(String[] attributes) {
 		this.attributes = attributes;
 	}
-	
+
 	private Constructor<? extends Scramble> newScrambleConstructor;
 	private Constructor<? extends Scramble> importScrambleConstructor;
-	
+
 	private String PUZZLE_NAME;
 	private String[] FACE_NAMES;
 	private int DEFAULT_UNIT_SIZE;
 	private String[] VARIATIONS;
 	private String[] ATTRIBUTES;
 	private String[] DEFAULT_ATTRIBUTES;
-	
+
 	private Method getDefaultScrambleLength;
 	private Method getDefaultFaceColor;
-	
+
 	private ScramblePlugin(Class<? extends Scramble> pluginClass) throws SecurityException, NoSuchMethodException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 		newScrambleConstructor = pluginClass.getConstructor(String.class, int.class, String[].class);
 		importScrambleConstructor = pluginClass.getConstructor(String.class, String.class, String[].class);
-		
+
 		Field f = pluginClass.getField("PUZZLE_NAME");
 		PUZZLE_NAME = (String) f.get(null);
-		
+
 		f = pluginClass.getField("FACE_NAMES");
 		FACE_NAMES = (String[]) f.get(null);
-		
+
 		f = pluginClass.getField("DEFAULT_UNIT_SIZE");
 		DEFAULT_UNIT_SIZE = f.getInt(null);
-		
+
 		f = pluginClass.getField("VARIATIONS");
 		VARIATIONS = (String[]) f.get(null);
-		
+
 		f = pluginClass.getField("ATTRIBUTES");
 		ATTRIBUTES = (String[]) f.get(null);
-		
+
 		f = pluginClass.getField("DEFAULT_ATTRIBUTES");
 		DEFAULT_ATTRIBUTES = (String[]) f.get(null);
-		
+
 		getDefaultScrambleLength = pluginClass.getMethod("getDefaultScrambleLength", String.class);
 		if(!getDefaultScrambleLength.getReturnType().equals(int.class))
 			throw new ClassCastException();
-		
+
 		getDefaultFaceColor = pluginClass.getMethod("getDefaultFaceColor", String.class);
 		if(!getDefaultFaceColor.getReturnType().equals(String.class))
 			throw new ClassCastException();
 	}
-	
+
 	public Scramble newScramble(String variation, int length, String[] attributes) {
 		try {
 			return newScrambleConstructor.newInstance(variation, length, attributes);
@@ -209,7 +209,7 @@ public class ScramblePlugin {
 		}
 		return null;
 	}
-	
+
 	public Scramble importScramble(String variation, String scramble, String[] attributes) {
 		try {
 			return importScrambleConstructor.newInstance(variation, scramble, attributes);
@@ -224,7 +224,7 @@ public class ScramblePlugin {
 		}
 		return null;
 	}
-	
+
 	public int getDefaultScrambleLength(ScrambleVariation var) {
 		try {
 			return (Integer) getDefaultScrambleLength.invoke(null, var.getVariation());
@@ -237,14 +237,14 @@ public class ScramblePlugin {
 		}
 		return 0;
 	}
-	
+
 	public String[] getFaceNames() {
 		return FACE_NAMES;
 	}
 	public String getPuzzleName() {
 		return PUZZLE_NAME;
 	}
-	
+
 	//begin configuration stuff
 	public HashMap<String, Color> getColorScheme(boolean defaults) {
 		HashMap<String, Color> scheme = null;
@@ -266,7 +266,7 @@ public class ScramblePlugin {
 		}
 		return scheme;
 	}
-	
+
 	//TODO - need defaults?
 	public int getPuzzleUnitSize(boolean defaults) {
 		try {

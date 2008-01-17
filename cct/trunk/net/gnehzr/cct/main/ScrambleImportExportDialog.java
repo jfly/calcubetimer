@@ -62,13 +62,13 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 		add(subPanel);
 		this.addAncestorListener(this);
 	}
-	
+
 	public void ancestorAdded(AncestorEvent e) {
 		urlField.requestFocus();
 	}
 	public void ancestorMoved(AncestorEvent event) {}
 	public void ancestorRemoved(AncestorEvent event) {}
-	
+
 	public URL getURL() {
 		try {
 			return new URI(urlField.getText()).toURL();

@@ -58,7 +58,7 @@ public class MegaminxScramble extends Scramble {
 				return null;
 		}
 	}
-	
+
 	public MegaminxScramble(String variation, String s, String... attrs) throws Exception {
 		super(s);
 		pochmann = variation.equals(VARIATIONS[1]);
@@ -186,7 +186,7 @@ public class MegaminxScramble extends Scramble {
 			}
 		}
 		else{
-			for(int i = 0; i < length; ){ 
+			for(int i = 0; i < length; ){
 				int dir;
 				for(int j = 0; i < length && j < 14; i++, j++){
 					int side = j % 2;
@@ -203,7 +203,7 @@ public class MegaminxScramble extends Scramble {
 			}
 		}
 	}
-	
+
 	private void turn(int side, int dir){
 		for(int i = 0; i < dir; i++){
 			turn(side);
@@ -340,7 +340,7 @@ public class MegaminxScramble extends Scramble {
 		GeneralPath p = pentagon(up, minxRad);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		p.transform(AffineTransform.getTranslateInstance(x, y));
-		
+
 		double[] xpoints = new double[5];
 		double[] ypoints = new double[5];
 		PathIterator iter = p.getPathIterator(null);

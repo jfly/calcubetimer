@@ -24,7 +24,7 @@ public class TimerPanel extends JLabel implements KeyboardTimerComponent {
 		setHorizontalTextPosition(JLabel.CENTER);
 		timer = new KeyboardTimerPanel(this, timeListener, scrambles);
 		this.setToolTipText("Just click here to request focus");
-		
+
 		Dimension size = Configuration.getDimension(VariableKey.KEYBOARD_TIMER_DIMENSION, false);
 		setPreferredSize(size);
 		setMinimumSize(size);

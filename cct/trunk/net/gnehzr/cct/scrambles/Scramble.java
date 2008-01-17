@@ -16,11 +16,11 @@ public abstract class Scramble {
 		scramble = s;
 		imported = true;
 	}
-	
+
 	public int getLength() {
 		return length;
 	}
-	
+
 	protected static int random(int choices) {
 		return (int)(choices * Math.random());
 	}
@@ -39,7 +39,7 @@ public abstract class Scramble {
 	public boolean isImported() {
 		return imported;
 	}
-	
+
 	/* Required fields */
 	//What follows are methods to display a scramble, a new scramble type
 	//will want to define them to have a custom scramble view
@@ -51,13 +51,13 @@ public abstract class Scramble {
 	//public static String getDefaultFaceColor(String face); REQUIRED - returns hex code of face's color
 	//public Constructor(String variation, int length, String... attrs) - REQUIRED
 	//public Constructor(String variation, String scramble, String... attrs) throws Exception - REQUIRED
-	public abstract int getNewUnitSize(int width, int height, int gap);	
+	public abstract int getNewUnitSize(int width, int height, int gap);
 	public abstract Dimension getMinimumSize(int gap, int unitSize);
 	public abstract BufferedImage getScrambleImage(int gap, int unitSize, HashMap<String, Color> colorScheme);
 	public abstract String getFaceClicked(int x, int y, int gap, int unitSize);
-	
+
 	/* Optional fields */
-	public static final String[] VARIATIONS = {""}; //OPTIONAL, this is so one class can handle 3x3x3-11x11x11 	
+	public static final String[] VARIATIONS = {""}; //OPTIONAL, this is so one class can handle 3x3x3-11x11x11
 	//As of now, there is support for named booleans to affect scrambles.
 	//This was introduced as a way of adding a multi-slice option for cubes
 	//without coding a special case.

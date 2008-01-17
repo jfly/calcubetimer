@@ -11,7 +11,7 @@ public class ScrambleCustomization {
 		}
 		Configuration.setString(VariableKey.SCRAMBLE_CUSTOMIZATIONS, types);
 	}
-	
+
 	private ScrambleVariation variation;
 	private String customization;
 	public ScrambleCustomization(ScrambleVariation variation, String customization) {

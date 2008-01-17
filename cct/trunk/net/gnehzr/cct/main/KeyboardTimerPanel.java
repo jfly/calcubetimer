@@ -110,7 +110,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 				return this;
 			}
 		}.setKeyCode(code);
-		
+
 		new Timer(10, checkForKeyPress).start();
 	}
 

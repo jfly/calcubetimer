@@ -39,7 +39,7 @@ public class ProfileListModel extends DraggableJTableModel {
 			a.executeAction();
 		}
 	}
-	
+
 	private ArrayList<ProfileEditAction> actions;
 	private ArrayList<Profile> contents;
 	public void setContents(ArrayList<Profile> contents) {

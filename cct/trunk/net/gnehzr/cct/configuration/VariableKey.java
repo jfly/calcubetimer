@@ -57,7 +57,7 @@ public class VariableKey<H> {
 	//TODO create a variable key for String[] stuff, and escape characters to make it work generally
 	static {
 		try {
-			Font lcdFont = Font.createFont(Font.TRUETYPE_FONT, 
+			Font lcdFont = Font.createFont(Font.TRUETYPE_FONT,
 					CALCubeTimer.class.getResourceAsStream("Digiface Regular.ttf"));
 			GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(lcdFont);
 		} catch (FontFormatException e) {
@@ -68,7 +68,7 @@ public class VariableKey<H> {
 	}
 	public static final VariableKey<Font> TIMER_FONT = new VariableKey<Font>("Timer_font");
 	public static final VariableKey<Font> SCRAMBLE_FONT = new VariableKey<Font>("Scramble_font");
-	
+
 	public static final VariableKey<Boolean> CLOCK_FORMAT = new VariableKey<Boolean>("Misc_isClockFormat");
 	public static final VariableKey<Boolean> INVERTED_HUNDREDTHS = new VariableKey<Boolean>("Stackmat_isInvertedHundredths");
 	public static final VariableKey<Boolean> INVERTED_SECONDS = new VariableKey<Boolean>("Stackmat_isInvertedSeconds");
@@ -89,24 +89,24 @@ public class VariableKey<H> {
 	public static final VariableKey<Boolean> LESS_ANNOYING_DISPLAY = new VariableKey<Boolean>("GUI_Timer_isLessAnnoyingDisplay");
 	public static final VariableKey<Boolean> FULLSCREEN_TIMING = new VariableKey<Boolean>("GUI_Timer_isFullScreenWhileTiming");
 	public static final VariableKey<Boolean> METRONOME_ENABLED = new VariableKey<Boolean>("Misc_Metronome_isEnabled");
-	
+
 	public static final VariableKey<Dimension> SCRAMBLE_VIEW_DIMENSION = new VariableKey<Dimension>("GUI_ScrambleView_dimension");
 	public static final VariableKey<Dimension> MAIN_FRAME_DIMENSION = new VariableKey<Dimension>("GUI_MainFrame_dimension");
 	public static final VariableKey<Dimension> KEYBOARD_TIMER_DIMENSION = new VariableKey<Dimension>("GUI_KeyboardTimer_dimension");
-	
+
 	public static final VariableKey<Point> SCRAMBLE_VIEW_LOCATION = new VariableKey<Point>("GUI_ScrambleView_location");
 	public static final VariableKey<Point> MAIN_FRAME_LOCATION = new VariableKey<Point>("GUI_MainFrame_location");
-	
+
 	public static final VariableKey<Color> BEST_AND_CURRENT = new VariableKey<Color>("Statistics_Color_bestAndCurrentAverage");
 	public static final VariableKey<Color> BEST_RA = new VariableKey<Color>("Statistics_Color_bestRA");
 	public static final VariableKey<Color> BEST_TIME = new VariableKey<Color>("Statistics_Color_bestTime");
 	public static final VariableKey<Color> CURRENT_AVERAGE = new VariableKey<Color>("Statistics_Color_currentAverage");
 	public static final VariableKey<Color> WORST_TIME = new VariableKey<Color>("Statistics_Color_worstTime");
-	
+
 	public static final VariableKey<Float> OPACITY = new VariableKey<Float>("Watermark_opacity");
-	
+
 	public static final VariableKey<Double> MIN_SPLIT_DIFFERENCE = new VariableKey<Double>("Splits_minimumSplitDifference");
-	
+
 	private final String propsName;
 	private VariableKey(String propertiesName) {
 		propsName = propertiesName;
