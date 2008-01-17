@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.Semaphore;
-import java.text.SimpleDateFormat;
 
-import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.umts.Protocol;
 
 public class CCTServer implements Runnable{

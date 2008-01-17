@@ -14,26 +14,20 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.main.Profile;
 import net.gnehzr.cct.misc.Utils;
-import net.gnehzr.cct.scrambles.Scramble;
-import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 public final class Configuration {
 	public static final File documentationFile = new File(getRootDirectory(), "documentation/readme.html");
 	public static final File profilesFolder = new File(getRootDirectory(), "profiles/");
+	public static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/");
 	private static final File guiLayoutsFolder = new File(getRootDirectory(), "guiLayouts/");
-	private static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/");
 	private static final File startupProfileFile = new File(profilesFolder, "startup");
 	
 	private static final String guestName = "Guest";
@@ -314,233 +308,6 @@ public final class Configuration {
 			});
 		}
 		return availableLayouts;
-	}
-	
-	public static int getPuzzleUnitSize(Class<? extends Scramble> puzzleType, boolean defaults) {
-		try {
-			String name = (String) puzzleType.getField("PUZZLE_NAME").get(null);
-			return getInt(VariableKey.UNIT_SIZE(name), defaults);
-		} catch (Exception e) {
-//			e.printStackTrace();
-		}
-		try {
-			return puzzleType.getField("DEFAULT_UNIT_SIZE").getInt(null);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		}
-		return 10;
-	}
-
-	public static String[] getPuzzleAttributes(Class<?> puzType) {
-		String[] attr = new String[0];
-		try {
-			attr = ((String[]) puzType.getField("ATTRIBUTES").get(null));
-		} catch (Exception e) {	}
-		return attr;
-	}
-	
-	public static HashMap<String, Color> getPuzzleColorScheme(Class<? extends Scramble> scrambleVariation) {
-		HashMap<String, Color> scheme = null;
-		try {
-			String[] faceNames = (String[]) scrambleVariation.getField("FACE_NAMES").get(null);
-			String puzzleName = (String) scrambleVariation.getField("PUZZLE_NAME").get(null);
-			scheme = new HashMap<String, Color>(faceNames.length);
-			for(String face : faceNames) {
-				String col = getString(VariableKey.PUZZLE_COLOR(puzzleName, face), false);
-				if(col == null) {
-					col = (String) scrambleVariation.getMethod("getDefaultFaceColor", String.class).invoke(null, face);
-				}
-				scheme.put(face, Utils.stringToColor(col));
-			}
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		}
-		return scheme;
-	}
-	public static void setPuzzleColorScheme(Class<?> scrambleVariation, HashMap<String, Color> colorScheme) {
-		try {
-			String[] faceNames = (String[]) scrambleVariation.getField("FACE_NAMES").get(null);
-			String puzzleName = (String) scrambleVariation.getField("PUZZLE_NAME").get(null);
-			for(String face : faceNames) {
-				setString(VariableKey.PUZZLE_COLOR(puzzleName, face), Utils.colorToString(colorScheme.get(face)));
-			}
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	//TODO - escape characters to deal with anything
-	public static ArrayList<String> getCustomScrambleVariations(boolean defaults) {
-		ArrayList<String> scramType = new ArrayList<String>();
-		for(ScrambleVariation t : getScrambleVariations()) {
-			scramType.add(t.toString());
-		}
-		
-		String[] variations = getString(VariableKey.SCRAMBLE_TYPES, defaults).split(";");
-		for(int ch = variations.length - 1; ch >= 0; ch--) {
-			String puzz = variations[ch].split(":")[0];
-			if(scramType.contains(puzz)) {
-				if(variations[ch].indexOf(':') == -1)
-					scramType.remove(puzz);
-				scramType.add(0, variations[ch]);
-			}
-		}
-		return scramType;
-	}
-	public static void setCustomScrambleVariations(String[] customTypes) {
-		String types = "";
-		for(String t : customTypes) {
-			types += t + ";";
-		}
-		setString(VariableKey.SCRAMBLE_TYPES, types);
-	}
-
-	public static String getPuzzle() {
-		String lastPuzzle = getString(VariableKey.DEFAULT_PUZZLE, false);
-		ScrambleVariation type = getScrambleVariation(lastPuzzle);
-		if(type != null)
-			return lastPuzzle;
-		try {
-			return getCustomScrambleVariations(false).get(0);
-		} catch(IndexOutOfBoundsException e) {
-			return null;
-		}
-	}
-	public static void setPuzzle(String puzzle) {
-		setString(VariableKey.DEFAULT_PUZZLE, puzzle);
-	}
-	private static int getScrambleLength(ScrambleVariation puzzle, boolean defaultValue) {
-		try {
-			return getInt(VariableKey.SCRAMBLE_LENGTH(puzzle.getPuzzleName(), puzzle.getVariation()),
-					defaultValue);
-		} catch (Exception e) {
-//			e.printStackTrace();
-		}
-		try {
-			if(puzzle != null)
-				return (Integer) puzzle.getPuzzleClass().getMethod("getDefaultScrambleLength", String.class).invoke(null, puzzle.getVariation());
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		}
-		return 10;
-	}
-	
-
-	public static String[] getPuzzleAttributes(ScrambleVariation puzzle) {
-		String attrs = getString(VariableKey.PUZZLE_ATTRIBUTES(puzzle.getPuzzleName()), false);
-		if(attrs != null) return attrs.split(",");
-		try {
-			return (String[]) puzzle.getPuzzleClass().getField("DEFAULT_ATTRIBUTES").get(null);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		}
-		return new String[0];
-	}
-	
-	public static void setPuzzleAttributes(ScrambleVariation puzzle, String[] attributes) {
-		String attrs = "";
-		for(int ch = 0; ch < attributes.length; ch++) {
-			attrs += attributes[ch] + (ch == attributes.length - 1 ? "" : ",");
-		}
-		setString(VariableKey.PUZZLE_ATTRIBUTES(puzzle.getPuzzleName()), attrs);
-	}
-	
-	private static ArrayList<Class<? extends Scramble>> scrambleClasses;
-	public static ArrayList<Class<? extends Scramble>> getScrambleClasses() {
-		if(scrambleClasses == null) {
-			// Create a File object on the root of the directory containing the class files
-			scrambleClasses = new ArrayList<Class<? extends Scramble>>();
-			if(scramblePluginsFolder.isDirectory()) {
-				try {
-					URL url = scramblePluginsFolder.toURI().toURL();
-					URL[] urls = new URL[]{url};
-					ClassLoader cl = new URLClassLoader(urls);
-	
-					for(String child : scramblePluginsFolder.list()) {
-						if(!child.endsWith(".class"))
-							continue;
-						try {
-							Class<?> cls = cl.loadClass(child.substring(0, child.indexOf(".")));
-							if(cls.getSuperclass().equals(Scramble.class))
-								scrambleClasses.add((Class<? extends Scramble>) cls);
-						} catch(NoClassDefFoundError ee) {
-							ee.printStackTrace();
-						}
-					}
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return scrambleClasses;
-	}
-	private static ScrambleVariation[] scrambleVariations;
-	public static ScrambleVariation[] getScrambleVariations() {
-		if(scrambleVariations == null) {
-			ArrayList<Class<? extends Scramble>> scrambles = getScrambleClasses();
-			ArrayList<ScrambleVariation> types = new ArrayList<ScrambleVariation>(scrambles.size());
-			for(Class<? extends Scramble> scramble : scrambles) {
-				try {
-					for(String var : (String[]) scramble.getField("VARIATIONS").get(null)) {
-						ScrambleVariation temp = new ScrambleVariation(scramble, var, 0);
-						temp.setLength(getScrambleLength(temp, false));
-						types.add(temp);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			scrambleVariations = new ScrambleVariation[types.size()];
-			types.toArray(scrambleVariations);
-		}
-		return scrambleVariations;
-	}
-	
-	public static ScrambleVariation getScrambleVariation(String puzzleName) {
-		if(puzzleName == null)
-			return null;
-		String puzz = puzzleName.split(":")[0];
-		for(ScrambleVariation type : getScrambleVariations()) {
-			if(type.toString().equals(puzz))
-				return type;
-		}
-		return null;
 	}
 	
 	//********* End of specialized methods ***************//

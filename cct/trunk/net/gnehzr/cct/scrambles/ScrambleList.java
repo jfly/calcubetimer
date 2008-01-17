@@ -46,11 +46,12 @@ public class ScrambleList extends ArrayList<Scramble>{
 		this.scrambleNumber = scrambleNumber - 1;
 	}
 
-	public static ScrambleList importScrambles(ScrambleVariation c, BufferedReader in) throws Exception{
+	public static ScrambleList importScrambles(ScrambleVariation c, BufferedReader in) throws Exception {
 		ScrambleList list = new ScrambleList(c);
 		String curr;
-		while((curr = in.readLine()) != null){
-			list.add(c.generateScramble(curr));
+		Scramble newScram;//TODO - exception is never thrown, fix this
+		while((curr = in.readLine()) != null && (newScram = c.generateScramble(curr)) != null){
+			list.add(newScram);
 		}
 		c.setLength(list.getCurrent().getLength());
 		list.setType(c);

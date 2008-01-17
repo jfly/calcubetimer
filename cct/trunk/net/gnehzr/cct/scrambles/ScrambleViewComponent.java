@@ -12,6 +12,7 @@ import javax.swing.JComponent;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.misc.Utils;
 
 import java.util.HashMap;
 
@@ -27,20 +28,24 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 
 
 	public void redo() {
-		setScramble(currentScram);
+		setScramble(currentScram, currentPlugin);
 	}
 	private BufferedImage buffer = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
 	private Scramble currentScram = null;
-	public void setScramble(Scramble scramble) {
+	private ScramblePlugin currentPlugin = null;
+	public void setScramble(Scramble scramble, ScramblePlugin plugin) {
 		if(scramble != null) {
 			currentScram = scramble;
-			Class<? extends Scramble> puzzleType = currentScram.getClass();
-			buffer = currentScram.getScrambleImage(GAP(), getUnitSize(puzzleType), getColorScheme(puzzleType));
+			currentPlugin = plugin;
+			buffer = currentScram.getScrambleImage(GAP(), getUnitSize(currentPlugin), getColorScheme(currentPlugin));
 			repaint();
 		}
 	}
 	public Scramble getScramble() {
 		return currentScram;
+	}
+	public ScramblePlugin getScramblePlugin() {
+		return currentPlugin;
 	}
 
 	public Dimension getPreferredSize() {
@@ -48,8 +53,9 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	}
 
 	public Dimension getMinimumSize() {
-		if(currentScram != null)
-			return currentScram.getMinimumSize(GAP(), Configuration.getPuzzleUnitSize(currentScram.getClass(), true));
+		if(currentScram != null) {
+			return currentScram.getMinimumSize(GAP(), currentPlugin.getPuzzleUnitSize(true));
+		}
 		else return new Dimension(buffer.getWidth(), buffer.getHeight());
 	}
 	
@@ -75,7 +81,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	public void componentShown(ComponentEvent e) {}
 	public void componentResized(ComponentEvent e) {
 		if(currentScram != null) {
-			setUnitSize(currentScram.getClass(), currentScram.getNewUnitSize(getWidth(), getHeight(), GAP()));
+			setUnitSize(currentPlugin, currentScram.getNewUnitSize(getWidth(), getHeight(), GAP()));
 			redo();
 		}
 	}
@@ -86,9 +92,9 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		this.listener = listener;
 	}
 	public void mouseClicked(MouseEvent e) {
-		String faceClicked = currentScram.getFaceClicked(e.getX(), e.getY(), GAP(), unitSizes.get(currentScram.getClass()));
+		String faceClicked = currentScram.getFaceClicked(e.getX(), e.getY(), GAP(), unitSizes.get(currentPlugin));
 		if(faceClicked != null)
-			listener.colorClicked(this, faceClicked, getColorScheme(currentScram.getClass()));
+			listener.colorClicked(this, faceClicked, getColorScheme(currentPlugin));
 	}
 
 	public void mouseEntered(MouseEvent e) {}
@@ -100,34 +106,49 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		public void colorClicked(ScrambleViewComponent source, String face, HashMap<String, Color> colorScheme);
 	}
 	
-	private HashMap<Class<?>, HashMap<String, Color>> colorSchemes = new HashMap<Class<?>, HashMap<String, Color>>();
-	public HashMap<String, Color> getColorScheme(Class<? extends Scramble> puzzleType) {
-		HashMap<String, Color> scheme = colorSchemes.get(puzzleType);
+
+	public void commitColorSchemeToConfiguration() {
+		HashMap<String, Color> colorScheme = getColorScheme(currentPlugin);
+		for(String face : currentPlugin.getFaceNames()) {
+			Configuration.setString(VariableKey.PUZZLE_COLOR(currentPlugin, face),
+					Utils.colorToString(colorScheme.get(face)));
+		}
+	}
+	private HashMap<ScramblePlugin, HashMap<String, Color>> colorSchemes = new HashMap<ScramblePlugin, HashMap<String, Color>>();
+	public HashMap<String, Color> getColorScheme(ScramblePlugin plugin) {
+		boolean defaults = colorSchemes == null;
+		if(defaults)
+			colorSchemes = new HashMap<ScramblePlugin, HashMap<String, Color>>();
+		HashMap<String, Color> scheme = colorSchemes.get(plugin);
 		if(scheme == null) {
-			scheme = Configuration.getPuzzleColorScheme(puzzleType);
-			colorSchemes.put(puzzleType, scheme);
+			scheme = plugin.getColorScheme(defaults);
+			colorSchemes.put(plugin, scheme);
 		}
 		return scheme;
 	}
-	public void setColorScheme(Class<?> puzzleType, HashMap<String, Color> scheme) {
-		colorSchemes.put(puzzleType, scheme);
+	//TODO - is this HashMap really neaded, or is it leftover from long ago?
+	public void setColorScheme(ScramblePlugin plugin, HashMap<String, Color> scheme) {
+		colorSchemes.put(plugin, scheme);
 		redo();
 	}
-	public void syncColorScheme() {
-		colorSchemes.clear();
+	public void syncColorScheme(boolean defaults) {
+		if(defaults)
+			colorSchemes = null; //this is how we will know to get the defaults
+		else
+			colorSchemes.clear();
 		redo();
 	}
 	
-	private HashMap<Class<?>, Integer> unitSizes = new HashMap<Class<?>, Integer>();
-	private int getUnitSize(Class<? extends Scramble> puzzleType) {
-		Integer unitSize = unitSizes.get(puzzleType);
+	private HashMap<ScramblePlugin, Integer> unitSizes = new HashMap<ScramblePlugin, Integer>();
+	private int getUnitSize(ScramblePlugin plugin) {
+		Integer unitSize = unitSizes.get(plugin);
 		if(unitSize == null) {
-			unitSize = Configuration.getPuzzleUnitSize(puzzleType, false);
-			unitSizes.put(puzzleType, unitSize);
+			unitSize = plugin.getPuzzleUnitSize(false);
+			unitSizes.put(plugin, unitSize);
 		}
 		return unitSize;
 	}
-	private void setUnitSize(Class<?> puzzleType, int unitSize) {
-		unitSizes.put(puzzleType, unitSize);
+	private void setUnitSize(ScramblePlugin plugin, int unitSize) {
+		unitSizes.put(plugin, unitSize);
 	}
 }

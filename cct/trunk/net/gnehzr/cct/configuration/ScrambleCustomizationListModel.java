@@ -3,24 +3,22 @@ package net.gnehzr.cct.configuration;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import javax.swing.JButton;
-import javax.swing.event.ListDataListener;
-
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
+import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 @SuppressWarnings("serial")
-public class PuzzleListModel extends DraggableJTableModel {
+public class ScrambleCustomizationListModel extends DraggableJTableModel {
 	private static final String[] COLUMN_NAMES = new String[] {"Scramble Variation", "Customization", "Scramble Length", "Reset Length"};
-	public static final Class<?>[] COLUMN_CLASSES = new Class[] { ScrambleVariation.class, String.class, Integer.class, JButton.class };
+	public static final Class<?>[] COLUMN_CLASSES = new Class[] { ScrambleVariation.class, String.class, Integer.class, Double.class };
 	
-	private ArrayList<String> customizations;
-	public void setContents(ArrayList<String> contents) {
+	private ArrayList<ScrambleCustomization> customizations;
+	public void setContents(ArrayList<ScrambleCustomization> contents) {
 		this.customizations = contents;
 		fireTableDataChanged();
 	}
-	public ArrayList<String> getContents() {
+	public ArrayList<ScrambleCustomization> getContents() {
 		return customizations;
 	}
 
@@ -40,9 +38,20 @@ public class PuzzleListModel extends DraggableJTableModel {
 		return customizations == null ? 0 : customizations.size();
 	}
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		if(columnIndex == 3)
-			return new JButton("reset");
-		return customizations.get(rowIndex);
+		ScrambleCustomization custom = customizations.get(rowIndex);
+		ScrambleVariation var = custom.getScrambleVariation();
+		switch(columnIndex) {
+		case 0:
+			return var;
+		case 1:
+			return custom.getCustomization();
+		case 2:
+			return var.getLength();
+		case 3: //this is for the reset button
+			return new Double(0);
+		default:
+			return null;
+		}
 	}
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
 		if(columnIndex == 3)
@@ -50,9 +59,9 @@ public class PuzzleListModel extends DraggableJTableModel {
 		return isRowDeletable(rowIndex);
 	}
 	public boolean isRowDeletable(int rowIndex) {
-		if(customizations.get(rowIndex).indexOf(":") != -1)
-			return true;
-		return false;
+		if(customizations.get(rowIndex).getCustomization().equals(""))
+			return false;
+		return true;
 	}
 	public boolean removeRowWithElement(Object element) {
 		boolean temp = customizations.remove(element);
@@ -60,11 +69,11 @@ public class PuzzleListModel extends DraggableJTableModel {
 		return temp;
 	}
 	public void insertValueAt(Object value, int rowIndex) {
-		customizations.add(rowIndex, (String)value);
+		customizations.add(rowIndex, (ScrambleCustomization)value);
 		fireTableRowsInserted(rowIndex, rowIndex);
 	}
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
-		String newVal = (String)value;
+		ScrambleCustomization newVal = (ScrambleCustomization)value;
 		if(rowIndex == customizations.size()) {
 			customizations.add(rowIndex, newVal);
 			fireTableRowsInserted(rowIndex, rowIndex);

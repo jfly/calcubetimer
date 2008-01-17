@@ -79,7 +79,7 @@ public class ScrambleDebugger {
 				System.out.println(face);
 			}
 		});
-		view.setScramble(s);
+		view.setScramble(s, null);//TODO - awesomize w/ scramblePlugin!
 		view.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		view.pack();
 		view.setVisible(true);

@@ -18,6 +18,7 @@ import javax.swing.event.AncestorListener;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.JSpinnerWithText;
+import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 @SuppressWarnings("serial")
@@ -34,7 +35,7 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 		browse = new JButton("Browse");
 		browse.addActionListener(this);
 
-		scrambleChooser = new JComboBox(Configuration.getScrambleVariations());
+		scrambleChooser = new JComboBox(ScramblePlugin.getScrambleVariations());
 		scrambleChooser.setSelectedItem(selected);
 		scrambleChooser.addActionListener(this);
 
@@ -97,7 +98,7 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 			}
 		} else if(source == scrambleChooser && scrambleLength != null) {
 			ScrambleVariation curr = (ScrambleVariation) scrambleChooser.getSelectedItem();
-			scrambleLength.setValue(Configuration.getInt(VariableKey.SCRAMBLE_LENGTH(curr.getPuzzleName(), curr.getVariation()), false));
+			scrambleLength.setValue(curr.getLength());
 		}
 	}
 

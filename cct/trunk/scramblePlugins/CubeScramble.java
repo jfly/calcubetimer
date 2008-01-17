@@ -77,11 +77,11 @@ public class CubeScramble extends Scramble {
 		setAttributes(attrs);
 	}
 	
-	public CubeScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
+	public CubeScramble(String variation, String s, String... attrs) throws Exception {
 		super(s);
 		this.size = Integer.parseInt(variation.split("x")[0]);
 		if(!setAttributes(attrs))
-			throw new InvalidScrambleException();
+			throw new Exception();
 	}
 
 	private boolean multislice;

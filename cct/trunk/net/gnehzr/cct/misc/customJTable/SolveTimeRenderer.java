@@ -2,16 +2,15 @@ package net.gnehzr.cct.misc.customJTable;
 
 import java.awt.Color;
 import java.awt.Component;
+
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JTable;
-import javax.swing.ListCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
-import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
+import net.gnehzr.cct.statistics.Statistics;
 
 @SuppressWarnings("serial")
 public class SolveTimeRenderer extends JLabel implements TableCellRenderer {

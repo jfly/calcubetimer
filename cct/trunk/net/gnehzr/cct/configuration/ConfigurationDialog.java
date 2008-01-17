@@ -27,13 +27,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EventObject;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
@@ -43,7 +41,6 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -51,18 +48,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.ListCellRenderer;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.Timer;
-import javax.swing.event.CellEditorListener;
-import javax.swing.table.TableCellEditor;
-
-import org.jvnet.lafwidget.LafWidget;
-
-import say.swing.JFontChooser;
 
 import net.gnehzr.cct.main.KeyboardTimerPanel;
 import net.gnehzr.cct.main.Profile;
@@ -75,13 +64,15 @@ import net.gnehzr.cct.misc.JTextAreaWithHistory;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.ProfileEditor;
 import net.gnehzr.cct.misc.customJTable.PuzzleCustomizationCellRendererEditor;
-import net.gnehzr.cct.misc.customJTable.SolveTimeEditor;
-import net.gnehzr.cct.scrambles.Scramble;
-import net.gnehzr.cct.scrambles.ScrambleVariation;
+import net.gnehzr.cct.scrambles.ScrambleCustomization;
+import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent.ColorListener;
 import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
-import net.gnehzr.cct.statistics.SolveTime;
+
+import org.jvnet.lafwidget.LafWidget;
+
+import say.swing.JFontChooser;
 
 @SuppressWarnings("serial")
 public class ConfigurationDialog extends JDialog implements KeyListener,
@@ -367,7 +358,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		return panel;
 	}
 
-	private PuzzleListModel puzzlesModel = new PuzzleListModel();
+	private ScrambleCustomizationListModel puzzlesModel = new ScrambleCustomizationListModel();
 	private ProfileListModel profilesModel = new ProfileListModel();
 
 	private JPanel makeScrambleTypeOptionsPanel() {
@@ -395,9 +386,10 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		DraggableJTable scramType = new DraggableJTable("Add new puzzle...", true);
 		scramType.setModel(puzzlesModel); 
 		PuzzleCustomizationCellRendererEditor rendererEditor = new PuzzleCustomizationCellRendererEditor();
-		scramType.setDefaultEditor(JButton.class, rendererEditor);
-		for(Class<?> c : PuzzleListModel.COLUMN_CLASSES)
+		for(Class<?> c : ScrambleCustomizationListModel.COLUMN_CLASSES) {
 			scramType.setDefaultRenderer(c, rendererEditor);
+			scramType.setDefaultEditor(c, rendererEditor);
+		}
 		JScrollPane scroller = new JScrollPane(scramType);
 		panel.add(scroller, BorderLayout.CENTER);
 
@@ -706,22 +698,14 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 				JScrollPane.VERTICAL_SCROLLBAR_NEVER,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scroller.getHorizontalScrollBar().setUnitIncrement(10);
-		ArrayList<Class<? extends Scramble>> scrambles = Configuration.getScrambleClasses();
-		solvedPuzzles = new ScrambleViewComponent[scrambles.size()];
-		
+		ArrayList<ScramblePlugin> scramblePlugins = ScramblePlugin.getScramblePlugins();
+		solvedPuzzles = new ScrambleViewComponent[scramblePlugins.size()];
+
 		Dimension preferred = new Dimension(0, 0);
-		
-		for (int ch = 0; ch < scrambles.size(); ch++) {
-			Class<? extends Scramble> scrambleType = scrambles.get(ch);
+		for (int ch = 0; ch < scramblePlugins.size(); ch++) {
+			ScramblePlugin plugin = scramblePlugins.get(ch);
 			solvedPuzzles[ch] = new ScrambleViewComponent();
-			try {
-				solvedPuzzles[ch]
-						.setScramble((Scramble) scrambleType.getConstructor(
-								String.class, int.class, String[].class)
-								.newInstance("", 0, new String[0]));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			solvedPuzzles[ch].setScramble(plugin.newScramble("", 0, new String[0]), plugin);
 			Dimension newDim = solvedPuzzles[ch].getPreferredSize();
 			if(newDim.height > preferred.height)
 				preferred = newDim;
@@ -861,7 +845,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		minSplitTime.setEnabled(splits.isSelected());
 
 		// makeScrambleTypeOptionsPanel
-		puzzlesModel.setContents(Configuration.getCustomScrambleVariations(defaults));
+		puzzlesModel.setContents(ScramblePlugin.getScrambleCustomizations(defaults));
 		profilesModel.setContents(Configuration.getProfiles());
 
 		// makeStackmatOptionsPanel
@@ -893,7 +877,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 
 		// makePuzzleColorsPanel
 		for (ScrambleViewComponent puzzle : solvedPuzzles) {
-			puzzle.syncColorScheme();
+			puzzle.syncColorScheme(defaults);
 		}
 	}
 	
@@ -904,7 +888,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		/*if (visible && tabbedPane == null)
 			createGUI();
 		else */
-		if (visible) {
+		if (visible) {//TODO - why won't this update before showing the gui?
 			syncGUIwithConfig(false);
 		}
 		this.setVisible(visible);
@@ -946,8 +930,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		Configuration.setString(VariableKey.AVERAGE_STATISTICS, averageStats.getText());
 
 		for (ScrambleViewComponent puzzle : solvedPuzzles) {
-			Class<? extends Scramble> type = puzzle.getScramble().getClass();
-			Configuration.setPuzzleColorScheme(type, puzzle.getColorScheme(type));
+			puzzle.commitColorSchemeToConfiguration();
 		}
 
 		Configuration.setBoolean(VariableKey.TIMING_SPLITS, splits.isSelected());
@@ -963,7 +946,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		Configuration.setFont(VariableKey.SCRAMBLE_FONT, scrambleFontButton.getFont());
 		Configuration.setFont(VariableKey.TIMER_FONT, timerFontButton.getFont());
 
-		Configuration.setCustomScrambleVariations(puzzlesModel.getContents().toArray(new String[0]));
+		ScrambleCustomization.setCustomScrambleVariations(puzzlesModel.getContents().toArray(new ScrambleCustomization[0]));
 
 		profilesModel.commitChanges();
 		Configuration.setProfileOrdering(profilesModel.getContents());

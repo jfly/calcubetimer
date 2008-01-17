@@ -9,6 +9,8 @@ import java.awt.Point;
 import java.io.IOException;
 
 import net.gnehzr.cct.main.CALCubeTimer;
+import net.gnehzr.cct.scrambles.ScramblePlugin;
+import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 public class VariableKey<H> {
 	public static final VariableKey<Integer> RA_SIZE = new VariableKey<Integer>("Statistics_raSize");
@@ -21,11 +23,11 @@ public class VariableKey<H> {
 	public static final VariableKey<Integer> METRONOME_DELAY = new VariableKey<Integer>("Misc_Metronome_delay");
 	public static final VariableKey<Integer> MAX_FONTSIZE = new VariableKey<Integer>("Scramble_fontMaxSize");
 	public static final VariableKey<Integer> SCRAMBLE_COMBOBOX_ROWS = new VariableKey<Integer>("Scramble_comboboxRows");
-	public static final VariableKey<Integer> UNIT_SIZE(String puzzleName) {
-		return new VariableKey<Integer>("Scramble_Popup_unitSize_" + puzzleName);
+	public static final VariableKey<Integer> UNIT_SIZE(ScramblePlugin plugin) {
+		return new VariableKey<Integer>("Scramble_Popup_unitSize_" + plugin.getPuzzleName());
 	} //TODO - document
-	public static final VariableKey<Integer> SCRAMBLE_LENGTH(String puzzleName, String variationName) {
-		return new VariableKey<Integer>("Puzzle_ScrambleLength_" + puzzleName + variationName);
+	public static final VariableKey<Integer> SCRAMBLE_LENGTH(ScrambleVariation var) {
+		return new VariableKey<Integer>("Puzzle_ScrambleLength_" + var.toString());
 	}
 
 	public static final VariableKey<String> SUNDAY_NAME = new VariableKey<String>("Sunday_name");
@@ -43,16 +45,16 @@ public class VariableKey<H> {
 	public static final VariableKey<String> DEFAULT_SCRAMBLE_URL = new VariableKey<String>("Misc_defaultScrambleURL");
 	public static final VariableKey<String> METRONOME_CLICK_FILE = new VariableKey<String>("Misc_Metronome_clickFile");
 	public static final VariableKey<String> XML_LAYOUT = new VariableKey<String>("GUI_xmlLayoutFile");
-	public static final VariableKey<String> DEFAULT_PUZZLE = new VariableKey<String>("Scramble_Default_puzzle");
-	public static final VariableKey<String> SCRAMBLE_TYPES = new VariableKey<String>("Scramble_types");
+	public static final VariableKey<String> DEFAULT_SCRAMBLE_CUSTOMIZATION = new VariableKey<String>("Scramble_Default_scrambleCustomization");
+	public static final VariableKey<String> SCRAMBLE_CUSTOMIZATIONS = new VariableKey<String>("Scramble_customizations");
 	public static final VariableKey<String> PROFILES = new VariableKey<String>("Profiles");//TODO - document
-	public static final VariableKey<String> PUZZLE_ATTRIBUTES(String puzzleName) {
-		return new VariableKey<String>("Puzzle_Attributes_" + puzzleName);
+	public static final VariableKey<String> PUZZLE_ATTRIBUTES(ScramblePlugin plugin) {
+		return new VariableKey<String>("Puzzle_Attributes_" + plugin.getPuzzleName());
 	} //TODO - document
-	public static final VariableKey<String> PUZZLE_COLOR(String puzzleName, String faceName) {
-		return new VariableKey<String>("Puzzle_Color_" + puzzleName + "_face" + faceName);
+	public static final VariableKey<String> PUZZLE_COLOR(ScramblePlugin plugin, String faceName) {
+		return new VariableKey<String>("Puzzle_Color_" + plugin.getPuzzleName() + "_face" + faceName);
 	}
-	
+	//TODO create a variable key for String[] stuff, and escape characters to make it work generally
 	static {
 		try {
 			Font lcdFont = Font.createFont(Font.TRUETYPE_FONT, 

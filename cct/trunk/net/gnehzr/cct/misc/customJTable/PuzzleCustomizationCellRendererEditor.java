@@ -13,39 +13,38 @@ import javax.swing.event.CellEditorListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.scrambles.ScrambleCustomization;
+import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 import org.jvnet.substance.SubstanceDefaultListCellRenderer;
 import org.jvnet.substance.SubstanceLookAndFeel;
 
 @SuppressWarnings("serial")
 public class PuzzleCustomizationCellRendererEditor extends SubstanceDefaultListCellRenderer implements TableCellRenderer, TableCellEditor {
+//	public PuzzleCustomizationCellRendererEditor() {}
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
-		String val = (String) value;
-		if(Configuration.getScrambleVariation(val) != null) {
-			String[] puzzle = ((String)value).split(":");
-			val = "<html><b>" + puzzle[0] + "</b>";
-			if(puzzle.length > 1)
-				val += ":" + puzzle[1];
-			val += "</html>";
-		}
+		ScrambleCustomization customization = (ScrambleCustomization) value;
+		String bolded = customization.getScrambleVariation().getVariation();
+		if(bolded.equals(""))
+			bolded = customization.getScramblePlugin().getPuzzleName();
+		String val = "<html><b>" + bolded + "</b>";
+		if(!customization.getCustomization().equals(""))
+			val += ": " + customization.getCustomization();
+		val += "</html>";
 		return super.getListCellRendererComponent(list, val, index, isSelected, cellHasFocus);
 	}
 
+//	private ScrambleCustomizationListModel model;
+//	public PuzzleCustomizationCellRendererEditor(ScrambleCustomizationListModel model) {
+//		this.model = model;
+//	}
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {
-		if(value instanceof String) {
-			String val = (String) value;
-			if(Configuration.getScrambleVariation(val) != null) {
-				String[] puzzle = ((String)value).split(":");
-				val = "<html><b>" + puzzle[0] + "</b>";
-				if(puzzle.length > 1)
-					val += ":" + puzzle[1];
-				val += "</html>";
-			}
-			return new JLabel(val);
-		} else if(value instanceof JButton) {
+		if(value instanceof ScrambleVariation) {
+			ScrambleVariation var = (ScrambleVariation) value;
+			return new JLabel(var.getVariation());
+		} else if(value instanceof Double) {
 			JButton temp = new JButton("reset");
 			temp.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE);
 			return temp;
