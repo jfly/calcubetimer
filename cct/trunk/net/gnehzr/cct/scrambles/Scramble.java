@@ -45,7 +45,7 @@ public abstract class Scramble {
 	//will want to define them to have a custom scramble view
 	//There should also the following defined in subclasses:
 	//public static final String[] FACE_NAMES - REQUIRED
-	//public static final String PUZZLE_NAME - REQUIRED
+	//public static final String PUZZLE_NAME - REQUIRED cannot contain the character ":"
 	//public static final int DEFAULT_UNIT_SIZE - REQUIRED, gives the default unit size for a scrambleview
 	//public static int getDefaultScrambleLength(String variation); REQUIRED
 	//public static String getDefaultFaceColor(String face); REQUIRED - returns hex code of face's color
@@ -57,7 +57,7 @@ public abstract class Scramble {
 	public abstract String getFaceClicked(int x, int y, int gap, int unitSize);
 
 	/* Optional fields */
-	public static final String[] VARIATIONS = {""}; //OPTIONAL, this is so one class can handle 3x3x3-11x11x11
+	public static final String[] VARIATIONS = {""}; //OPTIONAL, this is so one class can handle 3x3x3-11x11x11, cannot contain the character ":"
 	//As of now, there is support for named booleans to affect scrambles.
 	//This was introduced as a way of adding a multi-slice option for cubes
 	//without coding a special case.

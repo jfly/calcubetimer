@@ -9,6 +9,7 @@ import java.awt.Point;
 import java.io.IOException;
 
 import net.gnehzr.cct.main.CALCubeTimer;
+import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 
@@ -46,15 +47,17 @@ public class VariableKey<H> {
 	public static final VariableKey<String> METRONOME_CLICK_FILE = new VariableKey<String>("Misc_Metronome_clickFile");
 	public static final VariableKey<String> XML_LAYOUT = new VariableKey<String>("GUI_xmlLayoutFile");
 	public static final VariableKey<String> DEFAULT_SCRAMBLE_CUSTOMIZATION = new VariableKey<String>("Scramble_Default_scrambleCustomization");
-	public static final VariableKey<String> SCRAMBLE_CUSTOMIZATIONS = new VariableKey<String>("Scramble_customizations");
-	public static final VariableKey<String> PROFILES = new VariableKey<String>("Profiles");//TODO - document
 	public static final VariableKey<String> PUZZLE_ATTRIBUTES(ScramblePlugin plugin) {
 		return new VariableKey<String>("Puzzle_Attributes_" + plugin.getPuzzleName());
 	} //TODO - document
 	public static final VariableKey<String> PUZZLE_COLOR(ScramblePlugin plugin, String faceName) {
 		return new VariableKey<String>("Puzzle_Color_" + plugin.getPuzzleName() + "_face" + faceName);
 	}
+	
 	//TODO create a variable key for String[] stuff, and escape characters to make it work generally
+	public static final VariableKey<String[]> SCRAMBLE_CUSTOMIZATIONS = new VariableKey<String[]>("Scramble_customizations");
+	public static final VariableKey<String[]> PROFILES = new VariableKey<String[]>("Profiles");//TODO - document
+	
 	static {
 		try {
 			Font lcdFont = Font.createFont(Font.TRUETYPE_FONT,

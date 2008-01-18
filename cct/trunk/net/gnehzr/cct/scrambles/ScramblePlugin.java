@@ -111,18 +111,26 @@ public class ScramblePlugin {
 			scrambleCustomizations.add(new ScrambleCustomization(t, null));
 		}
 
-		String[] customNames = Configuration.getString(VariableKey.SCRAMBLE_CUSTOMIZATIONS, defaults).split(";");
+		String[] customNames = Configuration.getStringArray(VariableKey.SCRAMBLE_CUSTOMIZATIONS, false);
 		for(int ch = customNames.length - 1; ch >= 0; ch--) {
-			String[] name = customNames[ch].split(":");
-			String variationName = name[0];
-			String customizationName = name.length == 2 ? name[1] : null;
+			String name = customNames[ch];
+			int delimeter = customNames[ch].indexOf(':');
+			String customizationName;
+			if(delimeter == -1) {
+				delimeter = name.length();
+				customizationName = null;
+			} else
+				customizationName = name.substring(delimeter + 1, name.length());
+			String variationName = name.substring(0, delimeter);
 			ScrambleCustomization scramCustomization = null;
 			for(ScrambleCustomization custom : scrambleCustomizations) {
-				if(variationName.equals(custom.getScrambleVariation().toString()))
+				if(variationName.equals(custom.toString())) {
 					scramCustomization = custom;
+					break;
+				}
 			}
 			if(scramCustomization != null) {
-				if(customNames[ch].indexOf(':') == -1)
+				if(customizationName == null)
 					scrambleCustomizations.remove(scramCustomization);
 				scrambleCustomizations.add(0, new ScrambleCustomization(scramCustomization.getScrambleVariation(), customizationName));
 			}

@@ -4,13 +4,14 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 
 public class ScrambleCustomization {
-	public static void setCustomScrambleVariations(ScrambleCustomization[] customVariations) {
-		String types = "";
-		for(ScrambleCustomization t : customVariations) {
-			types += t.toString() + ";";
-		}
-		Configuration.setString(VariableKey.SCRAMBLE_CUSTOMIZATIONS, types);
-	}
+//	public static void setCustomScrambleVariations(ScrambleCustomization[] customVariations) {
+//		
+//		String types = "";
+//		for(ScrambleCustomization t : customVariations) {
+//			types += t.toString() + ";";
+//		}
+//		Configuration.setString(VariableKey.SCRAMBLE_CUSTOMIZATIONS, types);
+//	}
 	
 	private ScrambleVariation variation;
 	private String customization;

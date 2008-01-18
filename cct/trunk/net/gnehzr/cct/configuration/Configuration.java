@@ -144,6 +144,21 @@ public final class Configuration {
 	public static void setColor(VariableKey<Color> key, Color c) {
 		props.setProperty(key.toKey(), Utils.colorToString(c));
 	}
+	
+	//special characters are for now just ';'
+	public static String[] getStringArray(VariableKey<String[]> key, boolean defaultValue) {
+		return getStringArray(defaultValue ? defaults : props, key.toKey());
+	}
+	private static String[] getStringArray(Properties props, String key) {
+		return props.getProperty(key).split("\n");
+	}//TODO fix this
+	public static void setStringArray(VariableKey<String[]> key, Object[] arr) {
+		String mashed = "";
+		for(Object o : arr) {
+			mashed += o.toString() + "\n";
+		}
+		props.setProperty(key.toKey(), mashed);
+	}
 
 	//********* End getters and setters *****************//
 
@@ -227,7 +242,7 @@ public final class Configuration {
 			profs.add(new Profile(profDir));
 		}
 		if(props != null) {
-			String[] profiles = getString(VariableKey.PROFILES, false).split(";");
+			String[] profiles = getStringArray(VariableKey.PROFILES, false);
 			for(int ch = profiles.length - 1; ch >= 0; ch--) {
 				Profile temp = new Profile(profiles[ch]);
 				if(profs.contains(temp)) {
@@ -239,11 +254,11 @@ public final class Configuration {
 		return profs;
 	}
 	public static void setProfileOrdering(ArrayList<Profile> profiles) {
-		String types = "";
-		for(Profile p : profiles) {
-			types += p.getName() + ";";
-		}
-		setString(VariableKey.PROFILES, types);
+//		String types = "";
+//		for(Profile p : profiles) {
+//			types += p.getName() + ";";
+//		}
+		setStringArray(VariableKey.PROFILES, profiles.toArray(new Profile[0]));
 	}
 
 
