@@ -1,0 +1,108 @@
+changes:
++rehaul scrambles
++scramble plugins
++gui overhaul --> more details options
++add gui options to create a selectable/copy-able label (non-editable jtextarea)
++timer going negative (as a result of fullscreen feature) fixed
++glue component implemented
++update contrib folder
++fixed a bug where parseXML_gui() was getting called twice upon startup
++cleaned up the un-integrated timer panel, removing it from the grid layout, added corresponding configuration options
++cannot load "defaults.properties" anymore (intentionally)
++borders on selectablelabels
++packing is resizing the scramble popup - FIXED
++hitting save to exit configdialog enables keyboard timing - FIXED
++fullscreen only with stackmat?
++BUG: deleting times with delete key will eventually pop up a message saying "are you sure you wish to remove null?"
++time label border coloring when using stackmat
++editable jlist of times!
++fix RAW time
++fixed bug where "::::" and related would be valid times
++jtextfield context menus -> full :( Substance 4.1
++fixed bug where editing time invalidly and then starting to edit another --> index out of range exceptions
++fixed bug where editing time would generate new scramble
++fixed bug where adding new time would not use existing scramble
++metronome -> implemented (should probably find a better click sound)
++profiles
++configurable font for the timelabel w/ reset to default timer font (fullscreen bug fixed!)
++square-1 scrambles!
++fixed bug with sizing of right hand side time list! (esp when times wrap)
++MUST use full substance, lite versions break the laf select_on_focus keys
++Ant==BEAUTIFUL compiling to fix problems I've been having with eclipse? (deleted contrib folder)
++in configDialog, color labels are NOW opaque (Substance changed this)
++allow exporting scrambles gui access to scramble attributes (not necessary, just use cct gui)
++BUG: fixed when loading scrambles after using cct would not work for the first scramble
++clean up square one code (specifically appending to the scramble as it's created)
++rigorously test square 1 scrambles! (use jaap's for importing)
++graphics2d to fix megaminx alignment issues
++fixed bug where loading megaminx scrambles wouldn't work
++scramble 1 scrambles now show state of the middle
++synchronization error with loading/saving config files
+	+CopyOnWriteArrayList used instead of AWTEventMulticast
++bug with configdialog mnemonics fixed
++configdialog now opens last tab when displayed
++JListMutable - move the adding stuff down into it!
++you can now create your own type of scramble, useless now, but will be very powerful in the near future with logging
++custom jcombobox renderer for scrambles
++got rid of save as button since we now have profiles with their own configs
++jlistmutable - deleting multiple doesn't select addtext
++run from outside of folder!
++error messages for incorrect version of java/other problems during loading screen (note that in faq: "Could not find the main class. Program will exit." most likely means incorrect version of java
++best average field inside server?
++integrate new sunday contest w/cct
++how many mail options are needed? authentication/tls?
++sending should have a dialog with cancel button
++megaminx pochmann style changed into a variation
++make color selector "scrolling savvy"
++fixed newlines with exporting statistics
++configuration rehaul:
+	+capitalization standardized! like java, UpperCamelCase for "classes", lowerCamelCase for variables
+	+configuration rehaul to use VariableKey's instead of old verbose solution
+	+configdialog.java I got lazy with resetting stuff, so i best do this // TODO MERGE ABOVE METHOD AND BELOW METHOD!!!
++cct remembers focused compenent after gui change
++remove editablejcombobox, and switch to a jlistmutable within configdialog
++save all scramble lengths to file
++save profile ordering, just like with custom scramble types
++standardize the terms: scramble type, puzzle type, etc... ===> ScramblePlugin, ScrambleVariation, and ScrambleCustomization
++create a Class<? extends Scramble> wrapper, and do all the nasty stuff in there
++siwtched from JListMutable (crap) to a custom JTable subclass I wrote (better powerfulness)
+
+TODO:
+
+for release:
+-logging to xml database for each profile
+-internationalization (dates, too)
+	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html
+	http://www.eclipse.org/articles/Article-Internationalization/how2I18n.html
+-open source sourceforge!
+-update FAQ, defaults.properties file, about.html
+-create license, give credit where credit is due
+-expand jtable of times to include {current, rolling} average column
+
+scramble stuff:
+-scramble placeholder / n00b scrambler
+-improve the gui for custom scramble types
+	-add a reset scramble length button
+-write scramble plugin tutorial
+-use ScramblePlugin to finish scramble debugger
+-icons on scramble choices?
+
+misc:
+-request new scramble button? not in gui by default.
+-dual monitor support for fullscreen
+-keyboard stackmat feature? adam zamora's idea.
+-java webstart? applet?
+-force aspect ratio of scramble view
+-recreate the green and red buttons, and antialias them this time!
+
+cleanup:
+-behavior when recieving identical averages
+-generalize XML syntax (get rid of Dynamic... classes) UPDATE: no idea how to do this...???
+-integrate statsdialoghandler with ui xml stuff
+
+Server stuff:
+-fix server scrambles
+-latency on server - this is so that clients don't flood the server with too many time messages
+-urgent hint for waiting messages on server?
+-don't allow connections to old servers
+-don't accept connections to old clients.
