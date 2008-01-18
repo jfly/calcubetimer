@@ -1179,7 +1179,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		int choice = JOptionPane.showConfirmDialog(this,
 				scrambleImporter,
 				"Import Scrambles",
-				JOptionPane.YES_NO_OPTION,
+				JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.QUESTION_MESSAGE);
 		if(choice == JOptionPane.OK_OPTION) {
 			URL file = scrambleImporter.getURL();
