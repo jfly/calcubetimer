@@ -66,6 +66,7 @@ changes:
 +standardize the terms: scramble type, puzzle type, etc... ===> ScramblePlugin, ScrambleVariation, and ScrambleCustomization
 +create a Class<? extends Scramble> wrapper, and do all the nasty stuff in there
 +siwtched from JListMutable (crap) to a custom JTable subclass I wrote (better powerfulness)
++request new scramble button? not in gui by default.
 
 TODO:
 
@@ -88,7 +89,6 @@ scramble stuff:
 -icons on scramble choices?
 
 misc:
--request new scramble button? not in gui by default.
 -dual monitor support for fullscreen
 -keyboard stackmat feature? adam zamora's idea.
 -java webstart? applet?

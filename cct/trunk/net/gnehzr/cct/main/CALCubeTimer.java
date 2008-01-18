@@ -183,6 +183,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private AnnoyingDisplayAction annoyingDisplayAction;
 	private LessAnnoyingDisplayAction lessAnnoyingDisplayAction;
 	private ResetAction resetAction;
+	private RequestScrambleAction requestScrambleAction;
 	private void createActions(){
 		actionMap = new HashMap<String, AbstractAction>();
 
@@ -299,6 +300,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 						cubeIcon.getImage()));
 		aboutAction.putValue(Action.NAME, "About");
 		actionMap.put("showabout", aboutAction);
+
+		requestScrambleAction = new RequestScrambleAction(this);
+		requestScrambleAction.putValue(Action.NAME, "Request new scramble");
+		requestScrambleAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
+		actionMap.put("requestscramble", requestScrambleAction);
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -1280,6 +1286,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		Configuration.setBoolean(VariableKey.ANNOYING_DISPLAY, b);
 		timeLabel.repaint();
 	}
+
+	public void requestScrambleAction(){
+		scramblesList.getNext();
+		updateScramble();
+	}
 	// End actions section }}}
 
 	private void startMetronome() {
@@ -1609,5 +1620,16 @@ class LessAnnoyingDisplayAction extends AbstractAction{
 
 	public void actionPerformed(ActionEvent e){
 		cct.lessAnnoyingDisplayAction();
+	}
+}
+@SuppressWarnings("serial")
+class RequestScrambleAction extends AbstractAction{
+	private CALCubeTimer cct;
+	public RequestScrambleAction(CALCubeTimer cct){
+		this.cct = cct;
+	}
+
+	public void actionPerformed(ActionEvent e){
+		cct.requestScrambleAction();
 	}
 }

@@ -20,6 +20,9 @@
 						<component alignmentX=".5" type="startStopPanel"/>
 						<panel layout="flow" hgap="5" vgap="5">
 							<panel layout="grid" cols="3">
+								<panel />
+								<panel />
+								<button action="requestScramble">Request Scramble</button>
 								<button action="addTime">Add Time</button>
 								<checkbox action="keyboardTiming"/>
 								<button action="reset">Reset</button>
