@@ -2,12 +2,15 @@ package net.gnehzr.cct.configuration;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.EventObject;
 
 import javax.swing.Action;
@@ -35,7 +38,7 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants;
 
 @SuppressWarnings("serial")
-public class PuzzleCustomizationCellRendererEditor extends SubstanceDefaultListCellRenderer implements TableCellRenderer, TableCellEditor {
+public class PuzzleCustomizationCellRendererEditor extends SubstanceDefaultListCellRenderer implements TableCellRenderer, TableCellEditor, MouseListener {
 	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 		ScrambleCustomization customization = (ScrambleCustomization) value;
 		String bolded = customization.getScrambleVariation().getVariation();
@@ -47,7 +50,7 @@ public class PuzzleCustomizationCellRendererEditor extends SubstanceDefaultListC
 		val += "</html>";
 		return super.getListCellRendererComponent(list, val, index, isSelected, cellHasFocus);
 	}
-	
+
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		String val = value.toString();
 		if(value instanceof ScrambleCustomization) {
@@ -62,7 +65,7 @@ public class PuzzleCustomizationCellRendererEditor extends SubstanceDefaultListC
 		}
 		return new JLabel(val, SwingConstants.CENTER);
 	}
-	
+
 	public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 		if(value instanceof ScrambleCustomization) {
 			customization = (ScrambleCustomization) value;
@@ -71,12 +74,12 @@ public class PuzzleCustomizationCellRendererEditor extends SubstanceDefaultListC
 		}
 		return getCustomizationPanel(customization);
 	}
-	
+
 	private ScrambleCustomization customization;
 	private JComboBox scrambleVariations;
 	private JSpinner scramLength;
 	private JTextField customField;
-	
+
 	private JPanel getCustomizationPanel(ScrambleCustomization custom) {
 		JPanel customPanel = new JPanel();
 		if(custom.getCustomization() != null) {
@@ -92,20 +95,21 @@ public class PuzzleCustomizationCellRendererEditor extends SubstanceDefaultListC
 			});
 			scrambleVariations.setToolTipText("Select the puzzle variation.");
 			customPanel.add(scrambleVariations);
-			
+
 			customField = new JTextField(custom.getCustomization(), 15);
 			customField.setToolTipText("Specify the customization, for example: OH, BLD...");
 			customPanel.add(customField);
 		} else {
 			customPanel.add(new JLabel("<html><b>" + custom.getScrambleVariation().toString() + "</b></html>"));
 		}
-		
+
 		scramLength = new JSpinner(new SpinnerNumberModel(custom.getScrambleVariation().getLength(), 1, null, 1));
 		scramLength.setToolTipText("Specify the scramble length for this puzzle variation.");
 		((JSpinner.DefaultEditor) scramLength.getEditor()).getTextField().setColumns(3);
 		customPanel.add(scramLength);
-		
+
 		JButton resetButton = new JButton("Reset");
+		resetButton.setEnabled(false);
 		resetButton.setToolTipText("Reset the scramble length to its default.");
 		resetButton.setFocusable(false);
 		resetButton.setFocusPainted(false);
@@ -117,24 +121,53 @@ public class PuzzleCustomizationCellRendererEditor extends SubstanceDefaultListC
 		});
 		resetButton.putClientProperty(SubstanceLookAndFeel.BUTTON_SIDE_PROPERTY, new SubstanceConstants.Side[] { SubstanceConstants.Side.LEFT });
 		customPanel.add(resetButton);
-		
+
+		disabledComponents = new ArrayList<Component>();
+		listenToContainer(customPanel);
+
 		return customPanel;
 	}
-	
+
+	private ArrayList<Component> disabledComponents;
+
+	private void listenToContainer(Component c) {
+		c.addMouseListener(this);
+		c.setEnabled(false);
+		disabledComponents.add(c);
+		if(c instanceof Container) {
+			Container container = (Container) c;
+			for(Component c2 : container.getComponents())
+				listenToContainer(c2);
+		}
+	}
+
+	public void mouseClicked(MouseEvent arg0) {}
+
+	public void mouseEntered(MouseEvent arg0) {}
+
+	public void mouseExited(MouseEvent arg0) {}
+
+	public void mousePressed(MouseEvent e) {}
+
+	public void mouseReleased(MouseEvent e) {
+		for(Component c : disabledComponents)
+			c.setEnabled(true);
+	}
+
 	private CellEditorListener listener;
-	
+
 	public void addCellEditorListener(CellEditorListener l) {
 		listener = l;
 	}
-	
+
 	public void cancelCellEditing() {
 		listener.editingCanceled(null);
 	}
-	
+
 	public Object getCellEditorValue() {
 		return customization;
 	}
-	
+
 	public boolean isCellEditable(EventObject e) {
 		if(e instanceof MouseEvent) {
 			MouseEvent me = (MouseEvent) e;
@@ -143,16 +176,16 @@ public class PuzzleCustomizationCellRendererEditor extends SubstanceDefaultListC
 		}
 		return false;
 	}
-	
+
 	public void removeCellEditorListener(CellEditorListener l) {
 		if(listener == l)
 			listener = null;
 	}
-	
+
 	public boolean shouldSelectCell(EventObject arg0) {
 		return true;
 	}
-	
+
 	public boolean stopCellEditing() {
 		if(customization.getCustomization() != null) {
 			String customName = customField.getText();

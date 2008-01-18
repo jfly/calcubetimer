@@ -68,7 +68,10 @@ changes:
 +siwtched from JListMutable (crap) to a custom JTable subclass I wrote (better powerfulness)
 +request new scramble button? not in gui by default.
 +switching scramblecustomization is allowed (without message) so long as scramblevariation is unchanged
-
++improve the gui for custom scramble types
+	+add a reset scramble length button
+	+the scramblecustomization editing doesn't start until after releasing the mouse
+	
 TODO:
 
 for release:
@@ -79,17 +82,15 @@ for release:
 -open source sourceforge!
 -update FAQ, defaults.properties file, about.html
 -create license, give credit where credit is due
--expand jtable of times to include {current, rolling} average column
 
 scramble stuff:
 -scramble placeholder / n00b scrambler
--improve the gui for custom scramble types
-	-add a reset scramble length button
 -write scramble plugin tutorial
 -use ScramblePlugin to finish scramble debugger
 -icons on scramble choices?
 
 misc:
+-expand jtable of times to include {current, rolling} average column
 -dual monitor support for fullscreen
 -keyboard stackmat feature? adam zamora's idea.
 -java webstart? applet?
