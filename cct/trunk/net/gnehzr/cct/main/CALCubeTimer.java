@@ -794,10 +794,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	} //}}}
 
 	private void repaintTimes() {
-		String temp = stats.average(Statistics.averageType.CURRENT);
-		sendAverage(temp);
-		temp = stats.average(Statistics.averageType.RA);
-		sendBestAverage(temp);
+		sendAverage(stats.average(Statistics.averageType.CURRENT));
+		sendBestAverage(stats.average(Statistics.averageType.RA));
 		currentAverageAction.setEnabled(stats.isValid(Statistics.averageType.CURRENT));
 		rollingAverageAction.setEnabled(stats.isValid(Statistics.averageType.RA));
 		sessionAverageAction.setEnabled(stats.isValid(Statistics.averageType.SESSION));
@@ -1176,17 +1174,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 	}
 
-	private static String[] okCancel = new String[] {"OK", "Cancel"};
 	public void importScramblesAction(){
 		ScrambleImportExportDialog scrambleImporter = new ScrambleImportExportDialog(true, scramCustomizationChoice.getScrambleVariation());
-		int choice = JOptionPane.showOptionDialog(this,
+		int choice = JOptionPane.showConfirmDialog(this,
 				scrambleImporter,
 				"Import Scrambles",
 				JOptionPane.YES_NO_OPTION,
-				JOptionPane.QUESTION_MESSAGE,
-				cubeIcon,
-				okCancel,
-				okCancel[0]);
+				JOptionPane.QUESTION_MESSAGE);
 		if(choice == JOptionPane.OK_OPTION) {
 			URL file = scrambleImporter.getURL();
 			if(file != null)
@@ -1196,14 +1190,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	public void exportScramblesAction(){
 		ScrambleImportExportDialog scrambleExporter = new ScrambleImportExportDialog(false, scramCustomizationChoice.getScrambleVariation());
-		int choice = JOptionPane.showOptionDialog(this,
+		int choice = JOptionPane.showConfirmDialog(this,
 				scrambleExporter,
 				"Export Scrambles",
-				JOptionPane.YES_NO_OPTION,
-				JOptionPane.QUESTION_MESSAGE,
-				cubeIcon,
-				okCancel,
-				okCancel[0]);
+				JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.QUESTION_MESSAGE);
 		if(choice == JOptionPane.OK_OPTION) {
 			URL file = scrambleExporter.getURL();
 			if(file != null)
@@ -1390,14 +1381,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			splits = new ArrayList<SolveTime>();
 			boolean sameAsLast = addMe.compareTo(lastAccepted) == 0;
 			if(sameAsLast) {
-				int choice = JOptionPane.showOptionDialog(null,
+				int choice = JOptionPane.showConfirmDialog(null,
 						"This is the exact same time as last time! Are you sure you wish to add it?",
 						"Confirm Time: " + addMe.toString(),
 						JOptionPane.YES_NO_OPTION,
-						JOptionPane.QUESTION_MESSAGE,
-						null,
-						null,
-						null);
+						JOptionPane.QUESTION_MESSAGE);
 				if(choice != JOptionPane.YES_OPTION)
 					return false;
 			}
