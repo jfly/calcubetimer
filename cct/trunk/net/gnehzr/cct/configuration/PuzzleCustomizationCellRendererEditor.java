@@ -1,4 +1,4 @@
-package net.gnehzr.cct.misc.customJTable;
+package net.gnehzr.cct.configuration;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -29,7 +29,7 @@ public class PuzzleCustomizationCellRendererEditor extends SubstanceDefaultListC
 		if(bolded.equals(""))
 			bolded = customization.getScramblePlugin().getPuzzleName();
 		String val = "<html><b>" + bolded + "</b>";
-		if(!customization.getCustomization().equals(""))
+		if(customization.getCustomization() != null)
 			val += ": " + customization.getCustomization();
 		val += "</html>";
 		return super.getListCellRendererComponent(list, val, index, isSelected, cellHasFocus);

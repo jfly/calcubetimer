@@ -79,11 +79,11 @@ import javax.xml.parsers.SAXParserFactory;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.ConfigurationDialog;
+import net.gnehzr.cct.configuration.PuzzleCustomizationCellRendererEditor;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.help.AboutScrollFrame;
 import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
-import net.gnehzr.cct.misc.customJTable.PuzzleCustomizationCellRendererEditor;
 import net.gnehzr.cct.misc.customJTable.SolveTimeEditor;
 import net.gnehzr.cct.misc.customJTable.SolveTimeRenderer;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicButton;
@@ -876,7 +876,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 			//TODO improve importexport dialog to select customizations
 			if(!newVariation.equals(scramCustomizationChoice.getScrambleVariation())) {
-				scramCustomizationChoice = new ScrambleCustomization(newVariation, "");
+				scramCustomizationChoice = new ScrambleCustomization(newVariation, null);
 			}
 			newVariation.setLength(newLength);
 			safeSetValue(scrambleLength, newLength);

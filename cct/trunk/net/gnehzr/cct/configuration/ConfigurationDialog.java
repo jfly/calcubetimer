@@ -63,7 +63,6 @@ import net.gnehzr.cct.misc.ImagePreview;
 import net.gnehzr.cct.misc.JTextAreaWithHistory;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.ProfileEditor;
-import net.gnehzr.cct.misc.customJTable.PuzzleCustomizationCellRendererEditor;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
@@ -386,10 +385,10 @@ public class ConfigurationDialog extends JDialog implements KeyListener,
 		DraggableJTable scramType = new DraggableJTable("Add new puzzle...", true);
 		scramType.setModel(puzzlesModel);
 		PuzzleCustomizationCellRendererEditor rendererEditor = new PuzzleCustomizationCellRendererEditor();
-		for(Class<?> c : ScrambleCustomizationListModel.COLUMN_CLASSES) {
-			scramType.setDefaultRenderer(c, rendererEditor);
-			scramType.setDefaultEditor(c, rendererEditor);
-		}
+//		for(Class<?> c : ScrambleCustomizationListModel.COLUMN_CLASSES) {
+//			scramType.setDefaultRenderer(c, rendererEditor);
+//			scramType.setDefaultEditor(c, rendererEditor);
+//		}
 		JScrollPane scroller = new JScrollPane(scramType);
 		panel.add(scroller, BorderLayout.CENTER);
 

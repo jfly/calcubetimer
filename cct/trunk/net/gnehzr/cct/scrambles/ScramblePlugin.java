@@ -12,7 +12,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
@@ -78,16 +77,15 @@ public class ScramblePlugin {
 
 
 	public static ScrambleCustomization getCurrentScrambleCustomization() {
-		String[] lastCustom = Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, false).split(":");
-		String variationName = lastCustom[0];
-		String customizationName = lastCustom.length == 2 ? lastCustom[1] : "";
+//		String[] lastCustom = Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, false).split(":");
+		String lastCustom = Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, false);
+//		String variationName = lastCustom[0];
+//		String customizationName = lastCustom.length == 2 ? lastCustom[1] : "";
 		ArrayList<ScrambleCustomization> scrambleCustomizations = getScrambleCustomizations(false);
 		if(scrambleCustomizations.size() == 0)
 			return null;
 		for(ScrambleCustomization custom : scrambleCustomizations) {
-			if((custom.getScramblePlugin().getPuzzleName().equals(variationName) ||
-					custom.getScrambleVariation().getVariation().equals(variationName)) &&
-					custom.getCustomization().equals(customizationName)) {
+			if(custom.equals(lastCustom)) {
 				return custom;
 			}
 		}
@@ -98,7 +96,7 @@ public class ScramblePlugin {
 		if(scrambleCustomizations == null) {
 			scrambleCustomizations = new ArrayList<ScrambleCustomization>();
 			for(ScrambleVariation t : getScrambleVariations()) {
-				scrambleCustomizations.add(new ScrambleCustomization(t, ""));
+				scrambleCustomizations.add(new ScrambleCustomization(t, null));
 			}
 
 			String[] customNames = Configuration.getString(VariableKey.SCRAMBLE_CUSTOMIZATIONS, defaults).split(";");
@@ -267,7 +265,6 @@ public class ScramblePlugin {
 		return scheme;
 	}
 
-	//TODO - need defaults?
 	public int getPuzzleUnitSize(boolean defaults) {
 		try {
 			return Configuration.getInt(VariableKey.UNIT_SIZE(this), defaults);
