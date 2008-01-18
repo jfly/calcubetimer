@@ -137,19 +137,13 @@ public class ScramblePlugin {
 		}
 		return scrambleCustomizations;
 	}
-
-	private String[] getDefaultPuzzleAttributes() {
-		String attrs = Configuration.getString(VariableKey.PUZZLE_ATTRIBUTES(this), false);
-		if(attrs != null)
-			return attrs.split(",");
-		return DEFAULT_ATTRIBUTES;
-	}
+	
 	public String[] getAvailablePuzzleAttributes() {
 		return ATTRIBUTES;
 	}
 	public String[] getEnabledPuzzleAttributes() {
 		if(attributes == null) {
-			attributes = getDefaultPuzzleAttributes();
+			attributes = Configuration.getStringArray(VariableKey.PUZZLE_ATTRIBUTES(this), false);
 		}
 		return attributes;
 	}

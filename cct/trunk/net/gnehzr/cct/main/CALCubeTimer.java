@@ -978,12 +978,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		Configuration.setString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, scramCustomizationChoice.toString());
 		ScramblePlugin.saveLengthsToConfiguraiton();
 		for(ScramblePlugin plugin : ScramblePlugin.getScramblePlugins()) {
-			String attrs = "";
-			String[] attributes = plugin.getEnabledPuzzleAttributes();
-			for(int ch = 0; ch < attributes.length; ch++) {
-				attrs += attributes[ch] + (ch == attributes.length - 1 ? "" : ",");
-			}
-			Configuration.setString(VariableKey.PUZZLE_ATTRIBUTES(plugin), attrs);
+			Configuration.setStringArray(VariableKey.PUZZLE_ATTRIBUTES(plugin),
+					plugin.getEnabledPuzzleAttributes());
 		}
 		Configuration.setDimension(VariableKey.SCRAMBLE_VIEW_DIMENSION, scramblePopup.getSize());
 		Configuration.setPoint(VariableKey.SCRAMBLE_VIEW_LOCATION, scramblePopup.getLocation());

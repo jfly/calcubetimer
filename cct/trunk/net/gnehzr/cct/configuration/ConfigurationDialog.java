@@ -900,7 +900,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setFont(VariableKey.TIMER_FONT, timerFontButton.getFont());
 
 		Configuration.setStringArray(VariableKey.SCRAMBLE_CUSTOMIZATIONS, puzzlesModel.getContents().toArray(new ScrambleCustomization[0]));
-//		ScrambleCustomization.setCustomScrambleVariations(puzzlesModel.getContents().toArray(new ScrambleCustomization[0]));
 		ScramblePlugin.saveLengthsToConfiguraiton();
 
 		profilesModel.commitChanges();

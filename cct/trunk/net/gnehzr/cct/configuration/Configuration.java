@@ -150,8 +150,12 @@ public final class Configuration {
 		return getStringArray(defaultValue ? defaults : props, key.toKey());
 	}
 	private static String[] getStringArray(Properties props, String key) {
-		return props.getProperty(key).split("\n");
-	}//TODO fix this
+		try {
+			return props.getProperty(key).split("\n");
+		} catch(NullPointerException e) {
+			return new String[0];
+		}
+	}
 	public static void setStringArray(VariableKey<String[]> key, Object[] arr) {
 		String mashed = "";
 		for(Object o : arr) {
