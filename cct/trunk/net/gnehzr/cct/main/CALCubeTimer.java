@@ -347,20 +347,18 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scrambleChooser.setRenderer(new PuzzleCustomizationCellRendererEditor());
 		scrambleChooser.addItemListener(this);
 
-		SpinnerNumberModel model = new SpinnerNumberModel(1, //initial value
-				1,					//min
-				1,	//max
-				1);					//step
-		scrambleNumber = new JSpinner(model);
+		scrambleNumber = new JSpinner(new SpinnerNumberModel(1,
+				1,
+				1,
+				1));
 		scrambleNumber.setToolTipText("Select nth scramble");
 		((JSpinner.DefaultEditor) scrambleNumber.getEditor()).getTextField().setColumns(3);
 		scrambleNumber.addChangeListener(this);
 
-		model = new SpinnerNumberModel(1, //initial value
-				1,					//min
-				null,				//max
-				1);					//step
-		scrambleLength = new JSpinner(model);
+		scrambleLength = new JSpinner(new SpinnerNumberModel(1,
+				1,
+				null,
+				1));
 		scrambleLength.setToolTipText("Set length of scramble");
 		((JSpinner.DefaultEditor) scrambleLength.getEditor()).getTextField().setColumns(3);
 		scrambleLength.addChangeListener(this);
@@ -924,8 +922,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if(scrambleChooser.getSelectedItem() == null) return;
 
 		ScrambleCustomization newPuzzleChoice = (ScrambleCustomization)scrambleChooser.getSelectedItem();
+		boolean newVariation = !newPuzzleChoice.getScrambleVariation().equals(scramCustomizationChoice.getScrambleVariation());
 		int newLength = (Integer) scrambleLength.getValue();
-		if(scramblesList == null || !scramCustomizationChoice.equals(newPuzzleChoice) || scramCustomizationChoice.getScrambleVariation().getLength() != newLength) {
+		if(scramblesList == null || newVariation ||
+				scramCustomizationChoice.getScrambleVariation().getLength() != newLength) {
 			int choice = JOptionPane.YES_OPTION;
 			if(scramblesList != null && scramblesList.getCurrent().isImported()) {
 				choice = JOptionPane.showConfirmDialog(this,
@@ -935,7 +935,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 						JOptionPane.QUESTION_MESSAGE);
 			} else if(scramblesList != null && scramblesList.size() > 1) {
 				choice = JOptionPane.showConfirmDialog(this,
-						"Do you really wish to switch the type of scramble?\n" +
+						"Do you really wish to switch the scramble variation?\n" +
 						"All previous scrambles will be lost. Your times, however, will be saved.",
 						"Discard scrambles?",
 						JOptionPane.YES_NO_OPTION,

@@ -67,6 +67,7 @@ changes:
 +create a Class<? extends Scramble> wrapper, and do all the nasty stuff in there
 +siwtched from JListMutable (crap) to a custom JTable subclass I wrote (better powerfulness)
 +request new scramble button? not in gui by default.
++switching scramblecustomization is allowed (without message) so long as scramblevariation is unchanged
 
 TODO:
 
