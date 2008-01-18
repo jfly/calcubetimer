@@ -922,7 +922,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if(scrambleChooser.getSelectedItem() == null) return;
 
 		ScrambleCustomization newPuzzleChoice = (ScrambleCustomization)scrambleChooser.getSelectedItem();
-		boolean newVariation = !newPuzzleChoice.getScrambleVariation().equals(scramCustomizationChoice.getScrambleVariation());
+		boolean newVariation = scramCustomizationChoice == null || !newPuzzleChoice.getScrambleVariation().equals(scramCustomizationChoice.getScrambleVariation());
 		int newLength = (Integer) scrambleLength.getValue();
 		if(scramblesList == null || newVariation ||
 				scramCustomizationChoice.getScrambleVariation().getLength() != newLength) {
@@ -974,13 +974,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		super.dispose();
 		System.exit(0);
 	}
-	private void saveToConfiguration() {
+	public void saveToConfiguration() {
 		Configuration.setBoolean(VariableKey.STACKAMT_ENABLED, !(Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
-
+		Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, scramblePopup.isVisible());
 		Configuration.setString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, scramCustomizationChoice.toString());
-		for(ScrambleVariation variation : ScramblePlugin.getScrambleVariations()) {
-			Configuration.setInt(VariableKey.SCRAMBLE_LENGTH(variation), variation.getLength());
-		}
+		ScramblePlugin.saveLengthsToConfiguraiton();
 		for(ScramblePlugin plugin : ScramblePlugin.getScramblePlugins()) {
 			String attrs = "";
 			String[] attributes = plugin.getEnabledPuzzleAttributes();
@@ -1108,9 +1106,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scrambleChooser.setModel(new DefaultComboBoxModel(ScramblePlugin.getScrambleCustomizations(false).toArray(new ScrambleCustomization[0])));
 		profiles.setModel(new DefaultComboBoxModel(Configuration.getProfiles().toArray(new Profile[0])));
 		safeSelectItem(profiles, Configuration.getSelectedProfile());
-		scramCustomizationChoice = ScramblePlugin.getCurrentScrambleCustomization();
-		safeSelectItem(scrambleChooser, scramCustomizationChoice);
-		safeSetValue(scrambleLength, scramCustomizationChoice.getScrambleVariation().getLength());
+		
+		ScramblePlugin.reloadLengthsFromConfiguration(false);
+		ScrambleCustomization newCustom = ScramblePlugin.getCurrentScrambleCustomization();
+		safeSelectItem(scrambleChooser, newCustom);
+		safeSetValue(scrambleLength, newCustom.getScrambleVariation().getLength());
+		
 		timeLabel.setKeyboard(!stackmatEnabled);
 		timeLabel.setEnabledTiming(Configuration.getBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, false));
 		timeLabel.setOpaque(Configuration.getBoolean(VariableKey.ANNOYING_DISPLAY, false));

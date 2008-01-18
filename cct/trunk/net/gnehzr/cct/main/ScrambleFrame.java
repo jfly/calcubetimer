@@ -6,8 +6,6 @@ import java.awt.Dimension;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
-import net.gnehzr.cct.configuration.Configuration;
-import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
@@ -25,14 +23,6 @@ public class ScrambleFrame extends JDialog {
 		super.setSize(arg0);
 		scrambleView.setSize(arg0);
 		scrambleView.componentResized(null);
-	}
-
-	public void setVisible(boolean visible) {
-		Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, visible);
-//		if(!visible) {
-//			scrambleView.resetSize();
-//		}
-		super.setVisible(visible);
 	}
 
 	public void syncColorScheme() {

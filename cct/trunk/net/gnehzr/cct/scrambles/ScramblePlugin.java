@@ -62,6 +62,16 @@ public class ScramblePlugin {
 		return scramblePlugins;
 	}
 
+	public static void saveLengthsToConfiguraiton() {
+		for(ScrambleVariation variation : getScrambleVariations()) {
+			Configuration.setInt(VariableKey.SCRAMBLE_LENGTH(variation), variation.getLength());
+		}
+	}
+	public static void reloadLengthsFromConfiguration(boolean defaults) {
+		for(ScrambleVariation v : getScrambleVariations()) {
+			v.setLength(v.getScrambleLength(defaults));
+		}
+	}
 	private static ScrambleVariation[] scrambleVariations;
 	public static ScrambleVariation[] getScrambleVariations() {
 		if(scrambleVariations == null) {
@@ -75,12 +85,8 @@ public class ScramblePlugin {
 		return scrambleVariations;
 	}
 
-
 	public static ScrambleCustomization getCurrentScrambleCustomization() {
-//		String[] lastCustom = Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, false).split(":");
 		String lastCustom = Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, false);
-//		String variationName = lastCustom[0];
-//		String customizationName = lastCustom.length == 2 ? lastCustom[1] : "";
 		ArrayList<ScrambleCustomization> scrambleCustomizations = getScrambleCustomizations(false);
 		if(scrambleCustomizations.size() == 0)
 			return null;
@@ -89,45 +95,40 @@ public class ScramblePlugin {
 				return custom;
 			}
 		}
+		//now we'll try to match the variation
+		lastCustom = lastCustom.substring(0, lastCustom.indexOf(":"));
+		for(ScrambleCustomization custom : scrambleCustomizations) {
+			if(custom.equals(lastCustom)) {
+				return custom;
+			}
+		}
 		return scrambleCustomizations.get(0);
 	}
-	private static ArrayList<ScrambleCustomization> scrambleCustomizations;
+	
 	public static ArrayList<ScrambleCustomization> getScrambleCustomizations(boolean defaults) {
-		if(scrambleCustomizations == null) {
-			scrambleCustomizations = new ArrayList<ScrambleCustomization>();
-			for(ScrambleVariation t : getScrambleVariations()) {
-				scrambleCustomizations.add(new ScrambleCustomization(t, null));
-			}
+		ArrayList<ScrambleCustomization> scrambleCustomizations = new ArrayList<ScrambleCustomization>();
+		for(ScrambleVariation t : getScrambleVariations()) {
+			scrambleCustomizations.add(new ScrambleCustomization(t, null));
+		}
 
-			String[] customNames = Configuration.getString(VariableKey.SCRAMBLE_CUSTOMIZATIONS, defaults).split(";");
-			for(int ch = customNames.length - 1; ch >= 0; ch--) {
-				String[] name = customNames[ch].split(":");
-				String variationName = name[0];
-				String customizationName = name.length == 2 ? name[1] : "";
-				ScrambleCustomization scramCustomization = null;
-				for(ScrambleCustomization custom : scrambleCustomizations) {
-					if(variationName.equals(custom.getScrambleVariation().toString()))
-						scramCustomization = custom;
-				}
-				if(scramCustomization != null) {
-					if(customNames[ch].indexOf(':') == -1)
-						scrambleCustomizations.remove(scramCustomization);
-					scrambleCustomizations.add(0, new ScrambleCustomization(scramCustomization.getScrambleVariation(), customizationName));
-				}
+		String[] customNames = Configuration.getString(VariableKey.SCRAMBLE_CUSTOMIZATIONS, defaults).split(";");
+		for(int ch = customNames.length - 1; ch >= 0; ch--) {
+			String[] name = customNames[ch].split(":");
+			String variationName = name[0];
+			String customizationName = name.length == 2 ? name[1] : null;
+			ScrambleCustomization scramCustomization = null;
+			for(ScrambleCustomization custom : scrambleCustomizations) {
+				if(variationName.equals(custom.getScrambleVariation().toString()))
+					scramCustomization = custom;
+			}
+			if(scramCustomization != null) {
+				if(customNames[ch].indexOf(':') == -1)
+					scrambleCustomizations.remove(scramCustomization);
+				scrambleCustomizations.add(0, new ScrambleCustomization(scramCustomization.getScrambleVariation(), customizationName));
 			}
 		}
 		return scrambleCustomizations;
 	}
-
-
-
-//	public static void setCustomScrambleVariations(String[] customTypes) {
-//		String types = "";
-//		for(String t : customTypes) {
-//			types += t + ";";
-//		}
-//		setString(VariableKey.SCRAMBLE_TYPES, types);
-//	}
 
 	private String[] getDefaultPuzzleAttributes() {
 		String attrs = Configuration.getString(VariableKey.PUZZLE_ATTRIBUTES(this), false);

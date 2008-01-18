@@ -10,12 +10,12 @@ public class ScrambleVariation {
 	public ScrambleVariation(ScramblePlugin plugin, String variation) {
 		this.scramblePlugin = plugin;
 		this.variation = variation;
-		this.length = getScrambleLength(false);
+		length = getScrambleLength(false);
 	}
 
-	private int getScrambleLength(boolean defaultValue) {
+	public int getScrambleLength(boolean defaultValue) {
 		try {
-			return Configuration.getInt(VariableKey.SCRAMBLE_LENGTH(this),	defaultValue);
+			return Configuration.getInt(VariableKey.SCRAMBLE_LENGTH(this), defaultValue);
 		} catch (NumberFormatException e) {}
 		return scramblePlugin.getDefaultScrambleLength(this);
 	}

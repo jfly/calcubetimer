@@ -6,13 +6,9 @@ import java.util.ArrayList;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
-import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 @SuppressWarnings("serial")
 public class ScrambleCustomizationListModel extends DraggableJTableModel {
-//	private static final String[] COLUMN_NAMES = new String[] {"Scramble Variation", "Customization", "Scramble Length", "Reset Length"};
-//	public static final Class<?>[] COLUMN_CLASSES = new Class[] { ScrambleVariation.class, String.class, Integer.class, Double.class };
-
 	private ArrayList<ScrambleCustomization> customizations;
 	public void setContents(ArrayList<ScrambleCustomization> contents) {
 		this.customizations = contents;
@@ -26,16 +22,13 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel {
 		return removeRowWithElement(element);
 	}
 	public Class<?> getColumnClass(int columnIndex) {
-//		return COLUMN_CLASSES[columnIndex];
 		return ScrambleCustomization.class;
 	}
 	public int getColumnCount() {
-//		return COLUMN_NAMES.length;
 		return 1;
 	}
 	public String getColumnName(int column) {
-//		return COLUMN_NAMES[column];
-		return "Testing";
+		return "Scramble Customizations";
 	}
 	public int getRowCount() {
 		return customizations == null ? 0 : customizations.size();
@@ -43,24 +36,9 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		ScrambleCustomization custom = customizations.get(rowIndex);
 		return custom;
-//		ScrambleVariation var = custom.getScrambleVariation();
-//		switch(columnIndex) {
-//		case 0:
-//			return var;
-//		case 1:
-//			return custom.getCustomization();
-//		case 2:
-//			return var.getLength();
-//		case 3: //this is for the reset button
-//			return new Double(0);
-//		default:
-//			return null;
-//		}
 	}
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-//		if(columnIndex == 3)
-//			return true;
-		return isRowDeletable(rowIndex);
+		return true;
 	}
 	public boolean isRowDeletable(int rowIndex) {
 		if(customizations.get(rowIndex).getCustomization() == null)

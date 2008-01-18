@@ -122,6 +122,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 					true,
 					0,
 					0).getPreferredSize();
+			this.setRowHeight(dim.height);//TODO - this isn't working
 			dim.height = 0;
 			this.setPreferredScrollableViewportSize(dim);
 		} else
@@ -141,7 +142,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 	}
 	public void mouseDragged(MouseEvent m) {
 		int toRow = this.getSelectedRow();
-		if (toRow == fromRow || fromRow == this.getRowCount() - 1 || toRow == this.getRowCount() - 1)
+		if (toRow == -1 || toRow == fromRow || fromRow == this.getRowCount() - 1 || toRow == this.getRowCount() - 1)
 			return;
 		Object element = model.getValueAt(fromRow, 0);
 		model.removeRowWithElement(element);
