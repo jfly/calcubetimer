@@ -61,7 +61,7 @@ public abstract class Scramble {
 	//As of now, there is support for named booleans to affect scrambles.
 	//This was introduced as a way of adding a multi-slice option for cubes
 	//without coding a special case.
-	public static final String[] ATTRIBUTES = new String[0]; //OPTIONAL, this may come in useful for other puzzles. MAY NOT contain commas!
+	public static final String[] ATTRIBUTES = new String[0]; //OPTIONAL, this may come in useful for other puzzles.
 	public static final String[] DEFAULT_ATTRIBUTES = new String[0]; //OPTIONAL, this is an array of the default attributes for a puzzle
 	//this method should parse the attributes, and then generate a scramble (if scramble == null)
 	//or validate the current one (if scramble != null)
