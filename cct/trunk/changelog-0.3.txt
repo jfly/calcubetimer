@@ -71,6 +71,7 @@ changes:
 +improve the gui for custom scramble types
 	+add a reset scramble length button
 	+the scramblecustomization editing doesn't start until after releasing the mouse
++fix server scrambles
 	
 TODO:
 
@@ -104,7 +105,7 @@ cleanup:
 -integrate statsdialoghandler with ui xml stuff
 
 Server stuff:
--fix server scrambles
+-server scrambles needs link to load
 -latency on server - this is so that clients don't flood the server with too many time messages
 -urgent hint for waiting messages on server?
 -don't allow connections to old servers

@@ -5,6 +5,9 @@ import javax.swing.*;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
 import net.gnehzr.cct.umts.Protocol;
+import net.gnehzr.cct.scrambles.Scramble;
+import net.gnehzr.cct.scrambles.ScramblePlugin;
+import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
 
@@ -182,6 +185,26 @@ public class CCTClient {
 			return;
 		}
 
+		if(s.charAt(0) == '/' && s.length() > 1){
+			boolean flag = true;
+			for(String command : Protocol.COMMANDS){
+				if(s.substring(1, s.indexOf(" ")).equalsIgnoreCase(command)){
+					flag = false;
+					break;
+				}
+			}
+			if(flag){
+				System.out.println(s.substring(1).toLowerCase());
+				for(ScrambleVariation var : ScramblePlugin.getScrambleVariations()){
+					if(var.toString().toLowerCase().indexOf(s.substring(1).toLowerCase()) == 0){
+						Scramble scr = var.generateScramble();
+						write(Protocol.MESSAGE_SCRAMBLE, "" + var + Protocol.DELIMITER + scr);
+						return;
+					}
+				}
+			}
+		}
+
 		if(s.length() > 0) write(Protocol.MESSAGE_NORMAL, s);
 		if(s.toLowerCase().startsWith("/exit")) cleanup();
 	}
@@ -314,6 +337,12 @@ public class CCTClient {
 				from = users.getUser(strs[0]);
 				strs[1] = stripHTML(strs[1]);
 				printToLog("<span class='" + from.getName() + "'>" + strs[0] + "</span> " + strs[1]);
+				break;
+			case Protocol.MESSAGE_SCRAMBLE:
+				strs = s.split("" + Protocol.DELIMITER, 3);
+				from = users.getUser(strs[0]);
+				printToLog(strs[1] + " scramble request from <span class='" + from.getName() + "'>" +
+						strs[0] + "</span>: " + strs[2]);
 				break;
 			case Protocol.MESSAGE_ERROR:
 			case Protocol.COMMAND_HELP:

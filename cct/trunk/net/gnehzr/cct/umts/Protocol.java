@@ -18,6 +18,7 @@ public class Protocol{
 	public final static char MESSAGE_USER_CONNECT = 'G';
 	public final static char MESSAGE_USER_DISCONNECT = 'H';
 	public final static char MESSAGE_ERROR = 'I';
+	public final static char MESSAGE_SCRAMBLE = 'J';
 
 	public final static char DATA_USERS = 'a';
 	public final static char DATA_CURRENT_TIME = 'b';
@@ -35,8 +36,7 @@ public class Protocol{
 	public final static String DELIMITER = "\uFFFF";
 	public final static String DELIMITER2 = "\uFFFE";
 
-	public final static String[] COMMANDS = { "help", "exit", "me", "w", "whois", "admin",
-		"2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "megaminx", "square1" };
+	public final static String[] COMMANDS = { "help", "exit", "me", "w", "whois", "admin" };
 
 	public final static String[] ADMIN_COMMANDS = { "login", "name", "motd" };
 

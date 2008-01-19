@@ -91,6 +91,8 @@ public class ServerUserThread extends Thread{
 				}
 				server.processMessage(client.getUsername(), s);
 				break;
+			case Protocol.MESSAGE_SCRAMBLE:
+				server.broadcastScramble(client.getUsername(), s);
 			default:
 				server.println("Message error from " + client.getUsername() + ".");
 				break;
