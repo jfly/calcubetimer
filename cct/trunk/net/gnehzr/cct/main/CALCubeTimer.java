@@ -430,6 +430,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		profiles = new JComboBox();
 		profiles.addItemListener(this);
 //		profiles.setMaximumSize(new Dimension(1000, 100));
+
+		repaintTimes(); //disable the buttons at startup
 	}
 
 	public void itemStateChanged(ItemEvent e) {
