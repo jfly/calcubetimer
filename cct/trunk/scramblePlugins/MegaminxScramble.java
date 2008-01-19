@@ -118,8 +118,8 @@ public class MegaminxScramble extends Scramble {
 		}
 
 		for(int i = 0; i < cstrs.length; i++){
-			if(pochmann && !cstrs[i].matches(regexp)) return false;
-			else if(!cstrs[i].matches(regexp1)) return false;
+			if(pochmann && !cstrs[i].matches(regexp1)) return false;
+			else if(!pochmann && !cstrs[i].matches(regexp)) return false;
 		}
 
 		try{
