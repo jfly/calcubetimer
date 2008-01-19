@@ -18,6 +18,9 @@ import javax.swing.table.TableModel;
 @SuppressWarnings("serial")
 public class DraggableJTable extends JTable implements MouseListener, MouseMotionListener, KeyListener {
 	private String addText;
+	
+	//You must set any editors or renderers before setting this table's model
+	//because the preferred size is computed inside setModel()
 	public DraggableJTable(String addText, boolean draggable) {
 		this.addText = addText;
         this.addMouseListener(this);
@@ -115,16 +118,22 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			model = new JTableModelWrapper(model);
 			super.setModel(model);
 
-			Dimension dim = getCellRenderer(0, 0).getTableCellRendererComponent(
+			Dimension rendDim = getCellRenderer(0, 0).getTableCellRendererComponent(
 					this,
 					addText,
 					true,
 					true,
 					0,
 					0).getPreferredSize();
-			this.setRowHeight(dim.height);//TODO - this isn't working
-			dim.height = 0;
-			this.setPreferredScrollableViewportSize(dim);
+			Dimension edDim = getCellEditor(0, 0).getTableCellEditorComponent(
+					this,
+					addText,
+					true,
+					0,
+					0).getPreferredSize();
+			this.setRowHeight(Math.max(rendDim.height, edDim.height));
+			rendDim.height = 0;
+			this.setPreferredScrollableViewportSize(rendDim);
 		} else
 			super.setModel(tableModel);
 	}

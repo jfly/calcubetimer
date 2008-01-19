@@ -126,7 +126,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		}
 		return scheme;
 	}
-	//TODO - is this HashMap really neaded, or is it leftover from long ago?
+	
 	public void setColorScheme(ScramblePlugin plugin, HashMap<String, Color> scheme) {
 		colorSchemes.put(plugin, scheme);
 		redo();

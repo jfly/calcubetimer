@@ -351,12 +351,13 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		scramType.getTableHeader().setReorderingAllowed(false);
 		scramType.putClientProperty(SubstanceLookAndFeel.WATERMARK_IGNORE, Boolean.TRUE);
 		scramType.setShowGrid(false);
-		scramType.setModel(puzzlesModel);
+		
 		rendererEditor = new PuzzleCustomizationCellRendererEditor();
 		scramType.setDefaultRenderer(ScrambleCustomization.class, rendererEditor);
 		scramType.setDefaultEditor(ScrambleCustomization.class, rendererEditor);
 		scramType.setDefaultEditor(String.class, rendererEditor);
-		scramType.setRowHeight(30); // TODO - this is not correct
+		scramType.setModel(puzzlesModel);
+		
 		JScrollPane scroller = new JScrollPane(scramType);
 		panel.add(scroller, BorderLayout.CENTER);
 		return panel;
