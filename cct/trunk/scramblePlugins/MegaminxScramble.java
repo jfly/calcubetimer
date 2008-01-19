@@ -16,7 +16,7 @@ public class MegaminxScramble extends Scramble {
 	public static final String[] FACE_NAMES = {"A", "B", "C", "D", "E", "F", "a",
 		"b", "c", "d", "e", "f"};
 	public static final String PUZZLE_NAME = "Megaminx";
-	public static final String[] VARIATIONS = {"Megaminx", "Megaminx Pochmann"};
+	public static final String[] VARIATIONS = {"Megaminx", "Pochmann Megaminx"};
 	public static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
 	private int[][] image;
 	public static final int DEFAULT_UNIT_SIZE = 30;
