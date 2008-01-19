@@ -10,13 +10,15 @@
 				</center>
 				<page_end>
 					<panel layout="box" orientation="page">
-						<panel border="000000" layout="flow" hgap="5" vgap="5">
-							<component type="stackmatStatusLabel"/>
-							<component type="scrambleChooser"/>
-							<component type="scrambleLength"/>
-							<component type="scrambleNumber"/>
-							<component type="scrambleAttributes"/>
-						</panel>
+						<scrollpane verticalpolicy="never">
+							<panel border="000000" layout="flow" hgap="5" vgap="5">
+								<component type="stackmatStatusLabel"/>
+								<component type="scrambleChooser"/>
+								<component type="scrambleLength"/>
+								<component type="scrambleNumber"/>
+								<component type="scrambleAttributes"/>
+							</panel>
+						</scrollpane>
 						<component alignmentX=".5" type="startStopPanel"/>
 						<panel layout="flow" hgap="5" vgap="5">
 							<panel border="000000;Hello" layout="grid" cols="3">

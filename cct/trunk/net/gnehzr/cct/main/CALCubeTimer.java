@@ -673,6 +673,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				com = new JSeparator();
 				//TODO needs orientation
 			}
+			else if(elementName.equals("scrollpane")){
+				com = new JScrollPane();
+			}
 
 			else if(elementName.equals("glue")) {
 				Component glue = null;
@@ -715,6 +718,25 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 							border = BorderFactory.createTitledBorder(border, titleAttrs[1]);
 						com.setBorder(border);
 					}
+					if(com instanceof JScrollPane) {
+						JScrollPane scroller = (JScrollPane) com;
+						if((temp = attrs.getValue("verticalpolicy")) != null) {
+							int policy = JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED;
+							if(temp.equalsIgnoreCase("never"))
+								policy = JScrollPane.VERTICAL_SCROLLBAR_NEVER;
+							else if(temp.equalsIgnoreCase("always"))
+								policy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS;
+							scroller.setVerticalScrollBarPolicy(policy);
+						}
+						if((temp = attrs.getValue("horizontalpolicy")) != null) {
+							int policy = JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED;
+							if(temp.equalsIgnoreCase("never"))
+								policy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER;
+							else if(temp.equalsIgnoreCase("always"))
+								policy = JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS;
+							scroller.setHorizontalScrollBarPolicy(policy);
+						}
+					}
 					if((temp = attrs.getValue("opaque")) != null)
 						com.setOpaque(Boolean.parseBoolean(temp));
 					if((temp = attrs.getValue("background")) != null)
@@ -739,8 +761,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			else if(com != null){
 				temp = null;
 				for(int i = level - 1; i >= 0; i--){
-					if(componentTree.get(i) != null){
-						if(temp == null) componentTree.get(i).add(com);
+					JComponent c = componentTree.get(i);
+					if(c != null){
+						if(temp == null) {
+							if(c instanceof JScrollPane) {
+								JScrollPane scroller = (JScrollPane) c;
+								scroller.setViewportView(com);
+							} else
+								c.add(com);
+						}
 						else{
 							String loc = null;
 							if(temp.equals("center")) loc = BorderLayout.CENTER;
@@ -752,7 +781,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 							else if(temp.equals("page_end")) loc = BorderLayout.PAGE_END;
 							else if(temp.equals("line_start")) loc = BorderLayout.LINE_START;
 							else if(temp.equals("line_end")) loc = BorderLayout.LINE_END;
-							componentTree.get(i).add(com, loc);
+							c.add(com, loc);
 						}
 						break;
 					}

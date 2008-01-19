@@ -74,6 +74,7 @@ changes:
 +fix server scrambles
 +use ScramblePlugin to finish scramble debugger
 +tweaked the scramblecustomization editor gui
++gui sizes itself too small by default - FIXED by adding <scrollpane> to customizable gui
 
 TODO:
 
@@ -86,7 +87,6 @@ for release:
 -open source sourceforge!
 -update FAQ, defaults.properties file, about.html
 -create license, give credit where credit is due
--gui sizes itself too small by default
 
 scramble stuff:
 -scramble placeholder / n00b scrambler
