@@ -14,9 +14,9 @@ import net.gnehzr.cct.main.KeyboardTimerPanel.KeyboardTimerComponent;
 @SuppressWarnings("serial")
 public class TimerPanel extends JLabel implements KeyboardTimerComponent {
 	private KeyboardTimerPanel timer;
-	private ScrambleArea scrambles;
+	private ScramblePanel scrambles;
 	private TimerLabel timerDisplay; //this is to do the "semi-annoying" status light
-	public TimerPanel(ActionListener timeListener, ScrambleArea scrambles, TimerLabel timerDisplay) {
+	public TimerPanel(ActionListener timeListener, ScramblePanel scrambles, TimerLabel timerDisplay) {
 		super("", JLabel.CENTER);
 		this.scrambles = scrambles;
 		this.timerDisplay = timerDisplay;

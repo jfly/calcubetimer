@@ -3,6 +3,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
@@ -19,6 +20,7 @@ public class CubeScramble extends Scramble {
 	private int size;
 	private int[][][] image;
 	public static final int DEFAULT_UNIT_SIZE = 11;
+	private static final Pattern TOKEN_REGEX = Pattern.compile("^([LDBRUFldbruf](?:\\(\\d+\\))?[2']?)(.*)$");
 
 	public static int getDefaultScrambleLength(String variation) {
 		int end = variation.indexOf("x");
@@ -178,7 +180,7 @@ public class CubeScramble extends Scramble {
 	}
 	private final static String regexp23 = "^[LDBRUF][2']?$";
 	private final static String regexp45 = "^[LDBRUFldbruf][2']?$";
-	private final static String regexp = "^[LDBRUF](?:\\(\\d*\\))?[2']?$";
+	private final static String regexp = "^[LDBRUF](?:\\(\\d+\\))?[2']?$";
 	private boolean validateScramble(){
 		String[] strs = scramble.split(" ");
 		length = strs.length;
@@ -360,5 +362,9 @@ public class CubeScramble extends Scramble {
 	}
 	private boolean isInFace(int leftBound, int topBound, int x, int y, int size, int cubieSize) {
 		return x >= leftBound && x <= leftBound + size*cubieSize && y >= topBound && y <= topBound + size*cubieSize;
+	}
+
+	public Pattern getTokenRegex(){
+		return TOKEN_REGEX;
 	}
 }

@@ -26,8 +26,8 @@ import net.gnehzr.cct.main.KeyboardTimerPanel.KeyboardTimerComponent;
 @SuppressWarnings("serial")
 public class TimerLabel extends JLabel implements ComponentListener, KeyboardTimerComponent {
 	private KeyboardTimerPanel timer;
-	private ScrambleArea scrambles;
-	public TimerLabel(ActionListener timeListener, ScrambleArea scrambles) {
+	private ScramblePanel scrambles;
+	public TimerLabel(ActionListener timeListener, ScramblePanel scrambles) {
 		super("0.00", JLabel.CENTER);
 		this.scrambles = scrambles;
 		addComponentListener(this);

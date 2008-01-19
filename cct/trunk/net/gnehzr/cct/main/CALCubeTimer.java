@@ -127,7 +127,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private TimerPanel startStopPanel = null;
 	private JFrame fullscreenFrame = null;
 	private TimerLabel bigTimersDisplay = null;
-	private ScrambleArea scrambleText = null;
+	private ScramblePanel scramblePanel = null;
 	private ScrambleFrame scramblePopup = null;
 	private ScrambleCustomization scramCustomizationChoice = null;
 	private JComboBox scrambleChooser = null;
@@ -381,11 +381,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timesList.setModel(stats);
 		timesScroller = new JScrollPane(timesList);
 
-		scrambleText = new ScrambleArea();
-		scrambleText.setAlignmentX(.5f);
-		timeLabel = new TimerLabel(timeListener, scrambleText);
+		scramblePanel = new ScramblePanel(this);
+		scramblePanel.setAlignmentX(.5f);
+		timeLabel = new TimerLabel(timeListener, scramblePanel);
 
-		startStopPanel = new TimerPanel(timeListener, scrambleText, timeLabel);
+		startStopPanel = new TimerPanel(timeListener, scramblePanel, timeLabel);
 		startStopPanel.setKeyboard(true);
 
 		timeLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
@@ -464,7 +464,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	private void parseXML_GUI(File xmlGUIfile) {
 		//this is needed to compute the size of the gui correctly
-		scrambleText.resetPreferredSize();
+		scramblePanel.resetPreferredSize();
 
 		DefaultHandler handler = new GUIParser(this);
 		SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -642,7 +642,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				else if(temp.equalsIgnoreCase("scramblelength")) com = scrambleLength;
 				else if(temp.equalsIgnoreCase("scrambleattributes")) com = scrambleAttributes;
 				else if(temp.equalsIgnoreCase("stackmatstatuslabel")) com = onLabel;
-				else if(temp.equalsIgnoreCase("scrambletext")) com = scrambleText;
+				else if(temp.equalsIgnoreCase("scrambletext")) com = scramblePanel;
 				else if(temp.equalsIgnoreCase("timerdisplay")) com = timeLabel;
 				else if(temp.equalsIgnoreCase("startstoppanel")) com = startStopPanel;
 				else if(temp.equalsIgnoreCase("timeslist")) com = timesScroller;
@@ -984,7 +984,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if((Integer)scrambleNumber.getValue() != scramblesList.getScrambleNumber())
 			safeSetValue(scrambleNumber, scramblesList.getScrambleNumber());
 
-		scrambleText.setText(scramblesList.getCurrent());
+		scramblePanel.setScramble(scramblesList.getCurrent());
 		scramblePopup.setScramble(scramblesList.getCurrent(), scramCustomizationChoice.getScramblePlugin());
 		scramblePopup.pack();
 	}
@@ -1173,8 +1173,16 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		} else if(focusedComponent != null) {
 			focusedComponent.requestFocusInWindow();
 		} else
-			scrambleText.requestFocusInWindow();
+			scramblePanel.requestFocusInWindow();
 		timeLabel.componentResized(null);
+	}
+
+	public ScrambleFrame getScramblePopup(){
+		return scramblePopup;
+	}
+
+	public ScrambleCustomization getScramCustomizationChoice(){
+		return scramCustomizationChoice;
 	}
 
 	// Actions section {{{
@@ -1292,7 +1300,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	public void hideScramblesAction(){
 		Configuration.setBoolean(VariableKey.HIDE_SCRAMBLES, (Boolean)hideScramblesAction.getValue(Action.SELECTED_KEY));
-		scrambleText.refresh();
+		scramblePanel.refresh();
 	}
 
 	public void annoyingDisplayAction(){

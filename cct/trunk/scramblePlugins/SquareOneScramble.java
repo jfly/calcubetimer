@@ -26,6 +26,7 @@ public class SquareOneScramble extends Scramble {
 	private boolean even_parity = true; //this is the state of the middle pieces
 	public static final int DEFAULT_UNIT_SIZE = 32;
 	private boolean easyRead;
+	private static final Pattern TOKEN_REGEX = Pattern.compile("^(/|\\(?-?[0-6] *, *-?[0-6]*\\)?)(.*)$");
 
 	public static int getDefaultScrambleLength(String variation) {
 		return 40;
@@ -432,5 +433,9 @@ public class SquareOneScramble extends Scramble {
 		tri.closePath();
 		tri.transform(AffineTransform.getTranslateInstance(x - width / 2.0, y - width / 2.0));
 		return tri.contains(px, py);
+	}
+
+	public Pattern getTokenRegex(){
+		return TOKEN_REGEX;
 	}
 }

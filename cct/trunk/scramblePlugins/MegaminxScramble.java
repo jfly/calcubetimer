@@ -8,6 +8,7 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
@@ -23,6 +24,7 @@ public class MegaminxScramble extends Scramble {
 	public static final double UNFOLDHEIGHT = 2 + 3 * Math.sin(.3 * Math.PI) + Math.sin(.1 * Math.PI);
 	public static final double UNFOLDWIDTH = 4 * Math.cos(.1 * Math.PI) + 2 * Math.cos(.3 * Math.PI);
 	private boolean pochmann = false;
+	private static final Pattern TOKEN_REGEX = Pattern.compile("^([A-Fa-fRY](?:\\+\\+|--|[234]?))(.*)$");
 
 	public static int getDefaultScrambleLength(String variation) {
 		if(variation.equals(VARIATIONS[1]))
@@ -98,7 +100,7 @@ public class MegaminxScramble extends Scramble {
 		initializeImage();
 		return validateScramble();
 	}
-	private static String regexp = "^[ABCDEFabcdef][234]?$";
+	private static String regexp = "^[A-Fa-f][234]?$";
 	private static String regexp1 = "^[RDY]([+-])\\1$";
 	private boolean validateScramble() {
 		String[] strs = scramble.split(" ");
@@ -484,5 +486,9 @@ public class MegaminxScramble extends Scramble {
 		GeneralPath p = pentagon(up, minxRad);
 		p.transform(AffineTransform.getTranslateInstance(x, y));
 		return p.contains(mousex, mousey);
+	}
+
+	public Pattern getTokenRegex(){
+		return TOKEN_REGEX;
 	}
 }

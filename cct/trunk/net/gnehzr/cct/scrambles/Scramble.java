@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 public abstract class Scramble {
 	protected String scramble = null;
@@ -55,6 +56,9 @@ public abstract class Scramble {
 	public abstract Dimension getMinimumSize(int gap, int unitSize);
 	public abstract BufferedImage getScrambleImage(int gap, int unitSize, HashMap<String, Color> colorScheme);
 	public abstract String getFaceClicked(int x, int y, int gap, int unitSize);
+
+	//returns a Pattern that will match a single unit in the scramble string
+	public abstract Pattern getTokenRegex();
 
 	/* Optional fields */
 	public static final String[] VARIATIONS = {""}; //OPTIONAL, this is so one class can handle 3x3x3-11x11x11, cannot contain the character ":"
