@@ -2,13 +2,14 @@ package net.gnehzr.cct.scrambles;
 
 import java.awt.Color;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -17,10 +18,64 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 import net.gnehzr.cct.main.ScrambleFrame;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent.ColorListener;
 
-public class ScrambleDebugger {
+public class ScrambleDebugger extends ScramblePlugin {
+	public ScrambleDebugger(Class<? extends Scramble> cls, int length) throws SecurityException, IllegalArgumentException, NoSuchMethodException, NoSuchFieldException, IllegalAccessException {
+		super(cls);
 
+		System.out.println("Puzzle name: " + super.PUZZLE_NAME);
+		System.out.println("Puzzle faces: " + arrayToString(super.FACE_NAMES));
+		System.out.println("Default unit size: " + super.DEFAULT_UNIT_SIZE);
+		System.out.println("Scramble variations: " + arrayToString(super.VARIATIONS));
+		System.out.println("Available scramble attributes: " + arrayToString(super.ATTRIBUTES));
+		System.out.println("Default attributes: " + arrayToString(super.DEFAULT_ATTRIBUTES));
+		
+		if(length == -1) {
+			length = super.getDefaultScrambleLength(new ScrambleVariation(this, ""));
+		}
+		System.out.println("Scramble length: " + length);
+		Scramble s = super.newScramble("", length, super.DEFAULT_ATTRIBUTES);
+		ScrambleFrame view = new ScrambleFrame(null, "ScrambleDebugger");
+		final JLabel clicked = new JLabel("Nothing yet!");
+		view.add(clicked);
+		view.getScrambleView().setColorListener(new ColorListener() {
+			public void colorClicked(ScrambleViewComponent source, String face,
+					HashMap<String, Color> colorScheme) {
+				System.out.println(face);
+			}
+		});
+		view.setScramble(s, this);
+		view.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		view.pack();
+		view.setVisible(true);
+		System.out.println("New default scramble: " + s);
+	}
+	private String arrayToString(String[] array) {
+		String temp = "";
+		for(String s : array) {
+			temp += ", " + s;
+		}
+		return temp.substring(2);
+	}
+
+	private static void printUsage() {
+		System.out.println("Usage: ScrambleDebugger [class filename] (scramble length)");
+	}
+	
 	@SuppressWarnings("serial")
 	public static void main(String... args) {
+		String fileName;
+		int scramLength = -1;
+		if(args.length >= 1) {
+			fileName = args[0];
+			if(args.length == 2) {
+				scramLength = Integer.parseInt(args[1]);
+			}
+		} else {
+			System.out.println("Invalid arguments");
+			printUsage();
+			return;			
+		}
+
 		try {
 			UIManager.setLookAndFeel(new SubstanceLookAndFeel());
 			JDialog.setDefaultLookAndFeelDecorated(true);
@@ -29,7 +84,7 @@ public class ScrambleDebugger {
 		}
 		Class<?> cls = null;
 		try {
-			File scramClass = new File(args[0]);
+			File scramClass = new File(fileName);
 			URL url = scramClass.getParentFile().toURI().toURL();
 			URL[] urls = new URL[]{ url };
 			ClassLoader cl = new URLClassLoader(urls);
@@ -38,57 +93,25 @@ public class ScrambleDebugger {
 			Class<?> spr = cls.getSuperclass();
 			System.out.println(scramClass.getAbsolutePath() + " has superclass " + cls.getSuperclass());
 			if(!spr.equals(Scramble.class)) {
-				System.exit(1);
+				return;
 			}
+			new ScrambleDebugger((Class<? extends Scramble>) cls, scramLength);
 		} catch(NoClassDefFoundError e) {
 			e.printStackTrace();
-		} catch(Exception e) {
+		} catch(SecurityException e) {
+			e.printStackTrace();
+		} catch(IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch(NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch(NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch(IllegalAccessException e) {
+			e.printStackTrace();
+		} catch(ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch(MalformedURLException e) {
 			e.printStackTrace();
 		}
-		//TODO - check for everything, this is a debugger!
-		Scramble s = null;
-		try {
-			s = (Scramble) cls.getConstructor(String.class, int.class, String[].class).newInstance("", 0, new String[0]);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		}
-//		Scramble s = new SquareOneScramble(20);
-//		HashMap<String, Color> colors = new HashMap<String, Color>();
-//		colors.put("Up", Color.YELLOW);
-//		colors.put("Down", Color.WHITE);
-//		colors.put("Left", Color.BLUE);
-//		colors.put("Right", Color.GREEN);
-//		colors.put("Front", Color.RED);
-//		colors.put("Back", Color.ORANGE);
-		ScrambleFrame view = new ScrambleFrame(null, "ScrambleDebugger");
-//		final JLabel clicked = new JLabel("Nothing yet!");
-//		view.add(clicked);
-		view.getScrambleView().setColorListener(new ColorListener() {
-			public void colorClicked(ScrambleViewComponent source, String face,
-					HashMap<String, Color> colorScheme) {
-				System.out.println(face);
-			}
-		});
-		view.setScramble(s, null);//TODO - awesomize w/ scramblePlugin!
-		view.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		view.pack();
-		view.setVisible(true);
-//		ScrambleViewComponent view = new ScrambleViewComponent();
-//		view.setScramble(s);
-//		test.add(view);
-//		test.setSize(1000, 500);
-//		test.setVisible(true);
-//		test.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		System.out.println(s);
 	}
 }

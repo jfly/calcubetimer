@@ -16,7 +16,7 @@ public class ScrambleVariation {
 	public int getScrambleLength(boolean defaultValue) {
 		try {
 			return Configuration.getInt(VariableKey.SCRAMBLE_LENGTH(this), defaultValue);
-		} catch (NumberFormatException e) {}
+		} catch (Exception e) {}
 		return scramblePlugin.getDefaultScrambleLength(this);
 	}
 

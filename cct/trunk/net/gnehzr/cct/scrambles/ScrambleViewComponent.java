@@ -19,7 +19,11 @@ import java.util.HashMap;
 @SuppressWarnings("serial")
 public class ScrambleViewComponent extends JComponent implements ComponentListener, MouseListener {
 	private static final int GAP() {
-		return Configuration.getInt(VariableKey.POPUP_GAP, false);
+		try {
+			return Configuration.getInt(VariableKey.POPUP_GAP, false);
+		} catch(Exception e) {
+			return 5;
+		}
 	}
 
 	public ScrambleViewComponent() {

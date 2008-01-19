@@ -72,7 +72,8 @@ changes:
 	+add a reset scramble length button
 	+the scramblecustomization editing doesn't start until after releasing the mouse
 +fix server scrambles
-	
++use ScramblePlugin to finish scramble debugger
+
 TODO:
 
 for release:
@@ -89,7 +90,6 @@ scramble stuff:
 -tweak the scramblecustomization editor gui
 -scramble placeholder / n00b scrambler
 -write scramble plugin tutorial
--use ScramblePlugin to finish scramble debugger
 -icons on scramble choices?
 
 misc:

@@ -157,17 +157,17 @@ public class ScramblePlugin {
 	private Constructor<? extends Scramble> newScrambleConstructor;
 	private Constructor<? extends Scramble> importScrambleConstructor;
 
-	private String PUZZLE_NAME;
-	private String[] FACE_NAMES;
-	private int DEFAULT_UNIT_SIZE;
-	private String[] VARIATIONS;
-	private String[] ATTRIBUTES;
-	private String[] DEFAULT_ATTRIBUTES;
+	protected String PUZZLE_NAME;
+	protected String[] FACE_NAMES;
+	protected int DEFAULT_UNIT_SIZE;
+	protected String[] VARIATIONS;
+	protected String[] ATTRIBUTES;
+	protected String[] DEFAULT_ATTRIBUTES;
 
 	private Method getDefaultScrambleLength;
 	private Method getDefaultFaceColor;
 
-	private ScramblePlugin(Class<? extends Scramble> pluginClass) throws SecurityException, NoSuchMethodException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+	protected ScramblePlugin(Class<? extends Scramble> pluginClass) throws SecurityException, NoSuchMethodException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
 		newScrambleConstructor = pluginClass.getConstructor(String.class, int.class, String[].class);
 		importScrambleConstructor = pluginClass.getConstructor(String.class, String.class, String[].class);
 
@@ -258,7 +258,10 @@ public class ScramblePlugin {
 		HashMap<String, Color> scheme = null;
 		scheme = new HashMap<String, Color>(FACE_NAMES.length);
 		for(String face : FACE_NAMES) {
-			String col = Configuration.getString(VariableKey.PUZZLE_COLOR(this, face), defaults);
+			String col = null;
+			try {
+				col = Configuration.getString(VariableKey.PUZZLE_COLOR(this, face), defaults);
+			} catch(Exception e) {}
 			if(col == null) {
 				try {
 					col = (String) getDefaultFaceColor.invoke(null, face);
@@ -278,7 +281,7 @@ public class ScramblePlugin {
 	public int getPuzzleUnitSize(boolean defaults) {
 		try {
 			return Configuration.getInt(VariableKey.UNIT_SIZE(this), defaults);
-		} catch(NumberFormatException e) {}
+		} catch(Exception e) {}
 		return DEFAULT_UNIT_SIZE;
 	}
 }
