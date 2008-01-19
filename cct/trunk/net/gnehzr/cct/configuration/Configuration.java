@@ -153,7 +153,7 @@ public final class Configuration {
 		try {
 			return props.getProperty(key).split("\n");
 		} catch(NullPointerException e) {
-			return new String[0];
+			return null;
 		}
 	}
 	public static void setStringArray(VariableKey<String[]> key, Object[] arr) {

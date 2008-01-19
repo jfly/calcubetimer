@@ -95,7 +95,6 @@ import net.gnehzr.cct.misc.dynamicGUI.DynamicMenuItem;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicSelectableLabel;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicString;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicStringSettable;
-import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleList;
@@ -877,7 +876,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 			int newLength = scramblesList.getCurrent().getLength();
 
-			//TODO improve importexport dialog to select customizations
 			if(!newVariation.equals(scramCustomizationChoice.getScrambleVariation())) {
 				scramCustomizationChoice = new ScrambleCustomization(newVariation, null);
 			}
