@@ -1,5 +1,6 @@
 package net.gnehzr.cct.scrambles;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 @SuppressWarnings("serial")
@@ -45,10 +46,10 @@ public class ScrambleList extends ArrayList<Scramble>{
 		this.scrambleNumber = scrambleNumber - 1;
 	}
 
-	public static ScrambleList importScrambles(ScrambleVariation c, BufferedReader in) throws Exception {
+	public static ScrambleList importScrambles(ScrambleVariation c, BufferedReader in) throws InvalidScrambleException, IOException {
 		ScrambleList list = new ScrambleList(c);
 		String curr;
-		Scramble newScram;//TODO - exception is never thrown, fix this
+		Scramble newScram;
 		while((curr = in.readLine()) != null && (newScram = c.generateScramble(curr)) != null){
 			list.add(newScram);
 		}

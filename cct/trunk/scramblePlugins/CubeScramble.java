@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
+import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 
 public class CubeScramble extends Scramble {
@@ -77,11 +78,11 @@ public class CubeScramble extends Scramble {
 		setAttributes(attrs);
 	}
 
-	public CubeScramble(String variation, String s, String... attrs) throws Exception {
+	public CubeScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
 		super(s);
 		this.size = Integer.parseInt(variation.split("x")[0]);
 		if(!setAttributes(attrs))
-			throw new Exception();
+			throw new InvalidScrambleException();
 	}
 
 	private boolean multislice;

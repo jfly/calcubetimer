@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 
 public class SquareOneScramble extends Scramble {
@@ -58,10 +59,10 @@ public class SquareOneScramble extends Scramble {
 		setAttributes(attrs);
 	}
 
-	public SquareOneScramble(String variation, String s, String... attrs) throws Exception {
+	public SquareOneScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
 		super(s);
 		if(!setAttributes(attrs))
-			throw new Exception();
+			throw new InvalidScrambleException();
 	}
 
 	public boolean setAttributes(String... attributes) {

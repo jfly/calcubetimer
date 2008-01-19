@@ -211,7 +211,7 @@ public class ScramblePlugin {
 		return null;
 	}
 
-	public Scramble importScramble(String variation, String scramble, String[] attributes) {
+	public Scramble importScramble(String variation, String scramble, String[] attributes) throws InvalidScrambleException {
 		try {
 			return importScrambleConstructor.newInstance(variation, scramble, attributes);
 		} catch (IllegalArgumentException e) {
@@ -221,7 +221,12 @@ public class ScramblePlugin {
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Throwable cause = e.getCause();
+			if(cause instanceof InvalidScrambleException) {
+				InvalidScrambleException invalid = (InvalidScrambleException) cause;
+				throw invalid;
+			}
+			cause.printStackTrace();
 		}
 		return null;
 	}

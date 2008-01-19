@@ -50,7 +50,7 @@ public abstract class Scramble {
 	//public static int getDefaultScrambleLength(String variation); REQUIRED
 	//public static String getDefaultFaceColor(String face); REQUIRED - returns hex code of face's color
 	//public Constructor(String variation, int length, String... attrs) - REQUIRED
-	//public Constructor(String variation, String scramble, String... attrs) throws Exception - REQUIRED
+	//public Constructor(String variation, String scramble, String... attrs) throws InvalidScrambleException - REQUIRED
 	public abstract int getNewUnitSize(int width, int height, int gap);
 	public abstract Dimension getMinimumSize(int gap, int unitSize);
 	public abstract BufferedImage getScrambleImage(int gap, int unitSize, HashMap<String, Color> colorScheme);

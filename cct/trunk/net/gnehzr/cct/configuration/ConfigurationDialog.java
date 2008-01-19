@@ -359,19 +359,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		scramType.setRowHeight(30); // TODO - this is not correct
 		JScrollPane scroller = new JScrollPane(scramType);
 		panel.add(scroller, BorderLayout.CENTER);
-
-		// panel.add(new JLabel("<html><body>" // TODO make this correct...
-		// + "<div align=center><u>Legend</u></div><br>"
-		// + "$D = date and time<br>"
-		// + "$C = number of solves<br>"
-		// + "$P = number of pops<br>"
-		// + "$A = average<br>"
-		// + "$S = standard deviation<br>"
-		// + "$B = best time<br>"
-		// + "$W = worst time<br>"
-		// + "$I = individual times and scrambles<br>"
-		// + "$i = times, scrambles, and splits<br>"
-		// + "$T = terse formatting of times"), BorderLayout.LINE_END);
 		return panel;
 	}
 

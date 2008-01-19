@@ -95,6 +95,7 @@ import net.gnehzr.cct.misc.dynamicGUI.DynamicMenuItem;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicSelectableLabel;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicString;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicStringSettable;
+import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleList;

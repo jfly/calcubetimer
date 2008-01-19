@@ -37,7 +37,7 @@ public class ScrambleVariation {
 		return scramblePlugin.newScramble(variation, length, scramblePlugin.getEnabledPuzzleAttributes());
 	}
 
-	public Scramble generateScramble(String scramble) {
+	public Scramble generateScramble(String scramble) throws InvalidScrambleException {
 		return scramblePlugin.importScramble(variation, scramble, scramblePlugin.getEnabledPuzzleAttributes());
 	}
 

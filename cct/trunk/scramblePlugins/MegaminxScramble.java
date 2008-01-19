@@ -9,6 +9,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
+import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 
 public class MegaminxScramble extends Scramble {
@@ -59,10 +60,10 @@ public class MegaminxScramble extends Scramble {
 		}
 	}
 
-	public MegaminxScramble(String variation, String s, String... attrs) throws Exception {
+	public MegaminxScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
 		super(s);
 		pochmann = variation.equals(VARIATIONS[1]);
-		if(!setAttributes(attrs)) throw new Exception();
+		if(!setAttributes(attrs)) throw new InvalidScrambleException();
 	}
 
 	public MegaminxScramble(String variation, int length, String... attrs) {
