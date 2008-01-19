@@ -75,6 +75,8 @@ changes:
 +use ScramblePlugin to finish scramble debugger
 +tweaked the scramblecustomization editor gui
 +gui sizes itself too small by default - FIXED by adding <scrollpane> to customizable gui
++don't allow connections to old servers
++don't accept connections to old clients
 
 TODO:
 
@@ -110,5 +112,3 @@ Server stuff:
 -server scrambles needs link to load
 -latency on server - this is so that clients don't flood the server with too many time messages
 -urgent hint for waiting messages on server?
--don't allow connections to old servers
--don't accept connections to old clients.

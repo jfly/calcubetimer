@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class CCTClient {
 	public final static String VERSION = "0.3";
 	public final static int DEFAULT_PORT = 32125;
+	private final static double DISALLOW_OLDER_THAN = 0.3;
 
 	private int port;
 	private Socket socket;
@@ -158,6 +159,9 @@ public class CCTClient {
 			case Protocol.LOGIN_FAILED:
 				p += "Failed.";
 				break;
+			case Protocol.LOGIN_INVALID_CLIENT:
+				p += "Client is old. Please upgrade your client.";
+				break;
 			default:
 				p += "Unknown error.";
 				break;
@@ -188,7 +192,9 @@ public class CCTClient {
 		if(s.charAt(0) == '/' && s.length() > 1){
 			boolean flag = true;
 			for(String command : Protocol.COMMANDS){
-				if(s.substring(1, s.indexOf(" ")).equalsIgnoreCase(command)){
+				int end = s.indexOf(" ");
+				if(end < 0) end = s.length();
+				if(s.substring(1, end).equalsIgnoreCase(command)){
 					flag = false;
 					break;
 				}
@@ -453,6 +459,16 @@ public class CCTClient {
 
 	private void processSystemMessage(String s){
 		printToLog("<span class='system'>" + s + "</span>");
+		if(s.startsWith("Welcome")){
+			String ver = s.substring(s.indexOf(" v") + 2, s.indexOf("!"));
+			try{
+				double num = Double.parseDouble(ver);
+				if(num < DISALLOW_OLDER_THAN){
+					sendMessage("/exit server too old");
+					printToLog("Sorry, server version is too old.");
+				}
+			} catch(NumberFormatException e){}
+		}
 	}
 
 	public void printToLog(String s) {

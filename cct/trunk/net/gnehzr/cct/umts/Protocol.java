@@ -6,6 +6,7 @@ public class Protocol{
 	public final static char LOGIN_DUPLICATE_NAME = '1';
 	public final static char LOGIN_INVALID_NAME = '2';
 	public final static char LOGIN_FAILED = '3';
+	public final static char LOGIN_INVALID_CLIENT = '4';
 
 //clients send MESSAGE_NORMAL, DATA, COMMAND_EXIT
 

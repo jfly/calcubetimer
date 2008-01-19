@@ -31,7 +31,7 @@ public class ServerUserThread extends Thread{
 				client.write(Protocol.MESSAGE_SERVER, server.serverMessage());
 			}
 			else{
-				server.println("Failed login: " + name + "@" + (InetSocketAddress)socket.getRemoteSocketAddress());
+				server.println("Failed login: " + name + "@" + (InetSocketAddress)socket.getRemoteSocketAddress() + " Error code: " + loginStatus);
 			}
 		} catch(IOException e){
 			server.println("Failed connect: IO error. " + (InetSocketAddress)socket.getRemoteSocketAddress());

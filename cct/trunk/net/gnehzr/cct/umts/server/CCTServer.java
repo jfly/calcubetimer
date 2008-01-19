@@ -17,6 +17,7 @@ public class CCTServer implements Runnable{
 	private final static String USAGE = "Usage: CCTServer [password] (port)";
 	private final static int DEFAULT_PORT = 32125;
 	private final static SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private final static double DISALLOW_OLDER_THAN = 0.3;
 
 	private ServerSocket serverSocket;
 	private ServerData data;
@@ -197,12 +198,28 @@ public class CCTServer implements Runnable{
 	}
 
 	public char login(Client c) throws IOException{
-		if(!Protocol.isNameValid(c.getUsername())){
-			c.write(Protocol.LOGIN_INVALID_NAME);
-			return Protocol.LOGIN_INVALID_NAME;
+		char b;
+		String cs = c.getClientString();
+		String ver = cs.substring(cs.indexOf("v") + 1);
+		try{
+			double num = Double.parseDouble(ver);
+			if(num < DISALLOW_OLDER_THAN){
+				b = Protocol.LOGIN_INVALID_CLIENT;
+				c.writeSpec(b);
+				return b;
+			}
+		} catch(NumberFormatException e){
+			b = Protocol.LOGIN_INVALID_CLIENT;
+			c.writeSpec(b);
+			return b;
 		}
 
-		char b;
+		if(!Protocol.isNameValid(c.getUsername())){
+			b = Protocol.LOGIN_DUPLICATE_NAME;
+			c.writeSpec(b);
+			return b;
+		}
+
 		semaphore.acquireUninterruptibly();
 		try{
 			if(data.isNameDuplicate(c.getUsername())){
