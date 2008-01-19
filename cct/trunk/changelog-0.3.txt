@@ -73,6 +73,7 @@ changes:
 	+the scramblecustomization editing doesn't start until after releasing the mouse
 +fix server scrambles
 +use ScramblePlugin to finish scramble debugger
++tweaked the scramblecustomization editor gui
 
 TODO:
 
@@ -85,9 +86,9 @@ for release:
 -open source sourceforge!
 -update FAQ, defaults.properties file, about.html
 -create license, give credit where credit is due
+-gui sizes itself too small by default
 
 scramble stuff:
--tweak the scramblecustomization editor gui
 -scramble placeholder / n00b scrambler
 -write scramble plugin tutorial
 -icons on scramble choices?

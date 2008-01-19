@@ -336,7 +336,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 	private ScrambleCustomizationListModel puzzlesModel = new ScrambleCustomizationListModel();
 	private ProfileListModel profilesModel = new ProfileListModel();
-	private PuzzleCustomizationCellRendererEditor rendererEditor;
 
 	private JPanel makeScrambleTypeOptionsPanel() {
 		JPanel panel = new JPanel(new BorderLayout(10, 10));
@@ -345,21 +344,21 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		profilesTable.getTableHeader().setReorderingAllowed(false);
 		profilesTable.setModel(profilesModel);
 		profilesTable.setDefaultEditor(Profile.class, new ProfileEditor("Type new profile name here.", profilesModel));
-		panel.add(new JScrollPane(profilesTable), BorderLayout.LINE_START);
 
-		DraggableJTable scramType = new DraggableJTable("Add new puzzle...", true);
-		scramType.getTableHeader().setReorderingAllowed(false);
-		scramType.putClientProperty(SubstanceLookAndFeel.WATERMARK_IGNORE, Boolean.TRUE);
-		scramType.setShowGrid(false);
+		DraggableJTable scramTable = new DraggableJTable("Add new puzzle...", true);
+		scramTable.getTableHeader().setReorderingAllowed(false);
+		scramTable.putClientProperty(SubstanceLookAndFeel.WATERMARK_IGNORE, Boolean.TRUE);
+		scramTable.setShowGrid(false);
 		
-		rendererEditor = new PuzzleCustomizationCellRendererEditor();
-		scramType.setDefaultRenderer(ScrambleCustomization.class, rendererEditor);
-		scramType.setDefaultEditor(ScrambleCustomization.class, rendererEditor);
-		scramType.setDefaultEditor(String.class, rendererEditor);
-		scramType.setModel(puzzlesModel);
+		scramTable.setDefaultRenderer(ScrambleCustomization.class, puzzlesModel);
+		scramTable.setDefaultEditor(ScrambleCustomization.class, puzzlesModel);
+		scramTable.setDefaultEditor(String.class, puzzlesModel);
+		scramTable.setModel(puzzlesModel);
 		
-		JScrollPane scroller = new JScrollPane(scramType);
-		panel.add(scroller, BorderLayout.CENTER);
+//		panel.add(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(profilesTable), new JScrollPane(scramTable)));
+		
+		panel.add(new JScrollPane(profilesTable), BorderLayout.LINE_START);
+		panel.add(new JScrollPane(scramTable), BorderLayout.CENTER);
 		return panel;
 	}
 

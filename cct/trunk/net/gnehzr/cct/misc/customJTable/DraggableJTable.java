@@ -13,6 +13,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 @SuppressWarnings("serial")
@@ -63,15 +64,19 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			return wrapped.getRowCount() + 1;
 		}
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			if(rowIndex == wrapped.getRowCount())
-				return addText;
-			else
+			if(rowIndex == wrapped.getRowCount()) {
+				if(columnIndex == 0)
+					return addText;
+				return "";
+			} else
 				return wrapped.getValueAt(rowIndex, columnIndex);
 		}
 		public boolean isCellEditable(int rowIndex, int columnIndex) {
-			if(rowIndex == wrapped.getRowCount())
-				return true;
-			else
+			if(rowIndex == wrapped.getRowCount()) {
+				if(columnIndex == 0)
+					return true;
+				return false;
+			} else
 				return wrapped.isCellEditable(rowIndex, columnIndex);
 		}
 		public boolean isRowDeletable(int rowIndex) {
@@ -131,9 +136,20 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 					true,
 					0,
 					0).getPreferredSize();
+			
 			this.setRowHeight(Math.max(rendDim.height, edDim.height));
 			rendDim.height = 0;
 			this.setPreferredScrollableViewportSize(rendDim);
+
+			TableColumnModel columns = this.getColumnModel();
+			for(int ch = 0; ch < columns.getColumnCount(); ch++) {
+				columns.getColumn(ch).setPreferredWidth(getCellEditor(0, ch).getTableCellEditorComponent(
+						this,
+						null,
+						true,
+						0,
+						ch).getPreferredSize().width);
+			}
 		} else
 			super.setModel(tableModel);
 	}

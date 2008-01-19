@@ -79,7 +79,6 @@ import javax.xml.parsers.SAXParserFactory;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.ConfigurationDialog;
-import net.gnehzr.cct.configuration.PuzzleCustomizationCellRendererEditor;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.help.AboutScrollFrame;
 import net.gnehzr.cct.misc.Utils;
