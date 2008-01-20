@@ -98,6 +98,7 @@ import net.gnehzr.cct.misc.dynamicGUI.DynamicSelectableLabel;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicString;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicStringSettable;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
+import net.gnehzr.cct.scrambles.NullScramble;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleList;
@@ -1028,7 +1029,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	private void setScramble(Scramble s, ScrambleCustomization sc){
 		scramblePanel.setScramble(s, sc);
-		scramblePopup.setScramble(s, sc.getScramblePlugin());
+		if(sc == null) scramblePopup.setScramble(s, ScramblePlugin.NULL_SCRAMBLE_PLUGIN);
+		else scramblePopup.setScramble(s, sc.getScramblePlugin());
 		scramblePopup.pack();
 	}
 
@@ -1123,7 +1125,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				return;
 			}
 		}
-		scramblePanel.setText(s);
+		try{
+			setScramble(new NullScramble(null, s) , null);
+		} catch(InvalidScrambleException e){}
 	}
 
 	public void stateChanged(ChangeEvent e) {

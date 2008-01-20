@@ -21,6 +21,7 @@ import org.jvnet.lafwidget.LafWidget;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
+import net.gnehzr.cct.scrambles.NullScramble;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
@@ -51,21 +52,10 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 	}
 	private Scramble currentScramble;
 	private ScrambleCustomization currentCustomization;
-	//TODO - create null scramble type
-	public void setText(String string) {
-		Font temp = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
-		scramblePane.setText("<span style = \"font-family: " + temp.getFamily() + "; font-size: " + temp.getSize() + (temp.isItalic() ? "; font-style: italic" : "") + "\">" + string + "</span>");
 
-		scramblePane.setCaretPosition(0);
-		setProperSize();
-		getParent().validate();
-	}
 	public void setScramble(Scramble newScramble, final ScrambleCustomization sc) {
 		currentScramble = newScramble;
 		currentCustomization = sc;
-
-		Pattern regex = newScramble.getTokenRegex();
-		String s = newScramble.toString().trim();
 
 		Font font = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
 		String fontStyle = "";
@@ -82,13 +72,21 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 			"span { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "; " + fontStyle + "}" +
 			"sub { font-size: " + (font.getSize() / 2 + 1) + "; }" +
 			"</style></head><body>";
-		String plainScramble = "";
-		Matcher m;
-		while((m = regex.matcher(s)).matches()){
-			String str = m.group(1).trim();
-			plainScramble += " " + str;
-			formattedScramble += "<a href=\"http://" + plainScramble + "\">" + newScramble.htmlIfy(str) + "</a> ";
-			s = m.group(2).trim();
+		String s = newScramble.toString().trim();
+		if(newScramble instanceof NullScramble){
+			formattedScramble += s;
+		}
+		else{
+			Pattern regex = newScramble.getTokenRegex();
+
+			String plainScramble = "";
+			Matcher m;
+			while((m = regex.matcher(s)).matches()){
+				String str = m.group(1).trim();
+				plainScramble += " " + str;
+				formattedScramble += "<a href=\"http://" + plainScramble + "\">" + newScramble.htmlIfy(str) + "</a> ";
+				s = m.group(2).trim();
+			}
 		}
 		formattedScramble += "</body></html>";
 		scramblePane.setText(formattedScramble);
@@ -101,15 +99,17 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-			ScramblePlugin sp = currentCustomization.getScramblePlugin();
-			ScrambleVariation sv = currentCustomization.getScrambleVariation();
-			try{
-				//remove http://, and the leading space
-				String subScramble = e.getURL().toString().substring(8);
-				Scramble s = sp.importScramble(sv.toString(), subScramble, new String[0]);
-				scramblePopup.setScramble(s, sp);
-			} catch(InvalidScrambleException ex){
-				ex.printStackTrace();
+			if(currentCustomization != null){
+				ScramblePlugin sp = currentCustomization.getScramblePlugin();
+				ScrambleVariation sv = currentCustomization.getScrambleVariation();
+				try{
+					//remove http://, and the leading space
+					String subScramble = e.getURL().toString().substring(8);
+					Scramble s = sp.importScramble(sv.toString(), subScramble, new String[0]);
+					scramblePopup.setScramble(s, sp);
+				} catch(InvalidScrambleException ex){
+					ex.printStackTrace();
+				}
 			}
 		}
 	}

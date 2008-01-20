@@ -1,11 +1,10 @@
+package net.gnehzr.cct.scrambles;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.regex.Pattern;
-
-import net.gnehzr.cct.scrambles.InvalidScrambleException;
-import net.gnehzr.cct.scrambles.Scramble;
 
 public class NullScramble extends Scramble {
 	public static final String[] FACE_NAMES = {};

@@ -18,6 +18,13 @@ import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.Utils;
 
 public class ScramblePlugin {
+	public static ScramblePlugin NULL_SCRAMBLE_PLUGIN = null;
+	static{
+		try{
+			NULL_SCRAMBLE_PLUGIN = new ScramblePlugin(NullScramble.class);
+		} catch(Exception e){}
+	}
+
 	private static ArrayList<ScramblePlugin> scramblePlugins;
 	public static ArrayList<ScramblePlugin> getScramblePlugins() {
 		if(scramblePlugins == null) {
@@ -214,6 +221,9 @@ public class ScramblePlugin {
 	}
 
 	public Scramble importScramble(String variation, String scramble, String[] attributes) throws InvalidScrambleException {
+		if(variation == null){
+			return new NullScramble(variation, scramble);
+		}
 		try {
 			return importScrambleConstructor.newInstance(variation, scramble, attributes);
 		} catch (IllegalArgumentException e) {
