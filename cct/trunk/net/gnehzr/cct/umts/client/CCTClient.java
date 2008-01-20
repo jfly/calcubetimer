@@ -281,7 +281,7 @@ public class CCTClient {
 		}
 	}
 
-	private String stripHTML(String s){
+	private String escapeHTML(String s){
 		s = s.replaceAll("&", "&amp;");
 		s = s.replaceAll("<", "&lt;");
 		s = s.replaceAll(">", "&gt;");
@@ -323,13 +323,13 @@ public class CCTClient {
 				String[] strs = s.split(":", 2);
 				//perhaps some error checking at these places is required... !user case
 				User user = users.getUser(strs[0]);
-				strs[1] = stripHTML(strs[1]);
+				strs[1] = escapeHTML(strs[1]);
 				printToLog("<span class='" + user.getName() + "'>" + strs[0] + "</span>: " + strs[1]);
 				break;
 			case Protocol.MESSAGE_ME:
 				strs = s.split(" ", 2);
 				user = users.getUser(strs[0]);
-				strs[1] = stripHTML(strs[1]);
+				strs[1] = escapeHTML(strs[1]);
 				printToLog("<span class='" + user.getName() + "'>" + strs[0] + "</span> " + strs[1]);
 				break;
 			case Protocol.MESSAGE_SEND_WHISPER:
@@ -337,7 +337,7 @@ public class CCTClient {
 				User from = users.getUser(strs[0]);
 				strs[3] = strs[3].substring(0, strs[3].length() - 1); //Getting rid of the colon
 				User to = users.getUser(strs[3]);
-				strs[4] = stripHTML(strs[4]);
+				strs[4] = escapeHTML(strs[4]);
 				printToLog("<span class='" + from.getName() + "'>" + strs[0] + "</span> " +
 						strs[1] + " " +
 						strs[2] + " " +
@@ -347,19 +347,19 @@ public class CCTClient {
 			case Protocol.MESSAGE_WHISPER:
 				strs = s.split(" ", 2);
 				from = users.getUser(strs[0]);
-				strs[1] = stripHTML(strs[1]);
+				strs[1] = escapeHTML(strs[1]);
 				printToLog("<span class='" + from.getName() + "'>" + strs[0] + "</span> " + strs[1]);
 				break;
 			case Protocol.MESSAGE_SCRAMBLE:
 				strs = s.split("" + Protocol.DELIMITER, 3);
 				from = users.getUser(strs[0]);
 				printToLog("Scramble request from <span class='" + from.getName() + "'>" +
-						strs[0] + "</span>: <a href=''>" + strs[1] + ": " + strs[2] + "</a>");
+						from.getName() + "</span>: <a href=''>" + escapeHTML(strs[1] + ": " + strs[2]) + "</a>");
 				break;
 			case Protocol.MESSAGE_ERROR:
 			case Protocol.COMMAND_HELP:
 			default:
-				printToLog(s);
+				printToLog(escapeHTML(s));
 				break;
 		}
 	}
