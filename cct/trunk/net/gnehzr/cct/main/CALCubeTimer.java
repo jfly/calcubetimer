@@ -6,6 +6,9 @@ import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Point;
@@ -397,7 +400,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timeLabel.setAlignmentX(.5f);
 
 		JFrame.setDefaultLookAndFeelDecorated(false);
-		fullscreenFrame = new JFrame();
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] gs = ge.getScreenDevices();
+		if(gs.length > 1){
+			GraphicsDevice gd = gs[1]; // TODO screen choice... must be configurable
+			fullscreenFrame = new JFrame(gd.getDefaultConfiguration());
+		}
+		else fullscreenFrame = new JFrame();
 		fullscreenFrame.setUndecorated(true);
 		fullscreenFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
