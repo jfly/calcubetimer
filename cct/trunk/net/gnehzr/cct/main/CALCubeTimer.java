@@ -67,6 +67,7 @@ import javax.swing.JSpinner;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -683,13 +684,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 			else if(elementName.equals("separator")){
 				com = new JSeparator();
-				//TODO needs orientation
 			}
 			else if(elementName.equals("scrollpane")){
 				JScrollPane scroll = new JScrollPane();
 				scroll.putClientProperty(SubstanceLookAndFeel.OVERLAY_PROPERTY, Boolean.TRUE);
-			    scroll.putClientProperty(SubstanceLookAndFeel.BACKGROUND_COMPOSITE,
-			            new AlphaControlBackgroundComposite(0.3f, 0.5f));
+				scroll.putClientProperty(SubstanceLookAndFeel.BACKGROUND_COMPOSITE,
+						new AlphaControlBackgroundComposite(0.3f, 0.5f));
 				com = scroll;
 			}
 
@@ -759,6 +759,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 						com.setBackground(Utils.stringToColor(temp));
 					if((temp = attrs.getValue("foreground")) != null)
 						com.setForeground(Utils.stringToColor(temp));
+					if((temp = attrs.getValue("orientation")) != null){
+						if(com instanceof JSeparator){
+							if(temp.equalsIgnoreCase("horizontal"))
+								((JSeparator)com).setOrientation(SwingConstants.HORIZONTAL);
+							else if(temp.equalsIgnoreCase("vertical"))
+								((JSeparator)com).setOrientation(SwingConstants.VERTICAL);
+						}
+					}
 				} catch(Exception e) {
 					throw new SAXException(e);
 				}
