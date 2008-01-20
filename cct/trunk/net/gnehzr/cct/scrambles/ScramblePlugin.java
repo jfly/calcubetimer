@@ -144,9 +144,9 @@ public class ScramblePlugin {
 	public String[] getEnabledPuzzleAttributes() {
 		if(attributes == null) {
 			attributes = Configuration.getStringArray(VariableKey.PUZZLE_ATTRIBUTES(this), false);
+			if(attributes == null)
+				attributes = DEFAULT_ATTRIBUTES;
 		}
-		if(attributes == null)
-			attributes = DEFAULT_ATTRIBUTES;
 		return attributes;
 	}
 	private String[] attributes;

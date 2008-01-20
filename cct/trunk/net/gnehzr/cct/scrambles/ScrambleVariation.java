@@ -44,7 +44,7 @@ public class ScrambleVariation {
 	public boolean equals(Object o) {
 		try {
 			ScrambleVariation other = (ScrambleVariation) o;
-			return this.scramblePlugin.equals(other.scramblePlugin) && this.variation == other.variation && this.length == other.length;
+			return this.scramblePlugin.equals(other.scramblePlugin) && this.variation.equals(other.variation) && this.length == other.length;
 		} catch(Exception e) {
 			return false;
 		}
