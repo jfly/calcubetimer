@@ -5,8 +5,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.DisplayMode;
 import java.awt.FlowLayout;
-import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
@@ -71,8 +71,6 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
@@ -402,11 +400,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		JFrame.setDefaultLookAndFeelDecorated(false);
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();
-		if(gs.length > 1){
-			GraphicsDevice gd = gs[1]; // TODO screen choice... must be configurable
-			fullscreenFrame = new JFrame(gd.getDefaultConfiguration());
-		}
-		else fullscreenFrame = new JFrame();
+		GraphicsDevice gd = gs[gs.length > 1 ? 1 : 0]; // TODO screen choice... must be configurable
+		fullscreenFrame = new JFrame(gd.getDefaultConfiguration());
+		DisplayMode screenSize = gd.getDisplayMode();
+		
+		fullscreenFrame.setResizable(false);
+		fullscreenFrame.setSize(screenSize.getWidth(), screenSize.getHeight());
 		fullscreenFrame.setUndecorated(true);
 		fullscreenFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
@@ -419,9 +418,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		panel.add(bigTimersDisplay, BorderLayout.CENTER);
 		JButton fullScreenButton = new JButton(flipFullScreenAction);
 		panel.add(fullScreenButton, BorderLayout.PAGE_END);
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		fullscreenFrame.setResizable(false);
-		fullscreenFrame.setSize(screenSize.width, screenSize.height);
 		fullscreenFrame.validate();
 
 		customGUIMenu = new JMenu("Load custom GUI");
@@ -688,14 +684,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				//TODO needs orientation
 			}
 			else if(elementName.equals("scrollpane")){
-				final JScrollPane scroll = new JScrollPane();
-				scroll.addAncestorListener(new AncestorListener() {
-					public void ancestorAdded(AncestorEvent e) {
-						scroll.setPreferredSize(scroll.getViewport().getView().getPreferredSize());
-					}
-					public void ancestorMoved(AncestorEvent e) {}
-					public void ancestorRemoved(AncestorEvent e) {}
-				});
+				JScrollPane scroll = new JScrollPane();
 				scroll.putClientProperty(SubstanceLookAndFeel.OVERLAY_PROPERTY, Boolean.TRUE);
 			    scroll.putClientProperty(SubstanceLookAndFeel.BACKGROUND_COMPOSITE,
 			            new AlphaControlBackgroundComposite(0.3f, 0.5f));
@@ -790,8 +779,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					if(c != null){
 						if(temp == null) {
 							if(c instanceof JScrollPane) {
-								JScrollPane scroller = (JScrollPane) c;
-								scroller.setViewportView(com);
+								((JScrollPane) c).setViewportView(com);
 							} else
 								c.add(com);
 						}
@@ -818,10 +806,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		public void endElement(String namespaceURI, String sName, String qName) throws SAXException {
 			if(level >= 0){
-				if(needText.get(level) && strs.get(level).length() > 0)
+				if(needText.get(level) && strs.get(level).length() > 0) {
 					if(componentTree.get(level) instanceof DynamicStringSettable)
 						((DynamicStringSettable)componentTree.get(level)).setDynamicString(new DynamicString(strs.get(level), stats));
-
+				} else if(componentTree.get(level) instanceof JScrollPane && componentTree.get(level) != timesScroller) {
+					JScrollPane scroller = (JScrollPane) componentTree.get(level);
+					scroller.setPreferredSize(scroller.getViewport().getView().getPreferredSize());
+				}
 				componentTree.remove(level);
 				elementNames.remove(level);
 				strs.remove(level);

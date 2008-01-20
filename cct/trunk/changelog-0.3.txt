@@ -81,6 +81,7 @@ changes:
 TODO:
 
 for release:
+-command line argument for profile
 -logging to xml database for each profile
 -internationalization (dates, too)
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html
