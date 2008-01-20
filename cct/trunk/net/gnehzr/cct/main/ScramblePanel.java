@@ -40,6 +40,10 @@ public class ScramblePanel extends JPanel implements ComponentListener{
 		this.setPreferredSize(new Dimension(0, 100));
 	}
 
+	public Scramble getCurrentScramble(){
+		return currentScramble;
+	}
+
 	public void setScramble(Scramble newScramble) {
 		this.removeAll();
 		currentScramble = newScramble;

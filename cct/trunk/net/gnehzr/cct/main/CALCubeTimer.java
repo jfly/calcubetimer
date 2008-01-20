@@ -97,6 +97,7 @@ import net.gnehzr.cct.misc.dynamicGUI.DynamicMenuItem;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicSelectableLabel;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicString;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicStringSettable;
+import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleList;
@@ -1000,8 +1001,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if((Integer)scrambleNumber.getValue() != scramblesList.getScrambleNumber())
 			safeSetValue(scrambleNumber, scramblesList.getScrambleNumber());
 
-		scramblePanel.setScramble(scramblesList.getCurrent());
-		scramblePopup.setScramble(scramblesList.getCurrent(), scramCustomizationChoice.getScramblePlugin());
+		setScramble(scramblesList.getCurrent(), scramCustomizationChoice.getScramblePlugin());
+	}
+
+	private void setScramble(Scramble s, ScramblePlugin sp){
+		scramblePanel.setScramble(s);
+		scramblePopup.setScramble(s, sp);
 		scramblePopup.pack();
 	}
 
@@ -1042,9 +1047,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	public void tableChanged(TableModelEvent e) {
 		if(e != null && e.getType() == TableModelEvent.INSERT) {
-			Scramble curr = scramblesList.getCurrent();
+			Scramble curr = scramblePanel.getCurrentScramble();//scramblesList.getCurrent();
 			if(curr != null){
-				stats.get(stats.getSize() - 1).setScramble(scramblesList.getCurrent().toString());
+				stats.get(stats.getSize() - 1).setScramble(curr.toString());
 				boolean outOfScrambles = curr.isImported(); //This is tricky, think before you change it
 				outOfScrambles = !scramblesList.getNext().isImported() && outOfScrambles;
 				if(outOfScrambles)
@@ -1085,21 +1090,19 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 	}
 
-	//this is only called by cctclient
-//	public void setScramble(String s) {
-//		try {
-//			ScrambleVariation scrambleChoice = Configuration.getScrambleVariation(puzzleChoice);
-//			scrambles = new ScrambleList(scrambleChoice, scrambleChoice.generateScramble(s));
-//			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-//				public void run() {
-//					updateScramble();
-//				}
-//			});
-//		} catch(Exception e) {
-//			scrambleText.setText("Error in scramble from server.");
-//			e.printStackTrace();
-//		}
-//	}
+	public void setScramble(String var, String s){
+		for(ScrambleVariation sv : ScramblePlugin.getScrambleVariations()){
+			if(sv.getVariation().equals(var)){
+				try{
+					setScramble(sv.generateScramble(s), sv.getScramblePlugin());
+				} catch(InvalidScrambleException e){
+					break;
+				}
+				return;
+			}
+		}
+		scramblePanel.setScramble(s);
+	}
 
 	public void stateChanged(ChangeEvent e) {
 		Object source = e.getSource();
@@ -1270,7 +1273,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	public void connectToServer(){
-		client = new CCTClient(cubeIcon);
+		client = new CCTClient(this, cubeIcon);
 		client.enableAndDisable(connectToServerAction);
 	}
 

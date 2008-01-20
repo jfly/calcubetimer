@@ -2,6 +2,7 @@ package net.gnehzr.cct.umts.client;
 
 import javax.swing.*;
 
+import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.SolveTime;
 import net.gnehzr.cct.umts.Protocol;
@@ -30,16 +31,18 @@ public class CCTClient {
 
 	private UserTable users;
 	private CCTClientGUI gui;
+	private CALCubeTimer cct;
 
 	private AbstractAction enableDisable = null;
 
 	public static void main(String[] args) throws UnsupportedLookAndFeelException{
 		UIManager.setLookAndFeel(new SubstanceLookAndFeel());
 		JDialog.setDefaultLookAndFeelDecorated(true);
-		new CCTClient(new ImageIcon());
+		new CCTClient(null, new ImageIcon());
 	}
 
-	public CCTClient(ImageIcon icon){
+	public CCTClient(CALCubeTimer cct, ImageIcon icon){
+		this.cct = cct;
 		users = new UserTable();
 		gui = new CCTClientGUI(this, icon.getImage(), "CCTClient v" + VERSION + ": not connected");
 
@@ -55,6 +58,10 @@ public class CCTClient {
 		enableDisable = enableAndDisableMe;
 		if(gui.getFrame().isVisible())
 			enableDisable.setEnabled(false);
+	}
+
+	public CALCubeTimer getCCT(){
+		return cct;
 	}
 
 	public UserTable getUsers() {
@@ -200,7 +207,6 @@ public class CCTClient {
 				}
 			}
 			if(flag){
-				System.out.println(s.substring(1).toLowerCase());
 				for(ScrambleVariation var : ScramblePlugin.getScrambleVariations()){
 					if(var.toString().toLowerCase().indexOf(s.substring(1).toLowerCase()) == 0){
 						Scramble scr = var.generateScramble();
@@ -347,8 +353,8 @@ public class CCTClient {
 			case Protocol.MESSAGE_SCRAMBLE:
 				strs = s.split("" + Protocol.DELIMITER, 3);
 				from = users.getUser(strs[0]);
-				printToLog(strs[1] + " scramble request from <span class='" + from.getName() + "'>" +
-						strs[0] + "</span>: " + strs[2]);
+				printToLog("Scramble request from <span class='" + from.getName() + "'>" +
+						strs[0] + "</span>: <a href=''>" + strs[1] + ": " + strs[2] + "</a>");
 				break;
 			case Protocol.MESSAGE_ERROR:
 			case Protocol.COMMAND_HELP:

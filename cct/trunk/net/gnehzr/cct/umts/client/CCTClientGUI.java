@@ -19,6 +19,7 @@ import java.awt.geom.AffineTransform;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.ListIterator;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
@@ -34,11 +35,14 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.Timer;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 import javax.swing.text.html.StyleSheet;
 
 import net.gnehzr.cct.configuration.Configuration;
@@ -47,7 +51,7 @@ import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.stackmatInterpreter.StackmatState;
 import net.gnehzr.cct.statistics.SolveTime;
 
-public class CCTClientGUI implements MouseListener, ActionListener, KeyListener, TableModelListener {
+public class CCTClientGUI implements MouseListener, ActionListener, KeyListener, TableModelListener, HyperlinkListener {
 	private final static SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
 	private CCTClient client = null;
 	private UserTable users = null;
@@ -94,6 +98,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 		messageLog = new JEditorPane("text/html", null);
 		messageLog.setPreferredSize(new Dimension(400, 400));
 		messageLog.setEditable(false);
+		messageLog.addHyperlinkListener(this);
 		textScrollPane = new JScrollPane(messageLog);
 
 		doc = (HTMLDocument) messageLog.getDocument();
@@ -411,6 +416,21 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 			repaintTimes();
 	}
 
+	public void hyperlinkUpdate(HyperlinkEvent e) {
+		if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+			if(client.getCCT() != null){
+				try{
+					int start = e.getSourceElement().getStartOffset();
+					int end = e.getSourceElement().getEndOffset();
+					String s = e.getSourceElement().getDocument().getText(start, end - start);
+					String var = s.substring(0, s.indexOf(":"));
+					String scr = s.substring(s.indexOf(":") + 1);
+					client.getCCT().setScramble(var, scr);
+				} catch(Exception ex){ ex.printStackTrace(); }
+			}
+		}
+	}
+
 	class FlashwindowListener implements ActionListener {
 		private JFrame chatFrame;
 
@@ -418,7 +438,6 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 		public FlashwindowListener(JFrame frame) {
 			this.chatFrame = frame;
 		}
-
 
 		public void actionPerformed(ActionEvent ae) {
 			flip = !flip;
