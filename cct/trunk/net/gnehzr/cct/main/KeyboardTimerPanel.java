@@ -21,10 +21,8 @@ import net.gnehzr.cct.stackmatInterpreter.TimerState;
 public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseListener {
 	private static KeyboardTimer keyboardTimer; //static so everything will start and stop this one timer!
 	private KeyboardTimerComponent thingToListenTo;
-	private ScramblePanel scrambles;
-	public KeyboardTimerPanel(KeyboardTimerComponent thingy, ActionListener timeListener, ScramblePanel scrambles) {
+	public KeyboardTimerPanel(KeyboardTimerComponent thingy, ActionListener timeListener) {
 		this.thingToListenTo = thingy;
-		this.scrambles = scrambles;
 		keyboardTimer = new KeyboardTimer(90, timeListener);
 
 		JComponent thingToListenTo = (JComponent) thingy;
@@ -36,6 +34,11 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		thingToListenTo.setFocusTraversalKeysEnabled(false);
 	}
 
+	private TimerFocusListener focusListener;
+	public void setTimerFocusListener(TimerFocusListener l) {
+		focusListener = l;
+	}
+	
 	private boolean enabled = true;
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
@@ -44,9 +47,8 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 	private boolean keyboard;
 	public void setKeyboard(boolean isKey) {
 		keyboard = isKey;
-		if(!enabled) return;
-		if(!keyboard && scrambles != null)
-			scrambles.setHidden(false);
+		if(enabled && !keyboard && focusListener != null)
+			focusListener.focusChanged(true);
 	}
 	public void setStackmatOn(boolean on) {
 		if(keyboard || on)

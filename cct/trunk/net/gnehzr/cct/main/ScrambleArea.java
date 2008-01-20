@@ -7,26 +7,39 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.text.BadLocationException;
+
+import org.jvnet.lafwidget.LafWidget;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
+import net.gnehzr.cct.scrambles.ScrambleCustomization;
+import net.gnehzr.cct.scrambles.ScramblePlugin;
+import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 @SuppressWarnings("serial")
-public class ScrambleArea extends JScrollPane implements ComponentListener {
-	private JEditorPane scramble = null;
-
-	public ScrambleArea() {
+public class ScrambleArea extends JScrollPane implements ComponentListener, TimerFocusListener, HyperlinkListener {
+	private ScrambleFrame scramblePopup;
+	private JEditorPane scramblePane = null;
+	public ScrambleArea(ScrambleFrame scramblePopup) {
 		super(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scramble = new JEditorPane("text/html", null);
-		scramble.setEditable(false);
-		scramble.setBorder(null);
-		scramble.setOpaque(false);
-		setViewportView(scramble);
+		this.scramblePopup = scramblePopup;
+		this.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
+		scramblePane = new JEditorPane("text/html", null);
+		scramblePane.setEditable(false);
+		scramblePane.setBorder(null);
+		scramblePane.setOpaque(false);
+		scramblePane.addHyperlinkListener(this);
+		setViewportView(scramblePane);
 		setOpaque(true);
 		setBorder(null);
 		getViewport().setOpaque(false);
@@ -36,27 +49,55 @@ public class ScrambleArea extends JScrollPane implements ComponentListener {
 	public void resetPreferredSize() {
 		setPreferredSize(new Dimension(0, 100));
 	}
-	private Object latest;
+	private Scramble currentScramble;
+	private ScrambleCustomization currentCustomization;
+	//TODO - create null scramble type
 	public void setText(String string) {
-		latest = string;
+//		latest = string;
 		Font temp = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
 		string = doReplacement(string);
-		scramble.setText("<span style = \"font-family: " + temp.getFamily() + "; font-size: " + temp.getSize() + (temp.isItalic() ? "; font-style: italic" : "") + "\">" + string + "</span>");
+		scramblePane.setText("<span style = \"font-family: " + temp.getFamily() + "; font-size: " + temp.getSize() + (temp.isItalic() ? "; font-style: italic" : "") + "\">" + string + "</span>");
 
-		scramble.setCaretPosition(0);
+		scramblePane.setCaretPosition(0);
 		setProperSize();
 		getParent().validate();
 	}
-	public void setText(Scramble newScramble) {
-		latest = newScramble;
-		String temps = newScramble.toFormattedString();
-		temps = doReplacement(temps);
-		scramble.setText(temps);
-		scramble.setCaretPosition(0);
+	public void setScramble(Scramble newScramble, final ScrambleCustomization sc) {
+		currentScramble = newScramble;
+		currentCustomization = sc;
+//		String temps = newScramble.toFormattedString();
+//		temps = doReplacement(temps);
+		Pattern regex = newScramble.getTokenRegex();
+		String s = newScramble.toString().trim();
+		String formattedScramble = "<html>";
+		String plainScramble = "";
+		Matcher m;
+		while((m = regex.matcher(s)).matches()){
+			String str = m.group(1).trim();
+			plainScramble += " " + str;
+			formattedScramble += " " + "<a href=\"http://" + plainScramble + "\">" + str + "</a>";
+			s = m.group(2).trim();
+		}
+		scramblePane.setText(formattedScramble + "</html>");
+		scramblePane.setCaretPosition(0);
 		setProperSize();
 		Container par = getParent();
 		if(par != null)
 			par.validate();
+	}
+
+	public void hyperlinkUpdate(HyperlinkEvent e) {
+		if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+			ScramblePlugin sp = currentCustomization.getScramblePlugin();
+			ScrambleVariation sv = currentCustomization.getScrambleVariation();
+			try{
+				String subScramble = e.getURL().toString().substring(8);
+				Scramble s = sp.importScramble(sv.toString(), subScramble, new String[0]);
+				scramblePopup.setScramble(s, sp);
+			} catch(InvalidScrambleException ex){
+				ex.printStackTrace();
+			}
+		}
 	}
 
 	private String doReplacement(String s){
@@ -71,20 +112,17 @@ public class ScrambleArea extends JScrollPane implements ComponentListener {
 
 	private boolean hid;
 	public void refresh() {
-		setHidden(hid);
-		if(latest instanceof Scramble) {
-			setText((Scramble) latest);
-		} else
-			setText(latest == null ? "" : latest.toString());
+		focusChanged(hid);
+		setScramble(currentScramble, currentCustomization);
 	}
-	public void setHidden(boolean hidden) {
+	public void focusChanged(boolean hidden) {
 		hid = hidden;
 		setBackground(hid && Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false) ? Color.BLACK: Color.WHITE);
 	}
 
 	private void setProperSize() {
 		try {
-			Rectangle r = scramble.modelToView(scramble.getDocument().getLength());
+			Rectangle r = scramblePane.modelToView(scramblePane.getDocument().getLength());
 			if(r != null)
 				setPreferredSize(new Dimension(0, r.y + r.height + 20));
 		} catch (BadLocationException e) {

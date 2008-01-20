@@ -131,7 +131,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private TimerPanel startStopPanel = null;
 	private JFrame fullscreenFrame = null;
 	private TimerLabel bigTimersDisplay = null;
-	private ScramblePanel scramblePanel = null;
+	private ScrambleArea scramblePanel = null;
 	private ScrambleFrame scramblePopup = null;
 	private ScrambleCustomization scramCustomizationChoice = null;
 	private JComboBox scrambleChooser = null;
@@ -385,11 +385,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timesList.setModel(stats);
 		timesScroller = new JScrollPane(timesList);
 
-		scramblePanel = new ScramblePanel(this);
+		scramblePanel = new ScrambleArea(scramblePopup);
 		scramblePanel.setAlignmentX(.5f);
-		timeLabel = new TimerLabel(timeListener, scramblePanel);
+		timeLabel = new TimerLabel(timeListener);
+		timeLabel.setTimerFocusListener(scramblePanel);
 
-		startStopPanel = new TimerPanel(timeListener, scramblePanel, timeLabel);
+		startStopPanel = new TimerPanel(timeListener, timeLabel);
+		startStopPanel.setTimerFocusListener(scramblePanel);
 		startStopPanel.setKeyboard(true);
 
 		timeLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
@@ -411,7 +413,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		JPanel panel = new JPanel(new BorderLayout());
 		fullscreenFrame.setContentPane(panel);
-		bigTimersDisplay = new TimerLabel(timeListener, null);
+		bigTimersDisplay = new TimerLabel(timeListener);
 		bigTimersDisplay.setBackground(Color.WHITE);
 		bigTimersDisplay.setEnabledTiming(true);
 
@@ -1013,12 +1015,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if((Integer)scrambleNumber.getValue() != scramblesList.getScrambleNumber())
 			safeSetValue(scrambleNumber, scramblesList.getScrambleNumber());
 
-		setScramble(scramblesList.getCurrent(), scramCustomizationChoice.getScramblePlugin());
+		setScramble(scramblesList.getCurrent(), scramCustomizationChoice);
 	}
 
-	private void setScramble(Scramble s, ScramblePlugin sp){
-		scramblePanel.setScramble(s);
-		scramblePopup.setScramble(s, sp);
+	private void setScramble(Scramble s, ScrambleCustomization sc){
+		scramblePanel.setScramble(s, sc);
+		scramblePopup.setScramble(s, sc.getScramblePlugin());
 		scramblePopup.pack();
 	}
 
@@ -1059,7 +1061,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	public void tableChanged(TableModelEvent e) {
 		if(e != null && e.getType() == TableModelEvent.INSERT) {
-			Scramble curr = scramblePanel.getCurrentScramble();//scramblesList.getCurrent();
+			Scramble curr = /*scramblePanel.getCurrentScramble();*/scramblesList.getCurrent();
 			if(curr != null){
 				stats.get(stats.getSize() - 1).setScramble(curr.toString());
 				boolean outOfScrambles = curr.isImported(); //This is tricky, think before you change it
@@ -1106,14 +1108,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		for(ScrambleVariation sv : ScramblePlugin.getScrambleVariations()){
 			if(sv.getVariation().equals(var)){
 				try{
-					setScramble(sv.generateScramble(s), sv.getScramblePlugin());
+					setScramble(sv.generateScramble(s), new ScrambleCustomization(sv, null));
 				} catch(InvalidScrambleException e){
 					break;
 				}
 				return;
 			}
 		}
-		scramblePanel.setScramble(s);
+		scramblePanel.setText(s);
 	}
 
 	public void stateChanged(ChangeEvent e) {
@@ -1206,14 +1208,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		} else
 			scramblePanel.requestFocusInWindow();
 		timeLabel.componentResized(null);
-	}
-
-	public ScrambleFrame getScramblePopup(){
-		return scramblePopup;
-	}
-
-	public ScrambleCustomization getScramCustomizationChoice(){
-		return scramCustomizationChoice;
 	}
 
 	// Actions section {{{

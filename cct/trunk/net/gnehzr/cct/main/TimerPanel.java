@@ -14,15 +14,14 @@ import net.gnehzr.cct.main.KeyboardTimerPanel.KeyboardTimerComponent;
 @SuppressWarnings("serial")
 public class TimerPanel extends JLabel implements KeyboardTimerComponent {
 	private KeyboardTimerPanel timer;
-	private ScramblePanel scrambles;
+//	private ScramblePanel scrambles;
 	private TimerLabel timerDisplay; //this is to do the "semi-annoying" status light
-	public TimerPanel(ActionListener timeListener, ScramblePanel scrambles, TimerLabel timerDisplay) {
+	public TimerPanel(ActionListener timeListener, TimerLabel timerDisplay) {
 		super("", JLabel.CENTER);
-		this.scrambles = scrambles;
 		this.timerDisplay = timerDisplay;
 		setOpaque(true);
 		setHorizontalTextPosition(JLabel.CENTER);
-		timer = new KeyboardTimerPanel(this, timeListener, scrambles);
+		timer = new KeyboardTimerPanel(this, timeListener);
 		this.setToolTipText("Just click here to request focus");
 
 		Dimension size = Configuration.getDimension(VariableKey.KEYBOARD_TIMER_DIMENSION, false);
@@ -30,6 +29,14 @@ public class TimerPanel extends JLabel implements KeyboardTimerComponent {
 		setMinimumSize(size);
 		setMaximumSize(size);
 	}
+	
+
+	private TimerFocusListener focusListener;
+	public void setTimerFocusListener(TimerFocusListener l) {
+		timer.setTimerFocusListener(l);
+		focusListener = l;
+	}
+	
 	private boolean keyboard = true;
 	public void setKeyboard(boolean isKey) {
 		keyboard = isKey;
@@ -54,18 +61,20 @@ public class TimerPanel extends JLabel implements KeyboardTimerComponent {
 		super.setText(text);
 	}
 	public void setFocusedState() {
-		if(!isEnabled()) return;
-		scrambles.setHidden(false);
-		setText("Start Timer");
-		setBackground(Color.RED);
-		timerDisplay.setGreenButton();
+		if(isEnabled()) {
+			if(focusListener != null)
+				focusListener.focusChanged(false);
+			setText("Start Timer");
+			setBackground(Color.RED);
+			timerDisplay.setGreenButton();
+		}
 	}
 	public void setKeysDownState() {
 		setBackground(Color.GREEN);
 	}
 	public void setUnfocusedState() {
 		if(keyboard && Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false))
-			scrambles.setHidden(true);
+			focusListener.focusChanged(true);
 		setBackground(Color.GRAY);
 		timerDisplay.setRedButton();
 		setText("Click to focus");

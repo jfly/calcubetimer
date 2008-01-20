@@ -26,15 +26,20 @@ import net.gnehzr.cct.main.KeyboardTimerPanel.KeyboardTimerComponent;
 @SuppressWarnings("serial")
 public class TimerLabel extends JLabel implements ComponentListener, KeyboardTimerComponent {
 	private KeyboardTimerPanel timer;
-	private ScramblePanel scrambles;
-	public TimerLabel(ActionListener timeListener, ScramblePanel scrambles) {
+//	private ScramblePanel scrambles;
+	public TimerLabel(ActionListener timeListener) {
 		super("0.00", JLabel.CENTER);
-		this.scrambles = scrambles;
 		addComponentListener(this);
 		setGreenButton();
-		timer = new KeyboardTimerPanel(this, timeListener, scrambles);
+		timer = new KeyboardTimerPanel(this, timeListener);
 	}
 
+	private TimerFocusListener focusListener;
+	public void setTimerFocusListener(TimerFocusListener l) {
+		timer.setTimerFocusListener(l);
+		focusListener = l;
+	}
+	
 	public void setEnabledTiming(boolean enabled) {
 		if(!enabled)
 			setBorder(BorderFactory.createEmptyBorder());
@@ -96,8 +101,8 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 	}
 	public void componentShown(ComponentEvent arg0) {}
 	public void setFocusedState() {
-		if(keyboard && scrambles != null)
-			scrambles.setHidden(false);
+		if(keyboard && focusListener != null)
+			focusListener.focusChanged(false);
 		title = keyboard ? "Start Timer" : "Keyboard disabled";
 		setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createRaisedBevelBorder(),
@@ -112,8 +117,8 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 				title));
 	}
 	public void setUnfocusedState() {
-		if(keyboard && scrambles != null)
-			scrambles.setHidden(true);
+		if(keyboard && focusListener != null)
+			focusListener.focusChanged(true);
 //		thingToListenTo.setBorder(BorderFactory.createEmptyBorder());
 		if(Configuration.getBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, false))
 			setBorder(BorderFactory.createTitledBorder(
