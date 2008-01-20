@@ -79,7 +79,7 @@ public class ProfileListModel extends DraggableJTableModel {
 	}
 
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		if(contents.get(rowIndex).equals(Configuration.guestProfile))
+		if(contents.get(rowIndex).equals(Configuration.guestProfile) || !contents.get(rowIndex).isSaveable())
 			return false;
 		return true;
 	}

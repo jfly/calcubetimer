@@ -13,7 +13,6 @@ import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -853,7 +852,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	public static void main(String[] args) {
 		JDialog.setDefaultLookAndFeelDecorated(true);
 		JFrame.setDefaultLookAndFeelDecorated(true);
-
 		try {
 			UIManager.setLookAndFeel(new SubstanceLookAndFeel());
 //			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -867,6 +865,20 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		UIManager.put(LafWidget.ANIMATION_KIND, LafConstants.AnimationKind.NONE);
 //		UIManager.put(SubstanceLookAndFeel.WATERMARK_TO_BLEED, Boolean.TRUE);
 
+		if(args.length >= 2) {
+			System.out.println("Too many arguments!");
+			System.out.println("Usage: CALCubeTimer (profile directory)");
+		} else if(args.length == 1) {
+			File startupProfileDir = new File(args[0]);
+			if(!startupProfileDir.exists() || !startupProfileDir.isDirectory()) {
+				System.out.println("Couldn't find directory " + startupProfileDir.getAbsolutePath());
+			} else {
+				Profile commandedProfile = new Profile(startupProfileDir);
+				Configuration.setCommandLineProfile(commandedProfile);
+				Configuration.setSelectedProfile(commandedProfile);
+			}
+		}
+		
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				String errors = Configuration.getStartupErrors();

@@ -12,6 +12,16 @@ public class Profile {
 		directory = new File(Configuration.profilesFolder, name+"/");
 		configuration = new File(Configuration.profilesFolder, name+"/"+name+".properties");
 	}
+	private boolean saveable = true;
+	public Profile(File directory) {
+		saveable = false;
+		this.directory = directory;
+		this.name = directory.getAbsolutePath();
+		configuration = new File(directory, directory.getName() + ".properties");
+	}
+	public boolean isSaveable() {
+		return saveable;
+	}
 	public String getName() {
 		return name;
 	}
@@ -36,6 +46,9 @@ public class Profile {
 	public boolean equals(Object o) {
 		if(o == null)
 			return false;
+		if(o instanceof Profile) {
+			return ((Profile) o).directory.equals(directory);
+		}
 		return this.toString().equalsIgnoreCase(o.toString());
 	}
 	public String toString() {

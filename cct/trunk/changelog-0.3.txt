@@ -77,11 +77,11 @@ changes:
 +gui sizes itself too small by default - FIXED by adding <scrollpane> to customizable gui, FIXED resizing issue, too
 +don't allow connections to old servers
 +don't accept connections to old clients
++command line argument for profile
 
 TODO:
 
 for release:
--command line argument for profile
 -logging to xml database for each profile
 -internationalization (dates, too)
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html

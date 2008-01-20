@@ -144,7 +144,7 @@ public final class Configuration {
 	public static void setColor(VariableKey<Color> key, Color c) {
 		props.setProperty(key.toKey(), Utils.colorToString(c));
 	}
-	
+
 	//special characters are for now just ';'
 	public static String[] getStringArray(VariableKey<String[]> key, boolean defaultValue) {
 		return getStringArray(defaultValue ? defaults : props, key.toKey());
@@ -221,17 +221,25 @@ public final class Configuration {
 		FileOutputStream propsOut = new FileOutputStream(f);
 		props.store(propsOut, "CCT " + CALCubeTimer.CCT_VERSION + " Properties File");
 		propsOut.close();
-		try {
-			PrintWriter profileOut = new PrintWriter(new FileWriter(startupProfileFile));
-			profileOut.print(profileCache);
-			profileOut.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if(profileCache.isSaveable()) {
+			try {
+				PrintWriter profileOut = new PrintWriter(new FileWriter(startupProfileFile));
+				profileOut.print(profileCache);
+				profileOut.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 
 	//********* Start of specialized methods ***************//
+
+	private static Profile commandLineProfile;
+	//this is used for adding profiles that aren't under the "profiles" directory
+	public static void setCommandLineProfile(Profile profile) {
+		commandLineProfile = profile;
+	}
 
 	public static ArrayList<Profile> getProfiles() {
 		String[] profDirs = profilesFolder.list(new FilenameFilter() {
@@ -240,7 +248,7 @@ public final class Configuration {
 				return !temp.isHidden() && temp.isDirectory() && !s.equalsIgnoreCase(guestName);
 			}
 		});
-		ArrayList<Profile> profs = new ArrayList<Profile>(profDirs.length + 1);
+		ArrayList<Profile> profs = new ArrayList<Profile>();
 		profs.add(guestProfile);
 		for(String profDir : profDirs) {
 			profs.add(new Profile(profDir));
@@ -255,13 +263,11 @@ public final class Configuration {
 				}
 			}
 		}
+		if(commandLineProfile != null)
+			profs.add(0, commandLineProfile);
 		return profs;
 	}
 	public static void setProfileOrdering(ArrayList<Profile> profiles) {
-//		String types = "";
-//		for(Profile p : profiles) {
-//			types += p.getName() + ";";
-//		}
 		setStringArray(VariableKey.PROFILES, profiles.toArray(new Profile[0]));
 	}
 
