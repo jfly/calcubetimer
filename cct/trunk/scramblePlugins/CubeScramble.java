@@ -157,7 +157,7 @@ public class CubeScramble extends Scramble {
 		}
 	}
 	public String htmlIfy(String formatMe) {
-		return super.htmlIfy(formatMe.replaceAll("\\((\\d+)\\)", "<sub>\\1</sub>"));
+		return super.htmlIfy(formatMe.replaceAll("\\((\\d+)\\)", "<sub>$1</sub>"));
 	}
 
 	protected String moveString(int n){

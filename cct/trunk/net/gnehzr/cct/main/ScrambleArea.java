@@ -53,9 +53,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 	private ScrambleCustomization currentCustomization;
 	//TODO - create null scramble type
 	public void setText(String string) {
-//		latest = string;
 		Font temp = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
-		string = string; //doReplacement(string);
 		scramblePane.setText("<span style = \"font-family: " + temp.getFamily() + "; font-size: " + temp.getSize() + (temp.isItalic() ? "; font-style: italic" : "") + "\">" + string + "</span>");
 
 		scramblePane.setCaretPosition(0);
@@ -65,32 +63,31 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 	public void setScramble(Scramble newScramble, final ScrambleCustomization sc) {
 		currentScramble = newScramble;
 		currentCustomization = sc;
-//		String temps = newScramble.toFormattedString();
-//		temps = doReplacement(temps);
+
 		Pattern regex = newScramble.getTokenRegex();
 		String s = newScramble.toString().trim();
 
 		Font font = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
 		String fontStyle = "";
 		if(font.isItalic())
-			fontStyle += "; font-style: italic";
-		else if(font.isPlain()) {
-			fontStyle += "; font-style: normal";
-		}
+			fontStyle += "font-style: italic; ";
+		else if(font.isPlain())
+			fontStyle += "font-style: normal; ";
 		if(font.isBold())
-			fontStyle += "; font-weight: bold";
+			fontStyle += "font-weight: bold; ";
 		else
-			fontStyle += "; font-weight: normal";
-		String formattedScramble = "<html><head><style type=\"text/css\">" + 
-		"a {color: black;text-decoration: none;}" + 
-		"span {font-family: " + font.getFamily() + "; font-size: " + font.getSize() + fontStyle + ";}" +
-		"</style></head><body>";
+			fontStyle += "font-weight: normal; ";
+		String formattedScramble = "<html><head><style type=\"text/css\">" +
+			"a { color: black; text-decoration: none; }" +
+			"span { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "; " + fontStyle + "}" +
+			"sub { font-size: " + (font.getSize() / 2 + 1) + "; }" +
+			"</style></head><body>";
 		String plainScramble = "";
 		Matcher m;
 		while((m = regex.matcher(s)).matches()){
 			String str = m.group(1).trim();
 			plainScramble += " " + str;
-			formattedScramble += " <a href=\"http://" + plainScramble + "\">" + newScramble.htmlIfy(str) + "</a>";
+			formattedScramble += "<a href=\"http://" + plainScramble + "\">" + newScramble.htmlIfy(str) + "</a> ";
 			s = m.group(2).trim();
 		}
 		formattedScramble += "</body></html>";
@@ -102,21 +99,12 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 			par.validate();
 	}
 
-//	private String doReplacement(String s){
-//		Font temp = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
-//		s = s.replaceAll("INSERT_SIZE", "" + temp.getSize());
-//		s = s.replaceAll("INSERT_SUBSIZE", "" + (temp.getSize() / 2 + 1));
-//		s = s.replaceAll("INSERT_FAMILY", temp.getFamily());
-//		s = s.replaceAll("INSERT_STYLE", (temp.isItalic() ? "; font-style: italic" : "") +
-//			(temp.isBold() ? "; font-weight: bold" : ""));
-//		return s;
-//	}
-
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 			ScramblePlugin sp = currentCustomization.getScramblePlugin();
 			ScrambleVariation sv = currentCustomization.getScrambleVariation();
 			try{
+				//remove http://, and the leading space
 				String subScramble = e.getURL().toString().substring(8);
 				Scramble s = sp.importScramble(sv.toString(), subScramble, new String[0]);
 				scramblePopup.setScramble(s, sp);
@@ -125,7 +113,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 			}
 		}
 	}
-	
+
 	private boolean hid;
 	public void refresh() {
 		focusChanged(hid);
