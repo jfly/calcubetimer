@@ -55,7 +55,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 	public void setText(String string) {
 //		latest = string;
 		Font temp = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
-		string = doReplacement(string);
+		string = string; //doReplacement(string);
 		scramblePane.setText("<span style = \"font-family: " + temp.getFamily() + "; font-size: " + temp.getSize() + (temp.isItalic() ? "; font-style: italic" : "") + "\">" + string + "</span>");
 
 		scramblePane.setCaretPosition(0);
@@ -69,22 +69,48 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 //		temps = doReplacement(temps);
 		Pattern regex = newScramble.getTokenRegex();
 		String s = newScramble.toString().trim();
-		String formattedScramble = "<html>";
+
+		Font font = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
+		String fontStyle = "";
+		if(font.isItalic())
+			fontStyle += "; font-style: italic";
+		else if(font.isPlain()) {
+			fontStyle += "; font-style: normal";
+		}
+		if(font.isBold())
+			fontStyle += "; font-weight: bold";
+		else
+			fontStyle += "; font-weight: normal";
+		String formattedScramble = "<html><head><style type=\"text/css\">" + 
+		"a {color: black;text-decoration: none;}" + 
+		"span {font-family: " + font.getFamily() + "; font-size: " + font.getSize() + fontStyle + ";}" +
+		"</style></head><body>";
 		String plainScramble = "";
 		Matcher m;
 		while((m = regex.matcher(s)).matches()){
 			String str = m.group(1).trim();
 			plainScramble += " " + str;
-			formattedScramble += " " + "<a href=\"http://" + plainScramble + "\">" + str + "</a>";
+			formattedScramble += " <a href=\"http://" + plainScramble + "\">" + newScramble.htmlIfy(str) + "</a>";
 			s = m.group(2).trim();
 		}
-		scramblePane.setText(formattedScramble + "</html>");
+		formattedScramble += "</body></html>";
+		scramblePane.setText(formattedScramble);
 		scramblePane.setCaretPosition(0);
 		setProperSize();
 		Container par = getParent();
 		if(par != null)
 			par.validate();
 	}
+
+//	private String doReplacement(String s){
+//		Font temp = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
+//		s = s.replaceAll("INSERT_SIZE", "" + temp.getSize());
+//		s = s.replaceAll("INSERT_SUBSIZE", "" + (temp.getSize() / 2 + 1));
+//		s = s.replaceAll("INSERT_FAMILY", temp.getFamily());
+//		s = s.replaceAll("INSERT_STYLE", (temp.isItalic() ? "; font-style: italic" : "") +
+//			(temp.isBold() ? "; font-weight: bold" : ""));
+//		return s;
+//	}
 
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
@@ -99,17 +125,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 			}
 		}
 	}
-
-	private String doReplacement(String s){
-		Font temp = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
-		s = s.replaceAll("INSERT_SIZE", "" + temp.getSize());
-		s = s.replaceAll("INSERT_SUBSIZE", "" + (temp.getSize() / 2 + 1));
-		s = s.replaceAll("INSERT_FAMILY", temp.getFamily());
-		s = s.replaceAll("INSERT_STYLE", (temp.isItalic() ? "; font-style: italic" : "") +
-			(temp.isBold() ? "; font-weight: bold" : ""));
-		return s;
-	}
-
+	
 	private boolean hid;
 	public void refresh() {
 		focusChanged(hid);

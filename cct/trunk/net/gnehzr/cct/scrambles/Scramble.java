@@ -26,11 +26,8 @@ public abstract class Scramble {
 		return (int)(choices * Math.random());
 	}
 
-	public String toFormattedString() {
-		return toFormattedString(scramble);
-	}
-	protected String toFormattedString(String temps) {
-		return "<span style = \"font-family: INSERT_FAMILY; font-size: INSERT_SIZE INSERT_STYLE\">" + temps + "</span>";
+	public String htmlIfy(String temps) {
+		return "<span>" + temps + "</span>";
 	}
 
 	public String toString() {

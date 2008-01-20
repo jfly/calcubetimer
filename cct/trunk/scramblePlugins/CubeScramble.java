@@ -156,10 +156,8 @@ public class CubeScramble extends Scramble {
 			lastAxis = axis;
 		}
 	}
-	public String toFormattedString() {
-		String temps = scramble.replaceAll("\\(", "<span style=\"font-size: INSERT_SUBSIZE\">");
-		temps = temps.replaceAll("\\)", "</span>"); //i'm trusting the compiler is smart here
-		return super.toFormattedString(temps);
+	public String htmlIfy(String formatMe) {
+		return super.htmlIfy(formatMe.replaceAll("\\((\\d+)\\)", "<sub>\\1</sub>"));
 	}
 
 	protected String moveString(int n){
