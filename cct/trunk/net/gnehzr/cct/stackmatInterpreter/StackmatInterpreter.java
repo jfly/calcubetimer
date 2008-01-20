@@ -61,7 +61,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 			}
 			Configuration.setInt(VariableKey.MIXER_NUMBER, getSelectedMixerIndex());
 		}
-		enabled = Configuration.getBoolean(VariableKey.STACKAMT_ENABLED, false);
+		enabled = Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
 	}
 
 	private void cleanup(){

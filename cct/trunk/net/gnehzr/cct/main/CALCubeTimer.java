@@ -1033,7 +1033,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		System.exit(0);
 	}
 	public void saveToConfiguration() {
-		Configuration.setBoolean(VariableKey.STACKAMT_ENABLED, !(Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
+		Configuration.setBoolean(VariableKey.STACKMAT_ENABLED, !(Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
 		Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, scramblePopup.isVisible());
 		Configuration.setString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, scramCustomizationChoice.toString());
 		ScramblePlugin.saveLengthsToConfiguraiton();
@@ -1147,7 +1147,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	public void configurationChanged() {
 		updateWatermark();
-		boolean stackmatEnabled = Configuration.getBoolean(VariableKey.STACKAMT_ENABLED, false);
+		boolean stackmatEnabled = Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
 		keyboardTimingAction.putValue(Action.SELECTED_KEY, !stackmatEnabled);
 		integratedTimerAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, false));
 		annoyingDisplayAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.ANNOYING_DISPLAY, false));
@@ -1369,7 +1369,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				onLabel.setText("Timer is ON");
 			else
 				onLabel.setText("Timer is OFF");
-			if(!Configuration.getBoolean(VariableKey.STACKAMT_ENABLED, false))
+			if(!Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false))
 				return;
 
 			if(evt.getNewValue() instanceof StackmatState){

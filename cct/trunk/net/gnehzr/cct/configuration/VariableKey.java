@@ -82,7 +82,7 @@ public class VariableKey<H> {
 	public static final VariableKey<Boolean> CHAT_WINDOW_FLASH = new VariableKey<Boolean>("UMTS_Client_isChatWindowFlash");
 	public static final VariableKey<Boolean> TIMING_SPLITS = new VariableKey<Boolean>("Splits_isEnabled");
 	public static final VariableKey<Boolean> WATERMARK_ENABLED = new VariableKey<Boolean>("Watermark_isEnabled");
-	public static final VariableKey<Boolean> STACKAMT_ENABLED = new VariableKey<Boolean>("Stackmat_isEnabled");
+	public static final VariableKey<Boolean> STACKMAT_ENABLED = new VariableKey<Boolean>("Stackmat_isEnabled");
 	public static final VariableKey<Boolean> INTEGRATED_TIMER_DISPLAY = new VariableKey<Boolean>("GUI_Timer_isIntegratedTimerDisplay");
 	public static final VariableKey<Boolean> HIDE_SCRAMBLES = new VariableKey<Boolean>("GUI_Timer_isHideScrambles");
 	public static final VariableKey<Boolean> SPACEBAR_ONLY = new VariableKey<Boolean>("GUI_Timer_isSpacebarOnly");
