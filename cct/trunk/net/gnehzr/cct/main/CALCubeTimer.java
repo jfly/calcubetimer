@@ -68,6 +68,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
@@ -109,6 +111,7 @@ import net.gnehzr.cct.umts.client.CCTClient;
 import org.jvnet.lafwidget.LafWidget;
 import org.jvnet.lafwidget.utils.LafConstants;
 import org.jvnet.substance.SubstanceLookAndFeel;
+import org.jvnet.substance.painter.AlphaControlBackgroundComposite;
 import org.jvnet.substance.utils.SubstanceConstants;
 import org.jvnet.substance.watermark.SubstanceImageWatermark;
 import org.xml.sax.Attributes;
@@ -676,7 +679,18 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				//TODO needs orientation
 			}
 			else if(elementName.equals("scrollpane")){
-				com = new JScrollPane();
+				final JScrollPane scroll = new JScrollPane();
+				scroll.addAncestorListener(new AncestorListener() {
+					public void ancestorAdded(AncestorEvent e) {
+						scroll.setPreferredSize(scroll.getViewport().getView().getPreferredSize());
+					}
+					public void ancestorMoved(AncestorEvent e) {}
+					public void ancestorRemoved(AncestorEvent e) {}
+				});
+				scroll.putClientProperty(SubstanceLookAndFeel.OVERLAY_PROPERTY, Boolean.TRUE);
+			    scroll.putClientProperty(SubstanceLookAndFeel.BACKGROUND_COMPOSITE,
+			            new AlphaControlBackgroundComposite(0.3f, 0.5f));
+				com = scroll;
 			}
 
 			else if(elementName.equals("glue")) {

@@ -74,7 +74,7 @@ changes:
 +fix server scrambles
 +use ScramblePlugin to finish scramble debugger
 +tweaked the scramblecustomization editor gui
-+gui sizes itself too small by default - FIXED by adding <scrollpane> to customizable gui
++gui sizes itself too small by default - FIXED by adding <scrollpane> to customizable gui, FIXED resizing issue, too
 +don't allow connections to old servers
 +don't accept connections to old clients
 
