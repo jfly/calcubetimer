@@ -95,8 +95,13 @@ for release:
 
 scramble stuff:
 -scramble placeholder / n00b scrambler
+	-scramble placeholder color change when activated
+	-scramble placeholder must use the actual attributes of the scramble
 -write scramble plugin tutorial
 -icons on scramble choices?
+-add null scramble to replace scramble strings
+-server scramble loading behavior?
+-be able to import a list of scrambles by copy/paste
 
 misc:
 -expand jtable of times to include {current, rolling} average column
