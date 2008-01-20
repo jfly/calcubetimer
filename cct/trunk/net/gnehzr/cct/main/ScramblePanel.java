@@ -52,7 +52,7 @@ public class ScramblePanel extends JPanel implements ComponentListener{
 				String str = m.group(1).trim();
 				JButton b = new JButton(str);
 				temp += " " + str;
-				b.addActionListener(new ScrambleButtonListener(b, temp));
+				b.addActionListener(new ScrambleButtonListener(temp));
 				this.add(b);
 			}
 			else break;
@@ -100,15 +100,14 @@ public class ScramblePanel extends JPanel implements ComponentListener{
 	public void componentShown(ComponentEvent arg0) {}
 
 	private class ScrambleButtonListener implements ActionListener{
-		private JButton button;
 		private String scramble;
 
-		public ScrambleButtonListener(JButton b, String s){
-			button = b;
+		public ScrambleButtonListener(String s){
 			scramble = s;
 		}
 
 		public void actionPerformed(ActionEvent e){
+			JButton button = (JButton)e.getSource();
 			//TODO do something to show where we are
 			//button.setBackground(Color.BLUE);
 
