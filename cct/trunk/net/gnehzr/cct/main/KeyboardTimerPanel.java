@@ -130,8 +130,8 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 	}
 
 	private boolean stackmatKeysDown(){
-		return keyDown.get(Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY1, false)) &&
-			keyDown.get(Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY2, false));
+		return isKeyDown(Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY1, false)) &&
+			isKeyDown(Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY2, false));
 	}
 
 	//called when a key is physically pressed
