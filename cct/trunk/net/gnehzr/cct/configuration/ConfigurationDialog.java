@@ -265,8 +265,9 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		return test;
 	}
 
-	private JTextArea keySelector;
-	private int splitkey;
+	private JTextArea splitsKeySelector, stackmatKeySelector1, stackmatKeySelector2;
+	private JCheckBox stackmatEmulation;
+	private int splitkey, sekey1, sekey2;
 	private JCheckBox flashyWindow;
 	private JCheckBox isBackground;
 	private JTextField backgroundFile;
@@ -287,17 +288,39 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		splits = new JCheckBox("Detect splits.");
 		splits.addActionListener(this);
 
-		keySelector = new JTextArea();
-		keySelector.setColumns(10);
-		keySelector.setEditable(false);
-		keySelector.setToolTipText("Click here to set key");
-		keySelector.addKeyListener(this);
+		splitsKeySelector = new JTextArea();
+		splitsKeySelector.setColumns(10);
+		splitsKeySelector.setEditable(false);
+		splitsKeySelector.setToolTipText("Click here to set key");
+		splitsKeySelector.addKeyListener(this);
 
 		sideBySide.add(splits);
 		sideBySide.add(new JLabel("Minimum time between splits:"));
 		sideBySide.add(minSplitTime);
 		sideBySide.add(new JLabel("Split key:"));
-		sideBySide.add(keySelector);
+		sideBySide.add(splitsKeySelector);
+		panel.add(sideBySide);
+
+		sideBySide = new JPanel();
+		stackmatEmulation = new JCheckBox("Emulate a stackmat with the keyboard.");
+		stackmatEmulation.addActionListener(this);
+
+		stackmatKeySelector1 = new JTextArea();
+		stackmatKeySelector1.setColumns(10);
+		stackmatKeySelector1.setEditable(false);
+		stackmatKeySelector1.setToolTipText("Click here to set key");
+		stackmatKeySelector1.addKeyListener(this);
+
+		stackmatKeySelector2 = new JTextArea();
+		stackmatKeySelector2.setColumns(10);
+		stackmatKeySelector2.setEditable(false);
+		stackmatKeySelector2.setToolTipText("Click here to set key");
+		stackmatKeySelector2.addKeyListener(this);
+
+		sideBySide.add(stackmatEmulation);
+		sideBySide.add(new JLabel("Stackmat keys:"));
+		sideBySide.add(stackmatKeySelector1);
+		sideBySide.add(stackmatKeySelector2);
 		panel.add(sideBySide);
 
 		flashyWindow = new JCheckBox("Flash chat window when message recieved");
@@ -698,7 +721,10 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 				syncGUIwithConfig(true);
 		} else if(source == splits) {
 			minSplitTime.setEnabled(splits.isSelected());
-			keySelector.setEnabled(splits.isSelected());
+			splitsKeySelector.setEnabled(splits.isSelected());
+		} else if(source == stackmatEmulation){
+			stackmatKeySelector1.setEnabled(stackmatEmulation.isSelected());
+			stackmatKeySelector2.setEnabled(stackmatEmulation.isSelected());
 		} else if(source == browse) {
 			JFileChooser fc = new JFileChooser(".");
 			fc.setFileFilter(new ImageFilter());
@@ -766,8 +792,13 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		minSplitTime.setValue(Configuration.getDouble(VariableKey.MIN_SPLIT_DIFFERENCE, defaults));
 		splits.setSelected(Configuration.getBoolean(VariableKey.TIMING_SPLITS, defaults));
 		splitkey = Configuration.getInt(VariableKey.SPLIT_KEY, defaults);
-		keySelector.setText(KeyEvent.getKeyText(splitkey));
-		keySelector.setEnabled(splits.isSelected());
+		splitsKeySelector.setText(KeyEvent.getKeyText(splitkey));
+		splitsKeySelector.setEnabled(splits.isSelected());
+		stackmatEmulation.setSelected(Configuration.getBoolean(VariableKey.STACKMAT_EMULATION, defaults));
+		sekey1 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY1, defaults);
+		sekey2 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY2, defaults);
+		stackmatKeySelector1.setText(KeyEvent.getKeyText(sekey1));
+		stackmatKeySelector2.setText(KeyEvent.getKeyText(sekey2));
 		flashyWindow.setSelected(Configuration.getBoolean(VariableKey.CHAT_WINDOW_FLASH, defaults));
 		isBackground.setSelected(Configuration.getBoolean(VariableKey.WATERMARK_ENABLED, defaults));
 		backgroundFile.setText(Configuration.getString(VariableKey.WATERMARK_FILE, defaults));
@@ -878,6 +909,9 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setBoolean(VariableKey.TIMING_SPLITS, splits.isSelected());
 		Configuration.setDouble(VariableKey.MIN_SPLIT_DIFFERENCE, (Double) minSplitTime.getValue());
 		Configuration.setInt(VariableKey.SPLIT_KEY, splitkey);
+		Configuration.setBoolean(VariableKey.STACKMAT_EMULATION, stackmatEmulation.isSelected());
+		Configuration.setInt(VariableKey.STACKMAT_EMULATION_KEY1, sekey1);
+		Configuration.setInt(VariableKey.STACKMAT_EMULATION_KEY2, sekey2);
 
 		Configuration.setBoolean(VariableKey.CHAT_WINDOW_FLASH, flashyWindow.isSelected());
 
@@ -904,8 +938,16 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 	public void keyPressed(KeyEvent e) {
 		if(!KeyboardTimerPanel.ignoreKey(e, false, false, 0, 0)) {
-			splitkey = e.getKeyCode();
-			keySelector.setText(KeyEvent.getKeyText(splitkey));
+			if(e.getSource() == splitsKeySelector){
+				splitkey = e.getKeyCode();
+				splitsKeySelector.setText(KeyEvent.getKeyText(splitkey));
+			} else if(e.getSource() == stackmatKeySelector1){
+				sekey1 = e.getKeyCode();
+				stackmatKeySelector1.setText(KeyEvent.getKeyText(sekey1));
+			} else if(e.getSource() == stackmatKeySelector2){
+				sekey2 = e.getKeyCode();
+				stackmatKeySelector2.setText(KeyEvent.getKeyText(sekey2));
+			}
 		}
 	}
 
