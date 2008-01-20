@@ -19,6 +19,7 @@ public class VariableKey<H> {
 	public static final VariableKey<Integer> SPLIT_KEY = new VariableKey<Integer>("Splits_splitKey");
 	public static final VariableKey<Integer> STACKMAT_EMULATION_KEY1 = new VariableKey<Integer>("GUI_Timer_stackmatEmulationKey1");
 	public static final VariableKey<Integer> STACKMAT_EMULATION_KEY2 = new VariableKey<Integer>("GUI_Timer_stackmatEmulationKey2");
+	public static final VariableKey<Integer> STACKMAT_SAMPLING_RATE = new VariableKey<Integer>("Stackmat_samplingRate");
 	public static final VariableKey<Integer> POPUP_GAP = new VariableKey<Integer>("Scramble_Popup_gap");
 	public static final VariableKey<Integer> METRONOME_DELAY_MIN = new VariableKey<Integer>("Misc_Metronome_delayMin");
 	public static final VariableKey<Integer> METRONOME_DELAY_MAX = new VariableKey<Integer>("Misc_Metronome_delayMax");

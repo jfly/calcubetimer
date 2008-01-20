@@ -79,11 +79,11 @@ changes:
 +don't accept connections to old clients
 +command line argument for profile
 +recreate the green and red buttons, and antialias them this time!
++add configuration option for stackmat sampling rate
 
 TODO:
 
 for release:
--add configuration option for stackmat sampling rate
 -logging to xml database for each profile
 -internationalization (dates, too)
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html

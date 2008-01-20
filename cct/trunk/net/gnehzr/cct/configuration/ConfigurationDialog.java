@@ -394,6 +394,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private JComboBox lines = null;
 	private JPanel mixerPanel = null;
 	private JButton stackmatRefresh = null;
+	private JTextField stackmatSamplingRate = null;
 
 	private JPanel makeStackmatOptionsPanel() {
 		JPanel options = new JPanel(new GridLayout(0, 1));
@@ -407,7 +408,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		stackmatValue = new JSpinner(integerModel);
 		((JSpinner.DefaultEditor) stackmatValue.getEditor()).getTextField().setColumns(5);
 		sideBySide.add(stackmatValue);
-		options.add(new JLabel("This is an integer (typically near 50) " + "which should be changed if your timer " + "isn't working."));
+		options.add(new JLabel("This is an integer (typically near 50) which should be changed if your timer isn't working."));
 
 		options.add(new JLabel("If your timer displays any of these, change the corresponding box"));
 		sideBySide = new JPanel();
@@ -440,6 +441,12 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		mixerPanel.add(stackmatRefresh);
 
 		options.add(mixerPanel);
+
+		sideBySide = new JPanel();
+		sideBySide.add(new JLabel("Sampling rate:"));
+		stackmatSamplingRate = new JTextField(6);
+		sideBySide.add(stackmatSamplingRate);
+		options.add(sideBySide);
 
 		return options;
 	}
@@ -820,6 +827,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		invertedMinutes.setSelected(Configuration.getBoolean(VariableKey.INVERTED_MINUTES, defaults));
 		invertedSeconds.setSelected(Configuration.getBoolean(VariableKey.INVERTED_SECONDS, defaults));
 		invertedHundredths.setSelected(Configuration.getBoolean(VariableKey.INVERTED_HUNDREDTHS, defaults));
+		stackmatSamplingRate.setText("" + Configuration.getInt(VariableKey.STACKMAT_SAMPLING_RATE, defaults));
 
 		// makeSundaySetupPanel
 		useSMTPServer.setSelected(Configuration.getBoolean(VariableKey.SMTP_ENABLED, defaults));
@@ -885,6 +893,13 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setBoolean(VariableKey.INVERTED_SECONDS, invertedSeconds.isSelected());
 		Configuration.setBoolean(VariableKey.INVERTED_HUNDREDTHS, invertedHundredths.isSelected());
 		Configuration.setInt(VariableKey.MIXER_NUMBER, lines.getSelectedIndex());
+		try{
+			int rate = Integer.parseInt(stackmatSamplingRate.getText());
+			Configuration.setInt(VariableKey.STACKMAT_SAMPLING_RATE, rate);
+			stackmat.initialize(rate);
+		} catch(NumberFormatException e){
+			e.printStackTrace();
+		}
 
 		Configuration.setBoolean(VariableKey.SHOW_EMAIL, showEmail.isSelected());
 		Configuration.setString(VariableKey.SUNDAY_NAME, name.getText());

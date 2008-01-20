@@ -12,7 +12,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 	private static final int QUALITY = 2;
 	private static final int FRAMES = 64;
 
-	private int samplingRate;
+	private int samplingRate = 0;
 	private int noiseSpikeThreshold;
 	private int newPeriod;
 	private double signalLengthPerBit;
@@ -29,14 +29,15 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 	private static Mixer.Info[] aInfos = AudioSystem.getMixerInfo();
 
 	public StackmatInterpreter(){
-		initialize(44100);
+		initialize(Configuration.getInt(VariableKey.STACKMAT_SAMPLING_RATE, false));
 	}
 
 	public StackmatInterpreter(int samplingRate){
 		initialize(samplingRate);
 	}
 
-	private void initialize(int samplingRate){
+	public void initialize(int samplingRate){
+		if(this.samplingRate == samplingRate) return;
 		this.samplingRate = samplingRate;
 		noiseSpikeThreshold = samplingRate * 25 / 44100;
 		newPeriod = samplingRate / 44;
@@ -46,6 +47,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 		info = new DataLine.Info(TargetDataLine.class, format);
 
 		int mixerNum = Configuration.getInt(VariableKey.MIXER_NUMBER, false);
+		enabled = Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
 		if(mixerNum >= 0){
 			changeLine(mixerNum);
 		}
@@ -54,6 +56,9 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 				line = (TargetDataLine) AudioSystem.getLine(info);
 				line.open(format);
 				line.start();
+				synchronized(this){
+					notify();
+				}
 			} catch(LineUnavailableException e){
 				cleanup();
 			} catch(IllegalArgumentException e) {
@@ -61,7 +66,6 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 			}
 			Configuration.setInt(VariableKey.MIXER_NUMBER, getSelectedMixerIndex());
 		}
-		enabled = Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
 	}
 
 	private void cleanup(){
