@@ -17,6 +17,8 @@ public class VariableKey<H> {
 	public static final VariableKey<Integer> SWITCH_THRESHOLD = new VariableKey<Integer>("Stackmat_switchThreshold");
 	public static final VariableKey<Integer> MIXER_NUMBER = new VariableKey<Integer>("Stackmat_mixerNumber");
 	public static final VariableKey<Integer> SPLIT_KEY = new VariableKey<Integer>("Splits_splitKey");
+	public static final VariableKey<Integer> STACKMAT_EMULATION_KEY1 = new VariableKey<Integer>("GUI_Timer_stackmatEmulationKey1");
+	public static final VariableKey<Integer> STACKMAT_EMULATION_KEY2 = new VariableKey<Integer>("GUI_Timer_stackmatEmulationKey2");
 	public static final VariableKey<Integer> POPUP_GAP = new VariableKey<Integer>("Scramble_Popup_gap");
 	public static final VariableKey<Integer> METRONOME_DELAY_MIN = new VariableKey<Integer>("Misc_Metronome_delayMin");
 	public static final VariableKey<Integer> METRONOME_DELAY_MAX = new VariableKey<Integer>("Misc_Metronome_delayMax");
@@ -86,6 +88,7 @@ public class VariableKey<H> {
 	public static final VariableKey<Boolean> INTEGRATED_TIMER_DISPLAY = new VariableKey<Boolean>("GUI_Timer_isIntegratedTimerDisplay");
 	public static final VariableKey<Boolean> HIDE_SCRAMBLES = new VariableKey<Boolean>("GUI_Timer_isHideScrambles");
 	public static final VariableKey<Boolean> SPACEBAR_ONLY = new VariableKey<Boolean>("GUI_Timer_isSpacebarOnly");
+	public static final VariableKey<Boolean> STACKMAT_EMULATION = new VariableKey<Boolean>("GUI_Timer_stackmatEmulation");
 	public static final VariableKey<Boolean> ANNOYING_DISPLAY = new VariableKey<Boolean>("GUI_Timer_isAnnoyingDisplay");
 	public static final VariableKey<Boolean> LESS_ANNOYING_DISPLAY = new VariableKey<Boolean>("GUI_Timer_isLessAnnoyingDisplay");
 	public static final VariableKey<Boolean> FULLSCREEN_TIMING = new VariableKey<Boolean>("GUI_Timer_isFullScreenWhileTiming");

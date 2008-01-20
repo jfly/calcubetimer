@@ -903,7 +903,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	}
 
 	public void keyPressed(KeyEvent e) {
-		if(!KeyboardTimerPanel.ignoreKey(e, false)) {
+		if(!KeyboardTimerPanel.ignoreKey(e, false, false, 0, 0)) {
 			splitkey = e.getKeyCode();
 			keySelector.setText(KeyEvent.getKeyText(splitkey));
 		}

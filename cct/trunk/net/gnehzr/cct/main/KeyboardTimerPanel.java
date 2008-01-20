@@ -100,11 +100,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 				}
 				((Timer) evt.getSource()).stop();
 			}
-			public int keyCode;
-			//This method allows us to emulate a constructor for an
-			//anonymous inner class. I also use this trick in JListMutable.
-			//I'm not sure this is the best way of doing this, but it's
-			//the only thing I could think of.
+			private int keyCode;
 			public ActionListener setKeyCode(int keyCode) {
 				this.keyCode = keyCode;
 				return this;
@@ -126,37 +122,52 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 	}
 	public void keyTyped(KeyEvent e) {}
 
-	private boolean allKeysReleased() {
+	private boolean atMostKeysDown(int count){
 		Enumeration<Boolean> keys = keyDown.elements();
 		while(keys.hasMoreElements())
-			if(keys.nextElement()) return false;
+			if(keys.nextElement()) if(--count < 0) return false;
 		return true;
+	}
+
+	private boolean stackmatKeysDown(){
+		return keyDown.get(Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY1, false)) &&
+			keyDown.get(Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY2, false));
 	}
 
 	//called when a key is physically pressed
 	private void keyReallyPressed(KeyEvent e) {
+		boolean stackmatEmulation = Configuration.getBoolean(VariableKey.STACKMAT_EMULATION, false);
+		int sekey1 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY1, false);
+		int sekey2 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY2, false);
+
 		int key = e.getKeyCode();
 		if(key == 0) {
-		} else if(Configuration.getBoolean(VariableKey.TIMING_SPLITS, false) &&
-				key == Configuration.getInt(VariableKey.SPLIT_KEY, false)) {
-			keyboardTimer.split();
 		} else if(keyboardTimer.isRunning()) {
-			keyboardTimer.stop();
-			thingToListenTo.setKeysDownState();
-		} else if(!ignoreKey(e, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false))) {
+			if(Configuration.getBoolean(VariableKey.TIMING_SPLITS, false) && key == Configuration.getInt(VariableKey.SPLIT_KEY, false)) {
+				keyboardTimer.split();
+			}
+			else if(!stackmatEmulation || stackmatEmulation && stackmatKeysDown()){
+				keyboardTimer.stop();
+				thingToListenTo.setKeysDownState();
+			}
+		} else if(!ignoreKey(e, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false), stackmatEmulation, sekey1, sekey2)){
 			thingToListenTo.setKeysDownState();
 		}
 	}
 
 	//called when a key is physically released
 	private void keyReallyReleased(KeyEvent e) {
-		if(allKeysReleased()) {
+		boolean stackmatEmulation = Configuration.getBoolean(VariableKey.STACKMAT_EMULATION, false);
+		int sekey1 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY1, false);
+		int sekey2 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY2, false);
+
+		if(atMostKeysDown(stackmatEmulation ? 1 : 0)) {
 			thingToListenTo.setFocusedState();
 			if(!keyboardTimer.isRunning()) {
 				if(!keyboardTimer.isReset()) {
 					keyboardTimer.fireStop();
 					thingToListenTo.setStateText("Start Timer");
-				} else if(!ignoreKey(e, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false))) {
+				} else if(!ignoreKey(e, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false), stackmatEmulation, sekey1, sekey2)) {
 					if(keyboardTimer.startTimer()) {
 						thingToListenTo.setStateText("Stop Timer");
 					}
@@ -165,8 +176,11 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		}
 	}
 
-	public static boolean ignoreKey(KeyEvent e, boolean spaceBarOnly) {
+	public static boolean ignoreKey(KeyEvent e, boolean spaceBarOnly, boolean stackmatEmulation, int sekey1, int sekey2) {
 		int key = e.getKeyCode();
+		if(stackmatEmulation){
+			return key != sekey1 && key != sekey2;
+		}
 		if(spaceBarOnly)
 			return key != KeyEvent.VK_SPACE;
 		return key > 123 || key < 23 || e.isAltDown() || e.isControlDown() || key == KeyEvent.VK_ESCAPE;
