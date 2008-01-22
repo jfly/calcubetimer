@@ -225,6 +225,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 	}
 
 	public void configurationChanged() {
+		initialize(Configuration.getInt(VariableKey.STACKMAT_SAMPLING_RATE, false));
 		int mixNum = Configuration.getInt(VariableKey.MIXER_NUMBER, false);
 		if(mixNum != getSelectedMixerIndex())
 			changeLine(mixNum);
