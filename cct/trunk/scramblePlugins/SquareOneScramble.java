@@ -63,7 +63,7 @@ public class SquareOneScramble extends Scramble {
 	public SquareOneScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
 		super(s);
 		if(!setAttributes(attrs))
-			throw new InvalidScrambleException();
+			throw new InvalidScrambleException(s);
 	}
 
 	public boolean setAttributes(String... attributes) {

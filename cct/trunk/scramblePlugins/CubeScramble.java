@@ -84,7 +84,7 @@ public class CubeScramble extends Scramble {
 		super(s);
 		this.size = Integer.parseInt(variation.split("x")[0]);
 		if(!setAttributes(attrs))
-			throw new InvalidScrambleException();
+			throw new InvalidScrambleException(s);
 	}
 
 	private boolean multislice;

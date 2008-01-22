@@ -61,6 +61,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
@@ -131,7 +132,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private JLabel onLabel = null;
 	private DraggableJTable timesList = null;
 	private TimerPanel startStopPanel = null;
-	private JFrame fullscreenFrame = null;
+	private JPanel fullscreenPanel = null;
 	private TimerLabel bigTimersDisplay = null;
 	private ScrambleArea scramblePanel = null;
 	private ScrambleFrame scramblePopup = null;
@@ -401,28 +402,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timeLabel.setPreferredSize(new Dimension(0, 150));
 		timeLabel.setAlignmentX(.5f);
 
-		JFrame.setDefaultLookAndFeelDecorated(false);
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice[] gs = ge.getScreenDevices();
-		GraphicsDevice gd = gs[gs.length > 1 ? 1 : 0]; // TODO screen choice... must be configurable
-		fullscreenFrame = new JFrame(gd.getDefaultConfiguration());
-		DisplayMode screenSize = gd.getDisplayMode();
-		
-		fullscreenFrame.setResizable(false);
-		fullscreenFrame.setSize(screenSize.getWidth(), screenSize.getHeight());
-		fullscreenFrame.setUndecorated(true);
-		fullscreenFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-
-		JPanel panel = new JPanel(new BorderLayout());
-		fullscreenFrame.setContentPane(panel);
+		fullscreenPanel = new JPanel(new BorderLayout());
 		bigTimersDisplay = new TimerLabel(timeListener);
 		bigTimersDisplay.setBackground(Color.WHITE);
 		bigTimersDisplay.setEnabledTiming(true);
 
-		panel.add(bigTimersDisplay, BorderLayout.CENTER);
+		fullscreenPanel.add(bigTimersDisplay, BorderLayout.CENTER);
 		JButton fullScreenButton = new JButton(flipFullScreenAction);
-		panel.add(fullScreenButton, BorderLayout.PAGE_END);
-		fullscreenFrame.validate();
+		fullscreenPanel.add(fullScreenButton, BorderLayout.PAGE_END);
 
 		customGUIMenu = new JMenu("Load custom GUI");
 
@@ -1059,14 +1046,31 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		Configuration.setPoint(VariableKey.MAIN_FRAME_LOCATION, this.getLocation());
 	}
 
-	private boolean isFullScreen = false;
+	private JFrame fullscreenFrame;
+	private boolean isFullscreen = false;
 	public void setFullScreen(boolean b) {
-		isFullScreen = b;
-		fullscreenFrame.setVisible(isFullScreen);
-		if(isFullScreen) {
+		isFullscreen = b;
+		if(isFullscreen) {
+			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			GraphicsDevice[] gs = ge.getScreenDevices();
+			GraphicsDevice gd = gs[Configuration.getInt(VariableKey.FULLSCREEN_DESKTOP, false)];
+			fullscreenFrame = new JFrame(gd.getDefaultConfiguration());
+			fullscreenFrame.setUndecorated(true);
+			fullscreenFrame.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+			
+			DisplayMode screenSize = gd.getDisplayMode();
+			fullscreenFrame.setResizable(false);
+			fullscreenFrame.setSize(screenSize.getWidth(), screenSize.getHeight());
+			fullscreenFrame.setUndecorated(true);
+			fullscreenFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+			fullscreenFrame.setContentPane(fullscreenPanel);
+
 			bigTimersDisplay.setText(timeLabel.getText());
 			bigTimersDisplay.requestFocusInWindow();
+			
+			fullscreenFrame.validate();			
 		}
+		fullscreenFrame.setVisible(isFullscreen);
 	}
 
 	public void tableChanged(TableModelEvent e) {
@@ -1296,7 +1300,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	public void flipFullScreen(){
-		setFullScreen(!isFullScreen);
+		setFullScreen(!isFullscreen);
 	}
 
 	public void keyboardTimingAction(){
@@ -1405,7 +1409,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		private void updateTime(String newTime) {
 			timeLabel.setText(newTime);
-			if(isFullScreen)
+			if(isFullscreen)
 				bigTimersDisplay.setText(newTime);
 			if(!reset) {
 				sendCurrentTime(newTime);

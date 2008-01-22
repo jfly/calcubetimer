@@ -4,11 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.DisplayMode;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -30,6 +33,7 @@ import java.util.HashMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
@@ -42,6 +46,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
@@ -201,6 +206,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private JSpinner minSplitTime, RASize = null;
 	public TickerSlider metronomeDelay = null;
 	private JColorComponent bestRA, currentAverage, currentAndRA, bestTime, worstTime = null;
+	private JPanel desktopPanel;
+	private JButton refreshDesktops;
 
 	private JPanel makeStandardOptionsPanel1() {
 		JPanel options = new JPanel();
@@ -249,10 +256,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		currentAverage.addMouseListener(this);
 		colorPanel.add(currentAverage);
 
-		JPanel test = new JPanel();
-		test.setLayout(new BoxLayout(test, BoxLayout.PAGE_AXIS));
-		test.add(Box.createVerticalGlue());
-		test.add(options);
 		sideBySide = new JPanel();
 		metronome = new JCheckBox("Enable metronome?");
 		metronome.addActionListener(this);
@@ -260,6 +263,15 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		sideBySide.add(metronome);
 		sideBySide.add(new JLabel("Delay:"));
 		sideBySide.add(metronomeDelay);
+		
+		desktopPanel = new JPanel();
+		refreshDesktops = new JButton("Refresh");
+		
+		JPanel test = new JPanel();
+		test.setLayout(new BoxLayout(test, BoxLayout.PAGE_AXIS));
+		test.add(Box.createVerticalGlue());
+		test.add(options);
+		test.add(desktopPanel);
 		test.add(sideBySide);
 		test.add(Box.createVerticalGlue());
 		return test;
@@ -776,9 +788,12 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			pack();
 		} else if(source == metronome) {
 			metronomeDelay.setEnabled(metronome.isSelected());
+		} else if(source instanceof JRadioButton) {
+			JRadioButton jrb = (JRadioButton) source;
+			Configuration.setInt(VariableKey.FULLSCREEN_DESKTOP, Integer.parseInt(jrb.getText().split(" ")[1]) - 1);
 		}
 	}
-
+	
 	private void syncGUIwithConfig(boolean defaults) {
 		// makeStandardOptionsPanel1
 		clockFormat.setSelected(Configuration.getBoolean(VariableKey.CLOCK_FORMAT, defaults));
@@ -795,6 +810,21 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 				defaults), Configuration.getInt(VariableKey.METRONOME_DELAY, defaults));
 		metronomeDelay.setEnabled(metronome.isSelected());
 
+		desktopPanel.removeAll();
+		ButtonGroup g = new ButtonGroup();
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] gs = ge.getScreenDevices();
+		for(int ch = 0; ch < gs.length; ch++) {
+			GraphicsDevice gd = gs[ch];
+			DisplayMode screenSize = gd.getDisplayMode();
+			JRadioButton temp = new JRadioButton("Desktop " + (ch + 1) + " (Resolution: " + screenSize.getWidth() + "x" + screenSize.getHeight() + ")");
+			if(ch == Configuration.getInt(VariableKey.FULLSCREEN_DESKTOP, false))
+				temp.setSelected(true);
+			g.add(temp);
+			temp.addActionListener(this);
+			desktopPanel.add(temp);
+		}
+		
 		// makeStandardOptionsPanel2
 		minSplitTime.setValue(Configuration.getDouble(VariableKey.MIN_SPLIT_DIFFERENCE, defaults));
 		splits.setSelected(Configuration.getBoolean(VariableKey.TIMING_SPLITS, defaults));

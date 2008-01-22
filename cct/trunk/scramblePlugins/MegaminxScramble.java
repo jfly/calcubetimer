@@ -65,7 +65,7 @@ public class MegaminxScramble extends Scramble {
 	public MegaminxScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
 		super(s);
 		pochmann = variation.equals(VARIATIONS[1]);
-		if(!setAttributes(attrs)) throw new InvalidScrambleException();
+		if(!setAttributes(attrs)) throw new InvalidScrambleException(s);
 	}
 
 	public MegaminxScramble(String variation, int length, String... attrs) {

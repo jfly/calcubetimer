@@ -26,6 +26,7 @@ public class VariableKey<H> {
 	public static final VariableKey<Integer> METRONOME_DELAY = new VariableKey<Integer>("Misc_Metronome_delay");
 	public static final VariableKey<Integer> MAX_FONTSIZE = new VariableKey<Integer>("Scramble_fontMaxSize");
 	public static final VariableKey<Integer> SCRAMBLE_COMBOBOX_ROWS = new VariableKey<Integer>("Scramble_comboboxRows");
+	public static final VariableKey<Integer> FULLSCREEN_DESKTOP = new VariableKey<Integer>("Misc_fullscreenDesktop");
 	public static final VariableKey<Integer> UNIT_SIZE(ScramblePlugin plugin) {
 		return new VariableKey<Integer>("Scramble_Popup_unitSize_" + plugin.getPuzzleName());
 	}

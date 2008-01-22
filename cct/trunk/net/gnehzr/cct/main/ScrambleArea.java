@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,13 +17,13 @@ import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.html.HTMLDocument;
 
 import org.jvnet.lafwidget.LafWidget;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
-import net.gnehzr.cct.scrambles.NullScramble;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
@@ -52,11 +54,11 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 	}
 	private Scramble currentScramble;
 	private ScrambleCustomization currentCustomization;
-
+	private String part1, part2;
 	public void setScramble(Scramble newScramble, final ScrambleCustomization sc) {
 		currentScramble = newScramble;
 		currentCustomization = sc;
-
+		
 		Font font = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
 		String fontStyle = "";
 		if(font.isItalic())
@@ -67,30 +69,33 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 			fontStyle += "font-weight: bold; ";
 		else
 			fontStyle += "font-weight: normal; ";
-		String formattedScramble = "<html><head><style type=\"text/css\">" +
-			"a { color: black; text-decoration: none; }" +
-			"span { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "; " + fontStyle + "}" +
-			"sub { font-size: " + (font.getSize() / 2 + 1) + "; }" +
-			"</style></head><body>";
+		part1 = "<html><head><style type=\"text/css\">" + 
+		"a {color: black;text-decoration: none;}" +
+		"a#";
+		part2 = " { color: red; }" + 
+		"span { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "; " + fontStyle + "; }" +
+		"sub { font-size: " + (font.getSize() / 2 + 1) + "; }" +
+		"</style></head><body>";
 		String s = newScramble.toString().trim();
-		if(newScramble instanceof NullScramble){
-			formattedScramble += s;
-		}
-		else{
-			Pattern regex = newScramble.getTokenRegex();
-
-			String plainScramble = "";
-			Matcher m;
-			while((m = regex.matcher(s)).matches()){
-				String str = m.group(1).trim();
-				plainScramble += " " + str;
-				formattedScramble += "<a href=\"http://" + plainScramble + "\">" + newScramble.htmlIfy(str) + "</a> ";
-				s = m.group(2).trim();
+		URL currScram = null;
+		String plainScramble = "";
+		Matcher m;
+		int num = 0;
+		Pattern regex = newScramble.getTokenRegex();
+		while((m = regex.matcher(s)).matches()){
+			String str = m.group(1).trim();
+			plainScramble += " " + str;
+			try {
+				currScram = new URL("http://" + num + plainScramble);
+			} catch(MalformedURLException e) {
+				e.printStackTrace();
 			}
+			part2 += "<a id='" + num + "' href=\"" + currScram.toExternalForm() + "\">" + newScramble.htmlIfy(" " + str) + "</a>";
+			s = m.group(2).trim();
+			num++;
 		}
-		formattedScramble += "</body></html>";
-		scramblePane.setText(formattedScramble);
-		scramblePane.setCaretPosition(0);
+		part2 += "</body></html>";
+		hyperlinkUpdate(new HyperlinkEvent(scramblePane, HyperlinkEvent.EventType.ACTIVATED, currScram));
 		setProperSize();
 		Container par = getParent();
 		if(par != null)
@@ -99,17 +104,20 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-			if(currentCustomization != null){
-				ScramblePlugin sp = currentCustomization.getScramblePlugin();
-				ScrambleVariation sv = currentCustomization.getScrambleVariation();
-				try{
-					//remove http://, and the leading space
-					String subScramble = e.getURL().toString().substring(8);
-					Scramble s = sp.importScramble(sv.toString(), subScramble, new String[0]);
-					scramblePopup.setScramble(s, sp);
-				} catch(InvalidScrambleException ex){
-					ex.printStackTrace();
-				}
+			URL url = e.getURL();
+			ScramblePlugin sp = currentCustomization.getScramblePlugin();
+			ScrambleVariation sv = currentCustomization.getScrambleVariation();
+			try{
+				//parts[0] = http://#, parts[1] = scramble
+				String[] parts = url.toString().split(" ", 2);
+				int moveNum = Integer.parseInt(parts[0].substring(7));
+				Scramble s = sp.importScramble(sv.toString(), parts[1], new String[0]);
+				scramblePopup.setScramble(s, sp);
+				scramblePane.setDocument(new HTMLDocument());
+				scramblePane.setText(part1 + moveNum + part2);
+				scramblePane.setCaretPosition(0);
+			} catch(InvalidScrambleException ex){
+				ex.printStackTrace();
 			}
 		}
 	}
