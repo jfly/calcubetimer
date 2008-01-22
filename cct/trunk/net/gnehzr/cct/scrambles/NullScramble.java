@@ -11,7 +11,7 @@ public class NullScramble extends Scramble {
 	public static final String PUZZLE_NAME = "";
 	public static final String[] VARIATIONS = {};
 	public static final int DEFAULT_UNIT_SIZE = 0;
-	private static final Pattern TOKEN_REGEX = Pattern.compile("^(.*)$");
+	private static final Pattern TOKEN_REGEX = Pattern.compile("^(.+)()$");
 
 	public static int getDefaultScrambleLength(String variation) {
 		return 1;
