@@ -111,7 +111,7 @@ public class ScramblePlugin {
 		}
 		return scrambleCustomizations.get(0);
 	}
-	
+
 	public static ArrayList<ScrambleCustomization> getScrambleCustomizations(boolean defaults) {
 		ArrayList<ScrambleCustomization> scrambleCustomizations = new ArrayList<ScrambleCustomization>();
 		for(ScrambleVariation t : getScrambleVariations()) {
@@ -144,7 +144,7 @@ public class ScramblePlugin {
 		}
 		return scrambleCustomizations;
 	}
-	
+
 	public String[] getAvailablePuzzleAttributes() {
 		return ATTRIBUTES;
 	}

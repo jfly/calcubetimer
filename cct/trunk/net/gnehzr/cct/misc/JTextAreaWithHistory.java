@@ -19,46 +19,46 @@ import org.jvnet.lafwidget.LafWidget;
 public class JTextAreaWithHistory extends JTextArea {
 	public JTextAreaWithHistory() {
 		this.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
-	    final UndoManager undo = new UndoManager();
-	    Document doc = this.getDocument();
+		final UndoManager undo = new UndoManager();
+		Document doc = this.getDocument();
 
-	    // Listen for undo and redo events
-	    doc.addUndoableEditListener(new UndoableEditListener() {
-	        public void undoableEditHappened(UndoableEditEvent evt) {
-	            undo.addEdit(evt.getEdit());
-	        }
-	    });
+		// Listen for undo and redo events
+		doc.addUndoableEditListener(new UndoableEditListener() {
+			public void undoableEditHappened(UndoableEditEvent evt) {
+				undo.addEdit(evt.getEdit());
+			}
+		});
 
-	    // Create an undo action and add it to the text component
-	    this.getActionMap().put("Undo",
-	        new AbstractAction("Undo") {
-	            public void actionPerformed(ActionEvent evt) {
-	                try {
-	                    if (undo.canUndo()) {
-	                        undo.undo();
-	                    }
-	                } catch (CannotUndoException e) {
-	                }
-	            }
-	       });
+		// Create an undo action and add it to the text component
+		this.getActionMap().put("Undo",
+				new AbstractAction("Undo") {
+					public void actionPerformed(ActionEvent evt) {
+						try {
+							if (undo.canUndo()) {
+								undo.undo();
+							}
+						} catch (CannotUndoException e) {
+						}
+					}
+				});
 
-	    // Bind the undo action to ctl-Z
-	    this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK), "Undo");
+		// Bind the undo action to ctl-Z
+		this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK), "Undo");
 
-	    // Create a redo action and add it to the text component
-	    this.getActionMap().put("Redo",
-	        new AbstractAction("Redo") {
-	            public void actionPerformed(ActionEvent evt) {
-	                try {
-	                    if (undo.canRedo()) {
-	                        undo.redo();
-	                    }
-	                } catch (CannotRedoException e) {
-	                }
-	            }
-	        });
+		// Create a redo action and add it to the text component
+		this.getActionMap().put("Redo",
+				new AbstractAction("Redo") {
+					public void actionPerformed(ActionEvent evt) {
+						try {
+							if (undo.canRedo()) {
+								undo.redo();
+							}
+						} catch (CannotRedoException e) {
+						}
+					}
+				});
 
-	    // Bind the redo action to ctl-Y
-	    this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK), "Redo");
+		// Bind the redo action to ctl-Y
+		this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK), "Redo");
 	}
 }

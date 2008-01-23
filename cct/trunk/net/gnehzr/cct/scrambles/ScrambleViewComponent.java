@@ -130,7 +130,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		}
 		return scheme;
 	}
-	
+
 	public void setColorScheme(ScramblePlugin plugin, HashMap<String, Color> scheme) {
 		colorSchemes.put(plugin, scheme);
 		redo();

@@ -53,13 +53,13 @@ public class VariableKey<H> {
 	public static final VariableKey<String> PUZZLE_COLOR(ScramblePlugin plugin, String faceName) {
 		return new VariableKey<String>("Puzzle_Color_" + plugin.getPuzzleName() + "_face" + faceName);
 	}
-	
+
 	public static final VariableKey<String[]> SCRAMBLE_CUSTOMIZATIONS = new VariableKey<String[]>("Scramble_customizations");
 	public static final VariableKey<String[]> PROFILES = new VariableKey<String[]>("Profiles");
 	public static final VariableKey<String[]> PUZZLE_ATTRIBUTES(ScramblePlugin plugin) {
 		return new VariableKey<String[]>("Puzzle_Attributes_" + plugin.getPuzzleName());
 	}
-	
+
 	static {
 		try {
 			Font lcdFont = Font.createFont(Font.TRUETYPE_FONT,

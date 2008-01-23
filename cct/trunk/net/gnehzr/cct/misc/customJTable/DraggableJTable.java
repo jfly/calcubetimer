@@ -19,15 +19,15 @@ import javax.swing.table.TableModel;
 @SuppressWarnings("serial")
 public class DraggableJTable extends JTable implements MouseListener, MouseMotionListener, KeyListener {
 	private String addText;
-	
+
 	//You must set any editors or renderers before setting this table's model
 	//because the preferred size is computed inside setModel()
 	public DraggableJTable(String addText, boolean draggable) {
 		this.addText = addText;
-        this.addMouseListener(this);
+		this.addMouseListener(this);
 		if(draggable) {
 			setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	        this.addMouseMotionListener(this);
+			this.addMouseMotionListener(this);
 		}
 		this.addKeyListener(this);
 		this.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
@@ -136,7 +136,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 					true,
 					0,
 					0).getPreferredSize();
-			
+
 			this.setRowHeight(Math.max(rendDim.height, edDim.height));
 			rendDim.height = 0;
 			this.setPreferredScrollableViewportSize(rendDim);

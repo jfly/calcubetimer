@@ -103,9 +103,9 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		}
 	}
 	public void showPopup(MouseEvent e, DraggableJTable source) {}
-	
+
 	//******* Start of renderer/editor stuff ****************//
-	
+
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		String val = value.toString();
@@ -145,7 +145,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	private JSpinner scramLength;
 	private JTextField customField;
 	private String originalFieldText;
-	
+
 	private JPanel getCustomizationPanel(ScrambleCustomization custom) {
 		JPanel customPanel = new JPanel();
 		if(custom.getCustomization() != null) {
@@ -174,7 +174,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 
 		return customPanel;
 	}
-	
+
 	private JPanel getLengthPanel(ScrambleCustomization custom) {
 		JPanel lengthPanel = new JPanel();
 		customization = custom;
@@ -292,5 +292,5 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		scramLength = null;
 		listener.editingStopped(null);
 		return true;
-	}	
+	}
 }

@@ -17,10 +17,10 @@ public class JSpinnerWithText extends JPanel implements ChangeListener {
 	public JSpinnerWithText(int initial, int min, String text) {
 		super();
 
-	SpinnerModel averageModel = new SpinnerNumberModel(initial, //initial value
-			min,    //min
-			null, //max
-			1);   //step
+	SpinnerModel averageModel = new SpinnerNumberModel(initial,
+			min,
+			null,
+			1);
 		integerSpinner = new JSpinner(averageModel);
 		((JSpinner.DefaultEditor) integerSpinner.getEditor()).getTextField().setColumns(5);
 		//Ugly, but necessary. See http://forum.java.sun.com/thread.jspa?forumID=57&threadID=409748
@@ -28,9 +28,9 @@ public class JSpinnerWithText extends JPanel implements ChangeListener {
 
 		JPanel subPanel = new JPanel();
 		subPanel.add(new JLabel(text));
-        subPanel.add(integerSpinner);
+		subPanel.add(integerSpinner);
 
-        add(subPanel);
+		add(subPanel);
 	}
 
 	public int getSpinnerValue() {

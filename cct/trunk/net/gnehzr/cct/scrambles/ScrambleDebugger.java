@@ -28,7 +28,7 @@ public class ScrambleDebugger extends ScramblePlugin {
 		System.out.println("Scramble variations: " + arrayToString(super.VARIATIONS));
 		System.out.println("Available scramble attributes: " + arrayToString(super.ATTRIBUTES));
 		System.out.println("Default attributes: " + arrayToString(super.DEFAULT_ATTRIBUTES));
-		
+
 		if(length == -1) {
 			length = super.getDefaultScrambleLength(new ScrambleVariation(this, ""));
 		}
@@ -60,7 +60,7 @@ public class ScrambleDebugger extends ScramblePlugin {
 	private static void printUsage() {
 		System.out.println("Usage: ScrambleDebugger [class filename] (scramble length)");
 	}
-	
+
 	@SuppressWarnings("serial")
 	public static void main(String... args) {
 		String fileName;
@@ -73,7 +73,7 @@ public class ScrambleDebugger extends ScramblePlugin {
 		} else {
 			System.out.println("Invalid arguments");
 			printUsage();
-			return;			
+			return;
 		}
 
 		try {

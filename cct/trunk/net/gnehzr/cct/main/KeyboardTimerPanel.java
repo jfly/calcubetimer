@@ -38,7 +38,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 	public void setTimerFocusListener(TimerFocusListener l) {
 		focusListener = l;
 	}
-	
+
 	private boolean enabled = true;
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;

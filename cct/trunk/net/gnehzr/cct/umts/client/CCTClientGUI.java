@@ -283,7 +283,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 			ArrayList<SolveTime> bestSolves = selectedUser.getBestSolves();
 			JOptionPane.showMessageDialog(frame,
 					(solves.isEmpty() ?
-					 	"This user has not yet completed any solves!" :
+						"This user has not yet completed any solves!" :
 						"Current: " + toString(solves) + "\nBest: " + toString(bestSolves)),
 					"Details for " + selectedUser.getName(),
 					JOptionPane.INFORMATION_MESSAGE);

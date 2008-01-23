@@ -263,10 +263,10 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		sideBySide.add(metronome);
 		sideBySide.add(new JLabel("Delay:"));
 		sideBySide.add(metronomeDelay);
-		
+
 		desktopPanel = new JPanel();
 		refreshDesktops = new JButton("Refresh");
-		
+
 		JPanel test = new JPanel();
 		test.setLayout(new BoxLayout(test, BoxLayout.PAGE_AXIS));
 		test.add(Box.createVerticalGlue());
@@ -386,14 +386,14 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		scramTable.getTableHeader().setReorderingAllowed(false);
 		scramTable.putClientProperty(SubstanceLookAndFeel.WATERMARK_IGNORE, Boolean.TRUE);
 		scramTable.setShowGrid(false);
-		
+
 		scramTable.setDefaultRenderer(ScrambleCustomization.class, puzzlesModel);
 		scramTable.setDefaultEditor(ScrambleCustomization.class, puzzlesModel);
 		scramTable.setDefaultEditor(String.class, puzzlesModel);
 		scramTable.setModel(puzzlesModel);
-		
+
 //		panel.add(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(profilesTable), new JScrollPane(scramTable)));
-		
+
 		panel.add(new JScrollPane(profilesTable), BorderLayout.LINE_START);
 		panel.add(new JScrollPane(scramTable), BorderLayout.CENTER);
 		return panel;
@@ -793,7 +793,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			Configuration.setInt(VariableKey.FULLSCREEN_DESKTOP, Integer.parseInt(jrb.getText().split(" ")[1]) - 1);
 		}
 	}
-	
+
 	private void syncGUIwithConfig(boolean defaults) {
 		// makeStandardOptionsPanel1
 		clockFormat.setSelected(Configuration.getBoolean(VariableKey.CLOCK_FORMAT, defaults));
@@ -824,7 +824,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			temp.addActionListener(this);
 			desktopPanel.add(temp);
 		}
-		
+
 		// makeStandardOptionsPanel2
 		minSplitTime.setValue(Configuration.getDouble(VariableKey.MIN_SPLIT_DIFFERENCE, defaults));
 		splits.setSelected(Configuration.getBoolean(VariableKey.TIMING_SPLITS, defaults));

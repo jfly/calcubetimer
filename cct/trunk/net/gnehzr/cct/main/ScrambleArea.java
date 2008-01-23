@@ -58,7 +58,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 	public void setScramble(Scramble newScramble, final ScrambleCustomization sc) {
 		currentScramble = newScramble;
 		currentCustomization = sc;
-		
+
 		Font font = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
 		String fontStyle = "";
 		if(font.isItalic())
@@ -69,13 +69,13 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 			fontStyle += "font-weight: bold; ";
 		else
 			fontStyle += "font-weight: normal; ";
-		part1 = "<html><head><style type=\"text/css\">" + 
-		"a {color: black;text-decoration: none;}" +
-		"a#";
-		part2 = " { color: red; }" + 
-		"span { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "; " + fontStyle + "; }" +
-		"sub { font-size: " + (font.getSize() / 2 + 1) + "; }" +
-		"</style></head><body>";
+		part1 = "<html><head><style type=\"text/css\">" +
+			"a {color: black;text-decoration: none;}" +
+			"a#";
+		part2 = " { color: red; }" +
+			"span { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "; " + fontStyle + "; }" +
+			"sub { font-size: " + (font.getSize() / 2 + 1) + "; }" +
+			"</style></head><body>";
 		String s = newScramble.toString().trim();
 		URL currScram = null;
 		String plainScramble = "";

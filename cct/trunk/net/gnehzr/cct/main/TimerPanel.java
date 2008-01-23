@@ -29,14 +29,13 @@ public class TimerPanel extends JLabel implements KeyboardTimerComponent {
 		setMinimumSize(size);
 		setMaximumSize(size);
 	}
-	
 
 	private TimerFocusListener focusListener;
 	public void setTimerFocusListener(TimerFocusListener l) {
 		timer.setTimerFocusListener(l);
 		focusListener = l;
 	}
-	
+
 	private boolean keyboard = true;
 	public void setKeyboard(boolean isKey) {
 		keyboard = isKey;

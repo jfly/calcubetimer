@@ -876,7 +876,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				Configuration.setSelectedProfile(commandedProfile);
 			}
 		}
-		
+
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				String errors = Configuration.getStartupErrors();
@@ -1057,7 +1057,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			fullscreenFrame = new JFrame(gd.getDefaultConfiguration());
 			fullscreenFrame.setUndecorated(true);
 			fullscreenFrame.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
-			
+
 			DisplayMode screenSize = gd.getDisplayMode();
 			fullscreenFrame.setResizable(false);
 			fullscreenFrame.setSize(screenSize.getWidth(), screenSize.getHeight());
@@ -1067,8 +1067,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 			bigTimersDisplay.setText(timeLabel.getText());
 			bigTimersDisplay.requestFocusInWindow();
-			
-			fullscreenFrame.validate();			
+
+			fullscreenFrame.validate();
 		}
 		fullscreenFrame.setVisible(isFullscreen);
 	}
@@ -1176,12 +1176,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scrambleChooser.setModel(new DefaultComboBoxModel(ScramblePlugin.getScrambleCustomizations(false).toArray(new ScrambleCustomization[0])));
 		profiles.setModel(new DefaultComboBoxModel(Configuration.getProfiles().toArray(new Profile[0])));
 		safeSelectItem(profiles, Configuration.getSelectedProfile());
-		
+
 		ScramblePlugin.reloadLengthsFromConfiguration(false);
 		ScrambleCustomization newCustom = ScramblePlugin.getCurrentScrambleCustomization();
 		safeSelectItem(scrambleChooser, newCustom);
 		safeSetValue(scrambleLength, newCustom.getScrambleVariation().getLength());
-		
+
 		timeLabel.setKeyboard(!stackmatEnabled);
 		timeLabel.setEnabledTiming(Configuration.getBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, false));
 		timeLabel.setOpaque(Configuration.getBoolean(VariableKey.ANNOYING_DISPLAY, false));
