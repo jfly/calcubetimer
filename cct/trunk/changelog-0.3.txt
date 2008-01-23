@@ -94,6 +94,7 @@ for release:
 -update FAQ, defaults.properties file, about.html
 -create license, give credit where credit is due
 -send modified sunday contest to jon morris
+-dtds for xml files
 
 scramble stuff:
 -scramble placeholder must use the actual attributes of the scramble
