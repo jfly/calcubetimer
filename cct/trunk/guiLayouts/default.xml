@@ -1,3 +1,4 @@
+<!DOCTYPE gui SYSTEM "layout.dtd">
 <gui>
 	<panel layout="border">
 		<center>
