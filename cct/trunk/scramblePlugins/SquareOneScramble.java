@@ -252,8 +252,8 @@ public class SquareOneScramble extends Scramble {
 
 	public BufferedImage getScrambleImage(int gap,
 			int radius, HashMap<String, Color> colorScheme) {
-		int width = getWidth(gap, radius);
-		int height = getHeight(gap, radius);
+		int width = Math.max(getWidth(gap, radius), getWidth(gap, DEFAULT_UNIT_SIZE));
+		int height = Math.max(getHeight(gap, radius), getHeight(gap, DEFAULT_UNIT_SIZE));
 		BufferedImage buffer = new BufferedImage(width, height,
 				BufferedImage.TYPE_INT_ARGB);
 

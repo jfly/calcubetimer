@@ -307,7 +307,9 @@ public class MegaminxScramble extends Scramble {
 	}
 
 	public BufferedImage getScrambleImage(int gap, int minxRad, HashMap<String, Color> colorScheme) {
-		BufferedImage buffer = new BufferedImage(getMegaminxViewWidth(gap, minxRad), getMegaminxViewHeight(gap, minxRad), BufferedImage.TYPE_INT_ARGB);
+		int width = Math.max(getMegaminxViewWidth(gap, minxRad), getMegaminxViewWidth(gap, DEFAULT_UNIT_SIZE));
+		int height = Math.max(getMegaminxViewHeight(gap, minxRad), getMegaminxViewHeight(gap, DEFAULT_UNIT_SIZE));
+		BufferedImage buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		drawMinx(buffer.createGraphics(), gap, minxRad, colorScheme);
 		return buffer;
 	}
