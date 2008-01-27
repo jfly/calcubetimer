@@ -45,6 +45,8 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 import javax.swing.text.html.StyleSheet;
 
+import org.jvnet.lafwidget.LafWidget;
+
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.main.CALCubeTimer;
@@ -96,6 +98,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 
 	private void createAndShowGUI(){
 		messageLog = new JEditorPane("text/html", null);
+		messageLog.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 		messageLog.setPreferredSize(new Dimension(400, 400));
 		messageLog.setEditable(false);
 		messageLog.addHyperlinkListener(this);
