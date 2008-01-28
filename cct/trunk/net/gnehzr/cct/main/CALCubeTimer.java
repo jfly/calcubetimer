@@ -973,13 +973,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scrambleNumber.addChangeListener(this);
 	}
 	private void updateScramble() {
-		if(scrambleChooser.getSelectedItem() == null) return;
-
 		ScrambleCustomization newPuzzleChoice = (ScrambleCustomization)scrambleChooser.getSelectedItem();
-		boolean newVariation = scramCustomizationChoice == null || !newPuzzleChoice.getScrambleVariation().equals(scramCustomizationChoice.getScrambleVariation());
+		boolean newVariation = newPuzzleChoice != null && (scramCustomizationChoice == null || !newPuzzleChoice.getScrambleVariation().equals(scramCustomizationChoice.getScrambleVariation()));
+		if(scramCustomizationChoice != null)
+			System.out.println(newPuzzleChoice + "\t" + scramCustomizationChoice.getScrambleVariation());
 		int newLength = (Integer) scrambleLength.getValue();
-		if(scramblesList == null || newVariation ||
-				scramCustomizationChoice.getScrambleVariation().getLength() != newLength) {
+		if(scramblesList == null || newVariation || scramCustomizationChoice.getScrambleVariation().getLength() != newLength) {
 			int choice = JOptionPane.YES_OPTION;
 			if(scramblesList != null && scramblesList.getCurrent().isImported()) {
 				choice = JOptionPane.showConfirmDialog(this,
@@ -1002,7 +1001,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				validate();
 				scramblesList = new ScrambleList(scramCustomizationChoice.getScrambleVariation());
 			}
-		} else
+		} else if(newPuzzleChoice != null)
 			scramCustomizationChoice = newPuzzleChoice;
 		safeSelectItem(scrambleChooser, scramCustomizationChoice);
 		safeSetValue(scrambleLength, scramCustomizationChoice.getScrambleVariation().getLength());
@@ -1018,8 +1017,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	private void setScramble(Scramble s, ScrambleCustomization sc){
 		scramblePanel.setScramble(s, sc);
-		if(sc == null) scramblePopup.setScramble(s, ScramblePlugin.NULL_SCRAMBLE_PLUGIN);
-		else scramblePopup.setScramble(s, sc.getScramblePlugin());
 		scramblePopup.pack();
 	}
 
@@ -1077,17 +1074,23 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	public void tableChanged(TableModelEvent e) {
 		if(e != null && e.getType() == TableModelEvent.INSERT) {
-			Scramble curr = /*scramblePanel.getCurrentScramble();*/scramblesList.getCurrent();
+			Scramble curr = scramblesList.getCurrent();
 			if(curr != null){
 				stats.get(stats.getSize() - 1).setScramble(curr.toString());
 				boolean outOfScrambles = curr.isImported(); //This is tricky, think before you change it
 				outOfScrambles = !scramblesList.getNext().isImported() && outOfScrambles;
-				if(outOfScrambles)
+				if(outOfScrambles) {
 					JOptionPane.showMessageDialog(this,
 							"All imported scrambles have been used.\n" +
 							"Generated scrambles will be used from now on.",
 							"All Out of Scrambles!",
 							JOptionPane.INFORMATION_MESSAGE);
+					//if we were using null scrambles, lets restore the selected scramble type
+					if(scrambleChooser.getSelectedItem() == null) {
+						scramblesList = null;
+						scrambleChooser.setSelectedItem(ScramblePlugin.getCurrentScrambleCustomization());
+					}
+				}
 				updateScramble();
 			}
 		}
@@ -1119,27 +1122,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			client.sendBestAverage(s, stats);
 		}
 	}
-//
-//	public void setScramble(String var, String s){
-//		for(ScrambleVariation sv : ScramblePlugin.getScrambleVariations()){
-//			if(sv.getVariation().equals(var)){
-//				try{
-//					setScramble(sv.generateScramble(s), new ScrambleCustomization(sv, null));
-//				} catch(InvalidScrambleException e){
-//					break;
-//				}
-//				return;
-//			}
-//		}
-//		try{
-//			setScramble(new NullScramble(null, s) , null);
-//		} catch(InvalidScrambleException e){}
-//	}
 	
 	public void setScramble(String customization, String s) {
 		ScrambleCustomization sc = ScramblePlugin.getCustomizationFromString(customization);
-		if(sc == null) { 
-			sc = new ScrambleCustomization(new ScrambleVariation(ScramblePlugin.NULL_SCRAMBLE_PLUGIN, ""), null);
+		if(sc == null) {
+			saveToConfiguration();
+			sc = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION;
+			scrambleChooser.setSelectedItem(null);
 		}
 		ScrambleVariation sv = sc.getScrambleVariation();
 		try {

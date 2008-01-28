@@ -22,6 +22,7 @@ public class NullScramble extends Scramble {
 	}
 
 	public NullScramble(String variation, int length, String... attrs) {
+		scramble = "Null Scramble";
 	}
 
 	public NullScramble(String variation, String s, String... attrs) throws InvalidScrambleException {

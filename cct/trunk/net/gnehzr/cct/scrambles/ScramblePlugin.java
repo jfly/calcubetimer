@@ -18,10 +18,10 @@ import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.Utils;
 
 public class ScramblePlugin {
-	public static ScramblePlugin NULL_SCRAMBLE_PLUGIN = null;
+	public static ScrambleCustomization NULL_SCRAMBLE_CUSTOMIZATION = null;
 	static{
 		try{
-			NULL_SCRAMBLE_PLUGIN = new ScramblePlugin(NullScramble.class);
+			NULL_SCRAMBLE_CUSTOMIZATION = new ScrambleCustomization(new ScrambleVariation(new ScramblePlugin(NullScramble.class), ""), null);
 		} catch(Exception e){}
 	}
 
