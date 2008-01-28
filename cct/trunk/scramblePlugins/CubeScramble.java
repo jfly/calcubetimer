@@ -307,7 +307,7 @@ public class CubeScramble extends Scramble {
 		int width = Math.max(getCubeViewWidth(cubieSize, gap), getCubeViewWidth(DEFAULT_UNIT_SIZE, gap));
 		int height = Math.max(getCubeViewHeight(cubieSize, gap), getCubeViewHeight(DEFAULT_UNIT_SIZE, gap));
 		BufferedImage buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		drawCube(buffer.createGraphics(), image, gap, cubieSize, colorScheme);
+		drawCube(buffer.createGraphics(), image, gap, getNewUnitSize(width, height, gap), colorScheme);
 		return buffer;
 	}
 

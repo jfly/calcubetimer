@@ -310,7 +310,7 @@ public class MegaminxScramble extends Scramble {
 		int width = Math.max(getMegaminxViewWidth(gap, minxRad), getMegaminxViewWidth(gap, DEFAULT_UNIT_SIZE));
 		int height = Math.max(getMegaminxViewHeight(gap, minxRad), getMegaminxViewHeight(gap, DEFAULT_UNIT_SIZE));
 		BufferedImage buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		drawMinx(buffer.createGraphics(), gap, minxRad, colorScheme);
+		drawMinx(buffer.createGraphics(), gap, getNewUnitSize(width, height, gap), colorScheme);
 		return buffer;
 	}
 	public Dimension getMinimumSize(int gap, int defaultMinxRad) {

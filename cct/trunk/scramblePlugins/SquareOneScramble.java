@@ -256,7 +256,8 @@ public class SquareOneScramble extends Scramble {
 		int height = Math.max(getHeight(gap, radius), getHeight(gap, DEFAULT_UNIT_SIZE));
 		BufferedImage buffer = new BufferedImage(width, height,
 				BufferedImage.TYPE_INT_ARGB);
-
+		radius = getNewUnitSize(width, height, gap);
+		
 		Graphics2D g = buffer.createGraphics();
 		double half_square_width = (radius * RADIUS_MULTIPLIER * multiplier) / Math.sqrt(2);
 		double edge_width = 2 * radius * multiplier * Math.sin(Math.toRadians(15));
