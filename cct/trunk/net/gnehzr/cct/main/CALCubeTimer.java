@@ -99,7 +99,6 @@ import net.gnehzr.cct.misc.dynamicGUI.DynamicSelectableLabel;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicString;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicStringSettable;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
-import net.gnehzr.cct.scrambles.NullScramble;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleList;
@@ -975,8 +974,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private void updateScramble() {
 		ScrambleCustomization newPuzzleChoice = (ScrambleCustomization)scrambleChooser.getSelectedItem();
 		boolean newVariation = newPuzzleChoice != null && (scramCustomizationChoice == null || !newPuzzleChoice.getScrambleVariation().equals(scramCustomizationChoice.getScrambleVariation()));
-		if(scramCustomizationChoice != null)
-			System.out.println(newPuzzleChoice + "\t" + scramCustomizationChoice.getScrambleVariation());
 		int newLength = (Integer) scrambleLength.getValue();
 		if(scramblesList == null || newVariation || scramCustomizationChoice.getScrambleVariation().getLength() != newLength) {
 			int choice = JOptionPane.YES_OPTION;

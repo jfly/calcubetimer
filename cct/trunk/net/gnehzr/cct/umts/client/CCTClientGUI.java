@@ -19,8 +19,8 @@ import java.awt.geom.AffineTransform;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.ListIterator;
+
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -42,16 +42,15 @@ import javax.swing.event.TableModelListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 import javax.swing.text.html.StyleSheet;
-
-import org.jvnet.lafwidget.LafWidget;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.stackmatInterpreter.StackmatState;
 import net.gnehzr.cct.statistics.SolveTime;
+
+import org.jvnet.lafwidget.LafWidget;
 
 public class CCTClientGUI implements MouseListener, ActionListener, KeyListener, TableModelListener, HyperlinkListener {
 	private final static SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
