@@ -111,7 +111,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 				//parts[0] = http://#, parts[1] = scramble
 				String[] parts = url.toString().split(" ", 2);
 				int moveNum = Integer.parseInt(parts[0].substring(7));
-				Scramble s = sp.importScramble(sv.toString(), parts[1], new String[0]);
+				Scramble s = sp.importScramble(sv.toString(), parts[1], sp.getEnabledPuzzleAttributes());
 				scramblePopup.setScramble(s, sp);
 				scramblePane.setDocument(new HTMLDocument());
 				scramblePane.setText(part1 + moveNum + part2);
