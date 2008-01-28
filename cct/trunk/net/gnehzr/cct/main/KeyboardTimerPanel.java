@@ -131,6 +131,11 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		return true;
 	}
 
+	private int stackmatKeysDownCount(){
+		return (isKeyDown(Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY1, false)) ? 1 : 0) +
+			(isKeyDown(Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY2, false)) ? 1 : 0);
+	}
+
 	private boolean stackmatKeysDown(){
 		return isKeyDown(Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY1, false)) &&
 			isKeyDown(Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY2, false));
@@ -152,7 +157,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 				keyboardTimer.stop();
 				thingToListenTo.setKeysDownState();
 			}
-		} else if(!ignoreKey(e, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false), stackmatEmulation, sekey1, sekey2)){
+		} else if(!stackmatEmulation && !ignoreKey(e, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false), stackmatEmulation, sekey1, sekey2) || stackmatEmulation && stackmatKeysDown()){
 			thingToListenTo.setKeysDownState();
 		}
 	}
@@ -163,7 +168,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		int sekey1 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY1, false);
 		int sekey2 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY2, false);
 
-		if(atMostKeysDown(stackmatEmulation ? 1 : 0)) {
+		if(stackmatEmulation && stackmatKeysDownCount() == 1 && (e.getKeyCode() == sekey1 || e.getKeyCode() == sekey2) || !stackmatEmulation && atMostKeysDown(0)){
 			thingToListenTo.setFocusedState();
 			if(!keyboardTimer.isRunning()) {
 				if(!keyboardTimer.isReset()) {
@@ -207,7 +212,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		//returns true if it actually starts
 		public boolean startTimer() {
 			start = System.currentTimeMillis();
-			if(start - current < 500)	return false;
+			if(start - current < 500) return false;
 			super.fireActionPerformed(new ActionEvent(getTimerState(), 0, "Started"));
 			reset = false;
 			super.start();

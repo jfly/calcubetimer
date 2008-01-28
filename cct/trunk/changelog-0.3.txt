@@ -83,6 +83,9 @@ changes:
 +add configuration option for stackmat sampling rate
 +dual monitor support for fullscreen
 +force aspect ratio of scramble view (done after the scramble image is updated), also will increase size to minimum if necessary
++scramble placeholder must use the actual attributes of the scramble
++dtds for xml files
++keyboard stackmat feature (adam zamora's idea)
 
 TODO:
 
@@ -96,10 +99,8 @@ for release:
 -update FAQ, defaults.properties file, about.html
 -create license, give credit where credit is due
 -send modified sunday contest to jon morris
--dtds for xml files
 
 scramble stuff:
--scramble placeholder must use the actual attributes of the scramble
 -write scramble plugin tutorial
 -icons on scramble choices?
 -add null scramble to replace scramble strings
@@ -108,7 +109,6 @@ scramble stuff:
 
 misc:
 -expand jtable of times to include {current, rolling} average column
--keyboard stackmat feature? adam zamora's idea.
 -java webstart? applet?
 
 cleanup:
