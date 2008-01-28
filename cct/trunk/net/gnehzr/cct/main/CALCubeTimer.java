@@ -518,6 +518,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			attributes[ch].addActionListener(this);
 			scrambleAttributes.add(attributes[ch]);
 		}
+		if(scrambleAttributes.isDisplayable())
+			scrambleAttributes.getParent().validate();
 	}
 
 	//{{{ GUIParser
@@ -1117,21 +1119,40 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			client.sendBestAverage(s, stats);
 		}
 	}
-
-	public void setScramble(String var, String s){
-		for(ScrambleVariation sv : ScramblePlugin.getScrambleVariations()){
-			if(sv.getVariation().equals(var)){
-				try{
-					setScramble(sv.generateScramble(s), new ScrambleCustomization(sv, null));
-				} catch(InvalidScrambleException e){
-					break;
-				}
-				return;
-			}
+//
+//	public void setScramble(String var, String s){
+//		for(ScrambleVariation sv : ScramblePlugin.getScrambleVariations()){
+//			if(sv.getVariation().equals(var)){
+//				try{
+//					setScramble(sv.generateScramble(s), new ScrambleCustomization(sv, null));
+//				} catch(InvalidScrambleException e){
+//					break;
+//				}
+//				return;
+//			}
+//		}
+//		try{
+//			setScramble(new NullScramble(null, s) , null);
+//		} catch(InvalidScrambleException e){}
+//	}
+	
+	public void setScramble(String customization, String s) {
+		ScrambleCustomization sc = ScramblePlugin.getCustomizationFromString(customization);
+		if(sc == null) { 
+			sc = new ScrambleCustomization(new ScrambleVariation(ScramblePlugin.NULL_SCRAMBLE_PLUGIN, ""), null);
 		}
-		try{
-			setScramble(new NullScramble(null, s) , null);
-		} catch(InvalidScrambleException e){}
+		ScrambleVariation sv = sc.getScrambleVariation();
+		try {
+			scramblesList = new ScrambleList(sv);
+			scramblesList.add(sv.generateScramble(s.trim()));
+			scramCustomizationChoice = sc;
+			safeSelectItem(scrambleChooser, sc);
+			safeSetValue(scrambleLength, sv.getLength());
+			createScrambleAttributes();
+			updateScramble();
+		} catch(InvalidScrambleException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void stateChanged(ChangeEvent e) {

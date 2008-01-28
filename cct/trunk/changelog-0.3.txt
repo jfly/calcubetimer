@@ -81,6 +81,8 @@ changes:
 +recreate the green and red buttons, and antialias them this time!
 +scramble placeholder / n00b scrambler
 +add configuration option for stackmat sampling rate
++dual monitor support for fullscreen
++force aspect ratio of scramble view (done after the scramble image is updated), also will increase size to minimum if necessary
 
 TODO:
 
@@ -106,10 +108,8 @@ scramble stuff:
 
 misc:
 -expand jtable of times to include {current, rolling} average column
--dual monitor support for fullscreen
 -keyboard stackmat feature? adam zamora's idea.
 -java webstart? applet?
--force aspect ratio of scramble view
 
 cleanup:
 -behavior when recieving identical averages

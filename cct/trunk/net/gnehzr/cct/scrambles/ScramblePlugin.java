@@ -27,43 +27,41 @@ public class ScramblePlugin {
 
 	private static ArrayList<ScramblePlugin> scramblePlugins;
 	public static ArrayList<ScramblePlugin> getScramblePlugins() {
-		if(scramblePlugins == null) {
-			File pluginFolder = Configuration.scramblePluginsFolder;
-			if(scramblePlugins == null && pluginFolder.isDirectory()) {
-				scramblePlugins = new ArrayList<ScramblePlugin>();
-					URL url;
-					try {
-						url = Configuration.scramblePluginsFolder.toURI().toURL();
-					} catch (MalformedURLException e1) {
-						e1.printStackTrace();
-						return null;
-					}
-					URL[] urls = new URL[]{url};
-					ClassLoader cl = new URLClassLoader(urls);
+		File pluginFolder = Configuration.scramblePluginsFolder;
+		if(scramblePlugins == null && pluginFolder.isDirectory()) {
+			scramblePlugins = new ArrayList<ScramblePlugin>();
+			URL url;
+			try {
+				url = Configuration.scramblePluginsFolder.toURI().toURL();
+			} catch (MalformedURLException e1) {
+				e1.printStackTrace();
+				return null;
+			}
+			URL[] urls = new URL[]{url};
+			ClassLoader cl = new URLClassLoader(urls);
 
-					for(String child : pluginFolder.list(new FilenameFilter() {
-						public boolean accept(File dir, String name) {
-							if(new File(dir, name).isFile()) {
-								return name.endsWith(".class");
-							}
-							return false;
-						}
-					})) {
-						Class<?> cls = null;
-						try {
-							cls = cl.loadClass(child.substring(0, child.indexOf(".")));
-						} catch (ClassNotFoundException e) {
-							e.printStackTrace();
-							return null;
-						}
-						if(cls.getSuperclass().equals(Scramble.class)) {
-							try {
-								scramblePlugins.add(new ScramblePlugin((Class<? extends Scramble>) cls));
-							} catch(Exception ee) {
-								ee.printStackTrace();
-							}
-						}
+			for(String child : pluginFolder.list(new FilenameFilter() {
+				public boolean accept(File dir, String name) {
+					if(new File(dir, name).isFile()) {
+						return name.endsWith(".class");
 					}
+					return false;
+				}
+			})) {
+				Class<?> cls = null;
+				try {
+					cls = cl.loadClass(child.substring(0, child.indexOf(".")));
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+					return null;
+				}
+				if(cls.getSuperclass().equals(Scramble.class)) {
+					try {
+						scramblePlugins.add(new ScramblePlugin((Class<? extends Scramble>) cls));
+					} catch(Exception ee) {
+						ee.printStackTrace();
+					}
+				}
 			}
 		}
 		return scramblePlugins;
@@ -93,23 +91,30 @@ public class ScramblePlugin {
 	}
 
 	public static ScrambleCustomization getCurrentScrambleCustomization() {
-		String lastCustom = Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, false);
+		String scName = Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, false);
+		ScrambleCustomization sc = getCustomizationFromString(scName);
+
+		//now we'll try to match the variation, if we couldn't match the customization
+		if(sc == null && scName.indexOf(':') != -1) {
+			scName = scName.substring(0, scName.indexOf(":"));
+			sc = getCustomizationFromString(scName);
+		}
+		if(sc == null) {
+			ArrayList<ScrambleCustomization> scs = getScrambleCustomizations(false);
+			if(scs.size() > 0)
+				sc = scs.get(0);
+		}
+		return sc;
+	}
+	
+	public static ScrambleCustomization getCustomizationFromString(String customName) {
 		ArrayList<ScrambleCustomization> scrambleCustomizations = getScrambleCustomizations(false);
-		if(scrambleCustomizations.size() == 0)
-			return null;
 		for(ScrambleCustomization custom : scrambleCustomizations) {
-			if(custom.equals(lastCustom)) {
+			if(custom.equals(customName)) {
 				return custom;
 			}
 		}
-		//now we'll try to match the variation
-		lastCustom = lastCustom.substring(0, lastCustom.indexOf(":"));
-		for(ScrambleCustomization custom : scrambleCustomizations) {
-			if(custom.equals(lastCustom)) {
-				return custom;
-			}
-		}
-		return scrambleCustomizations.get(0);
+		return null;
 	}
 
 	public static ArrayList<ScrambleCustomization> getScrambleCustomizations(boolean defaults) {
