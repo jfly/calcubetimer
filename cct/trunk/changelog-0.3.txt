@@ -87,6 +87,8 @@ changes:
 +scramble placeholder must use the actual attributes of the scramble
 +dtds for xml files
 +keyboard stackmat feature (adam zamora's idea)
++server scrambles needs link to load
++behavior when recieving identical averages
 
 TODO:
 
@@ -112,11 +114,9 @@ misc:
 -java webstart? applet?
 
 cleanup:
--behavior when recieving identical averages
 -generalize XML syntax (get rid of Dynamic... classes) UPDATE: no idea how to do this...???
 -integrate statsdialoghandler with ui xml stuff
 
 Server stuff:
--server scrambles needs link to load
 -latency on server - this is so that clients don't flood the server with too many time messages
 -urgent hint for waiting messages on server?

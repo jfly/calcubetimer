@@ -98,6 +98,16 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 			listener.update();
 	}
 
+	public void add(int pos, SolveTime s) {
+		if(pos == times.size()){
+			add(s);
+		}
+		else{
+			times.add(pos, s);
+			refresh();
+		}
+	}
+
 	public void add(SolveTime s) {
 		addHelper(s);
 		int newRow = times.size() - 1;
@@ -109,8 +119,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		times.add(s);
 
 		int i;
-		for (i = 0; i < sorttimes.size() && sorttimes.get(i).compareTo(s) <= 0; i++)
-			;
+		for (i = 0; i < sorttimes.size() && sorttimes.get(i).compareTo(s) <= 0; i++) ;
 		sorttimes.add(i, s);
 
 		if (times.size() >= curRASize) {
@@ -138,30 +147,42 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 	private void calculateCurrentAverage() {
 		double avg = calculateRA(times.size() - curRASize, times.size());
 		if (avg > 0) {
+			Double s;
+			int i;
+
 			Double av = new Double(avg);
 			averages.add(av);
 
-			int i;
-			for (i = 0; i < sortaverages.size()
-					&& sortaverages.get(i).compareTo(av) <= 0; i++)
-				;
-			sortaverages.add(i, av);
-			if (i == 0)
-				indexOfBestRA = averages.size() - 1;
-
 			if (avg == Double.MAX_VALUE) {
-				Double s = new Double(Double.MAX_VALUE);
+				s = new Double(Double.MAX_VALUE);
 				sds.add(s);
 				sortsds.add(s);
 			} else {
 				double sd = calculateRSD(times.size() - curRASize, times.size());
-				Double s = new Double(sd);
+				s = new Double(sd);
 				sds.add(s);
 
-				for (i = 0; i < sortsds.size()
-						&& sortsds.get(i).compareTo(s) <= 0; i++)
-					;
+				for (i = 0; i < sortsds.size() && sortsds.get(i).compareTo(s) <= 0; i++) ;
 				sortsds.add(i, s);
+			}
+
+			for (i = 0; i < sortaverages.size() && sortaverages.get(i).compareTo(av) < 0; i++) ;
+			sortaverages.add(i, av);
+			if (i == 0){
+				int newbest = averages.size() - 1;
+				if(indexOfBestRA < 0 || averages.get(indexOfBestRA) != averages.get(newbest))
+					indexOfBestRA = newbest;
+				else{
+					if(sds.get(indexOfBestRA) > sds.get(newbest)) indexOfBestRA = newbest;
+					else if(sds.get(indexOfBestRA) == sds.get(newbest)){
+						if(bestTimeOfAverage(indexOfBestRA) > bestTimeOfAverage(newbest))
+							indexOfBestRA = newbest;
+						else if(bestTimeOfAverage(indexOfBestRA) == bestTimeOfAverage(newbest)){
+							if(worstTimeOfAverage(indexOfBestRA) > worstTimeOfAverage(newbest))
+								indexOfBestRA = newbest;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -715,16 +736,17 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		return true;
 	}
 	public void insertValueAt(Object value, int rowIndex) {
-		times.add(rowIndex, (SolveTime) value);
+		add(rowIndex, (SolveTime) value);
 		fireTableRowsInserted(rowIndex, rowIndex);
 	}
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
 		SolveTime val = (SolveTime) value;
 		if(rowIndex == getRowCount()) {
-			times.add(val);
+			add(val);
 		} else {
 			val.setScramble(times.get(rowIndex).getScramble());
 			times.set(rowIndex, val);
+			refresh();
 		}
 		fireTableRowsInserted(rowIndex, rowIndex);
 	}
