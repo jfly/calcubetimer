@@ -55,7 +55,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 	private Scramble currentScramble;
 	private ScrambleCustomization currentCustomization;
 	private String part1, part2;
-	public void setScramble(Scramble newScramble, final ScrambleCustomization sc) {
+	public void setScramble(Scramble newScramble, ScrambleCustomization sc) {
 		currentScramble = newScramble;
 		currentCustomization = sc;
 

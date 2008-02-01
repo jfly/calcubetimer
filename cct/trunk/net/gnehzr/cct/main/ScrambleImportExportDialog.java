@@ -2,15 +2,21 @@ package net.gnehzr.cct.main;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.URL;
+
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
@@ -18,24 +24,31 @@ import javax.swing.event.AncestorListener;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.JSpinnerWithText;
+import net.gnehzr.cct.misc.JTextAreaWithHistory;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
+
+import org.jvnet.lafwidget.LafWidget;
 
 @SuppressWarnings("serial")
 public class ScrambleImportExportDialog extends JPanel implements ActionListener, AncestorListener {
 	private boolean importing;
 	private JTextField urlField;
-	private JButton browse;
+	private JButton browse, addToArea;
+	private JTextAreaWithHistory scrambles;
 	private JComboBox scrambleChooser;
 	private JSpinnerWithText scrambleLength, numberOfScrambles;
 	public ScrambleImportExportDialog(boolean importing, ScrambleVariation selected) {
 		this.importing = importing;
-		urlField = new JTextField(importing ? Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_URL, false) : "", 20);
+		urlField = new JTextField(importing ? Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_URL, false) : "");
 		urlField.setToolTipText(importing ? "Browse for file or type URL of desired scrambles." : "Choose file to export scrambles to.");
 		browse = new JButton("Browse");
 		browse.addActionListener(this);
 
 		scrambleChooser = new JComboBox(ScramblePlugin.getScrambleVariations());
+		if(importing) {
+			scrambleChooser.addItem(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation());
+		}
 		scrambleChooser.setSelectedItem(selected);
 		scrambleChooser.addActionListener(this);
 
@@ -43,14 +56,22 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 		subPanel.setLayout(new BoxLayout(subPanel, BoxLayout.Y_AXIS));
 
 		JPanel sideBySide = new JPanel();
+		sideBySide.setLayout(new BoxLayout(sideBySide, BoxLayout.X_AXIS));
 		sideBySide.add(urlField);
 		sideBySide.add(browse);
+		if(importing) {
+			addToArea = new JButton("Add");
+			addToArea.addActionListener(this);
+			sideBySide.add(addToArea);
+		}
 
+		scrambles = new JTextAreaWithHistory();
+		scrambles.setColumns(50);
+		scrambles.setRows(20);
+		scrambles.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
+		
 		subPanel.add(sideBySide);
-
-		sideBySide = new JPanel();
-		sideBySide.add(scrambleChooser);
-
+		subPanel.add(new JScrollPane(scrambles, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
 		subPanel.add(scrambleChooser);
 
 		if(!importing) { //Exporting, so length of scramble and number of scrambles are needed
@@ -99,17 +120,44 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 		} else if(source == scrambleChooser && scrambleLength != null) {
 			ScrambleVariation curr = (ScrambleVariation) scrambleChooser.getSelectedItem();
 			scrambleLength.setValue(curr.getLength());
+		} else if(source == addToArea) {
+			URL url = getURL();
+			if(url != null) {
+				try {
+					BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+					String line, all = "";
+					while((line = in.readLine()) != null) {
+						all += line + "\n";
+					}
+					scrambles.append(all);
+					in.close();
+				} catch(ConnectException ee) {
+					showErrorMessage("Connection refused!", "Error!");
+				} catch(FileNotFoundException ee) {
+					showErrorMessage(url + "\nURL not found!", "Four-O-Four-ed!");
+				} catch(Exception ee) {
+					showErrorMessage("Error!\n" + e.toString(), "Hmmmmm...");
+				}
+			}
 		}
+	}
+	
+	private void showErrorMessage(String errorMessage, String title){
+		JOptionPane.showMessageDialog(this, errorMessage, title, JOptionPane.ERROR_MESSAGE);
 	}
 
 	public int getNumberOfScrambles() {
 		return numberOfScrambles.getSpinnerValue();
 	}
 
-	public ScrambleVariation getType() {
-		ScrambleVariation temp = (ScrambleVariation) scrambleChooser.getSelectedItem();
+	public String[] getScrambles() {
+		return scrambles.getText().split("\n");
+	}
+	
+	public ScrambleVariation getVariation() {
+		ScrambleVariation var = (ScrambleVariation) scrambleChooser.getSelectedItem();
 		if(scrambleLength != null)
-			temp.setLength(scrambleLength.getSpinnerValue());
-		return temp;
+			var.setLength(scrambleLength.getSpinnerValue());
+		return var;
 	}
 }

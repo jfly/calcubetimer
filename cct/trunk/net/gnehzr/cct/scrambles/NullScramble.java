@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class NullScramble extends Scramble {
 	public static final String[] FACE_NAMES = {};
-	public static final String PUZZLE_NAME = "";
+	public static final String PUZZLE_NAME = "Null Scramble";
 	public static final String[] VARIATIONS = {};
 	public static final int DEFAULT_UNIT_SIZE = 0;
 	private static final Pattern TOKEN_REGEX = Pattern.compile("^(.+)()$");
@@ -22,7 +22,6 @@ public class NullScramble extends Scramble {
 	}
 
 	public NullScramble(String variation, int length, String... attrs) {
-		scramble = "Null Scramble";
 	}
 
 	public NullScramble(String variation, String s, String... attrs) throws InvalidScrambleException {

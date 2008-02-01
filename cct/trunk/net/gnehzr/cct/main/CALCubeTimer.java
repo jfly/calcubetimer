@@ -924,34 +924,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 	}
 
-	private void readScramblesFile(URL inputFile, ScrambleVariation newVariation) {
-		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(inputFile.openStream()));
-			scramblesList = ScrambleList.importScrambles(newVariation, in);
-			in.close();
-
-			int newLength = scramblesList.getCurrent().getLength();
-
-			if(!newVariation.equals(scramCustomizationChoice.getScrambleVariation())) {
-				scramCustomizationChoice = new ScrambleCustomization(newVariation, null);
-			}
-			newVariation.setLength(newLength);
-			safeSetValue(scrambleLength, newLength);
-			safeSelectItem(scrambleChooser, scramCustomizationChoice);
-			updateScramble();
-			JOptionPane.showMessageDialog(this,
-					"Scrambles successfully loaded!",
-					inputFile.getPath(),
-					JOptionPane.INFORMATION_MESSAGE);
-		} catch(ConnectException e) {
-			showErrorMessage("Connection refused!", "Error!");
-		} catch(FileNotFoundException e) {
-			showErrorMessage(inputFile + "\nURL not found!", "Four-O-Four-ed!");
-		} catch(Exception e) {
-			showErrorMessage("Error!\n" + e.toString(), "Hmmmmm...");
-		}
-	}
-
 	private void showErrorMessage(String errorMessage, String title){
 		JOptionPane.showMessageDialog(this, errorMessage, title, JOptionPane.ERROR_MESSAGE);
 	}
@@ -973,9 +945,20 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 	private void updateScramble() {
 		ScrambleCustomization newPuzzleChoice = (ScrambleCustomization)scrambleChooser.getSelectedItem();
-		boolean newVariation = newPuzzleChoice != null && (scramCustomizationChoice == null || !newPuzzleChoice.getScrambleVariation().equals(scramCustomizationChoice.getScrambleVariation()));
 		int newLength = (Integer) scrambleLength.getValue();
-		if(scramblesList == null || newVariation || scramCustomizationChoice.getScrambleVariation().getLength() != newLength) {
+		boolean isNewVariation;
+		boolean isNewLength;
+		if(newPuzzleChoice == null) {
+			isNewVariation = false;
+			isNewLength = false;
+		} else if(scramCustomizationChoice == null) {
+			isNewVariation = true;
+			isNewLength = true;
+		} else {
+			isNewVariation = !newPuzzleChoice.getScrambleVariation().equals(scramCustomizationChoice.getScrambleVariation());
+			isNewLength = scramCustomizationChoice.getScrambleVariation().getLength() != newLength;
+		}
+		if(scramblesList == null || isNewVariation || isNewLength) {
 			int choice = JOptionPane.YES_OPTION;
 			if(scramblesList != null && scramblesList.getCurrent().isImported()) {
 				choice = JOptionPane.showConfirmDialog(this,
@@ -1122,17 +1105,17 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	
 	public void setScramble(String customization, String s) {
 		ScrambleCustomization sc = ScramblePlugin.getCustomizationFromString(customization);
+		safeSelectItem(scrambleChooser, sc);
 		if(sc == null) {
+			//save to configuration in order to load the correct scramcustomzation when we're done
 			saveToConfiguration();
 			sc = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION;
-			scrambleChooser.setSelectedItem(null);
 		}
 		ScrambleVariation sv = sc.getScrambleVariation();
 		try {
 			scramblesList = new ScrambleList(sv);
 			scramblesList.add(sv.generateScramble(s.trim()));
 			scramCustomizationChoice = sc;
-			safeSelectItem(scrambleChooser, sc);
 			safeSetValue(scrambleLength, sv.getLength());
 			createScrambleAttributes();
 			updateScramble();
@@ -1187,7 +1170,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		ScramblePlugin.reloadLengthsFromConfiguration(false);
 		ScrambleCustomization newCustom = ScramblePlugin.getCurrentScrambleCustomization();
 		safeSelectItem(scrambleChooser, newCustom);
+		int oldLength = (Integer)scrambleLength.getValue();
 		safeSetValue(scrambleLength, newCustom.getScrambleVariation().getLength());
+		newCustom.getScrambleVariation().setLength(oldLength);
 
 		timeLabel.setKeyboard(!stackmatEnabled);
 		timeLabel.setEnabledTiming(Configuration.getBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, false));
@@ -1261,9 +1246,28 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.QUESTION_MESSAGE);
 		if(choice == JOptionPane.OK_OPTION) {
-			URL file = scrambleImporter.getURL();
-			if(file != null)
-				readScramblesFile(scrambleImporter.getURL(), scrambleImporter.getType());
+			ScrambleVariation sv = scrambleImporter.getVariation();
+			try {
+				scramblesList = ScrambleList.importScrambles(sv, scrambleImporter.getScrambles());
+
+				if(!sv.equals(scramCustomizationChoice.getScrambleVariation())) {
+					scramCustomizationChoice = new ScrambleCustomization(sv, null);
+				}
+				int newLength = scramCustomizationChoice.getScrambleVariation().getLength();
+				sv.setLength(newLength);
+				safeSetValue(scrambleLength, newLength);
+				if(scramCustomizationChoice.equals(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION))
+					safeSelectItem(scrambleChooser, null);
+				else
+					safeSelectItem(scrambleChooser, scramCustomizationChoice);
+				updateScramble();
+				JOptionPane.showMessageDialog(this,
+						"Scrambles successfully loaded!",
+						scrambleImporter.getURL().getPath(),
+						JOptionPane.INFORMATION_MESSAGE);
+			} catch(InvalidScrambleException e) {
+				showErrorMessage(e.getLocalizedMessage(), "Invalid scramble!");
+			}
 		}
 	}
 
@@ -1277,7 +1281,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if(choice == JOptionPane.OK_OPTION) {
 			URL file = scrambleExporter.getURL();
 			if(file != null)
-				exportScrambles(file, scrambleExporter.getNumberOfScrambles(), scrambleExporter.getType());
+				exportScrambles(file, scrambleExporter.getNumberOfScrambles(), scrambleExporter.getVariation());
 		}
 	}
 
