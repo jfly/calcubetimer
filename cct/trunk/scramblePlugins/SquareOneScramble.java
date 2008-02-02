@@ -35,15 +35,15 @@ public class SquareOneScramble extends Scramble {
 	public static String getDefaultFaceColor(String face) {
 		switch (face.charAt(0)) {
 		case 'L':
-			return "0000ff";
-		case 'R':
 			return "ffff00";
+		case 'R':
+			return "0000ff";
 		case 'D':
 			return "00ff00";
 		case 'B':
-			return "ffc800";
-		case 'F':
 			return "ff0000";
+		case 'F':
+			return "ffc800";
 		case 'U':
 			return "ffffff";
 		default:
