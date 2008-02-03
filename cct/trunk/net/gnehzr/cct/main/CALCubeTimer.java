@@ -1221,6 +1221,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	// Actions section {{{
 	public void addTimeAction() {
 		timesList.promptForNewRow();
+		Rectangle newTimeRect = timesList.getCellRect(stats.getRowCount(), 0, true);
+		timesList.scrollRectToVisible(newTimeRect);
 	}
 
 	public void resetAction(){
