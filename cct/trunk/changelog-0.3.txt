@@ -90,6 +90,7 @@ changes:
 +server scrambles needs link to load
 +behavior when recieving identical averages
 +replaced TableSorter with built in functionality
++CCTClient title will revert to normal after focus is regained after receiving a message while unfocused
 
 TODO:
 

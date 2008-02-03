@@ -160,6 +160,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 			public void windowActivated(WindowEvent ae) {
 				isFocused = true;
 				flasher.stop();
+				frame.setTitle(title);
 			}
 
 			public void windowDeactivated(WindowEvent ae) {
