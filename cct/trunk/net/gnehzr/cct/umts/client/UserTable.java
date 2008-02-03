@@ -64,6 +64,19 @@ public class UserTable extends AbstractTableModel {
 	}
 
 	public Class<?> getColumnClass(int c) {
-		return getValueAt(0, c).getClass();
+		switch(c) {
+			case 0:
+				return User.NULLUSER.getName().getClass();
+			case 1:
+				return User.NULLUSER.getCurrentTime().getClass();
+			case 2:
+				return User.NULLUSER.getLastTime().getClass();
+			case 3:
+				return User.NULLUSER.getCurrentAverage().getClass();
+			case 4:
+				return User.NULLUSER.getBestAverage().getClass();
+			default:
+				return null;
+		}
 	}
 }

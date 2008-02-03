@@ -109,9 +109,8 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 		styles.addRule(".system {color: #00ff00}");
 		styles.addRule(".timestamp {color: #0000ff}");
 
-		TableSorter sorter = new TableSorter(users);
-		userTable = new JTable(sorter);
-		sorter.setTableHeader(userTable.getTableHeader());
+		userTable = new JTable(users);
+		userTable.setAutoCreateRowSorter(true);
 		userTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		userTable.addMouseListener(this);
 
