@@ -2,18 +2,16 @@
 <project default="dist">
 	<property name="dist" location="dist" />
 	<target name="dist" depends="compile, compress" description="Main distribution">
-		<echo>
-			Building CALCubeTimer.jar
-		</echo>
+		<echo>Building CALCubeTimer.jar</echo>
 	</target>
 
 	<target name="compile" description="Compilation target">
-		<javac srcdir="net/" />
-		<javac srcdir="scramblePlugins/" />
+		<javac srcdir="say/swing/"/>
+		<javac srcdir="net/" classpath="substance.jar:mailapi.jar"/>
+		<javac srcdir="scramblePlugins/"/>
 	</target>
 
 	<target name="compress" description="Compression target">
-
 		<delete quiet="true" includeemptydirs="true">
 			<fileset dir="${dist}" includes="**" />
 		</delete>
@@ -33,5 +31,11 @@
 				<include name="documentation/*" />
 			</fileset>
 		</copy>
+	</target>
+
+	<target name="clean" description="Clean">
+		<delete>
+			<fileset dir="." includes="**/*.class"/>
+		</delete>
 	</target>
 </project>
