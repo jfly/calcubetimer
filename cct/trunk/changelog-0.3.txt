@@ -127,3 +127,15 @@ cleanup:
 Server stuff:
 -latency on server - this is so that clients don't flood the server with too many time messages
 -urgent hint for waiting messages on server? nonexistent in java as of 1.6
+
+possible puzzles:
+pyraminx
+skewb
+cuboids
+master pyraminx
+dogic
+missing link
+octahedron
+skewb ultimate
+platypus
+
