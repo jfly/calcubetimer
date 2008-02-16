@@ -141,10 +141,16 @@ public class ScramblePlugin {
 					break;
 				}
 			}
+			ScrambleCustomization sc;
 			if(scramCustomization != null) {
 				if(customizationName == null)
 					scrambleCustomizations.remove(scramCustomization);
-				scrambleCustomizations.add(0, new ScrambleCustomization(scramCustomization.getScrambleVariation(), customizationName));
+				sc = new ScrambleCustomization(scramCustomization.getScrambleVariation(), customizationName);
+				scrambleCustomizations.add(0, sc);
+			}
+			else if(variationName.equals(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation().toString())){
+				sc = new ScrambleCustomization(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation(), customizationName);
+				scrambleCustomizations.add(0, sc);
 			}
 		}
 		return scrambleCustomizations;

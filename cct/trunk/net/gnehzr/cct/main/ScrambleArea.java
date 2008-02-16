@@ -78,6 +78,11 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 			"</style></head><body>";
 		String s = newScramble.toString().trim();
 		URL currScram = null;
+		try {
+			currScram = new URL("http://");
+		} catch(MalformedURLException e) {
+			e.printStackTrace();
+		}
 		String plainScramble = "";
 		Matcher m;
 		int num = 0;
@@ -110,6 +115,14 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 			try{
 				//parts[0] = http://#, parts[1] = scramble
 				String[] parts = url.toString().split(" ", 2);
+				if(parts.length < 2){
+					scramblePopup.setVisible(false);
+					scramblePane.setDocument(new HTMLDocument());
+					scramblePane.setText("");
+					scramblePane.setCaretPosition(0);
+					return;
+				}
+				scramblePopup.setVisible(true);
 				int moveNum = Integer.parseInt(parts[0].substring(7));
 				Scramble s = sp.importScramble(sv.toString(), parts[1], sp.getEnabledPuzzleAttributes());
 				scramblePopup.setScramble(s, sp);
@@ -133,10 +146,18 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 	}
 
 	private void setProperSize() {
+		if(scramblePane.getDocument().getLength() == 0){
+			setPreferredSize(new Dimension(0, 0));
+			return;
+		}
 		try {
 			Rectangle r = scramblePane.modelToView(scramblePane.getDocument().getLength());
-			if(r != null)
+			if(r != null){
 				setPreferredSize(new Dimension(0, r.y + r.height + 20));
+			}
+			else{
+				setPreferredSize(new Dimension(0, 100)); //this makes it do it again, r != null after
+			}
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}

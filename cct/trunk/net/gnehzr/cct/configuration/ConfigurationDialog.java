@@ -76,8 +76,6 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 
 import say.swing.JFontChooser;
 
-//TODO https://substance.dev.java.net/docs/clientprops/WindowModified.html
-//https://substance.dev.java.net/docs/clientprops/TabbedPaneCloseButtonsModifiedAnimation.html
 @SuppressWarnings("serial")
 public class ConfigurationDialog extends JDialog implements KeyListener, MouseListener, ActionListener, ColorListener, ItemListener {
 	private final static float DISPLAY_FONT_SIZE = 20;
