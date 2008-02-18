@@ -122,7 +122,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 					scramblePane.setCaretPosition(0);
 					return;
 				}
-				scramblePopup.setVisible(true);
+				scramblePopup.setVisible(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false));
 				int moveNum = Integer.parseInt(parts[0].substring(7));
 				Scramble s = sp.importScramble(sv.toString(), parts[1], sp.getEnabledPuzzleAttributes());
 				scramblePopup.setScramble(s, sp);
