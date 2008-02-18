@@ -13,7 +13,8 @@ import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 public class VariableKey<H> {
-	public static final VariableKey<Integer> RA_SIZE = new VariableKey<Integer>("Statistics_raSize");
+	public static final VariableKey<Integer> RA_SIZE0 = new VariableKey<Integer>("Statistics_raSize0");
+	public static final VariableKey<Integer> RA_SIZE1 = new VariableKey<Integer>("Statistics_raSize1");
 	public static final VariableKey<Integer> SWITCH_THRESHOLD = new VariableKey<Integer>("Stackmat_switchThreshold");
 	public static final VariableKey<Integer> MIXER_NUMBER = new VariableKey<Integer>("Stackmat_mixerNumber");
 	public static final VariableKey<Integer> SPLIT_KEY = new VariableKey<Integer>("Splits_splitKey");

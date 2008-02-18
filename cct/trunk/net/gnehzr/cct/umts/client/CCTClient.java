@@ -230,7 +230,7 @@ public class CCTClient {
 	}
 
 	public void sendAverage(String s, Statistics stats){
-		int num = Math.min(stats.getRASize(), stats.getSize());
+		int num = Math.min(stats.getRASize(0), stats.getSize());
 		s = Protocol.DATA_AVERAGE + s;
 		for(int i = stats.getSize() - num; i < stats.getSize(); i++){
 			s += Protocol.DELIMITER + stats.get(i).toString();
@@ -244,9 +244,9 @@ public class CCTClient {
 	}
 
 	public void sendBestAverage(String s, Statistics stats){
-		int num = Math.min(stats.getRASize(), stats.getSize());
+		int num = Math.min(stats.getRASize(0), stats.getSize());
 		s = Protocol.DATA_BEST_AVERAGE + s;
-		for(int i = stats.getIndexOfBestRA(), c = 0; i < stats.getSize() && c < num; i++, c++){
+		for(int i = stats.getIndexOfBestRA(0), c = 0; i < stats.getSize() && c < num; i++, c++){
 			s += Protocol.DELIMITER + stats.get(i).toString();
 		}
 

@@ -169,8 +169,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	private HashMap<String, AbstractAction> actionMap;
-	private StatisticsAction currentAverageAction;
-	private StatisticsAction rollingAverageAction;
+	private StatisticsAction currentAverageAction0;
+	private StatisticsAction rollingAverageAction0;
+	private StatisticsAction currentAverageAction1;
+	private StatisticsAction rollingAverageAction1;
 	private StatisticsAction sessionAverageAction;
 	private AddTimeAction addTimeAction;
 	private ImportScramblesAction importScramblesAction;
@@ -209,11 +211,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		resetAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
 		actionMap.put("reset", resetAction);
 
-		currentAverageAction = new StatisticsAction(this, stats, Statistics.averageType.CURRENT);
-		actionMap.put("currentaverage", currentAverageAction);
-		rollingAverageAction = new StatisticsAction(this, stats, Statistics.averageType.RA);
-		actionMap.put("bestaverage", rollingAverageAction);
-		sessionAverageAction = new StatisticsAction(this, stats, Statistics.averageType.SESSION);
+		currentAverageAction0 = new StatisticsAction(this, stats, Statistics.averageType.CURRENT, 0);
+		actionMap.put("currentaverage0", currentAverageAction0);
+		rollingAverageAction0 = new StatisticsAction(this, stats, Statistics.averageType.RA, 0);
+		actionMap.put("bestaverage0", rollingAverageAction0);
+		currentAverageAction1 = new StatisticsAction(this, stats, Statistics.averageType.CURRENT, 1);
+		actionMap.put("currentaverage1", currentAverageAction1);
+		rollingAverageAction1 = new StatisticsAction(this, stats, Statistics.averageType.RA, 1);
+		actionMap.put("bestaverage1", rollingAverageAction1);
+		sessionAverageAction = new StatisticsAction(this, stats, Statistics.averageType.SESSION, 0);
 		actionMap.put("sessionaverage", sessionAverageAction);
 
 		flipFullScreenAction = new FlipFullScreenAction(this);
@@ -838,11 +844,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	} //}}}
 
 	private void repaintTimes() {
-		sendAverage(stats.average(Statistics.averageType.CURRENT));
-		sendBestAverage(stats.average(Statistics.averageType.RA));
-		currentAverageAction.setEnabled(stats.isValid(Statistics.averageType.CURRENT));
-		rollingAverageAction.setEnabled(stats.isValid(Statistics.averageType.RA));
-		sessionAverageAction.setEnabled(stats.isValid(Statistics.averageType.SESSION));
+		sendAverage(stats.average(Statistics.averageType.CURRENT, 0));
+		sendBestAverage(stats.average(Statistics.averageType.RA, 0));
+		currentAverageAction0.setEnabled(stats.isValid(Statistics.averageType.CURRENT, 0));
+		rollingAverageAction0.setEnabled(stats.isValid(Statistics.averageType.RA, 0));
+		currentAverageAction1.setEnabled(stats.isValid(Statistics.averageType.CURRENT, 1));
+		rollingAverageAction1.setEnabled(stats.isValid(Statistics.averageType.RA, 1));
+		sessionAverageAction.setEnabled(stats.isValid(Statistics.averageType.SESSION, 0));
 
 		//make the new time visible
 		Rectangle newTimeRect = timesList.getCellRect(stats.getRowCount() - 1, 0, true);
@@ -1506,8 +1514,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 @SuppressWarnings("serial")
 class StatisticsAction extends AbstractAction{
 	private StatsDialogHandler statsHandler;
-	public StatisticsAction(CALCubeTimer cct, Statistics stats, Statistics.averageType type){
-		statsHandler = new StatsDialogHandler(cct, stats, type);
+	public StatisticsAction(CALCubeTimer cct, Statistics stats, Statistics.averageType type, int num){
+		statsHandler = new StatsDialogHandler(cct, stats, type, num);
 	}
 
 	public void actionPerformed(ActionEvent e){

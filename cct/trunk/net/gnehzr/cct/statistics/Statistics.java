@@ -37,14 +37,14 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 	}
 
 	private ArrayList<SolveTime> times;
-	private ArrayList<Double> averages;
-	private ArrayList<Double> sds;
+	private ArrayList<Double>[] averages;
+	private ArrayList<Double>[] sds;
 
-	private int indexOfBestRA;
+	private int indexOfBestRA[];
 
 	private ArrayList<SolveTime> sorttimes;
-	private ArrayList<Double> sortaverages;
-	private ArrayList<Double> sortsds;
+	private ArrayList<Double>[] sortaverages;
+	private ArrayList<Double>[] sortsds;
 
 	private double runningTotal;
 	private double curSessionAvg;
@@ -55,26 +55,44 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 	private int numPlus2s;
 	private int numDnfs;
 
-	private int curRASize;
+	private int curRASize[];
+
+	private int numSizes;
 
 	public Statistics() {
 		Configuration.addConfigurationChangeListener(this);
-		curRASize = Configuration.getInt(VariableKey.RA_SIZE, false);
+
+		numSizes = 2;
+
+		curRASize = new int[numSizes];
+		curRASize[0] = Configuration.getInt(VariableKey.RA_SIZE0, false);
+		curRASize[1] = Configuration.getInt(VariableKey.RA_SIZE1, false);
+
+		averages = new ArrayList[numSizes];
+		sds = new ArrayList[numSizes];
+		sortaverages = new ArrayList[numSizes];
+		sortsds = new ArrayList[numSizes];
+		indexOfBestRA = new int[numSizes];
+
 		initialize();
 	}
 
 	private void initialize() {
 		times = new ArrayList<SolveTime>();
-		averages = new ArrayList<Double>();
-		sds = new ArrayList<Double>();
 		sorttimes = new ArrayList<SolveTime>();
-		sortaverages = new ArrayList<Double>();
-		sortsds = new ArrayList<Double>();
+
+		for(int i = 0; i < numSizes; i++){
+			averages[i] = new ArrayList<Double>();
+			sds[i] = new ArrayList<Double>();
+			sortaverages[i] = new ArrayList<Double>();
+			sortsds[i] = new ArrayList<Double>();
+			indexOfBestRA[i] = -1;
+		}
+
 		runningTotal = runningSquareTotal = 0;
 		curSessionAvg = Double.MAX_VALUE;
 		curSessionSD = Double.MAX_VALUE;
 		numPops = numPlus2s = numDnfs = 0;
-		indexOfBestRA = -1;
 	}
 
 	public void clear() {
@@ -122,8 +140,10 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		for (i = 0; i < sorttimes.size() && sorttimes.get(i).compareTo(s) <= 0; i++) ;
 		sorttimes.add(i, s);
 
-		if (times.size() >= curRASize) {
-			calculateCurrentAverage();
+		for(int k = 0; k < numSizes; k++){
+			if (times.size() >= curRASize[k]) {
+				calculateCurrentAverage(k);
+			}
 		}
 
 		if (s.isPop())
@@ -144,42 +164,43 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		}
 	}
 
-	private void calculateCurrentAverage() {
-		double avg = calculateRA(times.size() - curRASize, times.size());
+	private void calculateCurrentAverage(int k) {
+		double avg = calculateRA(times.size() - curRASize[k], times.size(), k);
 		if (avg > 0) {
 			Double s;
 			int i;
 
 			Double av = new Double(avg);
-			averages.add(av);
+			averages[k].add(av);
 
 			if (avg == Double.MAX_VALUE) {
 				s = new Double(Double.MAX_VALUE);
-				sds.add(s);
-				sortsds.add(s);
+				sds[k].add(s);
+				sortsds[k].add(s);
 			} else {
-				double sd = calculateRSD(times.size() - curRASize, times.size());
+				double sd = calculateRSD(times.size() - curRASize[k], times.size(), k);
 				s = new Double(sd);
-				sds.add(s);
+				sds[k].add(s);
 
-				for (i = 0; i < sortsds.size() && sortsds.get(i).compareTo(s) <= 0; i++) ;
-				sortsds.add(i, s);
+				for (i = 0; i < sortsds[k].size() && sortsds[k].get(i).compareTo(s) <= 0; i++) ;
+				sortsds[k].add(i, s);
 			}
 
-			for (i = 0; i < sortaverages.size() && sortaverages.get(i).compareTo(av) < 0; i++) ;
-			sortaverages.add(i, av);
+			for (i = 0; i < sortaverages[k].size() && sortaverages[k].get(i).compareTo(av) < 0; i++) ;
+			sortaverages[k].add(i, av);
 			if (i == 0){
-				int newbest = averages.size() - 1;
-				if(indexOfBestRA < 0 || averages.get(indexOfBestRA) != averages.get(newbest))
-					indexOfBestRA = newbest;
+				int newbest = averages[k].size() - 1;
+				if(indexOfBestRA[k] < 0 || averages[k].get(indexOfBestRA[k]) != averages[k].get(newbest)){
+					indexOfBestRA[k] = newbest;
+				}
 				else{
-					if(sds.get(indexOfBestRA) > sds.get(newbest)) indexOfBestRA = newbest;
-					else if(sds.get(indexOfBestRA) == sds.get(newbest)){
-						if(bestTimeOfAverage(indexOfBestRA) > bestTimeOfAverage(newbest))
-							indexOfBestRA = newbest;
-						else if(bestTimeOfAverage(indexOfBestRA) == bestTimeOfAverage(newbest)){
-							if(worstTimeOfAverage(indexOfBestRA) > worstTimeOfAverage(newbest))
-								indexOfBestRA = newbest;
+					if(sds[k].get(indexOfBestRA[k]) > sds[k].get(newbest)) indexOfBestRA[k] = newbest;
+					else if(sds[k].get(indexOfBestRA[k]) == sds[k].get(newbest)){
+						if(bestTimeOfAverage(indexOfBestRA[k], k) > bestTimeOfAverage(newbest, k))
+							indexOfBestRA[k] = newbest;
+						else if(bestTimeOfAverage(indexOfBestRA[k], k) == bestTimeOfAverage(newbest, k)){
+							if(worstTimeOfAverage(indexOfBestRA[k], k) > worstTimeOfAverage(newbest, k))
+								indexOfBestRA[k] = newbest;
 						}
 					}
 				}
@@ -187,7 +208,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		}
 	}
 
-	private double calculateRA(int a, int b) {
+	private double calculateRA(int a, int b, int num) {
 		if (a < 0)
 			return -1;
 		int invalid = 0;
@@ -205,10 +226,10 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 			if (hi < temp)
 				hi = temp;
 		}
-		return (rt - lo - hi) / (curRASize - 2);
+		return (rt - lo - hi) / (curRASize[num] - 2);
 	}
 
-	private double calculateRSD(int a, int b) {
+	private double calculateRSD(int a, int b, int num) {
 		if (a < 0)
 			return -1;
 		double lo, hi, rt;
@@ -223,8 +244,8 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 			if (hi < temp)
 				hi = temp;
 		}
-		temp = averages.get(averages.size() - 1);
-		return Math.sqrt((rt - lo - hi) / (curRASize - 2) - temp * temp);
+		temp = averages[num].get(averages[num].size() - 1);
+		return Math.sqrt((rt - lo - hi) / (curRASize[num] - 2) - temp * temp);
 	}
 
 	private void refresh() {
@@ -249,27 +270,34 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 			return times.get(n);
 	}
 
-	public int getRASize() {
-		return curRASize;
+	public int getRASize(int num) {
+		return curRASize[num];
 	}
 
 	public void configurationChanged() {
-		int raSize = Configuration.getInt(VariableKey.RA_SIZE, false);
-		if (raSize != curRASize) {
-			curRASize = raSize;
-			refresh();
+		boolean refresh = false;
+		int raSize = Configuration.getInt(VariableKey.RA_SIZE0, false);
+		if (raSize != curRASize[0]) {
+			curRASize[0] = raSize;
+			refresh = true;
 		}
+		raSize = Configuration.getInt(VariableKey.RA_SIZE1, false);
+		if (raSize != curRASize[1]) {
+			curRASize[1] = raSize;
+			refresh = true;
+		}
+		if(refresh) refresh();
 	}
 
-	public String average(averageType type) {
+	public String average(averageType type, int num) {
 		double average;
 		try {
 			if (type == averageType.SESSION)
 				average = curSessionAvg;
 			else if (type == averageType.RA)
-				average = averages.get(indexOfBestRA).doubleValue();
+				average = averages[num].get(indexOfBestRA[num]).doubleValue();
 			else if (type == averageType.CURRENT)
-				average = averages.get(averages.size() - 1).doubleValue();
+				average = averages[num].get(averages[num].size() - 1).doubleValue();
 			else
 				return "Invalid average type.";
 		} catch (IndexOutOfBoundsException e) {
@@ -285,15 +313,15 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		return Utils.clockFormat(average, Configuration.getBoolean(VariableKey.CLOCK_FORMAT, false));
 	}
 
-	public boolean isValid(averageType type) {
+	public boolean isValid(averageType type, int num) {
 		double average;
 		try {
 			if (type == averageType.SESSION)
 				average = curSessionAvg;
 			else if (type == averageType.RA)
-				average = sortaverages.get(0).doubleValue();
+				average = sortaverages[num].get(0).doubleValue();
 			else if (type == averageType.CURRENT)
-				average = averages.get(averages.size() - 1).doubleValue();
+				average = averages[num].get(averages[num].size() - 1).doubleValue();
 			else
 				return false;
 		} catch (IndexOutOfBoundsException e) {
@@ -314,33 +342,33 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		return times.subList(a, b).listIterator();
 	}
 
-	private ListIterator<SolveTime> getSublist(averageType type) {
-		int[] bounds = getBounds(type);
+	private ListIterator<SolveTime> getSublist(averageType type, int num) {
+		int[] bounds = getBounds(type, num);
 		return times.subList(bounds[0], bounds[1]).listIterator();
 	}
 
-	private int[] getBounds(averageType type) {
+	private int[] getBounds(averageType type, int num) {
 		int lower, upper;
 		if (type == averageType.SESSION) {
 			lower = 0;
 			upper = times.size();
 		} else {
 			if (type == averageType.CURRENT)
-				lower = averages.size() - 1;
+				lower = averages[num].size() - 1;
 			else
-				lower = indexOfBestRA;
+				lower = indexOfBestRA[num];
 
 			if (lower < 0)
 				lower = 0;
-			if ((upper = lower + curRASize) > times.size())
+			if ((upper = lower + curRASize[num]) > times.size())
 				upper = times.size();
 		}
 		return new int[] { lower, upper };
 	}
 
-	public boolean containsTime(SolveTime solve, averageType type) {
+	public boolean containsTime(SolveTime solve, averageType type, int num) {
 		int indexOfSolve = times.indexOf(solve);
-		int bounds[] = getBounds(type);
+		int bounds[] = getBounds(type, num);
 		return indexOfSolve >= bounds[0] && indexOfSolve < bounds[1];
 	}
 
@@ -359,11 +387,11 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		return new SolveTime[] { best, worst };
 	}
 
-	public SolveTime[] getBestAndWorstTimes(averageType type) {
+	public SolveTime[] getBestAndWorstTimes(averageType type, int num) {
 		SolveTime best = SolveTime.WORST;
 		SolveTime worst = SolveTime.BEST;
 		boolean ignoreInfinite = type == averageType.SESSION;
-		ListIterator<SolveTime> iter = getSublist(type);
+		ListIterator<SolveTime> iter = getSublist(type, num);
 		while (iter.hasNext()) {
 			SolveTime time = iter.next();
 			if (best.compareTo(time) >= 0)
@@ -376,11 +404,11 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		return new SolveTime[] { best, worst };
 	}
 
-	public String toStatsString(averageType type, boolean showSplits) {
+	public String toStatsString(averageType type, boolean showSplits, int num) {
 		SolveTime[] bestAndWorst = ((type == averageType.SESSION) ? new SolveTime[] {
 				null, null }
-				: getBestAndWorstTimes(type));
-		return toStatsStringHelper(getSublist(type), bestAndWorst[0],
+				: getBestAndWorstTimes(type, num));
+		return toStatsStringHelper(getSublist(type, num), bestAndWorst[0],
 				bestAndWorst[1], showSplits);
 	}
 
@@ -400,18 +428,24 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 				+ toStatsStringHelper(times, best, worst, showSplits);
 	}
 
-	public String toTerseString(int n) {
-		SolveTime[] bestAndWorst = getBestAndWorstTimes(n, n + curRASize);
-		ListIterator<SolveTime> list = getSublist(n, n + curRASize);
+	public String toTerseString(int n, int num) {
+		if(num < 0) num = 0;
+		else if(num >= numSizes) num = numSizes - 1;
+
+		SolveTime[] bestAndWorst = getBestAndWorstTimes(n, n + curRASize[num]);
+		ListIterator<SolveTime> list = getSublist(n, n + curRASize[num]);
 		if (list.hasNext())
 			return toTerseStringHelper(list, bestAndWorst[0], bestAndWorst[1]);
 		else
 			return "N/A";
 	}
 
-	public String toTerseString(averageType type) {
-		SolveTime[] bestAndWorst = getBestAndWorstTimes(type);
-		ListIterator<SolveTime> list = getSublist(type);
+	public String toTerseString(averageType type, int num) {
+		if(num < 0) num = 0;
+		else if(num >= numSizes) num = numSizes - 1;
+
+		SolveTime[] bestAndWorst = getBestAndWorstTimes(type, num);
+		ListIterator<SolveTime> list = getSublist(type, num);
 		if (list.hasNext())
 			return toTerseStringHelper(list, bestAndWorst[0], bestAndWorst[1]);
 		else
@@ -427,27 +461,27 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 						+ toTerseStringHelper(printMe, best, worst) : "");
 	}
 
-	public String standardDeviation(averageType type) {
+	public String standardDeviation(averageType type, int num) {
 		double sd = Double.MAX_VALUE;
 		if (type == averageType.SESSION)
 			sd = curSessionSD;
 		else if (type == averageType.RA)
-			sd = sds.get(indexOfBestRA).doubleValue();
+			sd = sds[num].get(indexOfBestRA[num]).doubleValue();
 		else if (type == averageType.CURRENT)
-			sd = sds.get(sds.size() - 1).doubleValue();
+			sd = sds[num].get(sds[num].size() - 1).doubleValue();
 		return Utils.format(sd);
 	}
 
-	private double bestTimeOfAverage(int n) {
-		return getBestAndWorstTimes(n, n + curRASize)[0].secondsValue();
+	private double bestTimeOfAverage(int n, int num) {
+		return getBestAndWorstTimes(n, n + curRASize[num])[0].secondsValue();
 	}
 
-	private double worstTimeOfAverage(int n) {
-		return getBestAndWorstTimes(n, n + curRASize)[1].secondsValue();
+	private double worstTimeOfAverage(int n, int num) {
+		return getBestAndWorstTimes(n, n + curRASize[num])[1].secondsValue();
 	}
 
-	public int getIndexOfBestRA(){
-		return indexOfBestRA;
+	public int getIndexOfBestRA(int num){
+		return indexOfBestRA[num];
 	}
 
 	// access methods
@@ -489,24 +523,30 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 			return times.get(n).secondsValue();
 	}
 
-	public double getAverage(int n) {
-		if (n < 0)
-			n = averages.size() + n;
+	public double getAverage(int n, int num) {
+		if(num < 0) num = 0;
+		else if(num >= numSizes) num = numSizes - 1;
 
-		if (averages.size() == 0 || n < 0 || n >= averages.size())
+		if (n < 0)
+			n = averages[num].size() + n;
+
+		if (averages[num].size() == 0 || n < 0 || n >= averages[num].size())
 			return Double.MAX_VALUE;
 		else
-			return averages.get(n).doubleValue();
+			return averages[num].get(n).doubleValue();
 	}
 
-	public double getSD(int n) {
-		if (n < 0)
-			n = sds.size() + n;
+	public double getSD(int n, int num) {
+		if(num < 0) num = 0;
+		else if(num >= numSizes) num = numSizes - 1;
 
-		if (sds.size() == 0 || n < 0 || n >= sds.size())
+		if (n < 0)
+			n = sds[num].size() + n;
+
+		if (sds[num].size() == 0 || n < 0 || n >= sds[num].size())
 			return Double.MAX_VALUE;
 		else
-			return sds.get(n).doubleValue();
+			return sds[num].get(n).doubleValue();
 	}
 
 	public double getSortTime(int n) {
@@ -519,70 +559,91 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 			return sorttimes.get(n).secondsValue();
 	}
 
-	public double getSortAverage(int n) {
-		if (n < 0)
-			n = sortaverages.size() + n;
+	public double getSortAverage(int n, int num) {
+		if(num < 0) num = 0;
+		else if(num >= numSizes) num = numSizes - 1;
 
-		if (sortaverages.size() == 0 || n < 0 || n >= sortaverages.size())
+		if (n < 0)
+			n = sortaverages[num].size() + n;
+
+		if (sortaverages[num].size() == 0 || n < 0 || n >= sortaverages[num].size())
 			return Double.MAX_VALUE;
 		else
-			return sortaverages.get(n).doubleValue();
+			return sortaverages[num].get(n).doubleValue();
 	}
 
-	public double getSortSD(int n) {
-		if (n < 0)
-			n = sortsds.size() + n;
+	public double getSortSD(int n, int num) {
+		if(num < 0) num = 0;
+		else if(num >= numSizes) num = numSizes - 1;
 
-		if (sortsds.size() == 0 || n < 0 || n >= sortsds.size())
+		if (n < 0)
+			n = sortsds[num].size() + n;
+
+		if (sortsds[num].size() == 0 || n < 0 || n >= sortsds[num].size())
 			return Double.MAX_VALUE;
 		else
-			return sortsds.get(n).doubleValue();
+			return sortsds[num].get(n).doubleValue();
 	}
 
-	public double getSortAverageSD(int n) {
-		if (n < 0)
-			n = sortaverages.size() + n;
+	public double getSortAverageSD(int n, int num) {
+		if(num < 0) num = 0;
+		else if(num >= numSizes) num = numSizes - 1;
 
-		if (sortaverages.size() == 0 || n < 0 || n >= sortaverages.size())
+		if (n < 0)
+			n = sortaverages[num].size() + n;
+
+		if (sortaverages[num].size() == 0 || n < 0 || n >= sortaverages[num].size())
 			return Double.MAX_VALUE;
 		else
-			return sds.get(averages.indexOf(sortaverages.get(n))).doubleValue();
+			return sds[num].get(averages[num].indexOf(sortaverages[num].get(n))).doubleValue();
 	}
 
-	public double getBestTimeOfAverage(int n) {
-		if (n < 0)
-			n = averages.size() + n;
+	public double getBestTimeOfAverage(int n, int num) {
+		if(num < 0) num = 0;
+		else if(num >= numSizes) num = numSizes - 1;
 
-		if (averages.size() == 0 || n < 0 || n >= averages.size())
+		if (n < 0)
+			n = averages[num].size() + n;
+
+		if (averages[num].size() == 0 || n < 0 || n >= averages[num].size())
 			return Double.MAX_VALUE;
-		return bestTimeOfAverage(n);
+		return bestTimeOfAverage(n, num);
 	}
 
-	public double getWorstTimeOfAverage(int n) {
-		if (n < 0)
-			n = averages.size() + n;
+	public double getWorstTimeOfAverage(int n, int num) {
+		if(num < 0) num = 0;
+		else if(num >= numSizes) num = numSizes - 1;
 
-		if (averages.size() == 0 || n < 0 || n >= averages.size())
+		if (n < 0)
+			n = averages[num].size() + n;
+
+		if (averages[num].size() == 0 || n < 0 || n >= averages[num].size())
 			return Double.MAX_VALUE;
-		return worstTimeOfAverage(n);
+		return worstTimeOfAverage(n, num);
 	}
 
-	public double getBestTimeOfSortAverage(int n) {
-		if (n < 0)
-			n = sortaverages.size() + n;
+	public double getBestTimeOfSortAverage(int n, int num) {
+		if(num < 0) num = 0;
+		else if(num >= numSizes) num = numSizes - 1;
 
-		if (sortaverages.size() == 0 || n < 0 || n >= sortaverages.size())
+		if (n < 0)
+			n = sortaverages[num].size() + n;
+
+		if (sortaverages[num].size() == 0 || n < 0 || n >= sortaverages[num].size())
 			return Double.MAX_VALUE;
-		return bestTimeOfAverage(averages.indexOf(sortaverages.get(n)));
+		return bestTimeOfAverage(averages[num].indexOf(sortaverages[num].get(n)), num);
 	}
 
-	public double getWorstTimeOfSortAverage(int n) {
-		if (n < 0)
-			n = sortaverages.size() + n;
+	public double getWorstTimeOfSortAverage(int n, int num) {
+		if(num < 0) num = 0;
+		else if(num >= numSizes) num = numSizes - 1;
 
-		if (sortaverages.size() == 0 || n < 0 || n >= sortaverages.size())
+		if (n < 0)
+			n = sortaverages[num].size() + n;
+
+		if (sortaverages[num].size() == 0 || n < 0 || n >= sortaverages[num].size())
 			return Double.MAX_VALUE;
-		return worstTimeOfAverage(averages.indexOf(sortaverages.get(n)));
+		return worstTimeOfAverage(averages[num].indexOf(sortaverages[num].get(n)), num);
 	}
 
 	public double getProgressTime() {
@@ -599,14 +660,17 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		}
 	}
 
-	public double getProgressAverage() {
-		if (averages.size() < 2)
+	public double getProgressAverage(int num) {
+		if(num < 0) num = 0;
+		else if(num >= numSizes) num = numSizes - 1;
+
+		if (averages[num].size() < 2)
 			return Double.MAX_VALUE;
 		else {
-			double t1 = getAverage(-1);
+			double t1 = getAverage(-1, num);
 			if (t1 == Double.MAX_VALUE)
 				return Double.MAX_VALUE;
-			double t2 = getAverage(-2);
+			double t2 = getAverage(-2, num);
 			if (t2 == Double.MAX_VALUE)
 				return Double.MAX_VALUE;
 			return t1 - t2;
@@ -617,100 +681,102 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		return getSortTime(0);
 	}
 
-	public double getBestAverage() {
-		return getSortAverage(0);
+	public double getBestAverage(int num) {
+		return getSortAverage(0, num);
 	}
 
-	public double getBestSD() {
-		return getSortSD(0);
+	public double getBestSD(int num) {
+		return getSortSD(0, num);
 	}
 
-	public double getBestAverageSD() {
-		return getSortAverageSD(0);
+	public double getBestAverageSD(int num) {
+		return getSortAverageSD(0, num);
 	}
 
 	public double getWorstTime() {
 		return getSortTime(-1);
 	}
 
-	public double getWorstAverage() {
-		return getSortAverage(-1);
+	public double getWorstAverage(int num) {
+		return getSortAverage(-1, num);
 	}
 
-	public double getWorstSD() {
-		return getSortSD(-1);
+	public double getWorstSD(int num) {
+		return getSortSD(-1, num);
 	}
 
-	public double getWorstAverageSD() {
-		return getSortAverageSD(-1);
+	public double getWorstAverageSD(int num) {
+		return getSortAverageSD(-1, num);
 	}
 
 	public double getCurrentTime() {
 		return getTime(-1);
 	}
 
-	public double getCurrentAverage() {
-		return getAverage(-1);
+	public double getCurrentAverage(int num) {
+		return getAverage(-1, num);
 	}
 
-	public double getCurrentSD() {
-		return getSD(-1);
+	public double getCurrentSD(int num) {
+		return getSD(-1, num);
 	}
 
 	public double getLastTime() {
 		return getTime(-2);
 	}
 
-	public double getLastAverage() {
-		return getAverage(-2);
+	public double getLastAverage(int num) {
+		return getAverage(-2, num);
 	}
 
-	public double getLastSD() {
-		return getSD(-2);
+	public double getLastSD(int num) {
+		return getSD(-2, num);
 	}
 
-	public double getBestTimeOfCurrentAverage() {
-		return getBestTimeOfAverage(-1);
+	public double getBestTimeOfCurrentAverage(int num) {
+		return getBestTimeOfAverage(-1, num);
 	}
 
-	public double getWorstTimeOfCurrentAverage() {
-		return getWorstTimeOfAverage(-1);
+	public double getWorstTimeOfCurrentAverage(int num) {
+		return getWorstTimeOfAverage(-1, num);
 	}
 
-	public double getBestTimeOfBestAverage() {
-		return getBestTimeOfSortAverage(0);
+	public double getBestTimeOfBestAverage(int num) {
+		return getBestTimeOfSortAverage(0, num);
 	}
 
-	public double getWorstTimeOfBestAverage() {
-		return getWorstTimeOfSortAverage(0);
+	public double getWorstTimeOfBestAverage(int num) {
+		return getWorstTimeOfSortAverage(0, num);
 	}
 
-	public double getBestTimeOfWorstAverage() {
-		return getBestTimeOfSortAverage(-1);
+	public double getBestTimeOfWorstAverage(int num) {
+		return getBestTimeOfSortAverage(-1, num);
 	}
 
-	public double getWorstTimeOfWorstAverage() {
-		return getWorstTimeOfSortAverage(-1);
+	public double getWorstTimeOfWorstAverage(int num) {
+		return getWorstTimeOfSortAverage(-1, num);
 	}
 
-	public String getBestAverageList() {
-		return toTerseString(averageType.RA);
+	public String getBestAverageList(int num) {
+		return toTerseString(averageType.RA, num);
 	}
 
-	public String getCurrentAverageList() {
-		return toTerseString(averageType.CURRENT);
+	public String getCurrentAverageList(int num) {
+		return toTerseString(averageType.CURRENT, num);
 	}
 
 	public String getSessionAverageList() {
-		return toTerseString(averageType.SESSION);
+		return toTerseString(averageType.SESSION, 0);
 	}
 
-	public String getWorstAverageList() {
-		if (sortaverages.size() >= 1)
-			return toTerseString(averages.indexOf(sortaverages.get(sortaverages
-					.size() - 1)));
+	public String getWorstAverageList(int num) {
+		if(num < 0) num = 0;
+		else if(num >= numSizes) num = numSizes - 1;
+
+		if (sortaverages[num].size() >= 1)
+			return toTerseString(averages[num].indexOf(sortaverages[num].get(sortaverages[num].size() - 1)), num);
 		else
-			return toTerseString(averageType.RA);
+			return toTerseString(averageType.RA, num);
 	}
 
 //	TableModel

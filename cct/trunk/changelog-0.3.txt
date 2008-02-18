@@ -92,6 +92,7 @@ changes:
 +replaced TableSorter with built in functionality
 +CCTClient title will revert to normal after focus is regained after receiving a message while unfocused
 +addTime will scroll to show the input box if it's hidden
++added support for multiple RASizes
 
 TODO:
 
@@ -119,6 +120,7 @@ scramble stuff:
 misc:
 -expand jtable of times to include {current, rolling} average column
 -java webstart? applet?
+-dynamic string multiple argument format
 
 cleanup:
 -generalize XML syntax (get rid of Dynamic... classes) UPDATE: no idea how to do this...???

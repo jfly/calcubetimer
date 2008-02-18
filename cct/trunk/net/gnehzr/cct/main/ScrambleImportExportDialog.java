@@ -76,7 +76,7 @@ public class ScrambleImportExportDialog extends JPanel implements ActionListener
 
 		if(!importing) { //Exporting, so length of scramble and number of scrambles are needed
 			scrambleLength = new JSpinnerWithText(selected.getLength(), 1, "Length of scrambles");
-			numberOfScrambles = new JSpinnerWithText(Configuration.getInt(VariableKey.RA_SIZE, false), 1, "Number of scrambles");
+			numberOfScrambles = new JSpinnerWithText(Configuration.getInt(VariableKey.RA_SIZE1, false), 1, "Number of scrambles");
 			subPanel.add(scrambleLength);
 			subPanel.add(numberOfScrambles);
 		}

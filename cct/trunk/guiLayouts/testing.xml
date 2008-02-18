@@ -21,15 +21,15 @@
 						<component alignmentX=".5" type="startStopPanel"/>
 						<panel layout="flow" hgap="5" vgap="5">
 							<panel layout="grid" cols="3">
-								<panel />
-								<panel />
-								<button action="requestScramble">Request Scramble</button>
 								<button action="addTime">Add Time</button>
 								<checkbox action="keyboardTiming"/>
 								<button action="reset">Reset</button>
-								<button action="currentAverage"><![CDATA[<html><font color="$$color_currentAverage$$">Current Average: $$currentAverage$$</font></html>]]></button>
-								<button action="bestAverage"><![CDATA[<html><font color="$$color_bestAverage$$">Best Rolling Average: $$bestAverage$$</font></html>]]></button>
+								<button action="currentAverage0"><![CDATA[<html><font color="$$color_currentAverage$$">Current Average: $$currentAverage0$$</font></html>]]></button>
+								<button action="bestAverage0"><![CDATA[<html><font color="$$color_bestAverage$$">Best Rolling Average: $$bestAverage0$$</font></html>]]></button>
 								<button action="sessionAverage">Session Average: $$sessionAverage</button>
+								<button action="currentAverage1"><![CDATA[<html><font color="$$color_currentAverage$$">Current Average: $$currentAverage1$$</font></html>]]></button>
+								<button action="bestAverage1"><![CDATA[<html><font color="$$color_bestAverage$$">Best Rolling Average: $$bestAverage1$$</font></html>]]></button>
+								<button action="requestScramble">Request Scramble</button>
 							</panel>
 						</panel>
 						<label alignmentX=".5">$$solves$$/$$attempts$$ (solves/attempts)</label>

@@ -38,11 +38,13 @@ public class StatsDialogHandler extends JDialog implements ActionListener {
 	private JTextAreaWithHistory textArea = null;
 	private Statistics times = null;
 	private Statistics.averageType type;
+	private int avgNum;
 
-	public StatsDialogHandler(JFrame owner, Statistics times, Statistics.averageType type) {
+	public StatsDialogHandler(JFrame owner, Statistics times, Statistics.averageType type, int num) {
 		super(owner, "Detailed statistics for " + type.toString(), true);
 		this.times = times;
 		this.type = type;
+		this.avgNum = num;
 
 		textArea = new JTextAreaWithHistory();
 		JScrollPane textScroller = new JScrollPane(textArea);
@@ -80,20 +82,20 @@ public class StatsDialogHandler extends JDialog implements ActionListener {
 	}
 
 	private void updateStats() {
-		SolveTime[] bestAndWorst = times.getBestAndWorstTimes(type);
+		SolveTime[] bestAndWorst = times.getBestAndWorstTimes(type, avgNum);
 		String stats = (type == Statistics.averageType.SESSION) ?
 				Configuration.getString(VariableKey.SESSION_STATISTICS, false) :
 				Configuration.getString(VariableKey.AVERAGE_STATISTICS, false);
 		stats = stats.replaceAll("\\$D", SDF.format(cal.getTime()));
 		stats = stats.replaceAll("\\$C", "" + times.getNumSolves());
 		stats = stats.replaceAll("\\$P", "" + times.getNumPops());
-		stats = stats.replaceAll("\\$A", times.average(type));
-		stats = stats.replaceAll("\\$S", times.standardDeviation(type));
+		stats = stats.replaceAll("\\$A", times.average(type, avgNum));
+		stats = stats.replaceAll("\\$S", times.standardDeviation(type, avgNum));
 		stats = stats.replaceAll("\\$B", bestAndWorst[0].toString());
 		stats = stats.replaceAll("\\$W", bestAndWorst[1].toString());
-		stats = stats.replaceAll("\\$T", times.toTerseString(type));
-		stats = stats.replaceAll("\\$I", times.toStatsString(type, false));
-		stats = stats.replaceAll("\\$i", times.toStatsString(type, Configuration.getBoolean(VariableKey.TIMING_SPLITS, false)));
+		stats = stats.replaceAll("\\$T", times.toTerseString(type, avgNum));
+		stats = stats.replaceAll("\\$I", times.toStatsString(type, false, avgNum));
+		stats = stats.replaceAll("\\$i", times.toStatsString(type, Configuration.getBoolean(VariableKey.TIMING_SPLITS, false), avgNum));
 
 		textArea.setText(stats);
 	}
@@ -160,8 +162,8 @@ public class StatsDialogHandler extends JDialog implements ActionListener {
 					Configuration.getString(VariableKey.SUNDAY_NAME, false),
 					Configuration.getString(VariableKey.SUNDAY_COUNTRY, false),
 					Configuration.getString(VariableKey.SUNDAY_EMAIL_ADDRESS, false),
-					times.average(type),
-					times.toTerseString(type),
+					times.average(type, avgNum),
+					times.toTerseString(type, avgNum),
 					Configuration.getString(VariableKey.SUNDAY_QUOTE, false),
 					Configuration.getBoolean(VariableKey.SHOW_EMAIL, false));
 		} else if (source == doneButton) {
