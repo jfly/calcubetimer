@@ -100,6 +100,7 @@ TODO:
 
 for release:
 -add gui option (disabled by default) to maintain focus whenever possible
+-BUG: fullscreen timing broken by hiding of scramble popup (TODO in ScrambleArea.java)
 -BUG: default sizing of gui is bad!
 -logging to xml database for each profile
 -internationalization (dates, too)
