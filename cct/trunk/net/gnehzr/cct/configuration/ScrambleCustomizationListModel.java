@@ -151,6 +151,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		if(custom.getCustomization() != null) {
 			scrambleVariations = new JComboBox(ScramblePlugin.getScrambleVariations());
 			scrambleVariations.addItem(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation());
+			scrambleVariations.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
 			scrambleVariations.setSelectedItem(custom.getScrambleVariation());
 			scrambleVariations.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent e) {

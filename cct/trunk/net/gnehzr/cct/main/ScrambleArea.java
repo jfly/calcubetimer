@@ -101,6 +101,9 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 		}
 		part2 += "</body></html>";
 		hyperlinkUpdate(new HyperlinkEvent(scramblePane, HyperlinkEvent.EventType.ACTIVATED, currScram));
+		if(sc.getScrambleVariation().equals(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation())) {
+			scramblePopup.setVisible(false);
+		}
 		setProperSize();
 		Container par = getParent();
 		if(par != null)
@@ -116,7 +119,6 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 				//parts[0] = http://#, parts[1] = scramble
 				String[] parts = url.toString().split(" ", 2);
 				if(parts.length < 2){
-					scramblePopup.setVisible(false);
 					scramblePane.setDocument(new HTMLDocument());
 					scramblePane.setText("");
 					scramblePane.setCaretPosition(0);

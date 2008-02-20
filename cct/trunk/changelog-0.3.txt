@@ -93,6 +93,8 @@ changes:
 +CCTClient title will revert to normal after focus is regained after receiving a message while unfocused
 +addTime will scroll to show the input box if it's hidden
 +added support for multiple RASizes
++be able to import a list of scrambles by copy/paste
++add null scramble to replace scramble strings
 
 TODO:
 
@@ -114,8 +116,6 @@ for release:
 scramble stuff:
 -write scramble plugin tutorial
 -icons on scramble choices?
--add null scramble to replace scramble strings
--be able to import a list of scrambles by copy/paste
 
 misc:
 -expand jtable of times to include {current, rolling1, rolling2} average column

@@ -40,6 +40,7 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 		browse.addActionListener(this);
 
 		scrambleChooser = new JComboBox(ScramblePlugin.getScrambleVariations());
+		scrambleChooser.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
 		scrambleChooser.setSelectedItem(selected);
 		scrambleChooser.addActionListener(this);
 

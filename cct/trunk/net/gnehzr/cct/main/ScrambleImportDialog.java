@@ -75,6 +75,7 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 
 		scrambleChooser = new JComboBox(ScramblePlugin.getScrambleCustomizations(false).toArray(new ScrambleCustomization[0]));
 		scrambleChooser.addItem(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION);
+		scrambleChooser.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
 		scrambleChooser.setSelectedItem(selected);
 		scrambleChooser.addActionListener(this);
 		topBot.add(scrambleChooser);
@@ -223,5 +224,6 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 		validationString += "</body></html>";
 		qualityControl.setText(validationString);
 		importButton.setEnabled(perfect && !empty);
+		validate();
 	}
 }

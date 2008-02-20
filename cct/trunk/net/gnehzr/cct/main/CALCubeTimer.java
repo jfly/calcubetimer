@@ -24,19 +24,13 @@ import java.awt.event.WindowFocusListener;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -971,7 +965,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 		} else if(newPuzzleChoice != null)
 			scramCustomizationChoice = newPuzzleChoice;
-		safeSelectItem(scrambleChooser, scramCustomizationChoice);
+		if(scramCustomizationChoice.equals(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION))
+			safeSelectItem(scrambleChooser, null);
+		else
+			safeSelectItem(scrambleChooser, scramCustomizationChoice);
 		safeSetValue(scrambleLength, scramCustomizationChoice.getScrambleVariation().getLength());
 		//update new number of scrambles
 		if((Integer)((SpinnerNumberModel)scrambleNumber.getModel()).getMaximum() != scramblesList.size())
