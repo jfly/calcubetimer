@@ -272,6 +272,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 		desktopPanel = new JPanel();
 		refreshDesktops = new JButton("Refresh");
+		refreshDesktops.addActionListener(this);
 
 		JPanel test = new JPanel();
 		test.setLayout(new BoxLayout(test, BoxLayout.PAGE_AXIS));
@@ -797,9 +798,29 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		} else if(source instanceof JRadioButton) {
 			JRadioButton jrb = (JRadioButton) source;
 			Configuration.setInt(VariableKey.FULLSCREEN_DESKTOP, Integer.parseInt(jrb.getText().split(" ")[1]) - 1);
+		} else if(source == refreshDesktops) {
+			refreshDesktops();
 		}
 	}
 
+	private void refreshDesktops() {
+		desktopPanel.removeAll();
+		ButtonGroup g = new ButtonGroup();
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] gs = ge.getScreenDevices();
+		for(int ch = 0; ch < gs.length; ch++) {
+			GraphicsDevice gd = gs[ch];
+			DisplayMode screenSize = gd.getDisplayMode();
+			JRadioButton temp = new JRadioButton("Desktop " + (ch + 1) + " (Resolution: " + screenSize.getWidth() + "x" + screenSize.getHeight() + ")");
+			if(ch == Configuration.getInt(VariableKey.FULLSCREEN_DESKTOP, false))
+				temp.setSelected(true);
+			g.add(temp);
+			temp.addActionListener(this);
+			desktopPanel.add(temp);
+		}
+		desktopPanel.add(refreshDesktops);
+	}
+	
 	private void syncGUIwithConfig(boolean defaults) {
 		// makeStandardOptionsPanel1
 		clockFormat.setSelected(Configuration.getBoolean(VariableKey.CLOCK_FORMAT, defaults));
@@ -817,20 +838,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 				defaults), Configuration.getInt(VariableKey.METRONOME_DELAY, defaults));
 		metronomeDelay.setEnabled(metronome.isSelected());
 
-		desktopPanel.removeAll();
-		ButtonGroup g = new ButtonGroup();
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice[] gs = ge.getScreenDevices();
-		for(int ch = 0; ch < gs.length; ch++) {
-			GraphicsDevice gd = gs[ch];
-			DisplayMode screenSize = gd.getDisplayMode();
-			JRadioButton temp = new JRadioButton("Desktop " + (ch + 1) + " (Resolution: " + screenSize.getWidth() + "x" + screenSize.getHeight() + ")");
-			if(ch == Configuration.getInt(VariableKey.FULLSCREEN_DESKTOP, false))
-				temp.setSelected(true);
-			g.add(temp);
-			temp.addActionListener(this);
-			desktopPanel.add(temp);
-		}
+		refreshDesktops();
 
 		// makeStandardOptionsPanel2
 		minSplitTime.setValue(Configuration.getDouble(VariableKey.MIN_SPLIT_DIFFERENCE, defaults));
