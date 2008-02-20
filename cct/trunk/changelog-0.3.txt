@@ -118,7 +118,7 @@ scramble stuff:
 -be able to import a list of scrambles by copy/paste
 
 misc:
--expand jtable of times to include {current, rolling} average column
+-expand jtable of times to include {current, rolling1, rolling2} average column
 -java webstart? applet?
 -dynamic string multiple argument format
 

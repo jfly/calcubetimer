@@ -10,11 +10,6 @@ public class ScrambleList extends ArrayList<Scramble>{
 		this.type = c;
 	}
 
-	public ScrambleList(ScrambleVariation c, Scramble s){
-		this.type = c;
-		add(scrambleNumber, s);
-	}
-
 	public Scramble getCurrent() {
 		Scramble temp = null;
 		try {
@@ -41,11 +36,11 @@ public class ScrambleList extends ArrayList<Scramble>{
 		this.scrambleNumber = scrambleNumber - 1;
 	}
 
-	public static ScrambleList importScrambles(ScrambleVariation c, String[] scrambles) throws InvalidScrambleException {
-		ScrambleList list = new ScrambleList(c);
-		for(String scramble : scrambles) {
-			list.add(c.generateScramble(scramble));
-		}
-		return list;
-	}
+//	public static ScrambleList importScrambles(ScrambleVariation c, String[] scrambles) throws InvalidScrambleException {
+//		ScrambleList list = new ScrambleList(c);
+//		for(String scramble : scrambles) {
+//			list.add(c.generateScramble(scramble));
+//		}
+//		return list;
+//	}
 }

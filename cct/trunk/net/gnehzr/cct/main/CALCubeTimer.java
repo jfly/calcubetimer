@@ -916,27 +916,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		});
 	}
 
-	private void exportScrambles(URL outputFile, int numberOfScrambles, ScrambleVariation scrambleChoice) {
-		try {
-			PrintWriter out = new PrintWriter(new FileWriter(new File(outputFile.toURI())));
-			ScrambleList generatedScrambles = new ScrambleList(scrambleChoice);
-			for(int ch = 0; ch < numberOfScrambles; ch++, generatedScrambles.getNext()) {
-				out.println(generatedScrambles.getCurrent().toString());
-			}
-			out.close();
-			JOptionPane.showMessageDialog(this,
-					"Scrambles successfully saved!",
-					outputFile.getPath(),
-					JOptionPane.INFORMATION_MESSAGE);
-		} catch(Exception e) {
-			showErrorMessage("Error!\n" + e.toString(), "Hmmmmm...");
-		}
-	}
-
-	private void showErrorMessage(String errorMessage, String title){
-		JOptionPane.showMessageDialog(this, errorMessage, title, JOptionPane.ERROR_MESSAGE);
-	}
-
 	private void safeSetValue(JSpinner test, Object val) {
 		test.removeChangeListener(this);
 		test.setValue(val);
@@ -1250,50 +1229,22 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	public void importScramblesAction(){
-		ScrambleImportExportDialog scrambleImporter = new ScrambleImportExportDialog(true, scramCustomizationChoice.getScrambleVariation());
-		int choice = JOptionPane.showConfirmDialog(this,
-				scrambleImporter,
-				"Import Scrambles",
-				JOptionPane.OK_CANCEL_OPTION,
-				JOptionPane.QUESTION_MESSAGE);
-		if(choice == JOptionPane.OK_OPTION) {
-			ScrambleVariation sv = scrambleImporter.getVariation();
-			try {
-				scramblesList = ScrambleList.importScrambles(sv, scrambleImporter.getScrambles());
-
-				if(!sv.equals(scramCustomizationChoice.getScrambleVariation())) {
-					scramCustomizationChoice = new ScrambleCustomization(sv, null);
-				}
-				int newLength = scramCustomizationChoice.getScrambleVariation().getLength();
-				sv.setLength(newLength);
-				safeSetValue(scrambleLength, newLength);
-				if(scramCustomizationChoice.equals(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION))
-					safeSelectItem(scrambleChooser, null);
-				else
-					safeSelectItem(scrambleChooser, scramCustomizationChoice);
-				updateScramble();
-				JOptionPane.showMessageDialog(this,
-						"Scrambles successfully loaded!",
-						scrambleImporter.getURL().getPath(),
-						JOptionPane.INFORMATION_MESSAGE);
-			} catch(InvalidScrambleException e) {
-				showErrorMessage(e.getLocalizedMessage(), "Invalid scramble!");
-			}
+		ScrambleImportDialog sid = new ScrambleImportDialog(this, scramCustomizationChoice);
+		ScrambleList newList = sid.getScrambleList();
+		ScrambleCustomization sc = sid.getSelectedCustomization();
+		if(newList != null) {
+			scramblesList = newList;
+			scramCustomizationChoice = sc;
+			if(scramCustomizationChoice.equals(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION))
+				safeSelectItem(scrambleChooser, null);
+			else
+				safeSelectItem(scrambleChooser, scramCustomizationChoice);
+			updateScramble();
 		}
 	}
 
 	public void exportScramblesAction(){
-		ScrambleImportExportDialog scrambleExporter = new ScrambleImportExportDialog(false, scramCustomizationChoice.getScrambleVariation());
-		int choice = JOptionPane.showConfirmDialog(this,
-				scrambleExporter,
-				"Export Scrambles",
-				JOptionPane.OK_CANCEL_OPTION,
-				JOptionPane.QUESTION_MESSAGE);
-		if(choice == JOptionPane.OK_OPTION) {
-			URL file = scrambleExporter.getURL();
-			if(file != null)
-				exportScrambles(file, scrambleExporter.getNumberOfScrambles(), scrambleExporter.getVariation());
-		}
+		new ScrambleExportDialog(this, scramCustomizationChoice.getScrambleVariation());
 	}
 
 	public void showDocumentation(){

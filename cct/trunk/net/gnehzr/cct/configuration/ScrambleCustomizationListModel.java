@@ -149,13 +149,8 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	private JPanel getCustomizationPanel(ScrambleCustomization custom) {
 		JPanel customPanel = new JPanel();
 		if(custom.getCustomization() != null) {
-			ScrambleVariation[] oldVariations = ScramblePlugin.getScrambleVariations();
-			ScrambleVariation[] variations = new ScrambleVariation[oldVariations.length+1];
-			for(int i = 0; i < oldVariations.length; i++){
-				variations[i] = oldVariations[i];
-			}
-			variations[variations.length-1] = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation();
-			scrambleVariations = new JComboBox(variations);
+			scrambleVariations = new JComboBox(ScramblePlugin.getScrambleVariations());
+			scrambleVariations.addItem(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation());
 			scrambleVariations.setSelectedItem(custom.getScrambleVariation());
 			scrambleVariations.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent e) {
