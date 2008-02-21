@@ -95,13 +95,14 @@ changes:
 +added support for multiple RASizes
 +be able to import a list of scrambles by copy/paste
 +add null scramble to replace scramble strings
++BUG: default sizing of gui is NO LONGER bad! also got rid of the nasty xmlgui jscrollpane stuff in endelement
 
 TODO:
 
 for release:
 -add gui option (disabled by default) to maintain focus whenever possible
+-BUG: titled borders are not anti-aliased
 -BUG: fullscreen timing broken by hiding of scramble popup (TODO in ScrambleArea.java)
--BUG: default sizing of gui is bad!
 -logging to xml database for each profile
 -internationalization (dates, too)
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html
@@ -115,6 +116,7 @@ for release:
 	version, os, etc.)
 
 scramble stuff:
+-BUG: clicking a link when you are scrolled down has bad behavior
 -write scramble plugin tutorial
 -icons on scramble choices?
 

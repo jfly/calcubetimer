@@ -10,6 +10,7 @@ import java.awt.FlowLayout;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -676,7 +677,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				com = new JSeparator();
 			}
 			else if(elementName.equals("scrollpane")){
-				JScrollPane scroll = new JScrollPane();
+				JScrollPane scroll = new JScrollPane() {
+					public Dimension getPreferredSize() {
+						Insets i = this.getInsets();
+						Dimension d = getViewport().getView().getPreferredSize();
+						return new Dimension(d.width + i.left + i.right, d.height + i.top + i.bottom);
+					}
+				};
 				scroll.putClientProperty(SubstanceLookAndFeel.OVERLAY_PROPERTY, Boolean.TRUE);
 				scroll.putClientProperty(SubstanceLookAndFeel.BACKGROUND_COMPOSITE,
 						new AlphaControlBackgroundComposite(0.3f, 0.5f));
@@ -809,10 +816,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				if(needText.get(level) && strs.get(level).length() > 0) {
 					if(componentTree.get(level) instanceof DynamicStringSettable)
 						((DynamicStringSettable)componentTree.get(level)).setDynamicString(new DynamicString(strs.get(level), stats));
-				} else if(componentTree.get(level) instanceof JScrollPane && componentTree.get(level) != timesScroller) {
-					JScrollPane scroller = (JScrollPane) componentTree.get(level);
-					scroller.setPreferredSize(scroller.getViewport().getView().getPreferredSize());
-				}
+				} 
 				componentTree.remove(level);
 				elementNames.remove(level);
 				strs.remove(level);
@@ -884,7 +888,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				String errors = Configuration.getStartupErrors();
-				if(!errors.equals("")) {
+				if(!errors.isEmpty()) {
 					JOptionPane.showMessageDialog(
 							null,
 							errors,
@@ -976,7 +980,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		//update new scramble number
 		if((Integer)scrambleNumber.getValue() != scramblesList.getScrambleNumber())
 			safeSetValue(scrambleNumber, scramblesList.getScrambleNumber());
-
 		setScramble(scramblesList.getCurrent(), scramCustomizationChoice);
 	}
 
@@ -1169,9 +1172,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		bigTimersDisplay.setKeyboard(!stackmatEnabled);
 		scrambleChooser.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
 
-		updateScramble();
 		Component focusedComponent = this.getFocusOwner();
 		parseXML_GUI(Configuration.getXMLGUILayout());
+		updateScramble();
 		Dimension size = Configuration.getDimension(VariableKey.MAIN_FRAME_DIMENSION, false);
 		if(size == null) {
 			this.pack();

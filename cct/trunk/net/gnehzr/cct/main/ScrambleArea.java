@@ -148,22 +148,21 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 	}
 
 	private void setProperSize() {
-		if(scramblePane.getDocument().getLength() == 0){
+		if(scramblePane.getDocument().getLength() == 0) {
 			setPreferredSize(new Dimension(0, 0));
 			return;
 		}
 		try {
 			Rectangle r = scramblePane.modelToView(scramblePane.getDocument().getLength());
-			if(r != null){
-				setPreferredSize(new Dimension(0, r.y + r.height + 20));
-			}
-			else{
-				setPreferredSize(new Dimension(0, 100)); //this makes it do it again, r != null after
-			}
+			if(r != null) {
+				setPreferredSize(new Dimension(0, r.y + r.height + 5));
+			} else
+				resetPreferredSize(); //this will call setProperSize() again, with r != null
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
 	}
+	
 	public void componentHidden(ComponentEvent arg0) {}
 	public void componentMoved(ComponentEvent arg0) {}
 	public void componentResized(ComponentEvent arg0) {
