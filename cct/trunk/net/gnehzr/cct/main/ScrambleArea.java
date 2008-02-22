@@ -100,6 +100,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 			num++;
 		}
 		part2 += "</body></html>";
+		scramblePane.setCaretPosition(0);
 		hyperlinkUpdate(new HyperlinkEvent(scramblePane, HyperlinkEvent.EventType.ACTIVATED, currScram));
 		if(sc.getScrambleVariation().equals(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation())) {
 			scramblePopup.setVisible(false);
@@ -116,6 +117,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 			ScramblePlugin sp = currentCustomization.getScramblePlugin();
 			ScrambleVariation sv = currentCustomization.getScrambleVariation();
 			try{
+				int caretPos = scramblePane.getCaretPosition();
 				//parts[0] = http://#, parts[1] = scramble
 				String[] parts = url.toString().split(" ", 2);
 				if(parts.length < 2){
@@ -124,13 +126,16 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 					scramblePane.setCaretPosition(0);
 					return;
 				}
-				scramblePopup.setVisible(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false)); //TODO - this is breaking fullscreen timing
+				//this is here to prevent calls to setVisible(true) when the popup is already visbile
+				//if we were to allow these, then the main gui could pop up on top of our fullscreen panel
+				if(!scramblePopup.isVisible())
+					scramblePopup.setVisible(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false));
 				int moveNum = Integer.parseInt(parts[0].substring(7));
 				Scramble s = sp.importScramble(sv.toString(), parts[1], sp.getEnabledPuzzleAttributes());
 				scramblePopup.setScramble(s, sp);
 				scramblePane.setDocument(new HTMLDocument());
 				scramblePane.setText(part1 + moveNum + part2);
-				scramblePane.setCaretPosition(0);
+				scramblePane.setCaretPosition(caretPos);
 			} catch(InvalidScrambleException ex){
 				ex.printStackTrace();
 			}

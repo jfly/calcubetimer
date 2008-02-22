@@ -14,7 +14,6 @@ import net.gnehzr.cct.main.KeyboardTimerPanel.KeyboardTimerComponent;
 @SuppressWarnings("serial")
 public class TimerPanel extends JLabel implements KeyboardTimerComponent {
 	private KeyboardTimerPanel timer;
-//	private ScramblePanel scrambles;
 	private TimerLabel timerDisplay; //this is to do the "semi-annoying" status light
 	public TimerPanel(ActionListener timeListener, TimerLabel timerDisplay) {
 		super("", JLabel.CENTER);
@@ -72,7 +71,7 @@ public class TimerPanel extends JLabel implements KeyboardTimerComponent {
 		setBackground(Color.GREEN);
 	}
 	public void setUnfocusedState() {
-		if(keyboard && Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false))
+		if(focusListener != null && keyboard && Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false))
 			focusListener.focusChanged(true);
 		setBackground(Color.GRAY);
 		timerDisplay.setRedButton();
