@@ -99,11 +99,12 @@ changes:
 +BUG: clicking a link when you are scrolled down NO LONGER has bad behavior
 +BUG: fullscreen timing broken by hiding of scramble popup (TODO in ScrambleArea.java)
 +add xmlgui option for showing scramblepopup
++expand jtable of times to include {current, rolling1, rolling2} average column
++test out jsplitpane xmlgui stuff
 
 TODO:
 
 for release:
--test out jsplitpane xmlgui stuff
 -logging to xml database for each profile
 -internationalization (dates, too)
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html
@@ -121,7 +122,6 @@ scramble stuff:
 -icons on scramble choices?
 
 misc:
--expand jtable of times to include {current, rolling1, rolling2} average column
 -add gui option (disabled by default) to maintain focus whenever possible
 -java webstart? applet?
 -dynamic string multiple argument format
