@@ -60,6 +60,7 @@ import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
@@ -288,15 +289,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		actionMap.put("togglefullscreentiming", fullScreenTimingAction);
 
 		//TODO - possibly switch to anonymous inner classes?
-//		AbstractAction act = new AbstractAction() {
-//			public void actionPerformed(ActionEvent e) {
-//				Configuration.setFullScreenWhileTiming(((AbstractButton)e.getSource()).isSelected());
-//			}
-//		};
-//		act.putValue(Action.SELECTED_KEY, Configuration.isFullScreenWhileTiming());
-//		act.putValue(Action.NAME, "Fullscreen while timing");
-//		act.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_F);
-//		actionMap.put("togglefullscreentiming", act);
+		AbstractAction act = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, ((AbstractButton)e.getSource()).isSelected());
+				refreshScramblePopup();
+			}
+		};
+		act.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false));
+		act.putValue(Action.NAME, "Show scramble popup");
+		actionMap.put("togglescramblepopup", act);
 
 		documentationAction = new DocumentationAction(this);
 		documentationAction.putValue(Action.NAME, "View Documentation");
@@ -384,9 +385,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timesList = new DraggableJTable("Add time...", false);
 		timesList.setDefaultEditor(SolveTime.class, new SolveTimeEditor("Type new time here."));
 		timesList.setDefaultRenderer(SolveTime.class, new SolveTimeRenderer(stats));
-		timesList.setTableHeader(null);
 		timesList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		timesList.setModel(stats);
+		timesList.getTableHeader().setReorderingAllowed(false);
 		timesScroller = new JScrollPane(timesList);
 
 		scramblePanel = new ScrambleArea(scramblePopup);
@@ -397,6 +398,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		startStopPanel = new TimerPanel(timeListener, timeLabel);
 		startStopPanel.setTimerFocusListener(scramblePanel);
 		startStopPanel.setKeyboard(true);
+
 
 		timeLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 		timeLabel.setMinimumSize(new Dimension(0, 150));
@@ -689,7 +691,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 						new AlphaControlBackgroundComposite(0.3f, 0.5f));
 				com = scroll;
 			}
-
+			else if(elementName.equals("splitpane")) {
+				com = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, null, null);
+			}
 			else if(elementName.equals("glue")) {
 				Component glue = null;
 				if((temp = attrs.getValue("orientation")) != null) {
@@ -723,7 +727,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 						String[] titleAttrs = temp.split(";");
 
 						Border border = null;
-						if(titleAttrs[0].equals(""))
+						if(titleAttrs[0].isEmpty())
 							border = BorderFactory.createEtchedBorder();
 						else
 							border = BorderFactory.createLineBorder(Utils.stringToColor(new DynamicString(titleAttrs[0], null).toString()));
@@ -749,6 +753,18 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 								policy = JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS;
 							scroller.setHorizontalScrollBarPolicy(policy);
 						}
+					} else if(com instanceof JSplitPane) {
+						JSplitPane jsp = (JSplitPane) com;
+						if((temp = attrs.getValue("drawcontinuous")) != null) {
+							jsp.setContinuousLayout(Boolean.parseBoolean(temp));
+						}
+						if((temp = attrs.getValue("resizeweight")) != null) {
+							double resizeWeight = .5;
+							try { 
+								resizeWeight = Double.parseDouble(temp);
+							} catch(Exception e) {}
+							jsp.setResizeWeight(resizeWeight);
+						}
 					}
 					if((temp = attrs.getValue("opaque")) != null)
 						com.setOpaque(Boolean.parseBoolean(temp));
@@ -762,6 +778,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 								((JSeparator)com).setOrientation(SwingConstants.HORIZONTAL);
 							else if(temp.equalsIgnoreCase("vertical"))
 								((JSeparator)com).setOrientation(SwingConstants.VERTICAL);
+						} else if (com instanceof JSplitPane) {
+							JSplitPane jsp = (JSplitPane) com;
+							if(temp.equalsIgnoreCase("horizontal"))
+								jsp.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+							else if(temp.equalsIgnoreCase("vertical"))
+								jsp.setOrientation(JSplitPane.VERTICAL_SPLIT);
 						}
 					}
 				} catch(Exception e) {
@@ -787,6 +809,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 						if(temp == null) {
 							if(c instanceof JScrollPane) {
 								((JScrollPane) c).setViewportView(com);
+							} else if(c instanceof JSplitPane) {
+								JSplitPane jsp = (JSplitPane) c;
+								if(jsp.getLeftComponent() == null) {
+									((JSplitPane) c).setLeftComponent(com);
+								} else {
+									((JSplitPane) c).setRightComponent(com);
+								}
 							} else
 								c.add(com);
 						}
@@ -1155,6 +1184,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		profiles.setModel(new DefaultComboBoxModel(Configuration.getProfiles().toArray(new Profile[0])));
 		safeSelectItem(profiles, Configuration.getSelectedProfile());
 
+		timesList.setColumnVisible(1, Configuration.getBoolean(VariableKey.SHOW_RA0, false));
+		timesList.setColumnVisible(2, Configuration.getBoolean(VariableKey.SHOW_RA1, false));
+		
 		ScramblePlugin.reloadLengthsFromConfiguration(false);
 		ScrambleCustomization newCustom = ScramblePlugin.getCurrentScrambleCustomization();
 		safeSelectItem(scrambleChooser, newCustom);
@@ -1194,7 +1226,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		location = Configuration.getPoint(VariableKey.SCRAMBLE_VIEW_LOCATION, false);
 		if(location != null)
 			scramblePopup.setLocation(location);
-		scramblePopup.setVisible(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false) && !(scramblesList.getCurrent() instanceof NullScramble));
+		refreshScramblePopup();		
 
 		if(!stackmatEnabled) { //This is to ensure that the keyboard is focused
 			timeLabel.requestFocusInWindow();
@@ -1204,6 +1236,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		} else
 			scramblePanel.requestFocusInWindow();
 		timeLabel.componentResized(null);
+	}
+	
+	private void refreshScramblePopup() {
+		scramblePopup.setVisible(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false) && !(scramblesList.getCurrent() instanceof NullScramble));
 	}
 
 	// Actions section {{{

@@ -200,7 +200,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		}
 	}
 
-	private JCheckBox clockFormat, promptForNewTime, scramblePopup, splits, metronome = null;
+	private JCheckBox clockFormat, promptForNewTime, scramblePopup, splits, metronome, showRA0, showRA1;
 	private JSpinner minSplitTime, RASize0 = null, RASize1 = null;
 	public TickerSlider metronomeDelay = null;
 	private JColorComponent bestRA, currentAverage, currentAndRA, bestTime, worstTime = null;
@@ -230,16 +230,20 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		SpinnerNumberModel model = new SpinnerNumberModel(3, 3, null, 1);
 		RASize0 = new JSpinner(model);
 		((JSpinner.DefaultEditor) RASize0.getEditor()).getTextField().setColumns(3);
+		showRA0 = new JCheckBox("Show in times list?");
 		sideBySide.add(new JLabel("Size of rolling average 0:"));
 		sideBySide.add(RASize0);
+		sideBySide.add(showRA0);
 		rightPanel.add(sideBySide);
 
 		sideBySide = new JPanel();
 		model = new SpinnerNumberModel(3, 3, null, 1);
 		RASize1 = new JSpinner(model);
 		((JSpinner.DefaultEditor) RASize1.getEditor()).getTextField().setColumns(3);
+		showRA1 = new JCheckBox("Show in times list?");
 		sideBySide.add(new JLabel("Size of rolling average 1:"));
 		sideBySide.add(RASize1);
+		sideBySide.add(showRA1);
 		rightPanel.add(sideBySide);
 
 		bestRA = new JColorComponent("Best rolling average");
@@ -398,8 +402,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		scramTable.setDefaultEditor(ScrambleCustomization.class, puzzlesModel);
 		scramTable.setDefaultEditor(String.class, puzzlesModel);
 		scramTable.setModel(puzzlesModel);
-
-//		panel.add(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(profilesTable), new JScrollPane(scramTable)));
 
 		panel.add(new JScrollPane(profilesTable), BorderLayout.LINE_START);
 		panel.add(new JScrollPane(scramTable), BorderLayout.CENTER);
@@ -833,6 +835,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		currentAverage.setBackground(Configuration.getColor(VariableKey.CURRENT_AVERAGE, defaults));
 		RASize0.setValue(Configuration.getInt(VariableKey.RA_SIZE0, defaults));
 		RASize1.setValue(Configuration.getInt(VariableKey.RA_SIZE1, defaults));
+		showRA0.setSelected(Configuration.getBoolean(VariableKey.SHOW_RA0, defaults));
+		showRA1.setSelected(Configuration.getBoolean(VariableKey.SHOW_RA1, defaults));
 		metronome.setSelected(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, defaults));
 		metronomeDelay.setDelayBounds(Configuration.getInt(VariableKey.METRONOME_DELAY_MIN, defaults), Configuration.getInt(VariableKey.METRONOME_DELAY_MAX,
 				defaults), Configuration.getInt(VariableKey.METRONOME_DELAY, defaults));
@@ -931,6 +935,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, scramblePopup.isSelected());
 		Configuration.setInt(VariableKey.RA_SIZE0, (Integer) RASize0.getValue());
 		Configuration.setInt(VariableKey.RA_SIZE1, (Integer) RASize1.getValue());
+		Configuration.setBoolean(VariableKey.SHOW_RA0, showRA0.isSelected());
+		Configuration.setBoolean(VariableKey.SHOW_RA1, showRA1.isSelected());
 		Configuration.setBoolean(VariableKey.METRONOME_ENABLED, metronome.isSelected());
 		Configuration.setInt(VariableKey.METRONOME_DELAY, metronomeDelay.getMilliSecondsDelay());
 

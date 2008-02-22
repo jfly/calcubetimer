@@ -7,12 +7,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
@@ -116,42 +118,94 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		return temp;
 	}
 
+    // Converts a column index in the model to a visible column index.
+    // Returns -1 if the index does not exist.
+    private int toView(int mColIndex) {
+        for(int ch = 0; ch < getColumnModel().getColumnCount(); ch++) {
+            TableColumn col = getColumnModel().getColumn(ch);
+            if(col.getModelIndex() == mColIndex) {
+                return ch;
+            }
+        }
+        return -1;
+    }
+
+	private Vector<TableColumn> cols;
+	public void setColumnVisible(int column, boolean visible) {
+		if(cols == null) {
+			cols = new Vector<TableColumn>();
+			cols.setSize(getModel().getColumnCount());
+		}
+		if(!visible && cols.get(column) == null) {
+			cols.set(column, getColumnModel().getColumn(toView(column)));
+			removeColumn(cols.get(column));
+			computePreferredSizes();
+		} else if(visible && cols.get(column) != null){
+			addColumn(cols.get(column)); //this appends the column to the end of the view
+			if(column < getColumnModel().getColumnCount() - 1) //this moves the column to where it belongs
+				moveColumn(getColumnModel().getColumnCount() - 1, column);
+			cols.set(column, null);
+			computePreferredSizes();
+		}
+	}
+
 	private DraggableJTableModel model;
 	public void setModel(TableModel tableModel) {
 		if (tableModel instanceof DraggableJTableModel) {
 			model = (DraggableJTableModel) tableModel;
 			model = new JTableModelWrapper(model);
 			super.setModel(model);
-
-			Dimension rendDim = getCellRenderer(0, 0).getTableCellRendererComponent(
-					this,
-					addText,
-					true,
-					true,
-					0,
-					0).getPreferredSize();
-			Dimension edDim = getCellEditor(0, 0).getTableCellEditorComponent(
-					this,
-					addText,
-					true,
-					0,
-					0).getPreferredSize();
-
-			this.setRowHeight(Math.max(rendDim.height, edDim.height));
-			rendDim.height = 0;
-			this.setPreferredScrollableViewportSize(rendDim);
-
-			TableColumnModel columns = this.getColumnModel();
-			for(int ch = 0; ch < columns.getColumnCount(); ch++) {
-				columns.getColumn(ch).setPreferredWidth(getCellEditor(0, ch).getTableCellEditorComponent(
-						this,
-						null,
-						true,
-						0,
-						ch).getPreferredSize().width);
-			}
+			computePreferredSizes();
 		} else
 			super.setModel(tableModel);
+	}
+	
+	private void computePreferredSizes() {
+		Dimension rendDim = getCellRenderer(0, 0).getTableCellRendererComponent(
+				this,
+				addText,
+				true,
+				true,
+				0,
+				0).getPreferredSize();
+		Dimension edDim = getCellEditor(0, 0).getTableCellEditorComponent(
+				this,
+				addText,
+				true,
+				0,
+				0).getPreferredSize();
+
+		this.setRowHeight(Math.max(rendDim.height, edDim.height));
+		rendDim.height = 0;
+		for(int ch = 1; ch < getColumnModel().getColumnCount(); ch++) {
+			int edWidth = getCellEditor(0, ch).getTableCellEditorComponent(
+					this,
+					null,
+					true,
+					0,
+					ch).getPreferredSize().width;
+			int rendWidth = getCellRenderer(0, ch).getTableCellRendererComponent(
+					this,
+					addText,
+					true,
+					true,
+					0,
+					ch).getPreferredSize().width;
+			rendDim.width += Math.max(edWidth, rendWidth);
+		}
+		this.setPreferredScrollableViewportSize(rendDim);
+
+		TableColumnModel columns = this.getColumnModel();
+		Object render = addText;
+		for(int ch = 0; ch < columns.getColumnCount(); ch++) {				
+			columns.getColumn(ch).setPreferredWidth(getCellEditor(0, ch).getTableCellEditorComponent(
+					this,
+					render,
+					true,
+					0,
+					ch).getPreferredSize().width);
+			render = null;
+		}
 	}
 
 	private int fromRow;
@@ -186,10 +240,10 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 	public void keyTyped(KeyEvent e) {}
 
 	private void maybeShowPopup(MouseEvent e) {
-		if(e.isPopupTrigger()) {
+		int row;
+		if(e.isPopupTrigger() && (row = rowAtPoint(e.getPoint())) != -1) {
 			if(getSelectedRows().length <= 1) {
 				// if right clicking on a single cell, this will select it first
-				int row = rowAtPoint(e.getPoint());
 				setRowSelectionInterval(row, row);
 			}
 			model.showPopup(e, this);

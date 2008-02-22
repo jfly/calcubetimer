@@ -780,8 +780,14 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 	}
 
 //	TableModel
+
+	public String getColumnName(int column) {
+		if(column == 0)
+			return "Times";
+		return "RA " + (column - 1);
+	}
 	public int getColumnCount() {
-		return 1;
+		return 3;
 	}
 	public Class<?> getColumnClass(int columnIndex) {
 		return SolveTime.class;
@@ -793,10 +799,19 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		return times == null ? 0 : times.size();
 	}
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		return times.get(rowIndex);
+		if(columnIndex == 0) {
+			return times.get(rowIndex);
+		} else {
+			int whichRA = columnIndex - 1;
+			int RAnum = 1 + rowIndex - curRASize[whichRA];
+			if(RAnum < 0)
+				return "N/A";
+			else
+				return new SolveTime(averages[whichRA].get(RAnum), whichRA);
+		}
 	}
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return true;
+		return columnIndex == 0;
 	}
 	public boolean isRowDeletable(int rowIndex) {
 		return true;

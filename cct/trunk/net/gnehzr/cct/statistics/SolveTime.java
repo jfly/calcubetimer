@@ -24,6 +24,17 @@ public class SolveTime implements Comparable<SolveTime> {
 		setScramble(null);
 	}
 
+	//this constructor exists to allow the jtable of times to contain the averages also
+	//we need to know the index so we can syntax highlight it
+	private int whichRA = -1;
+	public SolveTime(double seconds, int whichRA) {
+		this(seconds, null);
+		this.whichRA = whichRA;
+	}
+	public int getWhichRA() {
+		return whichRA;
+	}
+	
 	public SolveTime(double seconds, String scramble) {
 		this.hundredths = (int)(100 * seconds + .5);
 		setScramble(scramble);

@@ -108,7 +108,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		String val = value.toString();
+		String val = value == null ? "" : value.toString();
 		if(value instanceof ScrambleCustomization) {
 			ScrambleCustomization customization = (ScrambleCustomization) value;
 			ScrambleVariation v = customization.getScrambleVariation();

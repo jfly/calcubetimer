@@ -15,8 +15,8 @@
 <!ELEMENT menu (#PCDATA|menuitem|separator|checkboxmenuitem|component)*>
 
 <!ELEMENT scrollpane (panel|component|button|checkbox|label|selectablelabel)?>
-<!ATTLIST scrollpane verticalpolicy (always|never) #IMPLIED>
-<!ATTLIST scrollpane horizontalpolicy (always|never) #IMPLIED>
+<!ATTLIST scrollpane verticalpolicy (always|never|asneeded) #IMPLIED>
+<!ATTLIST scrollpane horizontalpolicy (always|never|asneeded) #IMPLIED>
 
 <!ELEMENT component EMPTY>
 <!ELEMENT separator EMPTY>

@@ -1,7 +1,7 @@
 <!DOCTYPE gui SYSTEM "layout.dtd">
 <gui>
 	<panel layout="border">
-		<center>
+		<splitpane drawcontinuous="true" resizeweight="1" split="horizontal">
 			<panel layout="border">
 				<center>
 					<panel layout="box" orientation="page">
@@ -38,10 +38,8 @@
 					</panel>
 				</page_end>
 			</panel>
-		</center>
-		<line_end>
 			<component type="timesList"/>
-		</line_end>
+		</splitpane>
 	</panel>
 	<menubar>
 		<menu mnemonic="f">File

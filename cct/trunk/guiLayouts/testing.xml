@@ -1,7 +1,7 @@
 <!DOCTYPE gui SYSTEM "layout.dtd">
 <gui>
 	<panel layout="border">
-		<center>
+		<splitpane drawcontinuous="true" resizeweight=".5" split="horizontal">
 			<panel layout="border">
 				<center>
 					<panel layout="box" orientation="page">
@@ -92,11 +92,14 @@
 									</html>]]>
 								</selectablelabel>
 							</center>
+							<south>
+							<checkbox alignmentX=".5" action="togglescramblepopup"/>
+							</south>
 						</panel>
 					</panel>
 				</page_end>
 			</panel>
-		</center>
+		</splitpane>
 		<line_end>
 			<component type="timesList"/>
 		</line_end>
