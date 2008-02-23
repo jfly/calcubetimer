@@ -9,7 +9,7 @@
 						<component border="" type="scrambleText"/>
 					</panel>
 				</center>
-				<page_end>
+				<south>
 					<panel layout="box" orientation="page">
 						<scrollpane verticalpolicy="never" horizontalpolicy="asneeded">
 							<panel alignmentY=".5" layout="flow" hgap="5" vgap="5">
@@ -22,7 +22,7 @@
 						</scrollpane>
 						<component alignmentX=".5" type="startStopPanel"/>
 						<panel layout="flow" hgap="5" vgap="5">
-							<panel border="000000;Hello" layout="grid" cols="3">
+							<panel layout="grid" cols="3">
 								<button action="addTime">Add Time</button>
 								<checkbox action="keyboardTiming"/>
 								<button action="reset">Reset</button>
@@ -36,7 +36,7 @@
 						</panel>
 						<label alignmentX=".5">$$solves$$/$$attempts$$ (solves/attempts)</label>
 					</panel>
-				</page_end>
+				</south>
 			</panel>
 			<component type="timesList"/>
 		</splitpane>

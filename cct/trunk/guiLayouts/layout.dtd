@@ -1,22 +1,27 @@
 <!ELEMENT gui (panel,menubar)?>
 
-<!ELEMENT panel (center,north,south,east,west,page_start,page_end,line_start,line_end,(component,button,checkbox,label,selectablelabel)*)?>
-<!ELEMENT center (panel|component|button|checkbox|label|selectablelabel)?>
-<!ELEMENT north (panel|component|button|checkbox|label|selectablelabel)?>
-<!ELEMENT south (panel|component|button|checkbox|label|selectablelabel)?>
-<!ELEMENT east (panel|component|button|checkbox|label|selectablelabel)?>
-<!ELEMENT west (panel|component|button|checkbox|label|selectablelabel)?>
-<!ELEMENT page_start (panel|component|button|checkbox|label|selectablelabel)?>
-<!ELEMENT page_end (panel|component|button|checkbox|label|selectablelabel)?>
-<!ELEMENT line_start (panel|component|button|checkbox|label|selectablelabel)?>
-<!ELEMENT line_end (panel|component|button|checkbox|label|selectablelabel)?>
+<!ELEMENT panel (center,north,south,east,west,page_start,page_end,line_start,line_end,(splitpane,component,button,checkbox,label,selectablelabel)*)?>
+<!ELEMENT center (panel|splitpane|component|button|checkbox|label|selectablelabel)?>
+<!ELEMENT north (panel|splitpane|component|button|checkbox|label|selectablelabel)?>
+<!ELEMENT south (panel|splitpane|component|button|checkbox|label|selectablelabel)?>
+<!ELEMENT east (panel|splitpane|component|button|checkbox|label|selectablelabel)?>
+<!ELEMENT west (panel|splitpane|component|button|checkbox|label|selectablelabel)?>
+<!ELEMENT page_start (panel|splitpane|component|button|checkbox|label|selectablelabel)?>
+<!ELEMENT page_end (panel|splitpane|component|button|checkbox|label|selectablelabel)?>
+<!ELEMENT line_start (panel|splitpane|component|button|checkbox|label|selectablelabel)?>
+<!ELEMENT line_end (panel|splitpane|component|button|checkbox|label|selectablelabel)?>
 
 <!ELEMENT menubar (menu|glue|component|button|checkbox|label|selectablelabel)*>
 <!ELEMENT menu (#PCDATA|menuitem|separator|checkboxmenuitem|component)*>
 
-<!ELEMENT scrollpane (panel|component|button|checkbox|label|selectablelabel)?>
+<!ELEMENT scrollpane (panel|splitpane|component|button|checkbox|label|selectablelabel)?>
 <!ATTLIST scrollpane verticalpolicy (always|never|asneeded) #IMPLIED>
 <!ATTLIST scrollpane horizontalpolicy (always|never|asneeded) #IMPLIED>
+
+<!ELEMENT splitpane (panel|component|button|checkbox|label|selectablelabel)*>
+<!ATTLIST splitpane drawcontinuous (true|false) #IMPLIED>
+<!ATTLIST splitpane resizeweight CDATA #IMPLIED>
+<!ATTLIST splitpane split (horizontal|vertical) #IMPLIED>
 
 <!ELEMENT component EMPTY>
 <!ELEMENT separator EMPTY>
@@ -27,6 +32,7 @@
 <!ELEMENT selectablelabel (#PCDATA)>
 <!ELEMENT menuitem (#PCDATA)>
 <!ELEMENT checkboxmenuitem (#PCDATA)>
+<!ELEMENT splitpane EMPTY>
 
 <!ATTLIST panel layout (border|box|grid|flow) #IMPLIED>
 <!ATTLIST panel orientation (horizontal|vertical|page|line) #IMPLIED>
@@ -43,12 +49,14 @@
 <!ATTLIST menuitem action CDATA #IMPLIED>
 <!ATTLIST checkboxmenuitem action CDATA #IMPLIED>
 
+<!ATTLIST panel alignmentX CDATA #IMPLIED>
 <!ATTLIST component alignmentX CDATA #IMPLIED>
 <!ATTLIST button alignmentX CDATA #IMPLIED>
 <!ATTLIST checkbox alignmentX CDATA #IMPLIED>
 <!ATTLIST menuitem alignmentX CDATA #IMPLIED>
 <!ATTLIST checkboxmenuitem alignmentX CDATA #IMPLIED>
 
+<!ATTLIST panel alignmentY CDATA #IMPLIED>
 <!ATTLIST component alignmentY CDATA #IMPLIED>
 <!ATTLIST button alignmentY CDATA #IMPLIED>
 <!ATTLIST checkbox alignmentY CDATA #IMPLIED>

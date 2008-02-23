@@ -9,7 +9,7 @@
 						<component type="scrambleText"/>
 					</panel>
 				</center>
-				<page_end>
+				<south>
 					<panel layout="box" orientation="page">
 						<panel layout="flow" hgap="5" vgap="5">
 							<component type="stackmatStatusLabel"/>
@@ -35,7 +35,7 @@
 						<label alignmentX=".5">$$solves$$/$$attempts$$ (solves/attempts)</label>
 						<panel layout="border" hgap="5" vgap="5">
 							<north>
-								<panel layout="grid" rows="1">
+								<panel border="000000;Variables" layout="grid" rows="1">
 									<label><![CDATA[<html>
 											Session Average: $$sessionAverage$$<br/>
 											Session SD: $$sessionSD$$<br/>
@@ -93,16 +93,16 @@
 								</selectablelabel>
 							</center>
 							<south>
-							<checkbox alignmentX=".5" action="togglescramblepopup"/>
+								<checkbox alignmentX=".5" action="togglescramblepopup"/>
 							</south>
 						</panel>
 					</panel>
-				</page_end>
+				</south>
 			</panel>
 		</splitpane>
-		<line_end>
+		<east>
 			<component type="timesList"/>
-		</line_end>
+		</east>
 	</panel>
 	<menubar>
 		<menu mnemonic="f">File
