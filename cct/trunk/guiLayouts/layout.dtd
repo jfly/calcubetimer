@@ -1,6 +1,6 @@
 <!ELEMENT gui (panel,menubar)?>
 
-<!ELEMENT panel (center,north,south,east,west,page_start,page_end,line_start,line_end,(splitpane,component,button,checkbox,label,selectablelabel)*)?>
+<!ELEMENT panel (center|north|south|east|west|page_start|page_end|line_start|line_end|panel|scrollpane|splitpane|component|button|checkbox|label|selectablelabel)*>
 <!ELEMENT center (panel|splitpane|component|button|checkbox|label|selectablelabel)?>
 <!ELEMENT north (panel|splitpane|component|button|checkbox|label|selectablelabel)?>
 <!ELEMENT south (panel|splitpane|component|button|checkbox|label|selectablelabel)?>
@@ -12,7 +12,7 @@
 <!ELEMENT line_end (panel|splitpane|component|button|checkbox|label|selectablelabel)?>
 
 <!ELEMENT menubar (menu|glue|component|button|checkbox|label|selectablelabel)*>
-<!ELEMENT menu (#PCDATA|menuitem|separator|checkboxmenuitem|component)*>
+<!ELEMENT menu (#PCDATA|menu|menuitem|separator|checkboxmenuitem|component)*>
 
 <!ELEMENT scrollpane (panel|splitpane|component|button|checkbox|label|selectablelabel)?>
 <!ATTLIST scrollpane verticalpolicy (always|never|asneeded) #IMPLIED>
@@ -32,7 +32,6 @@
 <!ELEMENT selectablelabel (#PCDATA)>
 <!ELEMENT menuitem (#PCDATA)>
 <!ELEMENT checkboxmenuitem (#PCDATA)>
-<!ELEMENT splitpane EMPTY>
 
 <!ATTLIST panel layout (border|box|grid|flow) #IMPLIED>
 <!ATTLIST panel orientation (horizontal|vertical|page|line) #IMPLIED>
@@ -40,6 +39,7 @@
 <!ATTLIST panel vgap CDATA #IMPLIED>
 <!ATTLIST panel rows CDATA #IMPLIED>
 <!ATTLIST panel cols CDATA #IMPLIED>
+<!ATTLIST panel border CDATA #IMPLIED>
 <!ATTLIST panel align (left|right|center|leading|trailing) #IMPLIED>
 
 <!ATTLIST component type CDATA #REQUIRED>
@@ -55,6 +55,7 @@
 <!ATTLIST checkbox alignmentX CDATA #IMPLIED>
 <!ATTLIST menuitem alignmentX CDATA #IMPLIED>
 <!ATTLIST checkboxmenuitem alignmentX CDATA #IMPLIED>
+<!ATTLIST label alignmentX CDATA #IMPLIED>
 
 <!ATTLIST panel alignmentY CDATA #IMPLIED>
 <!ATTLIST component alignmentY CDATA #IMPLIED>
