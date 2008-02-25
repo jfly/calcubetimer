@@ -101,6 +101,8 @@ changes:
 +add xmlgui option for showing scramblepopup
 +expand jtable of times to include {current, rolling1, rolling2} average column
 +test out jsplitpane xmlgui stuff
++clean up all critical TODOs scattered throughout the code
++sent modified sunday contest to jon morris (emailed on 2/22/08, uploaded on 2/24/08)
 
 TODO:
 
@@ -109,11 +111,9 @@ for release:
 -internationalization (dates, too)
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html
 	http://www.eclipse.org/articles/Article-Internationalization/how2I18n.html
--clean up all critical TODOs scattered throughout the code
 -open source sourceforge!
 -update FAQ, defaults.properties file, about.html
 -create license, give credit where credit is due
--send modified sunday contest to jon morris
 -create small diagnostic problem that will dump relevant info to a file (java
 	version, os, etc.)
 
