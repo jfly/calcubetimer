@@ -35,6 +35,7 @@ public class VariableKey<H> {
 		return new VariableKey<Integer>("Puzzle_ScrambleLength_" + var.toString());
 	}
 
+	public static final VariableKey<String> SUNDAY_SUBMIT_URL = new VariableKey<String>("Sunday_submitURL");
 	public static final VariableKey<String> SUNDAY_NAME = new VariableKey<String>("Sunday_name");
 	public static final VariableKey<String> SMTP_FROM_ADDRESS = new VariableKey<String>("SMTP_fromAddress");
 	public static final VariableKey<String> SMTP_PASSWORD = new VariableKey<String>("SMTP_password");

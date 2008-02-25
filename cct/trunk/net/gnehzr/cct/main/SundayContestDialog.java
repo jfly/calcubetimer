@@ -33,6 +33,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.JTextAreaWithHistory;
 
 @SuppressWarnings("serial")
@@ -183,8 +185,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		data += "&" + URLEncoder.encode("submit", "UTF-8") + "="
 		+ URLEncoder.encode("submit times", "UTF-8");
 
-//		URL url = new URL("http://nascarjon.us/submit.php");
-		URL url = new URL("http://localhost/sunday/submit2.php");
+		URL url = new URL(Configuration.getString(VariableKey.SUNDAY_SUBMIT_URL, false));
 		URLConnection urlConn = url.openConnection();
 		urlConn.setDoOutput(true);
 		urlConn.setUseCaches(false);
