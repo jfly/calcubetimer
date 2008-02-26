@@ -855,6 +855,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		sekey2 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY2, defaults);
 		stackmatKeySelector1.setText(KeyEvent.getKeyText(sekey1));
 		stackmatKeySelector2.setText(KeyEvent.getKeyText(sekey2));
+		stackmatKeySelector1.setEnabled(stackmatEmulation.isSelected());
+		stackmatKeySelector2.setEnabled(stackmatEmulation.isSelected());
 		flashyWindow.setSelected(Configuration.getBoolean(VariableKey.CHAT_WINDOW_FLASH, defaults));
 		isBackground.setSelected(Configuration.getBoolean(VariableKey.WATERMARK_ENABLED, defaults));
 		backgroundFile.setText(Configuration.getString(VariableKey.WATERMARK_FILE, defaults));
