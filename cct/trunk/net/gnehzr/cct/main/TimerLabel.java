@@ -26,7 +26,6 @@ import net.gnehzr.cct.main.KeyboardTimerPanel.KeyboardTimerComponent;
 @SuppressWarnings("serial")
 public class TimerLabel extends JLabel implements ComponentListener, KeyboardTimerComponent {
 	private KeyboardTimerPanel timer;
-//	private ScramblePanel scrambles;
 	public TimerLabel(ActionListener timeListener) {
 		super("0.00", JLabel.CENTER);
 		addComponentListener(this);
@@ -46,7 +45,7 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 		else refreshFocus();
 		timer.setEnabled(enabled);
 	}
-
+	
 	public void refreshFocus(){
 		if(isFocusOwner())
 			setFocusedState();
@@ -119,7 +118,6 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 	public void setUnfocusedState() {
 		if(keyboard && focusListener != null)
 			focusListener.focusChanged(true);
-//		thingToListenTo.setBorder(BorderFactory.createEmptyBorder());
 		if(Configuration.getBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, false))
 			setBorder(BorderFactory.createTitledBorder(
 					BorderFactory.createRaisedBevelBorder(),
@@ -135,8 +133,7 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 			((TitledBorder) bord).setTitle(string);
 	}
 
-	private static BufferedImage curr = null;
-	private static BufferedImage red;
+	private static BufferedImage curr, red, green;
 	public void setRedButton() {
 		if(red == null) {
 			try {
@@ -146,7 +143,6 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 		curr = red;
 		repaint();
 	}
-	private static BufferedImage green;
 	public void setGreenButton() {
 		if(green == null) {
 			try {
@@ -154,10 +150,6 @@ public class TimerLabel extends JLabel implements ComponentListener, KeyboardTim
 			} catch (IOException e) {}
 		}
 		curr = green;
-		repaint();
-	}
-	public void clearButton() {
-		curr = null;
 		repaint();
 	}
 	public void paint(Graphics g) {

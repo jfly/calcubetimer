@@ -131,6 +131,7 @@ misc:
 cleanup:
 -generalize XML syntax (get rid of Dynamic... classes) UPDATE: no idea how to do this...???
 -integrate statsdialoghandler with ui xml stuff
+-the timer panel stuff has turned into a mess! (known bug: disable integrated timer, and the border will be wrong upon startup)
 
 Server stuff:
 -latency on server - this is so that clients don't flood the server with too many time messages
