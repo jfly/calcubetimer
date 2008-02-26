@@ -1,5 +1,6 @@
 package net.gnehzr.cct.misc.customJTable;
 
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -14,6 +15,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -36,6 +38,17 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		this.putClientProperty("JTable.autoStartsEdit", Boolean.FALSE);
 	}
 
+	private JTableHeader headers;
+	public void setHeadersVisible(boolean visible) {
+		if(!visible) {
+			if(headers == null)
+				headers = getTableHeader();
+			setTableHeader(null);
+		} else if(visible && headers != null) {
+			setTableHeader(headers);
+		}
+	}
+	
 	private class JTableModelWrapper extends DraggableJTableModel {
 		private DraggableJTableModel wrapped;
 		public JTableModelWrapper(DraggableJTableModel wrapped) {
@@ -139,14 +152,13 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		if(!visible && cols.get(column) == null) {
 			cols.set(column, getColumnModel().getColumn(toView(column)));
 			removeColumn(cols.get(column));
-			computePreferredSizes();
 		} else if(visible && cols.get(column) != null){
 			addColumn(cols.get(column)); //this appends the column to the end of the view
 			if(column < getColumnModel().getColumnCount() - 1) //this moves the column to where it belongs
 				moveColumn(getColumnModel().getColumnCount() - 1, column);
 			cols.set(column, null);
-			computePreferredSizes();
 		}
+		computePreferredSizes();
 	}
 
 	private DraggableJTableModel model;
@@ -160,7 +172,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			super.setModel(tableModel);
 	}
 	
-	private void computePreferredSizes() {
+	public void computePreferredSizes() {
 		Dimension rendDim = getCellRenderer(0, 0).getTableCellRendererComponent(
 				this,
 				addText,
@@ -194,7 +206,11 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			rendDim.width += Math.max(edWidth, rendWidth);
 		}
 		this.setPreferredScrollableViewportSize(rendDim);
-
+		Container par = this.getParent();
+		if(par != null) {
+			par.setMinimumSize(rendDim);
+		}
+		
 		TableColumnModel columns = this.getColumnModel();
 		Object render = addText;
 		for(int ch = 0; ch < columns.getColumnCount(); ch++) {				

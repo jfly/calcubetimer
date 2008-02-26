@@ -107,6 +107,7 @@ changes:
 TODO:
 
 for release:
+-comments on scrambles
 -logging to xml database for each profile
 -internationalization (dates, too)
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html

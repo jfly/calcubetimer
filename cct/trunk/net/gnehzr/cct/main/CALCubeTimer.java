@@ -524,7 +524,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if(scrambleAttributes.isDisplayable())
 			scrambleAttributes.getParent().validate();
 	}
-
 	//{{{ GUIParser
 	private class GUIParser extends DefaultHandler {
 		private int level = -2;
@@ -591,7 +590,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				com = new DynamicCheckBox();
 			}
 			else if(elementName.equals("panel")){
-				com = new JPanel();
+				com = new JPanel() {
+					//we're overwriting this to allow "nice" resizing of the gui with the jsplitpane
+					public Dimension getMinimumSize() {
+						return new Dimension(0, 0);
+					}
+				};
 				int hgap = 0;
 				int vgap = 0;
 				int align = FlowLayout.CENTER;
@@ -685,6 +689,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 						Dimension d = getViewport().getView().getPreferredSize();
 						return new Dimension(d.width + i.left + i.right, d.height + i.top + i.bottom);
 					}
+					@Override
+					public Dimension getMinimumSize() {
+						//this is to allow "nice" gui resizing
+						return new Dimension(0, 0);
+					}
 				};
 				scroll.putClientProperty(SubstanceLookAndFeel.OVERLAY_PROPERTY, Boolean.TRUE);
 				scroll.putClientProperty(SubstanceLookAndFeel.BACKGROUND_COMPOSITE,
@@ -692,7 +701,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				com = scroll;
 			}
 			else if(elementName.equals("splitpane")) {
-				com = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, null, null);
+				com = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, null, null) {
+				};
 			}
 			else if(elementName.equals("glue")) {
 				Component glue = null;
@@ -880,7 +890,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		sessionAverageAction.setEnabled(stats.isValid(Statistics.averageType.SESSION, 0));
 
 		//make the new time visible
-		Rectangle newTimeRect = timesList.getCellRect(stats.getRowCount() - 1, 0, true);
+		Rectangle newTimeRect = timesList.getCellRect(stats.getRowCount(), 0, true);
 		timesList.scrollRectToVisible(newTimeRect);
 	}
 
@@ -1184,8 +1194,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		profiles.setModel(new DefaultComboBoxModel(Configuration.getProfiles().toArray(new Profile[0])));
 		safeSelectItem(profiles, Configuration.getSelectedProfile());
 
-		timesList.setColumnVisible(1, Configuration.getBoolean(VariableKey.SHOW_RA0, false));
-		timesList.setColumnVisible(2, Configuration.getBoolean(VariableKey.SHOW_RA1, false));
+		boolean showRA0 = Configuration.getBoolean(VariableKey.SHOW_RA0, false);
+		boolean showRA1 = Configuration.getBoolean(VariableKey.SHOW_RA1, false);
+		timesList.setColumnVisible(1, showRA0);
+		timesList.setColumnVisible(2, showRA1);
+		timesList.setHeadersVisible(showRA0 || showRA1);
 		
 		ScramblePlugin.reloadLengthsFromConfiguration(false);
 		ScrambleCustomization newCustom = ScramblePlugin.getCurrentScrambleCustomization();
