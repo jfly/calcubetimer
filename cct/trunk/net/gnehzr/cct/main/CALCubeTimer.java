@@ -61,6 +61,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
@@ -70,6 +71,10 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.xml.parsers.ParserConfigurationException;
@@ -138,6 +143,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private JSpinner scrambleNumber, scrambleLength = null;
 	private ScrambleList scramblesList = null;
 	private JComboBox profiles = null;
+	private JTextArea commentArea = null;
 	private Statistics stats = null;
 	private StackmatInterpreter stackmatTimer = null;
 	private TimerHandler timeListener = null;
@@ -388,6 +394,22 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timesList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		timesList.setModel(stats);
 		timesList.getTableHeader().setReorderingAllowed(false);
+		
+		ListSelectionListener lsl = new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				commentArea.setEnabled(false);
+				if(e.getSource() == timesList.getSelectionModel() && timesList.getSelectedRowCount() == 1) {
+					int row = timesList.getSelectedRow();
+					SolveTime st = stats.get(row);
+					if(st != null) {
+						commentArea.setText(st.getComment());
+						commentArea.setEnabled(true);
+					}
+				}
+			}
+		};
+		timesList.getSelectionModel().addListSelectionListener(lsl);
+		
 		timesScroller = new JScrollPane(timesList);
 
 		scramblePanel = new ScrambleArea(scramblePopup);
@@ -399,7 +421,23 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		startStopPanel.setTimerFocusListener(scramblePanel);
 		startStopPanel.setKeyboard(true);
 
-
+		commentArea = new JTextArea();
+		commentArea.setEnabled(false);
+		commentArea.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
+		commentArea.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+			}
+			public void insertUpdate(DocumentEvent e) {
+				saveToSolveTime();
+			}
+			public void removeUpdate(DocumentEvent e) {
+				saveToSolveTime();				
+			}
+			private void saveToSolveTime() {
+				stats.get(timesList.getSelectedRow()).setComment(commentArea.getText());
+			}
+		});
+		
 		timeLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 		timeLabel.setMinimumSize(new Dimension(0, 150));
 		timeLabel.setPreferredSize(new Dimension(0, 150));
@@ -659,6 +697,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				else if(temp.equalsIgnoreCase("customguimenu")) com = customGUIMenu;
 				else if(temp.equalsIgnoreCase("maximizebutton")) com = maximize;
 				else if(temp.equalsIgnoreCase("profilecombobox")) com = profiles;
+				else if(temp.equalsIgnoreCase("commentarea")) com = commentArea;
 			}
 			else if(elementName.equals("center") || elementName.equals("east") || elementName.equals("west") || elementName.equals("south") || elementName.equals("north") || elementName.equals("page_start") || elementName.equals("page_end") || elementName.equals("line_start") || elementName.equals("line_end")){
 				com = null;
@@ -744,6 +783,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 						if(titleAttrs.length > 1)
 							border = BorderFactory.createTitledBorder(border, titleAttrs[1]);
 						com.setBorder(border);
+					}
+					if((temp = attrs.getValue("minimumsize")) != null) {
+						String[] dims = temp.split("x");
+						com.setMinimumSize(new Dimension(Integer.parseInt(dims[0]), Integer.parseInt(dims[1])));
+					}
+					if((temp = attrs.getValue("preferredsize")) != null) {
+						String[] dims = temp.split("x");
+						com.setPreferredSize(new Dimension(Integer.parseInt(dims[0]), Integer.parseInt(dims[1])));
 					}
 					if(com instanceof JScrollPane) {
 						JScrollPane scroller = (JScrollPane) com;
@@ -888,10 +935,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		currentAverageAction1.setEnabled(stats.isValid(Statistics.averageType.CURRENT, 1));
 		rollingAverageAction1.setEnabled(stats.isValid(Statistics.averageType.RA, 1));
 		sessionAverageAction.setEnabled(stats.isValid(Statistics.averageType.SESSION, 0));
-
-		//make the new time visible
-		Rectangle newTimeRect = timesList.getCellRect(stats.getRowCount(), 0, true);
-		timesList.scrollRectToVisible(newTimeRect);
 	}
 
 	public static void main(String[] args) {
@@ -1084,6 +1127,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			Scramble curr = scramblesList.getCurrent();
 			if(curr != null){
 				stats.get(stats.getSize() - 1).setScramble(curr.toString());
+				//TODO - set scramble comment
 				boolean outOfScrambles = curr.isImported(); //This is tricky, think before you change it
 				outOfScrambles = !scramblesList.getNext().isImported() && outOfScrambles;
 				if(outOfScrambles) {
@@ -1104,6 +1148,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if(stats != null && stats.getSize() >= 1)
 			sendTime(stats.get(-1));
 		repaintTimes();
+
+		int rows = stats.getRowCount();
+		if(rows > 0)
+			timesList.setRowSelectionInterval(rows - 1, rows - 1);
+		
+		//make the new time visible
+		Rectangle newTimeRect = timesList.getCellRect(rows, 0, true);
+		timesList.scrollRectToVisible(newTimeRect);
 	}
 
 	private void sendCurrentTime(String s){

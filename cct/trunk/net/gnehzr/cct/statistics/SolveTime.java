@@ -17,6 +17,7 @@ public class SolveTime implements Comparable<SolveTime> {
 	private boolean isDNF = false;
 	private int hundredths;
 	private String scramble = null;
+	private String comment;
 	private ArrayList<SolveTime> splits;
 
 	public SolveTime() {
@@ -94,6 +95,14 @@ public class SolveTime implements Comparable<SolveTime> {
 		}
 	}
 
+	public void setComment(String comm) {
+		comment = comm;
+	}
+	
+	public String getComment() {
+		return comment;
+	}
+	
 	public void setScramble(String scramble) {
 		this.scramble = scramble;
 	}

@@ -104,11 +104,11 @@ changes:
 +clean up all critical TODOs scattered throughout the code
 +sent modified sunday contest to jon morris (emailed on 2/22/08, uploaded on 2/24/08)
 +escape will release all keys we think are pressed, this allows an easy fix to the alt+spacebar problem
++comments on scrambles
 
 TODO:
 
 for release:
--comments on scrambles
 -logging to xml database for each profile
 -internationalization (dates, too)
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html

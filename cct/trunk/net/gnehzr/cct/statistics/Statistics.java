@@ -417,6 +417,9 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		if (!times.hasNext())
 			return "";
 		SolveTime next = times.next();
+		String comment = next.getComment();
+		if(!comment.isEmpty())
+			comment = "\t" + comment;
 		boolean parens = false;
 		if (next == best || next == worst)
 			parens = true;
@@ -424,6 +427,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 				+ next.toString() + (parens ? ")" : "") + "\t"
 				+ next.getScramble()
 				+ (showSplits ? next.toSplitsString() : "")
+				+ comment
 				+ "\n"
 				+ toStatsStringHelper(times, best, worst, showSplits);
 	}

@@ -94,7 +94,18 @@
 								</selectablelabel>
 							</center>
 							<south>
-								<checkbox alignmentX=".5" action="togglescramblepopup"/>
+								<panel layout="border">
+									<line_start>
+										<checkbox alignmentX=".5" action="togglescramblepopup"/>
+									</line_start>
+									<center>
+										<panel layout="border" preferredsize="100x100">
+											<scrollpane verticalpolicy="always" horizontalpolicy="always">
+												<component type="commentarea"/>
+											</scrollpane>
+										</panel>
+									</center>
+								</panel>
 							</south>
 						</panel>
 					</panel>
