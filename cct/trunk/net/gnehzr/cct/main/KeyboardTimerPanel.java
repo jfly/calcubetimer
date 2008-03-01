@@ -148,6 +148,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		int sekey2 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY2, false);
 
 		int key = e.getKeyCode();
+		System.out.println(key);
 		if(key == 0) {
 		} else if(keyboardTimer.isRunning()) {
 			if(Configuration.getBoolean(VariableKey.TIMING_SPLITS, false) && key == Configuration.getInt(VariableKey.SPLIT_KEY, false)) {
@@ -156,6 +157,11 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 			else if(!stackmatEmulation || stackmatEmulation && stackmatKeysDown()){
 				keyboardTimer.stop();
 				thingToListenTo.setKeysDownState();
+			}
+		} else if(key == KeyEvent.VK_ESCAPE) { //this will release all keys that we think are down
+			for(int code : keyDown.keySet()) {
+				e.setKeyCode(code);
+				keyReleased(e);
 			}
 		} else if(!stackmatEmulation && !ignoreKey(e, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false), stackmatEmulation, sekey1, sekey2) || stackmatEmulation && stackmatKeysDown()){
 			thingToListenTo.setKeysDownState();
