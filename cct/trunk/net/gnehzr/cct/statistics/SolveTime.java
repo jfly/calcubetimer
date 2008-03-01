@@ -100,7 +100,7 @@ public class SolveTime implements Comparable<SolveTime> {
 	}
 	
 	public String getComment() {
-		return comment;
+		return comment == null ? "" : comment;
 	}
 	
 	public void setScramble(String scramble) {
