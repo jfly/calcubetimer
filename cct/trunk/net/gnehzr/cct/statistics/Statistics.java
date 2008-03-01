@@ -827,13 +827,12 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
 		SolveTime val = (SolveTime) value;
 		if(rowIndex == getRowCount()) {
-			add(val);
+			add(val); //this will fire table row insertion
 		} else {
 			val.setScramble(times.get(rowIndex).getScramble());
 			times.set(rowIndex, val);
-			refresh();
+			refresh(); //this will fire table data changed
 		}
-		fireTableRowsInserted(rowIndex, rowIndex);
 	}
 	public boolean deleteRowWithElement(Object row) {
 		return removeRowWithElement(row);
