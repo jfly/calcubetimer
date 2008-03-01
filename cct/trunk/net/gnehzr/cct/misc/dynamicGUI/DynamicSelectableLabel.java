@@ -2,6 +2,8 @@ package net.gnehzr.cct.misc.dynamicGUI;
 
 import javax.swing.JEditorPane;
 
+import org.jvnet.lafwidget.LafWidget;
+
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.statistics.StatisticsUpdateListener;
@@ -12,6 +14,7 @@ public class DynamicSelectableLabel extends JEditorPane implements StatisticsUpd
 
 	public DynamicSelectableLabel(){
 		super("text/html", null);
+		putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 		setEditable(false);
 		setBorder(null);
 		setOpaque(false);
