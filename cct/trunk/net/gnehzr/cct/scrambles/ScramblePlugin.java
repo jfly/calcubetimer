@@ -85,6 +85,8 @@ public class ScramblePlugin {
 				for(String var : p.VARIATIONS)
 					vars.add(new ScrambleVariation(p, var));
 			}
+			if(vars.isEmpty())
+				vars.add(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation());
 			scrambleVariations = vars.toArray(new ScrambleVariation[0]);
 		}
 		return scrambleVariations;
