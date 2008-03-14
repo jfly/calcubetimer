@@ -76,6 +76,7 @@ public class VariableKey<H> {
 	public static final VariableKey<Font> TIMER_FONT = new VariableKey<Font>("Timer_font");
 	public static final VariableKey<Font> SCRAMBLE_FONT = new VariableKey<Font>("Scramble_font");
 
+	public static final VariableKey<Boolean> FOCUSABLE_BUTTONS = new VariableKey<Boolean>("GUI_focusableButtons");
 	public static final VariableKey<Boolean> SHOW_RA0 = new VariableKey<Boolean>("Statistics_showRA0");
 	public static final VariableKey<Boolean> SHOW_RA1 = new VariableKey<Boolean>("Statistics_showRA1");
 	public static final VariableKey<Boolean> CLOCK_FORMAT = new VariableKey<Boolean>("Misc_isClockFormat");
