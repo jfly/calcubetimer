@@ -69,7 +69,8 @@ public class SolveTimeRenderer extends JLabel implements TableCellRenderer {
 				background = Color.GRAY;
 			else
 				background = background.darker();
-		}
+		} else if(background == null)
+			background = Color.WHITE;			
 
 		setForeground(foreground);
 		setBackground(background);
