@@ -128,6 +128,7 @@ import org.xml.sax.helpers.DefaultHandler;
 @SuppressWarnings("serial")
 public class CALCubeTimer extends JFrame implements ActionListener, TableModelListener, ChangeListener, ConfigurationChangeListener, ItemListener {
 	public static final String CCT_VERSION = "0.3 beta";
+
 	private JScrollPane timesScroller = null;
 	private TimerLabel timeLabel = null;
 	private JLabel onLabel = null;
@@ -343,7 +344,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	private Timer tickTock;
-	private JButton maximize;
 	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Changed";
 	private JMenu customGUIMenu;
 	private void initializeGUIComponents() {
@@ -464,9 +464,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			customGUIMenu.add(temp);
 		}
 
-		maximize = new JButton(flipFullScreenAction);
-		maximize.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE);
-
 		profiles = new JComboBox();
 		profiles.addItemListener(this);
 //		profiles.setMaximumSize(new Dimension(1000, 100));
@@ -555,6 +552,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				}
 			}
 			attributes[ch] = new JCheckBox(attrs[ch], selected);
+			attributes[ch].setFocusable(Configuration.getBoolean(VariableKey.FOCUSABLE_BUTTONS, false));
 			attributes[ch].setActionCommand(SCRAMBLE_ATTRIBUTE_CHANGED);
 			attributes[ch].addActionListener(this);
 			scrambleAttributes.add(attributes[ch]);
@@ -623,9 +621,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 			else if(elementName.equals("button")){
 				com = new DynamicButton();
+				com.setFocusable(Configuration.getBoolean(VariableKey.FOCUSABLE_BUTTONS, false));
 			}
 			else if(elementName.equals("checkbox")){
 				com = new DynamicCheckBox();
+				com.setFocusable(Configuration.getBoolean(VariableKey.FOCUSABLE_BUTTONS, false));
 			}
 			else if(elementName.equals("panel")){
 				com = new JPanel() {
@@ -695,7 +695,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				else if(temp.equalsIgnoreCase("startstoppanel")) com = startStopPanel;
 				else if(temp.equalsIgnoreCase("timeslist")) com = timesScroller;
 				else if(temp.equalsIgnoreCase("customguimenu")) com = customGUIMenu;
-				else if(temp.equalsIgnoreCase("maximizebutton")) com = maximize;
 				else if(temp.equalsIgnoreCase("profilecombobox")) com = profiles;
 				else if(temp.equalsIgnoreCase("commentarea")) com = commentArea;
 			}
@@ -761,7 +760,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					if((temp = attrs.getValue("action")) != null){
 						AbstractAction a = actionMap.get(temp.toLowerCase());
 						if(a != null) ((AbstractButton)com).setAction(a);
-						else throw new SAXException("parse error in action");
+						else throw new SAXException("parse error in action: " + temp.toLowerCase());
 					}
 				}
 			}
@@ -842,6 +841,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 							else if(temp.equalsIgnoreCase("vertical"))
 								jsp.setOrientation(JSplitPane.VERTICAL_SPLIT);
 						}
+					}
+					if((temp = attrs.getValue("nominsize")) != null) {
+						com.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.parseBoolean(temp));
 					}
 				} catch(Exception e) {
 					throw new SAXException(e);
@@ -1083,7 +1085,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	public void saveToConfiguration() {
 		Configuration.setBoolean(VariableKey.STACKMAT_ENABLED, !(Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
 		Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, scramblePopup.isVisible());
-		Configuration.setString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, scramCustomizationChoice.toString());
+		Configuration.setString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, scramCustomizationChoice == null ? "" : scramCustomizationChoice.toString());
 		ScramblePlugin.saveLengthsToConfiguraiton();
 		for(ScramblePlugin plugin : ScramblePlugin.getScramblePlugins()) {
 			Configuration.setStringArray(VariableKey.PUZZLE_ATTRIBUTES(plugin),
@@ -1127,7 +1129,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			Scramble curr = scramblesList.getCurrent();
 			if(curr != null){
 				stats.get(stats.getSize() - 1).setScramble(curr.toString());
-				//TODO - set scramble comment
 				boolean outOfScrambles = curr.isImported(); //This is tricky, think before you change it
 				outOfScrambles = !scramblesList.getNext().isImported() && outOfScrambles;
 				if(outOfScrambles) {
@@ -1304,7 +1305,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 	
 	private void refreshScramblePopup() {
-		scramblePopup.setVisible(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false) && !(scramblesList.getCurrent() instanceof NullScramble));
+		scramblePopup.setVisible(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false) && scramblesList != null && !(scramblesList.getCurrent() instanceof NullScramble));
 	}
 
 	// Actions section {{{
