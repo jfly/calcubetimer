@@ -70,6 +70,6 @@
 			<menuitem action="showDocumentation">View Documentation</menuitem>
 			<menuitem action="showAbout">About</menuitem>
 		</menu>
-		<component type="maximizeButton"/>
+		<button nominsize="true" action="togglefullscreen"/>
 	</menubar>
 </gui>

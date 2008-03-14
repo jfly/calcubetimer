@@ -44,6 +44,8 @@
 
 <!ATTLIST component type CDATA #REQUIRED>
 
+<!ATTLIST button nominsize (true|false) #IMPLIED>
+
 <!ATTLIST button action CDATA #IMPLIED>
 <!ATTLIST checkbox action CDATA #IMPLIED>
 <!ATTLIST menuitem action CDATA #IMPLIED>
