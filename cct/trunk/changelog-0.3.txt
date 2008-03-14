@@ -105,6 +105,10 @@ changes:
 +sent modified sunday contest to jon morris (emailed on 2/22/08, uploaded on 2/24/08)
 +escape will release all keys we think are pressed, this allows an easy fix to the alt+spacebar problem
 +comments on scrambles
++to fix this problem: "add gui option (disabled by default) to maintain focus whenever possible"
+	+added configuration option (enabled by default) to prevent buttons and checkboxes from stealing focus
++updated to substance 4.2 -> had to modify solvetimerenderer to fix minor bug introduced by new substance
++issues with ant build.xml have been resolved (previously, it didn't include the jfontchooser, source code line numbers, or compile scrambleplugins)
 
 TODO:
 
@@ -114,17 +118,14 @@ for release:
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html
 	http://www.eclipse.org/articles/Article-Internationalization/how2I18n.html
 -open source sourceforge!
--update FAQ, defaults.properties file, about.html
 -create license, give credit where credit is due
+-update FAQ, defaults.properties file, about.html
 -create small diagnostic problem that will dump relevant info to a file (java
 	version, os, etc.)
-
-scramble stuff:
 -write scramble plugin tutorial
--icons on scramble choices?
 
 misc:
--add gui option (disabled by default) to maintain focus whenever possible
+-icons on scramble choices?
 -java webstart? applet?
 -dynamic string multiple argument format
 -BUG: titled borders are not anti-aliased (substance bug!)

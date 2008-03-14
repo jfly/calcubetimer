@@ -3,19 +3,20 @@
 	<property name="dist" location="dist"/>
 	<property name="targetjar" location="${dist}/CALCubeTimer.jar"/>
 	<target name="dist" depends="compile, compress" description="Main distribution">
-		<echo>Building CALCubeTimer.jar</echo>
+		<echo>Building ${targetjar}</echo>
 	</target>
 
-	<target name="run" depends="compile, compress" description="Compile and run">
+	<target name="run" description="Compile and run">
+		<echo>Running ${targetjar}</echo>
 		<java jar="${targetjar}" fork="true"/>
 	</target>
 	
 	<target name="compile" description="Compilation target">
-		<javac srcdir="net/:say/:scramblePlugins" classpath="substance.jar:mailapi.jar"/>
+		<javac srcdir="net/:say/:scramblePlugins/" classpath="substance.jar:mailapi.jar" debug="true" debuglevel="lines,vars,source"/>
 	</target>
 	
 	<target name="warnings" description="Compilation target">
-		<javac srcdir="net/:say/:scramblePlugins" classpath="substance.jar:mailapi.jar">
+		<javac srcdir="net/:say/:scramblePlugins/" classpath="substance.jar:mailapi.jar:." debug="true" debuglevel="lines,vars,source">
 			<compilerarg value="-Xlint:unchecked"/>
 		</javac>
 	</target>
@@ -27,7 +28,7 @@
 
 		<mkdir dir="${dist}" />
 		<jar jarfile="${dist}/CALCubeTimer.jar" manifest="files/cct.mf" basedir="." includes="*.class">
-			<fileset dir="." includes="net/**"/>
+			<fileset dir="." includes="net/**, say/**"/>
 			<zipfileset src="mailapi.jar" excludes="META-INF/MANIFEST.MF, META-INF/SUN_MICR.RSA, META-INF/SUN_MICR.SF"/>
 			<zipfileset src="smtp.jar" excludes="META-INF/MANIFEST.MF, META-INF/SUN_MICR.RSA, META-INF/SUN_MICR.SF"/>
 			<zipfileset src="substance.jar" excludes="META-INF/MANIFEST.MF"/>
