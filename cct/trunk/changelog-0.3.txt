@@ -65,7 +65,7 @@ changes:
 +save profile ordering, just like with custom scramble types
 +standardize the terms: scramble type, puzzle type, etc... ===> ScramblePlugin, ScrambleVariation, and ScrambleCustomization
 +create a Class<? extends Scramble> wrapper, and do all the nasty stuff in there
-+siwtched from JListMutable (crap) to a custom JTable subclass I wrote (better powerfulness)
++switched from JListMutable (crap) to a custom JTable subclass I wrote (better powerfulness)
 +request new scramble button? not in gui by default.
 +switching scramblecustomization is allowed (without message) so long as scramblevariation is unchanged
 +improve the gui for custom scramble types
@@ -109,10 +109,12 @@ changes:
 	+added configuration option (enabled by default) to prevent buttons and checkboxes from stealing focus
 +updated to substance 4.2 -> had to modify solvetimerenderer to fix minor bug introduced by new substance
 +issues with ant build.xml have been resolved (previously, it didn't include the jfontchooser, source code line numbers, or compile scrambleplugins)
++dynamic string can now access the configuration directly ($$configuration_...$$)
 
 TODO:
 
 for release:
+-progress time (dynamicstring) is broken
 -logging to xml database for each profile
 -internationalization (dates, too)
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html
@@ -125,12 +127,14 @@ for release:
 -write scramble plugin tutorial
 
 misc:
+-add undo-redo buttons (for times)
 -icons on scramble choices?
 -java webstart? applet?
 -dynamic string multiple argument format
 -BUG: titled borders are not anti-aliased (substance bug!)
 
 cleanup:
+-merge session stats dialog and average stats dialog w/ dynamic string
 -generalize XML syntax (get rid of Dynamic... classes) UPDATE: no idea how to do this...???
 -integrate statsdialoghandler with ui xml stuff
 -the timer panel stuff has turned into a mess! (known bug: disable integrated timer, and the border will be wrong upon startup)

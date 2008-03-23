@@ -45,6 +45,11 @@ public final class Configuration {
 
 	//********* Start getters and setters *****************//
 
+	public static String getValue(String key) {
+		String val = props.getProperty(key);
+		return val == null ? "Couldn't find key " + key : val;
+	}
+	
 	public static double getDouble(VariableKey<Double> key, boolean defaultValue) {
 		return getDouble(defaultValue ? defaults : props, key.toKey());
 	}

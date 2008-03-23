@@ -60,7 +60,7 @@ public class SolveTime implements Comparable<SolveTime> {
 		setScramble(scramble);
 	}
 
-	public void setTime(String time) throws Exception {
+	private void setTime(String time) throws Exception {
 		if(time != null) time = time.trim();
 		isDNF = time.equalsIgnoreCase("DNF");
 		isPop = time == null || time == "" || time.equalsIgnoreCase("POP");
@@ -135,12 +135,12 @@ public class SolveTime implements Comparable<SolveTime> {
 		return hundredths / 100.;
 	}
 
-	public double secondsValue() {
+	public double secondsValue() { //TODO - return DOUBLE_MAX if it should
 		return value() / 100.;
 	}
 
-	public int value() {
-		if(isInfiniteTime()) return Integer.MAX_VALUE - 1;
+	private int value() {
+		if(isInfiniteTime()) return Integer.MAX_VALUE - 1; //TODO - why is this MAX-1 and not just MAX?
 		return hundredths + (isPlusTwo ? 200 : 0);
 	}
 

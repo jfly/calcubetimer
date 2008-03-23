@@ -9,6 +9,8 @@ import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.statistics.Statistics;
 
 public class DynamicString{
+	private static final String CONF = "configuration_";
+	
 	private String[] splitText;
 	private Statistics stats;
 
@@ -36,6 +38,11 @@ public class DynamicString{
 	}
 
 	private String getReplacement(String s){
+		//Configuration section
+		if(s.startsWith(CONF)) {
+			return Configuration.getValue(s.substring(CONF.length()));
+		}
+		
 		Pattern p = Pattern.compile("([^0-9]*)([0-9]*)");
 		Matcher m = p.matcher(s);
 		int num = 0;
@@ -87,13 +94,6 @@ public class DynamicString{
 		else if(s.equalsIgnoreCase("currentAverageList")) r = stats.getCurrentAverageList(num);
 		else if(s.equalsIgnoreCase("sessionAverageList")) r = stats.getSessionAverageList();
 		else if(s.equalsIgnoreCase("worstAverageList")) r = stats.getWorstAverageList(num);
-
-		//Configuration section
-		else if(s.equalsIgnoreCase("color_bestAverage")) r = Utils.colorToString(Configuration.getColor(VariableKey.BEST_RA, false));
-		else if(s.equalsIgnoreCase("color_bestAndCurrentAverage")) r = Utils.colorToString(Configuration.getColor(VariableKey.BEST_AND_CURRENT, false));
-		else if(s.equalsIgnoreCase("color_currentAverage")) r = Utils.colorToString(Configuration.getColor(VariableKey.CURRENT_AVERAGE, false));
-		else if(s.equalsIgnoreCase("color_bestTime")) r = Utils.colorToString(Configuration.getColor(VariableKey.BEST_TIME, false));
-		else if(s.equalsIgnoreCase("color_worstTime")) r = Utils.colorToString(Configuration.getColor(VariableKey.WORST_TIME, false));
 
 		if(r.equalsIgnoreCase("" + Double.MAX_VALUE)) return "N/A";
 		else return r;

@@ -128,6 +128,7 @@ import org.xml.sax.helpers.DefaultHandler;
 @SuppressWarnings("serial")
 public class CALCubeTimer extends JFrame implements ActionListener, TableModelListener, ChangeListener, ConfigurationChangeListener, ItemListener {
 	public static final String CCT_VERSION = "0.3 beta";
+	public static final ImageIcon cubeIcon = new ImageIcon(CALCubeTimer.class.getResource("cube.png"));
 
 	private JScrollPane timesScroller = null;
 	private TimerLabel timeLabel = null;
@@ -150,8 +151,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private TimerHandler timeListener = null;
 	private CCTClient client;
 	private ConfigurationDialog configurationDialog;
-
-	public static final ImageIcon cubeIcon = new ImageIcon(CALCubeTimer.class.getResource("cube.png"));
 
 	public CALCubeTimer() {
 		stackmatTimer = new StackmatInterpreter();

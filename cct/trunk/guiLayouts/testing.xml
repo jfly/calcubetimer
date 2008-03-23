@@ -25,11 +25,11 @@
 								<button action="addTime">Add Time</button>
 								<checkbox action="keyboardTiming"/>
 								<button action="reset">Reset</button>
-								<button action="currentAverage0"><![CDATA[<html><font color="$$color_currentAverage$$">Current Average: $$currentAverage0$$</font></html>]]></button>
-								<button action="bestAverage0"><![CDATA[<html><font color="$$color_bestAverage$$">Best Rolling Average: $$bestAverage0$$</font></html>]]></button>
-								<button action="sessionAverage">Session Average: $$sessionAverage</button>
-								<button action="currentAverage1"><![CDATA[<html><font color="$$color_currentAverage$$">Current Average: $$currentAverage1$$</font></html>]]></button>
-								<button action="bestAverage1"><![CDATA[<html><font color="$$color_bestAverage$$">Best Rolling Average: $$bestAverage1$$</font></html>]]></button>
+								<button action="currentAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average of $$configuration_Statistics_raSize0$$: $$currentAverage0$$</font></html>]]></button>
+								<button action="bestAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">Best Rolling Average: $$bestAverage0$$</font></html>]]></button>
+								<button action="sessionAverage">Session Average: $$sessionAverage$$</button>
+								<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average: $$currentAverage1$$</font></html>]]></button>
+								<button action="bestAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">Best Rolling Average: $$bestAverage1$$</font></html>]]></button>
 								<button action="requestScramble">Request Scramble</button>
 							</panel>
 						</panel>
