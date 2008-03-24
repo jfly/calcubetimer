@@ -66,6 +66,8 @@
 			</menu>
 			<component type="customGUIMenu"/>
 		</menu>
+		<button nominsize="true" action="undo"/>
+		<button nominsize="true" action="redo"/>
 		<glue orientation="horizontal"/>
 		<component type="profilecombobox"/>
 		<menu mnemonic="h">Help
