@@ -18,6 +18,6 @@ public abstract class DraggableJTableModel extends AbstractTableModel {
 	//this is to just remove the element from the list
 	public abstract boolean removeRowWithElement(Object element);
 	//this is to actually delete the element
-	public abstract boolean deleteRowWithElement(Object element);
+	public abstract boolean deleteRowsWithElements(Object[] element);
 	public abstract void showPopup(MouseEvent e, DraggableJTable source);
 }

@@ -51,11 +51,11 @@ public class ProfileListModel extends DraggableJTableModel {
 		return contents;
 	}
 
-	@Override
-	public boolean deleteRowWithElement(Object element) {
-		Profile deleteMe = (Profile)element;
-		removeRowWithElement(deleteMe);
-		actions.add(new ProfileEditAction(editAction.REMOVED, deleteMe.getName(), null));
+	public boolean deleteRowsWithElements(Object[] elements) {
+		for(Object o : elements) {
+			removeRowWithElement(o);
+			actions.add(new ProfileEditAction(editAction.REMOVED, ((Profile)o).getName(), null));
+		}
 		return true;
 	}
 	public String getColumnName(int column) {

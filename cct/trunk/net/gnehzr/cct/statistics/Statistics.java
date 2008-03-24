@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ListIterator;
 
 import javax.swing.ButtonGroup;
@@ -20,7 +21,7 @@ import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 
 @SuppressWarnings("serial")
 public class Statistics extends DraggableJTableModel implements ConfigurationChangeListener {
-	public enum averageType {
+	public static enum averageType {
 		CURRENT {
 			public String toString() {
 				return "Current Average";
@@ -36,6 +37,62 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		}
 	}
 
+	private class StatisticsEdit {
+		private int[] positions;
+		private SolveTime[] oldTimes;
+		private SolveTime newTime;
+		public StatisticsEdit(int[] rows, SolveTime[] oldValues, SolveTime newValue) {
+			positions = rows;
+			oldTimes = oldValues;
+			newTime = newValue;
+		}
+		public void doEdit() {
+			editActions.setEnabled(false);
+			if(oldTimes == null) { //add newTime
+				add(positions[0], newTime);
+			} else if(newTime == null) { //remove oldTimes
+				for(SolveTime t : oldTimes)
+					removeRowWithElement(t);
+			} else { //change oldTime to newTime
+				setValueAt(newTime, positions[0], 1);
+			}
+			editActions.setEnabled(true);
+		}
+		public void undoEdit() {
+			editActions.setEnabled(false);
+			if(oldTimes == null) { //undo add
+				removeRowWithElement(newTime);
+			} else if(newTime == null) { //undo removal
+				for(int ch = 0; ch < oldTimes.length; ch++) {
+					if(positions[ch] != -1)
+						add(positions[ch], oldTimes[ch]);
+				}
+			} else { //undo change
+				setValueAt(oldTimes[0], positions[0], 1);
+			}
+			editActions.setEnabled(true);
+		}
+		public String toString() {
+			if(oldTimes == null) { //add newTime
+				return "added"+newTime;
+			} else if(newTime == null) { //remove oldTime
+				return "removed"+Arrays.toString(oldTimes);
+			} else { //change oldTime to newTime
+				return "changed"+oldTimes[0]+"->"+newTime;
+			}
+		}
+	}
+	public void redo() {
+		editActions.getNext().doEdit();
+	}
+	public void undo() {
+		editActions.getPrevious().undoEdit();
+	}
+	public void setUndoRedoListener(UndoRedoListener url) {
+		editActions.setUndoRedoListener(url);
+	}
+	private UndoRedoList<StatisticsEdit> editActions = new UndoRedoList<StatisticsEdit>();
+	
 	private ArrayList<SolveTime> times;
 	private ArrayList<Double>[] averages;
 	private ArrayList<Double>[] sds;
@@ -96,6 +153,10 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 	}
 
 	public void clear() {
+		int[] indices = new int[times.size()];
+		for(int ch = 0; ch < indices.length; ch++)
+			indices[ch] = ch;
+		editActions.add(new StatisticsEdit(indices, times.toArray(new SolveTime[0]), null));
 		initialize();
 		fireTableDataChanged();
 		notifyStrings();
@@ -121,6 +182,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 			add(s);
 		}
 		else{
+			editActions.add(new StatisticsEdit(new int[]{pos}, null, s));
 			times.add(pos, s);
 			refresh();
 		}
@@ -130,6 +192,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		addHelper(s);
 		int newRow = times.size() - 1;
 		fireTableRowsInserted(newRow, newRow);
+		editActions.add(new StatisticsEdit(new int[]{newRow}, null, s));
 		notifyStrings();
 	}
 
@@ -830,19 +893,25 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 			add(val); //this will fire table row insertion
 		} else {
 			val.setScramble(times.get(rowIndex).getScramble());
+			editActions.add(new StatisticsEdit(new int[]{rowIndex}, new SolveTime[]{times.get(rowIndex)}, val));
 			times.set(rowIndex, val);
 			refresh(); //this will fire table data changed
 		}
 	}
-	public boolean deleteRowWithElement(Object row) {
-		return removeRowWithElement(row);
+	public boolean deleteRowsWithElements(Object[] elements) {
+		int[] indices = new int[elements.length];
+		SolveTime[] t = new SolveTime[elements.length];
+		for(int ch = 0; ch < indices.length; ch++) {
+			t[ch] = (SolveTime) elements[ch];
+			indices[ch] = times.indexOf(elements[ch]);
+			times.remove(indices[ch]);
+		}
+		editActions.add(new StatisticsEdit(indices, t, null));
+		refresh();
+		return true;
 	}
 	public boolean removeRowWithElement(Object row) {
-		if(times.remove(row)) {
-			refresh();
-			return true;
-		}
-		return false;
+		return deleteRowsWithElements(new Object[] {row});
 	}
 
 	private JRadioButtonMenuItem none, plusTwo, pop, dnf;

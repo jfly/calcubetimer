@@ -48,8 +48,10 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		return customizations;
 	}
 
-	public boolean deleteRowWithElement(Object element) {
-		return removeRowWithElement(element);
+	public boolean deleteRowsWithElements(Object[] elements) {
+		for(Object o : elements)
+			removeRowWithElement(o);
+		return true;
 	}
 	public Class<?> getColumnClass(int columnIndex) {
 		return ScrambleCustomization.class;

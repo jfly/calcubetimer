@@ -69,8 +69,8 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 				}
 			});
 		}
-		public boolean deleteRowWithElement(Object element) {
-			return wrapped.deleteRowWithElement(element);
+		public boolean deleteRowsWithElements(Object[] element) {
+			return wrapped.deleteRowsWithElements(element);
 		}
 		public int getColumnCount() {
 			return wrapped.getColumnCount();
@@ -287,8 +287,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 				"Are you sure you wish to remove " + temp + "?", "Confirm",
 				JOptionPane.YES_NO_OPTION);
 		if (choice == JOptionPane.YES_OPTION) {
-			for (Object deleteMe : toDelete)
-					model.deleteRowWithElement(deleteMe);
+			model.deleteRowsWithElements(toDelete.toArray());
 			if (selectedRows.length > 1) {
 				clearSelection();
 			} else if(selectedRows[0] < model.getRowCount() - 1) {

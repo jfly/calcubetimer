@@ -806,6 +806,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	}
 
 	private void refreshDesktops() {
+		Component focused = getFocusOwner();
 		desktopPanel.removeAll();
 		ButtonGroup g = new ButtonGroup();
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -821,6 +822,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			desktopPanel.add(temp);
 		}
 		desktopPanel.add(refreshDesktops);
+		if(focused != null)
+			focused.requestFocusInWindow();
 	}
 	
 	private void syncGUIwithConfig(boolean defaults) {

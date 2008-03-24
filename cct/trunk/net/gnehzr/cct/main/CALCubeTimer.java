@@ -111,6 +111,7 @@ import net.gnehzr.cct.stackmatInterpreter.StackmatState;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
 import net.gnehzr.cct.statistics.SolveTime;
 import net.gnehzr.cct.statistics.Statistics;
+import net.gnehzr.cct.statistics.UndoRedoListener;
 import net.gnehzr.cct.umts.client.CCTClient;
 
 import org.jvnet.lafwidget.LafWidget;
@@ -146,6 +147,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private ScrambleList scramblesList = null;
 	private JComboBox profiles = null;
 	private JTextArea commentArea = null;
+	private JButton undo, redo = null;
 	private Statistics stats = null;
 	private StackmatInterpreter stackmatTimer = null;
 	private TimerHandler timeListener = null;
@@ -466,6 +468,29 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		profiles = new JComboBox();
 		profiles.addItemListener(this);
 //		profiles.setMaximumSize(new Dimension(1000, 100));
+		
+		undo = new JButton();
+		undo.setFocusable(false);
+		undo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				stats.undo();
+			}
+		});
+		redo = new JButton();
+		redo.setFocusable(false);
+		redo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				stats.redo();
+			}
+		});
+		stats.setUndoRedoListener(new UndoRedoListener() {
+			public void undoRedoChange(int undoable, int redoable) {
+				undo.setEnabled(undoable != 0);
+				redo.setEnabled(redoable != 0);
+				undo.setText("<- " + undoable);
+				redo.setText(redoable + " ->");
+			}
+		});
 
 		repaintTimes(); //disable the buttons at startup
 	}
@@ -696,6 +721,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				else if(temp.equalsIgnoreCase("customguimenu")) com = customGUIMenu;
 				else if(temp.equalsIgnoreCase("profilecombobox")) com = profiles;
 				else if(temp.equalsIgnoreCase("commentarea")) com = commentArea;
+				else if(temp.equalsIgnoreCase("undo")) com = undo;
+				else if(temp.equalsIgnoreCase("redo")) com = redo;
 			}
 			else if(elementName.equals("center") || elementName.equals("east") || elementName.equals("west") || elementName.equals("south") || elementName.equals("north") || elementName.equals("page_start") || elementName.equals("page_end") || elementName.equals("line_start") || elementName.equals("line_end")){
 				com = null;
