@@ -43,7 +43,9 @@
 							</panel>
 						</panel>
 						<panel border=";Best Average">
-							<selectablelabel>Average: \nIndividual Times: </selectablelabel>
+							<selectablelabel><![CDATA[<html>
+									Average: $$bestAverage1$$<br/>
+									Individual Times: $$bestAverageList$$</html>]]></selectablelabel>
 						</panel>
 					</panel>
 				</south>
@@ -65,7 +67,7 @@
 			<menuitem action="exportScrambles">Scramble Generator</menuitem>
 			<checkboxmenuitem action="togglescramblepopup">View Scramble</checkboxmenuitem>
 		</menu>
- 	<menu mnemonic="o">CCT Options
+		<menu mnemonic="o">CCT Options
 			<component type="customGUIMenu"/>
 			<menu mnemonic="k">Keyboard Timer
 				<checkboxmenuitem action="toggleIntegratedTimer">Integrate timer and display</checkboxmenuitem>

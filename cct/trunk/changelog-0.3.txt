@@ -140,6 +140,7 @@ cleanup:
 -the timer panel stuff has turned into a mess! (known bug: disable integrated timer, and the border will be wrong upon startup)
 
 Server stuff:
+-overhaul to get rid of threads
 -latency on server - this is so that clients don't flood the server with too many time messages
 -urgent hint for waiting messages on server? nonexistent in java as of 1.6
 
