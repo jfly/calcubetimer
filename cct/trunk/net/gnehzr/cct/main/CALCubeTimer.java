@@ -147,7 +147,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private ScrambleList scramblesList = null;
 	private JComboBox profiles = null;
 	private JTextArea commentArea = null;
-	private JButton undo, redo = null;
 	private Statistics stats = null;
 	private StackmatInterpreter stackmatTimer = null;
 	private TimerHandler timeListener = null;
@@ -196,6 +195,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private LessAnnoyingDisplayAction lessAnnoyingDisplayAction;
 	private ResetAction resetAction;
 	private RequestScrambleAction requestScrambleAction;
+	private AbstractAction undo, redo;
 	private void createActions(){
 		actionMap = new HashMap<String, AbstractAction>();
 
@@ -306,6 +306,36 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		act.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false));
 		act.putValue(Action.NAME, "Show scramble popup");
 		actionMap.put("togglescramblepopup", act);
+
+		undo = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if(stats.undo()) { //must decrement 1 from scramblenumber, if possible
+					Object prev = scrambleNumber.getPreviousValue();
+					if(prev != null) {
+						scrambleNumber.setValue(prev);
+					}
+				}
+			}
+		};
+		undo.putValue(Action.ACCELERATOR_KEY,
+				KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+		actionMap.put("undo", undo);
+		redo = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				stats.redo();
+			}
+		};
+		redo.putValue(Action.ACCELERATOR_KEY,
+				KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
+		actionMap.put("redo", redo);
+		stats.setUndoRedoListener(new UndoRedoListener() {
+			public void undoRedoChange(int undoable, int redoable) {
+				undo.setEnabled(undoable != 0);
+				redo.setEnabled(redoable != 0);
+				undo.putValue(Action.NAME, "Undo " + undoable);
+				redo.putValue(Action.NAME, "Redo " + redoable);
+			}
+		});
 
 		documentationAction = new DocumentationAction(this);
 		documentationAction.putValue(Action.NAME, "View Documentation");
@@ -469,29 +499,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		profiles.addItemListener(this);
 //		profiles.setMaximumSize(new Dimension(1000, 100));
 		
-		undo = new JButton();
-		undo.setFocusable(false);
-		undo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				stats.undo();
-			}
-		});
-		redo = new JButton();
-		redo.setFocusable(false);
-		redo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				stats.redo();
-			}
-		});
-		stats.setUndoRedoListener(new UndoRedoListener() {
-			public void undoRedoChange(int undoable, int redoable) {
-				undo.setEnabled(undoable != 0);
-				redo.setEnabled(redoable != 0);
-				undo.setText("<- " + undoable);
-				redo.setText(redoable + " ->");
-			}
-		});
-
 		repaintTimes(); //disable the buttons at startup
 	}
 
@@ -721,8 +728,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				else if(temp.equalsIgnoreCase("customguimenu")) com = customGUIMenu;
 				else if(temp.equalsIgnoreCase("profilecombobox")) com = profiles;
 				else if(temp.equalsIgnoreCase("commentarea")) com = commentArea;
-				else if(temp.equalsIgnoreCase("undo")) com = undo;
-				else if(temp.equalsIgnoreCase("redo")) com = redo;
 			}
 			else if(elementName.equals("center") || elementName.equals("east") || elementName.equals("west") || elementName.equals("south") || elementName.equals("north") || elementName.equals("page_start") || elementName.equals("page_end") || elementName.equals("line_start") || elementName.equals("line_end")){
 				com = null;
@@ -1576,10 +1581,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			if(choice == JOptionPane.YES_OPTION) {
 				stats.add(protect);
 			} else if(choice == JOptionPane.NO_OPTION) {
-				protect.setPlusTwo(true);
+				protect.setType(SolveTime.SolveType.PLUS_TWO);
 				stats.add(protect);
 			} else if(choice == JOptionPane.CANCEL_OPTION) {
-				protect.setPop(true);
+				protect.setType(SolveTime.SolveType.POP);
 				stats.add(protect);
 			} else {
 				return false;

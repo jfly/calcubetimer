@@ -69,8 +69,8 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 				}
 			});
 		}
-		public boolean deleteRowsWithElements(Object[] element) {
-			return wrapped.deleteRowsWithElements(element);
+		public void deleteRows(int[] indices) {
+			wrapped.deleteRows(indices);
 		}
 		public int getColumnCount() {
 			return wrapped.getColumnCount();
@@ -100,8 +100,8 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			else
 				return wrapped.isRowDeletable(rowIndex);
 		}
-		public boolean removeRowWithElement(Object element) {
-			return wrapped.removeRowWithElement(element);
+		public void removeRows(int[] indices) {
+			wrapped.removeRows(indices);
 		}
 		public void setValueAt(Object value, int rowIndex, int columnIndex) {
 			wrapped.setValueAt(value, rowIndex, columnIndex);
@@ -240,7 +240,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		if (toRow == -1 || toRow == fromRow || fromRow == this.getRowCount() - 1 || toRow == this.getRowCount() - 1)
 			return;
 		Object element = model.getValueAt(fromRow, 0);
-		model.removeRowWithElement(element);
+		model.removeRows(new int[]{fromRow});
 		model.insertValueAt(element, toRow);
 		fromRow = toRow;
 	}
@@ -268,18 +268,14 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 
 	public void deleteSelectedRows(boolean prompt) {
 		int[] selectedRows = this.getSelectedRows();
-		ArrayList<Object> toDelete = new ArrayList<Object>();
+		String temp = "";
 		for(int row : selectedRows) {
 			if (model.isRowDeletable(row)) {
-				toDelete.add(model.getValueAt(row, 0));
+				temp += ", " + model.getValueAt(row, 0);
 			}
 		}
-		if(toDelete.size() == 0) //nothing to delete
+		if(temp.isEmpty()) //nothing to delete
 			return;
-		String temp = "";
-		for (Object deleteMe : toDelete) {
-			temp += ", " + deleteMe;
-		}
 		temp = temp.substring(2);
 		int choice = JOptionPane.YES_OPTION;
 		if(prompt)
@@ -287,7 +283,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 				"Are you sure you wish to remove " + temp + "?", "Confirm",
 				JOptionPane.YES_NO_OPTION);
 		if (choice == JOptionPane.YES_OPTION) {
-			model.deleteRowsWithElements(toDelete.toArray());
+			model.deleteRows(selectedRows);
 			if (selectedRows.length > 1) {
 				clearSelection();
 			} else if(selectedRows[0] < model.getRowCount() - 1) {

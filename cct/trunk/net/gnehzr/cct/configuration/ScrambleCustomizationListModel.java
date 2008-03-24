@@ -48,10 +48,8 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		return customizations;
 	}
 
-	public boolean deleteRowsWithElements(Object[] elements) {
-		for(Object o : elements)
-			removeRowWithElement(o);
-		return true;
+	public void deleteRows(int[] indices) {
+		removeRows(indices);
 	}
 	public Class<?> getColumnClass(int columnIndex) {
 		return ScrambleCustomization.class;
@@ -85,10 +83,14 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 			return false;
 		return true;
 	}
-	public boolean removeRowWithElement(Object element) {
-		boolean temp = customizations.remove(element);
-		fireTableDataChanged();
-		return temp;
+	public void removeRows(int[] indices) {
+		for(int ch = indices.length - 1; ch >=0; ch--) {
+			int i = indices[ch];
+			if(i >= 0 && i < customizations.size()) {
+				customizations.remove(i);
+			}
+		}
+		fireTableRowsDeleted(indices[0], indices[indices.length - 1]);
 	}
 	public void insertValueAt(Object value, int rowIndex) {
 		customizations.add(rowIndex, (ScrambleCustomization)value);

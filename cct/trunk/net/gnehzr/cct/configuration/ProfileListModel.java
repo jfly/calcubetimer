@@ -51,12 +51,12 @@ public class ProfileListModel extends DraggableJTableModel {
 		return contents;
 	}
 
-	public boolean deleteRowsWithElements(Object[] elements) {
-		for(Object o : elements) {
-			removeRowWithElement(o);
-			actions.add(new ProfileEditAction(editAction.REMOVED, ((Profile)o).getName(), null));
+	public void deleteRows(int[] indices) {
+		for(int i : indices) {
+			if(i >= 0 && i < contents.size())
+				actions.add(new ProfileEditAction(editAction.REMOVED, contents.get(i).getName(), null));
 		}
-		return true;
+		removeRows(indices);
 	}
 	public String getColumnName(int column) {
 		return "Profiles";
@@ -88,15 +88,15 @@ public class ProfileListModel extends DraggableJTableModel {
 		return isCellEditable(rowIndex, 0);
 	}
 
-	@Override
-	public boolean removeRowWithElement(Object element) {
-		int index = contents.indexOf((Profile) element);
-		if(index != -1) {
-			contents.remove(index);
-			fireTableRowsDeleted(index, index);
-			return true;
+	public void removeRows(int[] indices) {
+		for(int ch = indices.length - 1; ch >= 0; ch--) {
+			int i = indices[ch];
+			if(i >= 0 && i < contents.size())
+				contents.remove(i);
+			else
+				indices[ch] = -1;
 		}
-		return false;
+		fireTableRowsDeleted(indices[0], indices[indices.length - 1]);
 	}
 
 	@Override

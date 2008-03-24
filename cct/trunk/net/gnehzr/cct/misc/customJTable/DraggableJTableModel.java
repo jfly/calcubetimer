@@ -15,9 +15,13 @@ public abstract class DraggableJTableModel extends AbstractTableModel {
 	public abstract void insertValueAt(Object value, int rowIndex);
 	public abstract Class<?> getColumnClass(int columnIndex);
 
-	//this is to just remove the element from the list
-	public abstract boolean removeRowWithElement(Object element);
-	//this is to actually delete the element
-	public abstract boolean deleteRowsWithElements(Object[] element);
+	/* This is to just remove the indices from the list
+	 * NOTE: Must be sorted!
+	 */
+	public abstract void removeRows(int[] indices);
+	/* This is to actually delete the indices
+	 * NOTE: Must be sorted!
+	 */
+	public abstract void deleteRows(int[] indices);
 	public abstract void showPopup(MouseEvent e, DraggableJTable source);
 }

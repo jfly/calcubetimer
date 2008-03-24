@@ -46,31 +46,49 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 			oldTimes = oldValues;
 			newTime = newValue;
 		}
+		private int row = -1;
+		private SolveTime.SolveType oldType, newType;
+		public StatisticsEdit(int row, SolveTime.SolveType oldType, SolveTime.SolveType newType) {
+			this.row = row;
+			this.oldType = oldType;
+			this.newType = newType;
+		}
 		public void doEdit() {
-			editActions.setEnabled(false);
-			if(oldTimes == null) { //add newTime
-				add(positions[0], newTime);
-			} else if(newTime == null) { //remove oldTimes
-				for(SolveTime t : oldTimes)
-					removeRowWithElement(t);
-			} else { //change oldTime to newTime
-				setValueAt(newTime, positions[0], 1);
+			if(row != -1) { //changed type
+				times.get(row).setType(newType);
+				refresh();
+			} else { //time added/removed/changed
+				editActions.setEnabled(false);
+				if(oldTimes == null) { //add newTime
+					add(positions[0], newTime);
+				} else if(newTime == null) { //remove oldTimes
+					removeRows(positions);
+				} else { //change oldTime to newTime
+					setValueAt(newTime, positions[0], 1);
+				}
+				editActions.setEnabled(true);
 			}
-			editActions.setEnabled(true);
 		}
 		public void undoEdit() {
-			editActions.setEnabled(false);
-			if(oldTimes == null) { //undo add
-				removeRowWithElement(newTime);
-			} else if(newTime == null) { //undo removal
-				for(int ch = 0; ch < oldTimes.length; ch++) {
-					if(positions[ch] != -1)
-						add(positions[ch], oldTimes[ch]);
+			if(row != -1) { //changed type
+				times.get(row).setType(oldType);
+				refresh();
+			} else { //time added/removed/changed
+				editActions.setEnabled(false);
+				if(oldTimes == null) { //undo add
+					removeRows(positions);
+				} else if(newTime == null) { //undo removal
+					for(int ch = 0; ch < positions.length; ch++) {
+						if(positions[ch] >= 0) {
+							//we don't want this to change the scramble #
+							addSilently(positions[ch], oldTimes[ch]);
+						}
+					}
+				} else { //undo change
+					setValueAt(oldTimes[0], positions[0], 1);
 				}
-			} else { //undo change
-				setValueAt(oldTimes[0], positions[0], 1);
+				editActions.setEnabled(true);
 			}
-			editActions.setEnabled(true);
 		}
 		public String toString() {
 			if(oldTimes == null) { //add newTime
@@ -85,8 +103,11 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 	public void redo() {
 		editActions.getNext().doEdit();
 	}
-	public void undo() {
-		editActions.getPrevious().undoEdit();
+	//returns true if the caller should decrement the scramble #
+	public boolean undo() {
+		StatisticsEdit t = editActions.getPrevious();
+		t.undoEdit();
+		return t.row == -1 && t.oldTimes == null;
 	}
 	public void setUndoRedoListener(UndoRedoListener url) {
 		editActions.setUndoRedoListener(url);
@@ -178,14 +199,21 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 	}
 
 	public void add(int pos, SolveTime s) {
-		if(pos == times.size()){
+		if(pos == times.size()) {
 			add(s);
-		}
-		else{
+		} else {
 			editActions.add(new StatisticsEdit(new int[]{pos}, null, s));
 			times.add(pos, s);
 			refresh();
 		}
+	}
+	
+	//this method will not cause CALCubeTimer to increment the scramble number
+	//nasty fix for undo-redo
+	private void addSilently(int pos, SolveTime s) {
+		editActions.add(new StatisticsEdit(new int[]{pos}, null, s));
+		times.add(pos, s);
+		refresh();
 	}
 
 	public void add(SolveTime s) {
@@ -209,12 +237,17 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 			}
 		}
 
-		if (s.isPop())
+		switch(s.getType()) {
+		case POP:
 			numPops++;
-		if (s.isPlusTwo())
+			break;
+		case PLUS_TWO:
 			numPlus2s++;
-		if (s.isDNF())
+			break;
+		case DNF:
 			numDnfs++;
+			break;
+		}
 
 		if (!s.isInfiniteTime()) {
 			double t = s.secondsValue();
@@ -898,20 +931,23 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 			refresh(); //this will fire table data changed
 		}
 	}
-	public boolean deleteRowsWithElements(Object[] elements) {
-		int[] indices = new int[elements.length];
-		SolveTime[] t = new SolveTime[elements.length];
-		for(int ch = 0; ch < indices.length; ch++) {
-			t[ch] = (SolveTime) elements[ch];
-			indices[ch] = times.indexOf(elements[ch]);
-			times.remove(indices[ch]);
+	public void deleteRows(int[] indices) {
+		SolveTime[] t = new SolveTime[indices.length];
+		for(int ch = indices.length - 1; ch >= 0; ch--) {
+			int i = indices[ch];
+			if(i >= 0 && i < times.size()) {
+				t[ch] = times.get(i);
+				times.remove(i);
+			} else {
+				t[ch] = null;
+				indices[ch] = -1;
+			}
 		}
 		editActions.add(new StatisticsEdit(indices, t, null));
 		refresh();
-		return true;
 	}
-	public boolean removeRowWithElement(Object row) {
-		return deleteRowsWithElements(new Object[] {row});
+	public void removeRows(int[] indices) {
+		deleteRows(indices);
 	}
 
 	private JRadioButtonMenuItem none, plusTwo, pop, dnf;
@@ -923,13 +959,21 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 				int selectedRow = timesTable.getSelectedRow();
 				SolveTime selectedSolve = times.get(selectedRow);
 
-				if (source == plusTwo || source == dnf || source == pop || source == none) {
-					selectedSolve.setPlusTwo(plusTwo.isSelected());
-					selectedSolve.setDNF(dnf.isSelected());
-					selectedSolve.setPop(pop.isSelected());
+				SolveTime.SolveType newType = null;
+				if (source == plusTwo) {
+					newType = SolveTime.SolveType.PLUS_TWO;
+				} else if(source == dnf) {
+					newType = SolveTime.SolveType.DNF;
+				} else if(source == pop) {
+					newType = SolveTime.SolveType.POP;
+				} else if(source == none) {
+					newType = SolveTime.SolveType.NORMAL;
 				}
-
-				if (command.equals("Discard")) {
+				if(newType != null) {
+					SolveTime.SolveType oldType = selectedSolve.getType();
+					selectedSolve.setType(newType);
+					editActions.add(new StatisticsEdit(selectedRow, oldType, newType));
+				} else if (command.equals("Discard")) {
 					timesTable.deleteSelectedRows(false);
 				} else if (command.equals("Edit time")) {
 					timesTable.editCellAt(selectedRow, 0);
@@ -964,25 +1008,25 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 
 			ButtonGroup group = new ButtonGroup();
 
-			none = new JRadioButtonMenuItem("None", selectedSolve.isNormal());
+			none = new JRadioButtonMenuItem("None", selectedSolve.getType() == SolveTime.SolveType.NORMAL);
 			group.add(none);
 			none.addActionListener(al);
 			jpopup.add(none);
 			none.setEnabled(!selectedSolve.isTrueWorstTime());
 
-			plusTwo = new JRadioButtonMenuItem("+2", selectedSolve.isPlusTwo());
+			plusTwo = new JRadioButtonMenuItem("+2", selectedSolve.getType() == SolveTime.SolveType.PLUS_TWO);
 			group.add(plusTwo);
 			plusTwo.addActionListener(al);
 			jpopup.add(plusTwo);
 			plusTwo.setEnabled(!selectedSolve.isTrueWorstTime());
 
-			pop = new JRadioButtonMenuItem("POP", selectedSolve.isPop());
+			pop = new JRadioButtonMenuItem("POP", selectedSolve.getType() == SolveTime.SolveType.POP);
 			group.add(pop);
 			pop.addActionListener(al);
 			jpopup.add(pop);
 			pop.setEnabled(!selectedSolve.isTrueWorstTime());
 
-			dnf = new JRadioButtonMenuItem("DNF", selectedSolve.isDNF());
+			dnf = new JRadioButtonMenuItem("DNF", selectedSolve.getType() == SolveTime.SolveType.DNF);
 			group.add(dnf);
 			dnf.addActionListener(al);
 			jpopup.add(dnf);

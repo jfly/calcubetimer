@@ -12,9 +12,9 @@ public class SolveTime implements Comparable<SolveTime> {
 	public static final SolveTime BEST = new SolveTime(0, null);
 	public static final SolveTime WORST = new SolveTime();
 
-	private boolean isPop = false;
-	private boolean isPlusTwo = false;
-	private boolean isDNF = false;
+	public static enum SolveType { NORMAL, POP, PLUS_TWO, DNF }
+	
+	private SolveType type = SolveType.NORMAL;
 	private int hundredths;
 	private String scramble = null;
 	private String comment;
@@ -45,7 +45,7 @@ public class SolveTime implements Comparable<SolveTime> {
 		if (time != null) {
 			hundredths = time.value();
 		} else { //If time == null, then it was a POP
-			isPop = true;
+			type = SolveType.POP;
 		}
 		setScramble(scramble);
 	}
@@ -60,16 +60,20 @@ public class SolveTime implements Comparable<SolveTime> {
 		setScramble(scramble);
 	}
 
+	//TODO - can time == null?
 	private void setTime(String time) throws Exception {
-		if(time != null) time = time.trim();
-		isDNF = time.equalsIgnoreCase("DNF");
-		isPop = time == null || time == "" || time.equalsIgnoreCase("POP");
-		if(time.equalsIgnoreCase("N/A")) {
+		time = time.trim();
+		if(time.equalsIgnoreCase("DNF"))
+			type = SolveType.DNF;
+		else if(time.isEmpty() || time.equalsIgnoreCase("POP"))
+			type = SolveType.POP;
+		else if(time.equalsIgnoreCase("N/A"))
 			hundredths = Integer.MAX_VALUE;
-		} else if(!isDNF && !isPop) {
-			isPlusTwo = time.endsWith("+");
-			if(isPlusTwo)
+		else {
+			if(time.endsWith("+")) {
+				type = SolveType.PLUS_TWO;
 				time = time.substring(0, time.length() - 1);
+			}
 			String[] temp = time.split(":");
 			if(temp.length > 3 || time.lastIndexOf(":") == time.length() - 1) throw new Exception("Time has invalid placement of colons!");
 			else if(time.indexOf(".") != time.lastIndexOf(".")) throw new Exception("Time has too many decimal points!");
@@ -88,7 +92,7 @@ public class SolveTime implements Comparable<SolveTime> {
 				if(i != 0 && d >= 60) throw new Exception("Argument too large!");
 				seconds += d;
 			}
-			seconds -= (isPlusTwo ? 2 : 0);
+			seconds -= (type == SolveType.PLUS_TWO ? 2 : 0);
 			if(seconds < 0) throw new Exception("Can't have negative times!");
 			else if(seconds > 21000000) throw new Exception("Time too large!");
 			this.hundredths = (int)(100 * seconds + .5);
@@ -112,10 +116,15 @@ public class SolveTime implements Comparable<SolveTime> {
 	}
 
 	public String toString() {
-		if(isDNF) return "DNF";
-		else if(isPop) return "POP";
-		else if(hundredths == Integer.MAX_VALUE) return "N/A";
-		else return Utils.clockFormat(secondsValue(), Configuration.getBoolean(VariableKey.CLOCK_FORMAT, false)) + (isPlusTwo ? "+" : "");
+		switch(type) {
+		case DNF:
+			return "DNF";
+		case POP:
+			return "POP";
+		default:
+			if(hundredths == Integer.MAX_VALUE) return "N/A";
+			else return Utils.clockFormat(secondsValue(), Configuration.getBoolean(VariableKey.CLOCK_FORMAT, false)) + (type == SolveType.PLUS_TWO ? "+" : "");
+		}
 	}
 
 	public String toSplitsString() {
@@ -141,48 +150,55 @@ public class SolveTime implements Comparable<SolveTime> {
 
 	private int value() {
 		if(isInfiniteTime()) return Integer.MAX_VALUE - 1; //TODO - why is this MAX-1 and not just MAX?
-		return hundredths + (isPlusTwo ? 200 : 0);
+		return hundredths + (type == SolveType.PLUS_TWO ? 200 : 0);
 	}
 
 	public int compareTo(SolveTime o) {
 		return this.value() - o.value();
 	}
 
-	public boolean isPop() {
-		return isPop;
+	public SolveType getType() {
+		return type;
 	}
-
+	public void setType(SolveType t) {
+		type = t;
+	}
+	
+//	public boolean isPop() {
+//		return isPop;
+//	}
+//
 	public boolean isInfiniteTime() {
-		return isPop || isDNF;
+		return type == SolveType.POP || type == SolveType.DNF;
 	}
-
+//
 	public boolean isTrueWorstTime(){
-		return hundredths == 0 && (isPop || isDNF);
+		return hundredths == 0 && (type == SolveType.POP || type == SolveType.DNF);
 	}
-
-	public void setPop(boolean pop) {
-		isPop = pop;
-	}
-
-	public boolean isDNF() {
-		return isDNF;
-	}
-
-	public void setDNF(boolean dnf) {
-		isDNF = dnf;
-	}
-
-	public boolean isPlusTwo() {
-		return isPlusTwo;
-	}
-
-	public boolean isNormal() {
-		return !isPop && !isPlusTwo && !isDNF;
-	}
-
-	public void setPlusTwo(boolean plustwo) {
-		isPlusTwo = plustwo;
-	}
+//
+//	public void setPop(boolean pop) {
+//		isPop = pop;
+//	}
+//
+//	public boolean isDNF() {
+//		return isDNF;
+//	}
+//
+//	public void setDNF(boolean dnf) {
+//		isDNF = dnf;
+//	}
+//
+//	public boolean isPlusTwo() {
+//		return isPlusTwo;
+//	}
+//
+//	public boolean isNormal() {
+//		return !isPop && !isPlusTwo && !isDNF;
+//	}
+//
+//	public void setPlusTwo(boolean plustwo) {
+//		isPlusTwo = plustwo;
+//	}
 
 	public ArrayList<SolveTime> getSplits() {
 		return splits;

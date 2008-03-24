@@ -32,10 +32,6 @@
 								<button action="sessionAverage">Session Average: $$sessionAverage$$</button>
 								<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average of $$configuration_Statistics_raSize1$$: $$currentAverage1$$</font></html>]]></button>
 								<button action="bestAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">Best Rolling Average of $$configuration_Statistics_raSize1$$: $$bestAverage1$$</font></html>]]></button>
-								<panel>
-									<component type="undo"/>
-									<component type="redo"/>
-								</panel>
 							</panel>
 						</panel>
 						<label alignmentX=".5">$$solves$$/$$attempts$$ (solves/attempts)</label>
@@ -57,6 +53,9 @@
 			<menuitem action="exit">Exit</menuitem>
 		</menu>
 		<menu mnemonic="o">Options
+			<menuitem action="undo"/>
+			<menuitem action="redo"/>
+			<separator/>
 			<menu mnemonic="k">Keyboard Timer
 				<checkboxmenuitem action="toggleIntegratedTimer">Integrate timer and display</checkboxmenuitem>
 				<checkboxmenuitem action="toggleAnnoyingDisplay">Use annoying status light</checkboxmenuitem>

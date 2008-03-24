@@ -35,12 +35,4 @@ public class ScrambleList extends ArrayList<Scramble>{
 	public void setScrambleNumber(int scrambleNumber) {
 		this.scrambleNumber = scrambleNumber - 1;
 	}
-
-//	public static ScrambleList importScrambles(ScrambleVariation c, String[] scrambles) throws InvalidScrambleException {
-//		ScrambleList list = new ScrambleList(c);
-//		for(String scramble : scrambles) {
-//			list.add(c.generateScramble(scramble));
-//		}
-//		return list;
-//	}
 }

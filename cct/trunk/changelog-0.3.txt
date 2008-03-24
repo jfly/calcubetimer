@@ -110,6 +110,7 @@ changes:
 +updated to substance 4.2 -> had to modify solvetimerenderer to fix minor bug introduced by new substance
 +issues with ant build.xml have been resolved (previously, it didn't include the jfontchooser, source code line numbers, or compile scrambleplugins)
 +dynamic string can now access the configuration directly ($$configuration_...$$)
++add undo-redo buttons (for times and scrambles)
 
 TODO:
 
@@ -127,7 +128,6 @@ for release:
 -write scramble plugin tutorial
 
 misc:
--add undo-redo buttons (for times)
 -icons on scramble choices?
 -java webstart? applet?
 -dynamic string multiple argument format
