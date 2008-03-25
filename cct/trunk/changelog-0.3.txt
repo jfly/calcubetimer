@@ -111,6 +111,7 @@ changes:
 +issues with ant build.xml have been resolved (previously, it didn't include the jfontchooser, source code line numbers, or compile scrambleplugins)
 +dynamic string can now access the configuration directly ($$configuration_...$$)
 +add undo-redo buttons (for times and scrambles)
++icons on scramble choices, just specify a *.png file in the plugins directory (http://whiskeyfire.typepad.com/whiskey_fire/2006/12/index.html)
 
 TODO:
 
@@ -128,7 +129,6 @@ for release:
 -write scramble plugin tutorial
 
 misc:
--icons on scramble choices?
 -java webstart? applet?
 -dynamic string multiple argument format
 -BUG: titled borders are not anti-aliased (substance bug!)

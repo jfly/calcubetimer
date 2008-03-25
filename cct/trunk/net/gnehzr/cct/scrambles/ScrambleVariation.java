@@ -1,18 +1,35 @@
 package net.gnehzr.cct.scrambles;
 
+import java.io.File;
+import java.net.MalformedURLException;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.main.CALCubeTimer;
 
 public class ScrambleVariation {
 	private String variation;
 	private int length = 0;
 	private ScramblePlugin scramblePlugin;
+	private Icon image;
 	public ScrambleVariation(ScramblePlugin plugin, String variation) {
 		this.scramblePlugin = plugin;
 		this.variation = variation;
 		length = getScrambleLength(false);
+		try {
+			image = new ImageIcon(new File(Configuration.scramblePluginsFolder, variation + ".png").toURI().toURL());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 	}
-
+	
+	public Icon getImage() {
+		return image;
+	}
+	
 	public int getScrambleLength(boolean defaultValue) {
 		try {
 			return Configuration.getInt(VariableKey.SCRAMBLE_LENGTH(this), defaultValue);
