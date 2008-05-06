@@ -8,11 +8,14 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.io.IOException;
 
+import javax.swing.JTable;
+
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 public class VariableKey<H> {
+	public static final VariableKey<Integer> DELAY_BETWEEN_SOLVES = new VariableKey<Integer>("GUI_Timer_delayBetweenSolves");
 	public static final VariableKey<Integer> RA_SIZE0 = new VariableKey<Integer>("Statistics_raSize0");
 	public static final VariableKey<Integer> RA_SIZE1 = new VariableKey<Integer>("Statistics_raSize1");
 	public static final VariableKey<Integer> SWITCH_THRESHOLD = new VariableKey<Integer>("Stackmat_switchThreshold");
@@ -34,7 +37,19 @@ public class VariableKey<H> {
 	public static final VariableKey<Integer> SCRAMBLE_LENGTH(ScrambleVariation var) {
 		return new VariableKey<Integer>("Puzzle_ScrambleLength_" + var.toString());
 	}
+	public static final VariableKey<Integer> JCOMPONENT_VALUE(String componentID, boolean xmlSpecific) {
+		String key = "GUI_xmlLayout";
+		if(xmlSpecific)
+			key += "_" + Configuration.getXMLGUILayout().getName();
+		key += "_component"+ componentID;
+		return new VariableKey<Integer>(key);
+	}
 
+	public static final VariableKey<Integer[]> JTABLE_COLUMN_ORDERING(String componentID) {
+		return new VariableKey<Integer[]>("GUI_xmlLayout_" + componentID + "_columns");
+	}
+	
+	public static final VariableKey<String> DATE_FORMAT = new VariableKey<String>("Misc_dateFormat");
 	public static final VariableKey<String> SUNDAY_SUBMIT_URL = new VariableKey<String>("Sunday_submitURL");
 	public static final VariableKey<String> SUNDAY_NAME = new VariableKey<String>("Sunday_name");
 	public static final VariableKey<String> SMTP_FROM_ADDRESS = new VariableKey<String>("SMTP_fromAddress");
@@ -50,14 +65,13 @@ public class VariableKey<H> {
 	public static final VariableKey<String> WATERMARK_FILE = new VariableKey<String>("Watermark_file");
 	public static final VariableKey<String> DEFAULT_SCRAMBLE_URL = new VariableKey<String>("Misc_defaultScrambleURL");
 	public static final VariableKey<String> METRONOME_CLICK_FILE = new VariableKey<String>("Misc_Metronome_clickFile");
-	public static final VariableKey<String> XML_LAYOUT = new VariableKey<String>("GUI_xmlLayoutFile");
+	public static final VariableKey<String> XML_LAYOUT = new VariableKey<String>("GUI_xmlLayout_file");
 	public static final VariableKey<String> DEFAULT_SCRAMBLE_CUSTOMIZATION = new VariableKey<String>("Scramble_Default_scrambleCustomization");
 	public static final VariableKey<String> PUZZLE_COLOR(ScramblePlugin plugin, String faceName) {
 		return new VariableKey<String>("Puzzle_Color_" + plugin.getPuzzleName() + "_face" + faceName);
 	}
 
 	public static final VariableKey<String[]> SCRAMBLE_CUSTOMIZATIONS = new VariableKey<String[]>("Scramble_customizations");
-	public static final VariableKey<String[]> PROFILES = new VariableKey<String[]>("Profiles");
 	public static final VariableKey<String[]> PUZZLE_ATTRIBUTES(ScramblePlugin plugin) {
 		return new VariableKey<String[]>("Puzzle_Attributes_" + plugin.getPuzzleName());
 	}
@@ -77,8 +91,6 @@ public class VariableKey<H> {
 	public static final VariableKey<Font> SCRAMBLE_FONT = new VariableKey<Font>("Scramble_font");
 
 	public static final VariableKey<Boolean> FOCUSABLE_BUTTONS = new VariableKey<Boolean>("GUI_focusableButtons");
-	public static final VariableKey<Boolean> SHOW_RA0 = new VariableKey<Boolean>("Statistics_showRA0");
-	public static final VariableKey<Boolean> SHOW_RA1 = new VariableKey<Boolean>("Statistics_showRA1");
 	public static final VariableKey<Boolean> CLOCK_FORMAT = new VariableKey<Boolean>("Misc_isClockFormat");
 	public static final VariableKey<Boolean> INVERTED_HUNDREDTHS = new VariableKey<Boolean>("Stackmat_isInvertedHundredths");
 	public static final VariableKey<Boolean> INVERTED_SECONDS = new VariableKey<Boolean>("Stackmat_isInvertedSeconds");
@@ -100,6 +112,12 @@ public class VariableKey<H> {
 	public static final VariableKey<Boolean> LESS_ANNOYING_DISPLAY = new VariableKey<Boolean>("GUI_Timer_isLessAnnoyingDisplay");
 	public static final VariableKey<Boolean> FULLSCREEN_TIMING = new VariableKey<Boolean>("GUI_Timer_isFullScreenWhileTiming");
 	public static final VariableKey<Boolean> METRONOME_ENABLED = new VariableKey<Boolean>("Misc_Metronome_isEnabled");
+	//TODO - merge the two guys below?
+	public static final VariableKey<Boolean> SHOW_RA0 = new VariableKey<Boolean>("Statistics_showRA0");
+	public static final VariableKey<Boolean> SHOW_RA1 = new VariableKey<Boolean>("Statistics_showRA1");
+	public static final VariableKey<Boolean> COLUMN_VISIBLE(JTable src, int index) {
+		return new VariableKey<Boolean>("GUI_xmlLayout_" + src.getName() + index);
+	}
 
 	public static final VariableKey<Dimension> SCRAMBLE_VIEW_DIMENSION = new VariableKey<Dimension>("GUI_ScrambleView_dimension");
 	public static final VariableKey<Dimension> MAIN_FRAME_DIMENSION = new VariableKey<Dimension>("GUI_MainFrame_dimension");

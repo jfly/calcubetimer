@@ -16,6 +16,8 @@ import java.util.regex.Pattern;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 
+//not at all related to these scrambles:
+//http://www.worldcubeassociation.org/regulations/scrambles/scramble_square1.htm?num=5&len=40
 public class SquareOneScramble extends Scramble {
 	public static final String[] FACE_NAMES = { "Back", "Left", "Front", "Right",
 		"Up", "Down" };
@@ -146,10 +148,6 @@ public class SquareOneScramble extends Scramble {
 	}
 	private int u = 0, d = 0;
 	private void finalizeScramble() {
-		/*
-		if(u + d == 0)
-			return;
-			*/
 		if(u == 0 && d == 0) return;
 		if(u > 6)
 			u -= 12;

@@ -1,27 +1,20 @@
 package net.gnehzr.cct.statistics;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.ListIterator;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.Utils;
-import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
+import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
 @SuppressWarnings("serial")
-public class Statistics extends DraggableJTableModel implements ConfigurationChangeListener {
-	public static enum averageType {
+public class Statistics implements ConfigurationChangeListener {
+	public static enum AverageType {
 		CURRENT {
 			public String toString() {
 				return "Current Average";
@@ -62,9 +55,9 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 				if(oldTimes == null) { //add newTime
 					add(positions[0], newTime);
 				} else if(newTime == null) { //remove oldTimes
-					removeRows(positions);
+					remove(positions);
 				} else { //change oldTime to newTime
-					setValueAt(newTime, positions[0], 1);
+					set(positions[0], newTime);
 				}
 				editActions.setEnabled(true);
 			}
@@ -76,7 +69,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 			} else { //time added/removed/changed
 				editActions.setEnabled(false);
 				if(oldTimes == null) { //undo add
-					removeRows(positions);
+					remove(positions);
 				} else if(newTime == null) { //undo removal
 					for(int ch = 0; ch < positions.length; ch++) {
 						if(positions[ch] >= 0) {
@@ -85,7 +78,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 						}
 					}
 				} else { //undo change
-					setValueAt(oldTimes[0], positions[0], 1);
+					set(positions[0], oldTimes[0]);
 				}
 				editActions.setEnabled(true);
 			}
@@ -118,7 +111,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 	private ArrayList<Double>[] averages;
 	private ArrayList<Double>[] sds;
 
-	private int indexOfBestRA[];
+	private int[] indexOfBestRA;
 
 	private ArrayList<SolveTime> sorttimes;
 	private ArrayList<Double>[] sortaverages;
@@ -127,85 +120,155 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 	private double runningTotal;
 	private double curSessionAvg;
 	private double runningSquareTotal;
-	private double curSessionSD;
+	private	double curSessionSD;
+	
+	private int[] solveCounter;
 
-	private int numPops;
-	private int numPlus2s;
-	private int numDnfs;
+	private int[] curRASize;
 
-	private int curRASize[];
+	public static final int RA_SIZES_COUNT = 2;
+	private Date dateStarted;
+	public Date getStartDate() {
+		return dateStarted;
+	}
+	public Statistics(Date d) {
+		if(d == null)
+			dateStarted = new Date();
+		else
+			dateStarted = d;
+		Configuration.addConfigurationChangeListener(this); //TODO - this makes me worry about garbage collection
 
-	private int numSizes;
-
-	public Statistics() {
-		Configuration.addConfigurationChangeListener(this);
-
-		numSizes = 2;
-
-		curRASize = new int[numSizes];
+		curRASize = new int[RA_SIZES_COUNT];
 		curRASize[0] = Configuration.getInt(VariableKey.RA_SIZE0, false);
 		curRASize[1] = Configuration.getInt(VariableKey.RA_SIZE1, false);
 
-		averages = new ArrayList[numSizes];
-		sds = new ArrayList[numSizes];
-		sortaverages = new ArrayList[numSizes];
-		sortsds = new ArrayList[numSizes];
-		indexOfBestRA = new int[numSizes];
-
-		initialize();
-	}
-
-	private void initialize() {
-		times = new ArrayList<SolveTime>();
-		sorttimes = new ArrayList<SolveTime>();
-
-		for(int i = 0; i < numSizes; i++){
+		averages = new ArrayList[RA_SIZES_COUNT];
+		sds = new ArrayList[RA_SIZES_COUNT];
+		sortaverages = new ArrayList[RA_SIZES_COUNT];
+		sortsds = new ArrayList[RA_SIZES_COUNT];
+		indexOfBestRA = new int[RA_SIZES_COUNT];
+		
+		for(int i = 0; i < RA_SIZES_COUNT; i++){
 			averages[i] = new ArrayList<Double>();
 			sds[i] = new ArrayList<Double>();
 			sortaverages[i] = new ArrayList<Double>();
 			sortsds[i] = new ArrayList<Double>();
+		}
+		
+		solveCounter = new int[SolveType.values().length];
+		
+		times = new ArrayList<SolveTime>();
+		sorttimes = new ArrayList<SolveTime>();
+		initialize();
+	}
+
+	private void initialize() {
+		times.clear();
+		sorttimes.clear();
+
+		for(int i = 0; i < RA_SIZES_COUNT; i++){
+			averages[i].clear();
+			sds[i].clear();
+			sortaverages[i].clear();
+			sortsds[i].clear();
 			indexOfBestRA[i] = -1;
 		}
 
 		runningTotal = runningSquareTotal = 0;
 		curSessionAvg = Double.MAX_VALUE;
 		curSessionSD = Double.MAX_VALUE;
-		numPops = numPlus2s = numDnfs = 0;
+		
+		//zero out numPops, numDNFs, numPlus2s
+		for(int ch = 0; ch < solveCounter.length; ch++) {
+			solveCounter[ch] = 0;
+		}
 	}
 
+	
 	public void clear() {
 		int[] indices = new int[times.size()];
 		for(int ch = 0; ch < indices.length; ch++)
 			indices[ch] = ch;
 		editActions.add(new StatisticsEdit(indices, times.toArray(new SolveTime[0]), null));
 		initialize();
-		fireTableDataChanged();
-		notifyStrings();
+		notifyListeners(false);
 	}
 
-	private ArrayList<StatisticsUpdateListener> strlisten = new ArrayList<StatisticsUpdateListener>();
-
-	public void addStatisticsUpdateListener(StatisticsUpdateListener listener) {
-		strlisten.add(listener);
+	private ArrayList<StatisticsUpdateListener> strlisten;
+	public void setStatisticsUpdateListeners(ArrayList<StatisticsUpdateListener> listener) {
+		strlisten = listener;
 	}
-
-	public void removeStatisticsUpdateListener(StatisticsUpdateListener listener) {
-		strlisten.remove(listener);
+	
+	public DraggableJTableModel tableListener;
+	public void setTableListener(DraggableJTableModel tableListener) {
+		this.tableListener = tableListener;
 	}
-
-	public void notifyStrings() {
-		for (StatisticsUpdateListener listener : strlisten)
-			listener.update();
+	
+	//TODO - this could probably be cleaned up, as it is currently
+	//hacked together from the ashes of the old system (see StatisticsTableModel for how it's done)
+	public void notifyListeners(boolean newTime) {
+		if(tableListener != null) {
+			if(newTime) {
+				int row = getAttemptCount() - 1;
+				tableListener.fireTableRowsInserted(row, row);
+			} else
+				tableListener.fireTableDataChanged();
+		}
+		editActions.notifyListener(); //TODO - is this needed here?
+		if(strlisten != null) {
+			for (StatisticsUpdateListener listener : strlisten) {
+				listener.update();
+			}
+		}
 	}
-
-	public void add(int pos, SolveTime s) {
+	
+	public void add(int pos, SolveTime st) {
 		if(pos == times.size()) {
-			add(s);
+			add(st);
 		} else {
-			editActions.add(new StatisticsEdit(new int[]{pos}, null, s));
-			times.add(pos, s);
+			editActions.add(new StatisticsEdit(new int[]{pos}, null, st));
+			times.add(pos, st);
 			refresh();
 		}
+	}
+	
+	public void set(int pos, SolveTime st) {
+		if(pos == getAttemptCount()) {
+			addHelper(st);
+			editActions.add(new StatisticsEdit(new int[]{pos}, null, st));
+			notifyListeners(true);
+		} else {
+			st.setScramble(times.get(pos).getScramble());
+			editActions.add(new StatisticsEdit(new int[]{pos}, new SolveTime[]{times.get(pos)}, st));
+			times.set(pos, st);
+			refresh(); //this will fire table data changed
+		}
+	}
+	
+	//returns an array of the times removed
+	//index array must be sorted!
+	public void remove(int[] indices) {
+		SolveTime[] t = new SolveTime[indices.length];
+		for(int ch = indices.length - 1; ch >= 0; ch--) {
+			int i = indices[ch];
+			if(i >= 0 && i < times.size()) {
+				t[ch] = times.get(i);
+				times.remove(i);
+			} else {
+				t[ch] = null;
+				indices[ch] = -1;
+			}
+		}
+		editActions.add(new StatisticsEdit(indices, t, null));
+		refresh();
+	}
+	
+	public void setSolveType(int row, SolveType newType) {
+		SolveTime selectedSolve = times.get(row);
+		SolveTime.SolveType oldType = selectedSolve.getType();
+		selectedSolve.setType(newType);
+		editActions.add(new StatisticsEdit(row, oldType, newType));
+		refresh();
 	}
 	
 	//this method will not cause CALCubeTimer to increment the scramble number
@@ -219,43 +282,33 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 	public void add(SolveTime s) {
 		addHelper(s);
 		int newRow = times.size() - 1;
-		fireTableRowsInserted(newRow, newRow);
 		editActions.add(new StatisticsEdit(new int[]{newRow}, null, s));
-		notifyStrings();
+		notifyListeners(true);
 	}
 
 	private void addHelper(SolveTime s) {
 		times.add(s);
 
 		int i;
-		for (i = 0; i < sorttimes.size() && sorttimes.get(i).compareTo(s) <= 0; i++) ;
+		for(i = 0; i < sorttimes.size() && sorttimes.get(i).compareTo(s) <= 0; i++) ;
 		sorttimes.add(i, s);
 
-		for(int k = 0; k < numSizes; k++){
+		for(int k = 0; k < RA_SIZES_COUNT; k++){
 			if (times.size() >= curRASize[k]) {
 				calculateCurrentAverage(k);
 			}
 		}
 
-		switch(s.getType()) {
-		case POP:
-			numPops++;
-			break;
-		case PLUS_TWO:
-			numPlus2s++;
-			break;
-		case DNF:
-			numDnfs++;
-			break;
-		}
-
-		if (!s.isInfiniteTime()) {
+		solveCounter[s.getType().ordinal()]++;
+		int numPOPs = solveCounter[SolveTime.SolveType.POP.ordinal()];
+		int numDNFs = solveCounter[SolveTime.SolveType.DNF.ordinal()];
+		if(!s.isInfiniteTime()) {
 			double t = s.secondsValue();
 			runningTotal += t;
-			curSessionAvg = runningTotal / (times.size() - numPops - numDnfs);
+			curSessionAvg = runningTotal / getSolveCount();
 			runningSquareTotal += t * t;
 			curSessionSD = Math.sqrt(runningSquareTotal
-					/ (times.size() - numPops - numDnfs) - curSessionAvg
+					/ (times.size() - numPOPs - numDNFs) - curSessionAvg
 					* curSessionAvg);
 		}
 	}
@@ -345,15 +398,14 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 	}
 
 	private void refresh() {
-		if (times != null) {
-			ArrayList<SolveTime> temp = times;
+//		if (times != null) {
+			ArrayList<SolveTime> temp = new ArrayList<SolveTime>(times);
 			initialize();
 			for (SolveTime t : temp) {
 				addHelper(t);
 			}
-			fireTableDataChanged();
-			notifyStrings();
-		}
+			notifyListeners(false);
+//		}
 	}
 
 	public SolveTime get(int n) {
@@ -368,6 +420,16 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 
 	public int getRASize(int num) {
 		return curRASize[num];
+	}
+	
+	public SolveTime getRA(int num, int whichRA) {
+		int RAnum = 1 + num - curRASize[whichRA];
+		double seconds;
+		if(RAnum < 0)
+			seconds = -1;
+		else
+			seconds = averages[whichRA].get(RAnum);
+		return new SolveTime(seconds, whichRA);
 	}
 
 	public void configurationChanged() {
@@ -385,14 +447,14 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		if(refresh) refresh();
 	}
 
-	public String average(averageType type, int num) {
+	public String average(AverageType type, int num) {
 		double average;
 		try {
-			if (type == averageType.SESSION)
+			if (type == AverageType.SESSION)
 				average = curSessionAvg;
-			else if (type == averageType.RA)
+			else if (type == AverageType.RA)
 				average = averages[num].get(indexOfBestRA[num]).doubleValue();
-			else if (type == averageType.CURRENT)
+			else if (type == AverageType.CURRENT)
 				average = averages[num].get(averages[num].size() - 1).doubleValue();
 			else
 				return "Invalid average type.";
@@ -406,17 +468,17 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		if (average == Double.MAX_VALUE)
 			return "Invalid";
 
-		return Utils.clockFormat(average, Configuration.getBoolean(VariableKey.CLOCK_FORMAT, false));
+		return Utils.formatTime(average);
 	}
 
-	public boolean isValid(averageType type, int num) {
+	public boolean isValid(AverageType type, int num) {
 		double average;
 		try {
-			if (type == averageType.SESSION)
+			if (type == AverageType.SESSION)
 				average = curSessionAvg;
-			else if (type == averageType.RA)
+			else if (type == AverageType.RA)
 				average = sortaverages[num].get(0).doubleValue();
-			else if (type == averageType.CURRENT)
+			else if (type == AverageType.CURRENT)
 				average = averages[num].get(averages[num].size() - 1).doubleValue();
 			else
 				return false;
@@ -438,18 +500,18 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		return times.subList(a, b).listIterator();
 	}
 
-	private ListIterator<SolveTime> getSublist(averageType type, int num) {
+	private ListIterator<SolveTime> getSublist(AverageType type, int num) {
 		int[] bounds = getBounds(type, num);
 		return times.subList(bounds[0], bounds[1]).listIterator();
 	}
 
-	private int[] getBounds(averageType type, int num) {
+	private int[] getBounds(AverageType type, int num) {
 		int lower, upper;
-		if (type == averageType.SESSION) {
+		if (type == AverageType.SESSION) {
 			lower = 0;
 			upper = times.size();
 		} else {
-			if (type == averageType.CURRENT)
+			if (type == AverageType.CURRENT)
 				lower = averages[num].size() - 1;
 			else
 				lower = indexOfBestRA[num];
@@ -462,7 +524,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		return new int[] { lower, upper };
 	}
 
-	public boolean containsTime(SolveTime solve, averageType type, int num) {
+	public boolean containsTime(SolveTime solve, AverageType type, int num) {
 		int indexOfSolve = times.indexOf(solve);
 		int bounds[] = getBounds(type, num);
 		return indexOfSolve >= bounds[0] && indexOfSolve < bounds[1];
@@ -483,10 +545,10 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		return new SolveTime[] { best, worst };
 	}
 
-	public SolveTime[] getBestAndWorstTimes(averageType type, int num) {
+	public SolveTime[] getBestAndWorstTimes(AverageType type, int num) {
 		SolveTime best = SolveTime.WORST;
 		SolveTime worst = SolveTime.BEST;
-		boolean ignoreInfinite = type == averageType.SESSION;
+		boolean ignoreInfinite = type == AverageType.SESSION;
 		ListIterator<SolveTime> iter = getSublist(type, num);
 		while (iter.hasNext()) {
 			SolveTime time = iter.next();
@@ -500,8 +562,8 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		return new SolveTime[] { best, worst };
 	}
 
-	public String toStatsString(averageType type, boolean showSplits, int num) {
-		SolveTime[] bestAndWorst = ((type == averageType.SESSION) ? new SolveTime[] {
+	public String toStatsString(AverageType type, boolean showSplits, int num) {
+		SolveTime[] bestAndWorst = ((type == AverageType.SESSION) ? new SolveTime[] {
 				null, null }
 				: getBestAndWorstTimes(type, num));
 		return toStatsStringHelper(getSublist(type, num), bestAndWorst[0],
@@ -530,7 +592,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 
 	public String toTerseString(int n, int num) {
 		if(num < 0) num = 0;
-		else if(num >= numSizes) num = numSizes - 1;
+		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		SolveTime[] bestAndWorst = getBestAndWorstTimes(n, n + curRASize[num]);
 		ListIterator<SolveTime> list = getSublist(n, n + curRASize[num]);
@@ -540,9 +602,9 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 			return "N/A";
 	}
 
-	public String toTerseString(averageType type, int num) {
+	public String toTerseString(AverageType type, int num) {
 		if(num < 0) num = 0;
-		else if(num >= numSizes) num = numSizes - 1;
+		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		SolveTime[] bestAndWorst = getBestAndWorstTimes(type, num);
 		ListIterator<SolveTime> list = getSublist(type, num);
@@ -561,13 +623,13 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 						+ toTerseStringHelper(printMe, best, worst) : "");
 	}
 
-	public String standardDeviation(averageType type, int num) {
+	public String standardDeviation(AverageType type, int num) {
 		double sd = Double.MAX_VALUE;
-		if (type == averageType.SESSION)
+		if (type == AverageType.SESSION)
 			sd = curSessionSD;
-		else if (type == averageType.RA)
+		else if (type == AverageType.RA)
 			sd = sds[num].get(indexOfBestRA[num]).doubleValue();
-		else if (type == averageType.CURRENT)
+		else if (type == AverageType.CURRENT)
 			sd = sds[num].get(sds[num].size() - 1).doubleValue();
 		return Utils.format(sd);
 	}
@@ -593,23 +655,22 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 		return curSessionSD;
 	}
 
-	public int getNumPops() {
-		return numPops;
+	public int getPOPCount() {
+		return solveCounter[SolveType.POP.ordinal()];
 	}
-
-	public int getNumPlus2s() {
-		return numPlus2s;
+	public int getPlus2Count() {
+		return solveCounter[SolveType.PLUS_TWO.ordinal()];
 	}
-
-	public int getNumDnfs() {
-		return numDnfs;
+	public int getDNFCount() {
+		return solveCounter[SolveType.DNF.ordinal()];
 	}
-
-	public int getNumSolves() {
-		return times.size() - numDnfs - numPops;
+	public int getNormalSolveCount() {
+		return solveCounter[SolveType.NORMAL.ordinal()];
 	}
-
-	public int getNumAttempts() {
+	public int getSolveCount() {
+		return getNormalSolveCount() + getPlus2Count();
+	}
+	public int getAttemptCount() {
 		return times.size();
 	}
 
@@ -625,7 +686,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 
 	public double getAverage(int n, int num) {
 		if(num < 0) num = 0;
-		else if(num >= numSizes) num = numSizes - 1;
+		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		if (n < 0)
 			n = averages[num].size() + n;
@@ -638,7 +699,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 
 	public double getSD(int n, int num) {
 		if(num < 0) num = 0;
-		else if(num >= numSizes) num = numSizes - 1;
+		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		if (n < 0)
 			n = sds[num].size() + n;
@@ -661,7 +722,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 
 	public double getSortAverage(int n, int num) {
 		if(num < 0) num = 0;
-		else if(num >= numSizes) num = numSizes - 1;
+		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		if (n < 0)
 			n = sortaverages[num].size() + n;
@@ -674,7 +735,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 
 	public double getSortSD(int n, int num) {
 		if(num < 0) num = 0;
-		else if(num >= numSizes) num = numSizes - 1;
+		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		if (n < 0)
 			n = sortsds[num].size() + n;
@@ -687,7 +748,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 
 	public double getSortAverageSD(int n, int num) {
 		if(num < 0) num = 0;
-		else if(num >= numSizes) num = numSizes - 1;
+		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		if (n < 0)
 			n = sortaverages[num].size() + n;
@@ -700,7 +761,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 
 	public double getBestTimeOfAverage(int n, int num) {
 		if(num < 0) num = 0;
-		else if(num >= numSizes) num = numSizes - 1;
+		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		if (n < 0)
 			n = averages[num].size() + n;
@@ -712,7 +773,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 
 	public double getWorstTimeOfAverage(int n, int num) {
 		if(num < 0) num = 0;
-		else if(num >= numSizes) num = numSizes - 1;
+		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		if (n < 0)
 			n = averages[num].size() + n;
@@ -724,7 +785,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 
 	public double getBestTimeOfSortAverage(int n, int num) {
 		if(num < 0) num = 0;
-		else if(num >= numSizes) num = numSizes - 1;
+		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		if (n < 0)
 			n = sortaverages[num].size() + n;
@@ -736,7 +797,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 
 	public double getWorstTimeOfSortAverage(int n, int num) {
 		if(num < 0) num = 0;
-		else if(num >= numSizes) num = numSizes - 1;
+		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		if (n < 0)
 			n = sortaverages[num].size() + n;
@@ -762,7 +823,7 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 
 	public double getProgressAverage(int num) {
 		if(num < 0) num = 0;
-		else if(num >= numSizes) num = numSizes - 1;
+		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		if (averages[num].size() < 2)
 			return Double.MAX_VALUE;
@@ -858,193 +919,24 @@ public class Statistics extends DraggableJTableModel implements ConfigurationCha
 	}
 
 	public String getBestAverageList(int num) {
-		return toTerseString(averageType.RA, num);
+		return toTerseString(AverageType.RA, num);
 	}
 
 	public String getCurrentAverageList(int num) {
-		return toTerseString(averageType.CURRENT, num);
+		return toTerseString(AverageType.CURRENT, num);
 	}
 
 	public String getSessionAverageList() {
-		return toTerseString(averageType.SESSION, 0);
+		return toTerseString(AverageType.SESSION, 0);
 	}
 
 	public String getWorstAverageList(int num) {
 		if(num < 0) num = 0;
-		else if(num >= numSizes) num = numSizes - 1;
+		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		if (sortaverages[num].size() >= 1)
 			return toTerseString(averages[num].indexOf(sortaverages[num].get(sortaverages[num].size() - 1)), num);
 		else
-			return toTerseString(averageType.RA, num);
-	}
-
-//	TableModel
-
-	public String getColumnName(int column) {
-		if(column == 0)
-			return "Times";
-		return "RA " + (column - 1);
-	}
-	public int getColumnCount() {
-		return 3;
-	}
-	public Class<?> getColumnClass(int columnIndex) {
-		return SolveTime.class;
-	}
-	public int getSize() {
-		return getRowCount();
-	}
-	public int getRowCount() {
-		return times == null ? 0 : times.size();
-	}
-	public Object getValueAt(int rowIndex, int columnIndex) {
-		if(columnIndex == 0) {
-			return times.get(rowIndex);
-		} else {
-			int whichRA = columnIndex - 1;
-			int RAnum = 1 + rowIndex - curRASize[whichRA];
-			if(RAnum < 0)
-				return "N/A";
-			else
-				return new SolveTime(averages[whichRA].get(RAnum), whichRA);
-		}
-	}
-	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == 0;
-	}
-	public boolean isRowDeletable(int rowIndex) {
-		return true;
-	}
-	public void insertValueAt(Object value, int rowIndex) {
-		add(rowIndex, (SolveTime) value);
-		fireTableRowsInserted(rowIndex, rowIndex);
-	}
-	public void setValueAt(Object value, int rowIndex, int columnIndex) {
-		SolveTime val = (SolveTime) value;
-		if(rowIndex == getRowCount()) {
-			add(val); //this will fire table row insertion
-		} else {
-			val.setScramble(times.get(rowIndex).getScramble());
-			editActions.add(new StatisticsEdit(new int[]{rowIndex}, new SolveTime[]{times.get(rowIndex)}, val));
-			times.set(rowIndex, val);
-			refresh(); //this will fire table data changed
-		}
-	}
-	public void deleteRows(int[] indices) {
-		SolveTime[] t = new SolveTime[indices.length];
-		for(int ch = indices.length - 1; ch >= 0; ch--) {
-			int i = indices[ch];
-			if(i >= 0 && i < times.size()) {
-				t[ch] = times.get(i);
-				times.remove(i);
-			} else {
-				t[ch] = null;
-				indices[ch] = -1;
-			}
-		}
-		editActions.add(new StatisticsEdit(indices, t, null));
-		refresh();
-	}
-	public void removeRows(int[] indices) {
-		deleteRows(indices);
-	}
-
-	private JRadioButtonMenuItem none, plusTwo, pop, dnf;
-	public void showPopup(MouseEvent e, final DraggableJTable timesTable) {
-		ActionListener al = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String command = e.getActionCommand();
-				Object source = e.getSource();
-				int selectedRow = timesTable.getSelectedRow();
-				SolveTime selectedSolve = times.get(selectedRow);
-
-				SolveTime.SolveType newType = null;
-				if (source == plusTwo) {
-					newType = SolveTime.SolveType.PLUS_TWO;
-				} else if(source == dnf) {
-					newType = SolveTime.SolveType.DNF;
-				} else if(source == pop) {
-					newType = SolveTime.SolveType.POP;
-				} else if(source == none) {
-					newType = SolveTime.SolveType.NORMAL;
-				}
-				if(newType != null) {
-					SolveTime.SolveType oldType = selectedSolve.getType();
-					selectedSolve.setType(newType);
-					editActions.add(new StatisticsEdit(selectedRow, oldType, newType));
-				} else if (command.equals("Discard")) {
-					timesTable.deleteSelectedRows(false);
-				} else if (command.equals("Edit time")) {
-					timesTable.editCellAt(selectedRow, 0);
-				}
-				refresh();
-			}
-		};
-		JPopupMenu jpopup = new JPopupMenu();
-		int[] selectedSolves = timesTable.getSelectedRows();
-		if(selectedSolves.length == 0)
-			return;
-		else if(selectedSolves.length == 1) {
-			SolveTime selectedSolve = times.get(timesTable.getSelectedRow());
-			JMenuItem rawTime = new JMenuItem("Raw Time: "
-					+ Utils.format(selectedSolve.rawSecondsValue()));
-			rawTime.setEnabled(false);
-			jpopup.add(rawTime);
-
-			ArrayList<SolveTime> split = selectedSolve.getSplits();
-			if (split != null) {
-				ListIterator<SolveTime> splits = split.listIterator();
-				while (splits.hasNext()) {
-					SolveTime next = splits.next();
-					rawTime = new JMenuItem("Split " + splits.nextIndex()
-							+ ": " + next + "\t" + next.getScramble());
-					rawTime.setEnabled(false);
-					jpopup.add(rawTime);
-				}
-			}
-
-			jpopup.addSeparator();
-
-			ButtonGroup group = new ButtonGroup();
-
-			none = new JRadioButtonMenuItem("None", selectedSolve.getType() == SolveTime.SolveType.NORMAL);
-			group.add(none);
-			none.addActionListener(al);
-			jpopup.add(none);
-			none.setEnabled(!selectedSolve.isTrueWorstTime());
-
-			plusTwo = new JRadioButtonMenuItem("+2", selectedSolve.getType() == SolveTime.SolveType.PLUS_TWO);
-			group.add(plusTwo);
-			plusTwo.addActionListener(al);
-			jpopup.add(plusTwo);
-			plusTwo.setEnabled(!selectedSolve.isTrueWorstTime());
-
-			pop = new JRadioButtonMenuItem("POP", selectedSolve.getType() == SolveTime.SolveType.POP);
-			group.add(pop);
-			pop.addActionListener(al);
-			jpopup.add(pop);
-			pop.setEnabled(!selectedSolve.isTrueWorstTime());
-
-			dnf = new JRadioButtonMenuItem("DNF", selectedSolve.getType() == SolveTime.SolveType.DNF);
-			group.add(dnf);
-			dnf.addActionListener(al);
-			jpopup.add(dnf);
-			dnf.setEnabled(!selectedSolve.isTrueWorstTime());
-
-			jpopup.addSeparator();
-
-			JMenuItem edit = new JMenuItem("Edit time");
-			edit.addActionListener(al);
-			jpopup.add(edit);
-
-			jpopup.addSeparator();
-		}
-
-		JMenuItem discard = new JMenuItem("Discard");
-		discard.addActionListener(al);
-		jpopup.add(discard);
-		timesTable.requestFocusInWindow();
-		jpopup.show(e.getComponent(), e.getX(), e.getY());
+			return toTerseString(AverageType.RA, num);
 	}
 }

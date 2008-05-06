@@ -24,6 +24,7 @@ import org.jvnet.lafwidget.LafWidget;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
+import net.gnehzr.cct.scrambles.NullScramble;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
@@ -56,6 +57,8 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 	private ScrambleCustomization currentCustomization;
 	private String part1, part2;
 	public void setScramble(Scramble newScramble, ScrambleCustomization sc) {
+		if(!(currentScramble instanceof NullScramble))
+			Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, scramblePopup.isVisible());
 		currentScramble = newScramble;
 		currentCustomization = sc;
 
@@ -102,9 +105,6 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 		part2 += "</body></html>";
 		scramblePane.setCaretPosition(0);
 		hyperlinkUpdate(new HyperlinkEvent(scramblePane, HyperlinkEvent.EventType.ACTIVATED, currScram));
-		if(sc.getScrambleVariation().equals(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation())) {
-			scramblePopup.setVisible(false);
-		}
 		setProperSize();
 		Container par = getParent();
 		if(par != null)
@@ -116,29 +116,41 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 			URL url = e.getURL();
 			ScramblePlugin sp = currentCustomization.getScramblePlugin();
 			ScrambleVariation sv = currentCustomization.getScrambleVariation();
-			try{
-				int caretPos = scramblePane.getCaretPosition();
-				//parts[0] = http://#, parts[1] = scramble
-				String[] parts = url.toString().split(" ", 2);
-				if(parts.length < 2){
-					scramblePane.setDocument(new HTMLDocument());
-					scramblePane.setText("");
-					scramblePane.setCaretPosition(0);
-					return;
-				}
-				//this is here to prevent calls to setVisible(true) when the popup is already visbile
-				//if we were to allow these, then the main gui could pop up on top of our fullscreen panel
-				if(!scramblePopup.isVisible())
-					scramblePopup.setVisible(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false));
-				int moveNum = Integer.parseInt(parts[0].substring(7));
-				Scramble s = sp.importScramble(sv.toString(), parts[1], sp.getEnabledPuzzleAttributes());
-				scramblePopup.setScramble(s, sp);
+			int caretPos = scramblePane.getCaretPosition();
+			//parts[0] = http://#, parts[1] = scramble
+			String[] parts = url.toString().split(" ", 2);
+			if(parts.length < 2) {
 				scramblePane.setDocument(new HTMLDocument());
-				scramblePane.setText(part1 + moveNum + part2);
-				scramblePane.setCaretPosition(caretPos);
-			} catch(InvalidScrambleException ex){
-				ex.printStackTrace();
+				scramblePane.setText("");
+				scramblePane.setCaretPosition(0);
+				return;
 			}
+			//this is here to prevent calls to setVisible(true) when the popup is already visbile
+			//if we were to allow these, then the main gui could pop up on top of our fullscreen panel
+			if(currentScramble instanceof NullScramble) {
+				scramblePopup.setVisible(false);
+			} else if(!scramblePopup.isVisible()) {
+				scramblePopup.setVisible(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false));
+//				System.out.println("setting..." + scramblePopup.isVisible());
+				//TODO - closing popup, null scramble, then real scramble and popup is visible
+				Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, scramblePopup.isVisible());
+			}
+			int moveNum = Integer.parseInt(parts[0].substring(7));
+			scramblePane.setDocument(new HTMLDocument());
+			scramblePane.setText(part1 + moveNum + part2);
+			scramblePane.setCaretPosition(caretPos);
+			Scramble s = null;
+			try {
+				s = sv.generateScramble(parts[1]);//.importScramble(sv.toString(), parts[1], sp.getEnabledPuzzleAttributes());
+			} catch(InvalidScrambleException e0) { //this could happen if a null scramble is imported
+				sp = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScramblePlugin();
+				try {
+					s = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation().generateScramble(parts[1]);
+				} catch (InvalidScrambleException e1) {
+					e1.printStackTrace();
+				}
+			}
+			scramblePopup.setScramble(s, sp);
 		}
 	}
 

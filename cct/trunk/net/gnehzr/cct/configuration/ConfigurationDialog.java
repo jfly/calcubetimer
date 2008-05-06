@@ -57,7 +57,6 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.Timer;
 
 import net.gnehzr.cct.main.KeyboardTimerPanel;
-import net.gnehzr.cct.main.Profile;
 import net.gnehzr.cct.misc.ComboItem;
 import net.gnehzr.cct.misc.ComboListener;
 import net.gnehzr.cct.misc.ComboRenderer;
@@ -71,6 +70,7 @@ import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent.ColorListener;
 import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
+import net.gnehzr.cct.statistics.Profile;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
 
@@ -388,12 +388,12 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private JPanel makeScrambleTypeOptionsPanel() {
 		JPanel panel = new JPanel(new BorderLayout(10, 10));
 
-		DraggableJTable profilesTable = new DraggableJTable("Add new profile...          ", true);
+		DraggableJTable profilesTable = new DraggableJTable("Add new profile...          ", true, false);
 		profilesTable.getTableHeader().setReorderingAllowed(false);
 		profilesTable.setModel(profilesModel);
 		profilesTable.setDefaultEditor(Profile.class, new ProfileEditor("Type new profile name here.", profilesModel));
 
-		DraggableJTable scramTable = new DraggableJTable("Add new puzzle...", true);
+		DraggableJTable scramTable = new DraggableJTable("Add new puzzle...", true, false);
 		scramTable.getTableHeader().setReorderingAllowed(false);
 		scramTable.putClientProperty(SubstanceLookAndFeel.WATERMARK_IGNORE, Boolean.TRUE);
 		scramTable.setShowGrid(false);
@@ -729,7 +729,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		try {
 			Configuration.saveConfigurationToFile(currProfile.getConfigurationFile());
 		} catch(IOException e) {
-			e.printStackTrace();
+			//this could happen when the current profile was deleted
 		}
 	}
 
@@ -738,11 +738,11 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		if(source == applyButton) {
 			applyAndSave();
 		} else if(source == saveButton) {
+			setVisible(false); //this needs to be before the call to apply()
 			applyAndSave();
-			setVisible(false);
 		} else if(source == cancelButton) {
-			cancel();
 			setVisible(false);
+			cancel();
 		} else if(source == resetButton) {
 			int choice = JOptionPane.showConfirmDialog(this, "Do you really want to reset everything?", "Warning!", JOptionPane.YES_NO_OPTION);
 			if(choice == JOptionPane.YES_OPTION)
@@ -927,6 +927,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	// this probably won't get used as much as apply, but it's here if you need it
 	public void cancel() {
 		ScramblePlugin.reloadLengthsFromConfiguration(false);
+		profilesModel.discardChanges();
 	}
 
 	private void applyConfiguration() {

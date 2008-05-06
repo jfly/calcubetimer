@@ -8,7 +8,6 @@ import javax.swing.ImageIcon;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
-import net.gnehzr.cct.main.CALCubeTimer;
 
 public class ScrambleVariation {
 	private String variation;

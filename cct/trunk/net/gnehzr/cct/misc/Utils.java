@@ -5,20 +5,31 @@ import java.awt.Font;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
-public class Utils{
-	private static final DecimalFormat DF = new DecimalFormat("0.00");
+import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
 
-	private Utils(){
+public class Utils {
+	private static final DecimalFormat DF = new DecimalFormat("0.00");
+	static {
+		DF.setRoundingMode(RoundingMode.HALF_UP);
 	}
 
-	public static String format(double seconds){
+	private Utils() {}
+
+	public static String format(double seconds) {
 		if(seconds == Double.MAX_VALUE) return "N/A";
 
-		DF.setRoundingMode(RoundingMode.HALF_UP);
 		return DF.format(seconds);
 	}
 
-	public static String clockFormat(double seconds){
+	public static String formatTime(double seconds) {
+		if(Configuration.getBoolean(VariableKey.CLOCK_FORMAT, false))
+			return clockFormat(seconds);
+		else
+			return format(seconds);
+	}
+	
+	private static String clockFormat(double seconds) {
 		if(seconds == Double.MAX_VALUE) return "N/A";
 
 		int hours = (int) (seconds / 3600.);
@@ -39,15 +50,11 @@ public class Utils{
 			+ format(seconds);
 	}
 
-	public static String clockFormat(double seconds, boolean isClock){
-		return isClock ? clockFormat(seconds) : format(seconds);
-	}
-
-	public static String colorToString(Color c){
+	public static String colorToString(Color c) {
 		return padWith0s(Integer.toHexString(c.getRGB() & 0xffffff));
 	}
 
-	private static String padWith0s(String s){
+	private static String padWith0s(String s) {
 		int pad = 6 - s.length();
 		if(pad > 0){
 			for(int i = 0; i < pad; i++) s = "0" + s;

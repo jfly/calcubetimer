@@ -8,10 +8,9 @@ import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
 @SuppressWarnings("serial")
 public class DynamicButton extends JButton implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener{
-	private DynamicString s;
+	private DynamicString s = null;
 
 	public DynamicButton(){
-		s = null;
 		Configuration.addConfigurationChangeListener(this);
 	}
 
@@ -19,15 +18,14 @@ public class DynamicButton extends JButton implements StatisticsUpdateListener, 
 		setDynamicString(s);
 	}
 
+	//TODO - Ryan, i need you to verify that this does what the previous version did (around revision 134)
 	public void setDynamicString(DynamicString s){
-		if(s != null){
-			s.getStatistics().removeStatisticsUpdateListener(this);
-		}
 		this.s = s;
-		if(s != null){
-			s.getStatistics().addStatisticsUpdateListener(this);
+		if(s != null) {
+			s.getStatisticsModel().addStatisticsUpdateListener(this);
 			update();
-		}
+		} else
+			s.getStatisticsModel().removeStatisticsUpdateListener(this);
 	}
 
 	public void update(){

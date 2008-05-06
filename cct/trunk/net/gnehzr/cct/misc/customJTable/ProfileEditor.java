@@ -12,7 +12,7 @@ import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
 import net.gnehzr.cct.configuration.ProfileListModel;
-import net.gnehzr.cct.main.Profile;
+import net.gnehzr.cct.statistics.Profile;
 
 @SuppressWarnings("serial")
 public class ProfileEditor extends DefaultCellEditor {
@@ -25,19 +25,20 @@ public class ProfileEditor extends DefaultCellEditor {
 		this.editText = editText;
 	}
 
+	private static final String INVALID_CHARACTERS = "\\/:*?<>|\"";
 	public boolean stopCellEditing() {
 		String s = (String) super.getCellEditorValue();
-		value = new Profile(s);
+		value = Profile.getProfileByName(s);
 		if(!value.equals(originalValue)) {
 			String error = null;
-			if(!s.matches("[A-Za-z0-9 ]+"))
-				error = "Invalid profile name. Name can only contain letters, numbers and spaces.";
+			if(stringContainsCharacters(s, INVALID_CHARACTERS))
+				error = "Invalid profile name. Name cannot contain any of the following characters: " + INVALID_CHARACTERS;
 			if(model.getContents().contains(value)) {
 				error = value + " already exists!";
 			}
 			if(error != null) {
 				JComponent component = (JComponent) getComponent();
-				component.setBorder(new LineBorder(Color.red));
+				component.setBorder(new LineBorder(Color.RED));
 				component.setToolTipText(error);
 				Action toolTipAction = component.getActionMap().get("postTip");
 				if (toolTipAction != null) {
@@ -47,18 +48,29 @@ public class ProfileEditor extends DefaultCellEditor {
 				}
 				return false;
 			}
-		}
+		} else
+			value = null;
 		return super.stopCellEditing();
+	}
+	private boolean stringContainsCharacters(String s, String characters) {
+		for(char ch : characters.toCharArray()) {
+			if(s.indexOf(ch) != -1)
+				return true;
+		}
+		return false;
 	}
 
 	private String originalValue;
 	public Component getTableCellEditorComponent(JTable table, Object value,
 			boolean isSelected, int row, int column) {
 		this.value = null;
-		originalValue = value.toString();
+		if(value instanceof Profile)
+			originalValue = ((Profile)value).getName();
+		else
+			originalValue = value.toString();
 		((JComponent) getComponent()).setBorder(new LineBorder(Color.black));
 		((JComponent) getComponent()).setToolTipText(editText);
-		return super.getTableCellEditorComponent(table, value, isSelected, row,
+		return super.getTableCellEditorComponent(table, originalValue, isSelected, row,
 				column);
 	}
 

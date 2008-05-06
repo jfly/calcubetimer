@@ -74,11 +74,11 @@
 											Best Time of Worst Average: $$bestTimeOfWorstAverage$$<br/>
 											Worst Time of Worst Average: $$worstTimeOfWorstAverage$$<br/>
 											<br/>
-											Color of Best Average: $$color_bestAverage$$<br/>
-											Color of Best and Current Average: $$color_bestAndCurrentAverage$$<br/>
-											Color of Current Average: $$color_currentAverage$$<br/>
-											Color of Best Time: $$color_bestTime$$<br/>
-											Color of Worst Time: $$color_worstTime$$<br/>
+											Color of Best Average: $$configuration_Statistics_Color_bestRA$$<br/>
+											Color of Best and Current Average: $$configuration_Statistics_Color_bestAndCurrentAverage$$<br/>
+											Color of Current Average: $$configuration_Statistics_Color_currentAverage$$<br/>
+											Color of Best Time: $$configuration_Statistics_Color_bestTime$$<br/>
+											Color of Worst Time: $$configuration_Statistics_Color_worstTime$$<br/>
 										</html>
 										]]>
 									</label>

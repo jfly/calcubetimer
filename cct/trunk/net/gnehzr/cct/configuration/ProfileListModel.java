@@ -3,41 +3,41 @@ package net.gnehzr.cct.configuration;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import net.gnehzr.cct.main.Profile;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
+import net.gnehzr.cct.statistics.Profile;
 
 @SuppressWarnings("serial")
 public class ProfileListModel extends DraggableJTableModel {
-	//this could probably be cleaned up, should strings or profiles be used as the type?
-	//they're kinda interchangeable
 	private enum editAction {ADDED, RENAMED, REMOVED};
 	private static class ProfileEditAction {
 		private editAction act;
-		private String s1, s2;
-		public ProfileEditAction(editAction act, String s1, String s2) {
+		private Profile p1;
+		public ProfileEditAction(editAction act, Profile p1) {
 			this.act = act;
-			this.s1 = s1;
-			this.s2 = s2;
+			this.p1 = p1;
 		}
 		public void executeAction() {
 			switch(act) {
 			case ADDED:
-				new Profile(s1).createProfileDirectory();
+				p1.createProfileDirectory();
 				break;
 			case RENAMED:
-				new Profile(s1).renameTo(new Profile(s2));
+				p1.commitRename();
 				break;
 			case REMOVED:
-				new Profile(s1).delete();
+				p1.delete();
 				break;
 			}
 		}
 	}
 	public void commitChanges() {
-		for(ProfileEditAction a : actions) {
+		for(ProfileEditAction a : actions)
 			a.executeAction();
-		}
+	}
+	public void discardChanges() {
+		for(Profile p : contents)
+			p.discardRename();
 	}
 
 	private ArrayList<ProfileEditAction> actions;
@@ -54,7 +54,7 @@ public class ProfileListModel extends DraggableJTableModel {
 	public void deleteRows(int[] indices) {
 		for(int i : indices) {
 			if(i >= 0 && i < contents.size())
-				actions.add(new ProfileEditAction(editAction.REMOVED, contents.get(i).getName(), null));
+				actions.add(new ProfileEditAction(editAction.REMOVED, contents.get(i)));
 		}
 		removeRows(indices);
 	}
@@ -101,13 +101,15 @@ public class ProfileListModel extends DraggableJTableModel {
 
 	@Override
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
+		if(value == null) //null if the name was equal to the addText
+			return;
 		Profile newProfile = (Profile)value;
 		if(rowIndex == contents.size()) {
-			actions.add(new ProfileEditAction(editAction.ADDED, newProfile.getName(), null));
+			actions.add(new ProfileEditAction(editAction.ADDED, newProfile));
 			contents.add(newProfile);
 		} else {
 			Profile oldProfile = contents.get(rowIndex);
-			actions.add(new ProfileEditAction(editAction.RENAMED, oldProfile.getName(), newProfile.getName()));
+			actions.add(new ProfileEditAction(editAction.RENAMED, oldProfile));
 			oldProfile.renameTo(newProfile.getName());
 		}
 		fireTableDataChanged();

@@ -63,7 +63,8 @@ public class UndoRedoList<E> {
 		l = url;
 		notifyListener();
 	}
-	private void notifyListener() {
-		l.undoRedoChange(before, remaining);
+	public void notifyListener() {
+		if(l != null)
+			l.undoRedoChange(before, remaining);
 	}
 }

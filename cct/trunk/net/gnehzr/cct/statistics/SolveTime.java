@@ -3,12 +3,10 @@ package net.gnehzr.cct.statistics;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import net.gnehzr.cct.configuration.Configuration;
-import net.gnehzr.cct.configuration.VariableKey;
-import net.gnehzr.cct.stackmatInterpreter.TimerState;
 import net.gnehzr.cct.misc.Utils;
+import net.gnehzr.cct.stackmatInterpreter.TimerState;
 
-public class SolveTime implements Comparable<SolveTime> {
+public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	public static final SolveTime BEST = new SolveTime(0, null);
 	public static final SolveTime WORST = new SolveTime();
 
@@ -17,7 +15,6 @@ public class SolveTime implements Comparable<SolveTime> {
 	private SolveType type = SolveType.NORMAL;
 	private int hundredths;
 	private String scramble = null;
-	private String comment;
 	private ArrayList<SolveTime> splits;
 
 	public SolveTime() {
@@ -61,7 +58,8 @@ public class SolveTime implements Comparable<SolveTime> {
 	}
 
 	//TODO - can time == null?
-	private void setTime(String time) throws Exception {
+	//TODO - should we really allow users to type in "N/A"?
+	public void setTime(String time) throws Exception {
 		time = time.trim();
 		if(time.equalsIgnoreCase("DNF"))
 			type = SolveType.DNF;
@@ -98,21 +96,13 @@ public class SolveTime implements Comparable<SolveTime> {
 			this.hundredths = (int)(100 * seconds + .5);
 		}
 	}
-
-	public void setComment(String comm) {
-		comment = comm;
-	}
-	
-	public String getComment() {
-		return comment == null ? "" : comment;
-	}
 	
 	public void setScramble(String scramble) {
 		this.scramble = scramble;
 	}
 
 	public String getScramble() {
-		return scramble;
+		return scramble == null ? "" : scramble;
 	}
 
 	public String toString() {
@@ -122,8 +112,8 @@ public class SolveTime implements Comparable<SolveTime> {
 		case POP:
 			return "POP";
 		default:
-			if(hundredths == Integer.MAX_VALUE) return "N/A";
-			else return Utils.clockFormat(secondsValue(), Configuration.getBoolean(VariableKey.CLOCK_FORMAT, false)) + (type == SolveType.PLUS_TWO ? "+" : "");
+			if(hundredths == Integer.MAX_VALUE || hundredths < 0) return "N/A";
+			else return Utils.formatTime(secondsValue()) + (type == SolveType.PLUS_TWO ? "+" : "");
 		}
 	}
 
@@ -163,42 +153,13 @@ public class SolveTime implements Comparable<SolveTime> {
 	public void setType(SolveType t) {
 		type = t;
 	}
-	
-//	public boolean isPop() {
-//		return isPop;
-//	}
-//
 	public boolean isInfiniteTime() {
 		return type == SolveType.POP || type == SolveType.DNF;
 	}
-//
+	//"true" in the sense that it was manually entered as POP or DNF
 	public boolean isTrueWorstTime(){
 		return hundredths == 0 && (type == SolveType.POP || type == SolveType.DNF);
 	}
-//
-//	public void setPop(boolean pop) {
-//		isPop = pop;
-//	}
-//
-//	public boolean isDNF() {
-//		return isDNF;
-//	}
-//
-//	public void setDNF(boolean dnf) {
-//		isDNF = dnf;
-//	}
-//
-//	public boolean isPlusTwo() {
-//		return isPlusTwo;
-//	}
-//
-//	public boolean isNormal() {
-//		return !isPop && !isPlusTwo && !isDNF;
-//	}
-//
-//	public void setPlusTwo(boolean plustwo) {
-//		isPlusTwo = plustwo;
-//	}
 
 	public ArrayList<SolveTime> getSplits() {
 		return splits;

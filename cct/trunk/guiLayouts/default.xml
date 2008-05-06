@@ -22,23 +22,52 @@
 							</panel>
 						</scrollpane>
 						<component alignmentX=".5" type="startStopPanel"/>
-						<panel layout="flow" hgap="5" vgap="5">
-							<panel layout="grid" cols="3">
-								<button action="addTime">Add Time</button>
-								<checkbox action="keyboardTiming"/>
-								<button action="reset">Reset</button>
-								<button action="currentAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average of $$configuration_Statistics_raSize0$$: $$currentAverage0$$</font></html>]]></button>
-								<button action="bestAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">Best Rolling Average of $$configuration_Statistics_raSize0$$: $$bestAverage0$$</font></html>]]></button>
-								<button action="sessionAverage">Session Average: $$sessionAverage$$</button>
-								<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average of $$configuration_Statistics_raSize1$$: $$currentAverage1$$</font></html>]]></button>
-								<button action="bestAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">Best Rolling Average of $$configuration_Statistics_raSize1$$: $$bestAverage1$$</font></html>]]></button>
+						<panel layout="grid" cols="3">
+							<button action="addTime">Add Time</button>
+							<panel><checkbox alignmentX=".5" action="keyboardTiming"/></panel>
+							<panel>
+								<button action="newSession">New Session</button>
+								<button action="reset">Clear Session</button>
 							</panel>
 						</panel>
-						<label alignmentX=".5">$$solves$$/$$attempts$$ (solves/attempts)</label>
+						<panel layout="box" orientation="line">
+							<panel border=";Session Statistics" layout="box" orientation="page">
+								<panel layout="box" orientation="line">
+									<label alignmentX=".5">RA of $$configuration_Statistics_raSize0$$</label>
+									<button action="currentAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average: $$currentAverage0$$</font></html>]]></button>
+									<button action="bestAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">Best RA: $$bestRA0$$</font></html>]]></button>
+								</panel>
+								<panel layout="box" orientation="line">
+									<label alignmentX=".5">RA of $$configuration_Statistics_raSize1$$</label>
+									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average: $$currentAverage1$$</font></html>]]></button>
+									<button action="bestAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">Best RA: $$bestRA1$$</font></html>]]></button>
+								</panel>
+								<panel layout="box" orientation="line">
+									<label alignmentX=".5">$$solves$$/$$attempts$$ (solves/attempts)</label>
+									<button action="sessionAverage"><![CDATA[<html>Session Average: $$sessionAverage$$</html>]]></button>
+								</panel>
+								<panel></panel> <!-- I have no idea why this needs to be here, weird behavior without it -->
+							</panel>
+							<panel border=";Cubing History" layout="box" orientation="page">
+								<panel><label alignmentX=".5">Best time ever: $$veryBestTime$$</label></panel>
+								<panel><label alignmentX=".5">Best RA of $$configuration_Statistics_raSize0$$: $$veryBestRA0$$</label></panel>
+								<panel><label alignmentX=".5">$$globalSolveCount$$ solve average: $$globalAverage$$</label></panel>
+							</panel>
+						</panel>
+						<panel layout="border" preferredsize="100x25">
+							<scrollpane verticalpolicy="asneeded" horizontalpolicy="asneeded">
+								<component type="commentarea"/>
+							</scrollpane>
+						</panel>
 					</panel>
 				</south>
 			</panel>
-			<component type="timesList"/>
+			<panel nominsize="false" layout="border">
+				<tabbedpane>
+					<component name="Times" type="timesList"/>
+					<component name="Sessions" type="sessionsList"/>
+				</tabbedpane>
+			</panel>
 		</splitpane>
 	</panel>
 	<menubar>
@@ -70,10 +99,11 @@
 		<button nominsize="true" action="redo"/>
 		<glue orientation="horizontal"/>
 		<component type="profilecombobox"/>
+		<component type="clock"/> <!-- Probably want to add a gui option for empty borders, to create blank space -->
 		<menu mnemonic="h">Help
 			<menuitem action="showDocumentation">View Documentation</menuitem>
 			<menuitem action="showAbout">About</menuitem>
 		</menu>
-		<button nominsize="true" action="togglefullscreen"/>
+		<button nominsize="true" action="togglefullscreen">+</button>
 	</menubar>
 </gui>

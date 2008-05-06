@@ -98,13 +98,12 @@ changes:
 +BUG: default sizing of gui is NO LONGER bad! also got rid of the nasty xmlgui jscrollpane stuff in endelement
 +BUG: clicking a link when you are scrolled down NO LONGER has bad behavior
 +BUG: fullscreen timing broken by hiding of scramble popup (TODO in ScrambleArea.java)
+	+hiding of scramble popup fixed (behavior w/ config & null scrambles)
 +add xmlgui option for showing scramblepopup
 +expand jtable of times to include {current, rolling1, rolling2} average column
 +test out jsplitpane xmlgui stuff
-+clean up all critical TODOs scattered throughout the code
 +sent modified sunday contest to jon morris (emailed on 2/22/08, uploaded on 2/24/08)
 +escape will release all keys we think are pressed, this allows an easy fix to the alt+spacebar problem
-+comments on scrambles
 +to fix this problem: "add gui option (disabled by default) to maintain focus whenever possible"
 	+added configuration option (enabled by default) to prevent buttons and checkboxes from stealing focus
 +updated to substance 4.2 -> had to modify solvetimerenderer to fix minor bug introduced by new substance
@@ -112,12 +111,30 @@ changes:
 +dynamic string can now access the configuration directly ($$configuration_...$$)
 +add undo-redo buttons (for times and scrambles)
 +icons on scramble choices, just specify a *.png file in the plugins directory (http://whiskeyfire.typepad.com/whiskey_fire/2006/12/index.html)
++added jtabbedpane to xml gui
++added clock component to xml gui
++enter button can now be used to start the timer
++create a jtable class (draggablejtable) that will remember enabled columns, widths, ordering, and sorting
++imported scrambles message no longer appears for server scrambles & old session scrambles
++scramble popup now hidden when null scrambles imported, and scramblelength disabled
++fixed bug where creating new scramblecustomizations would screw up their variation's lengths
++profile ordering should be constant across profiles
++can't create new profile from addtext repeatedly
++fixed renaming profiles, including the current profile
++gui layouts remember stuff like jsplitpane location and jtabbedpane selection in a (kinda) general fashion
++add properties option for delay between solves
++logging to xml database for each profile
+	+comments on sessions and scrambles
+	+add dynamic string stuff/actions for puzzledatabases
+	+deal with unrecognized scramblecustomizations, and renaming customizations!
 
 TODO:
 
 for release:
+-create recent history jtextarea for connecting to chat servers & downloading scrambles 
+-make scrambleplugins secure
+-clean up all critical TODOs scattered throughout the code (SolveTime, esp.)
 -progress time (dynamicstring) is broken
--logging to xml database for each profile
 -internationalization (dates, too)
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html
 	http://www.eclipse.org/articles/Article-Internationalization/how2I18n.html

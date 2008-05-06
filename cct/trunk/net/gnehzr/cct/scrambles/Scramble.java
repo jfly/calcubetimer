@@ -17,6 +17,9 @@ public abstract class Scramble {
 		scramble = s;
 		imported = true;
 	}
+	public void setImported(boolean imported) {
+		this.imported = imported;
+	}
 
 	public int getLength() {
 		return length;

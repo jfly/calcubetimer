@@ -50,7 +50,9 @@
 					</panel>
 				</south>
 			</panel>
-			<component type="timesList"/>
+			<panel nominsize="false" layout="border">
+				<component type="timesList"/>
+			</panel>
 		</splitpane>
 	</panel>
 	<menubar>

@@ -1,15 +1,15 @@
 <!ELEMENT gui (panel,menubar)?>
 
-<!ELEMENT panel (center|north|south|east|west|page_start|page_end|line_start|line_end|panel|scrollpane|splitpane|component|button|checkbox|label|selectablelabel)*>
-<!ELEMENT center (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane)?>
-<!ELEMENT north (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane)?>
-<!ELEMENT south (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane)?>
-<!ELEMENT east (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane)?>
-<!ELEMENT west (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane)?>
-<!ELEMENT page_start (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane)?>
-<!ELEMENT page_end (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane)?>
-<!ELEMENT line_start (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane)?>
-<!ELEMENT line_end (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane)?>
+<!ELEMENT panel (center|north|south|east|west|page_start|page_end|line_start|line_end|panel|scrollpane|splitpane|component|button|checkbox|label|selectablelabel|tabbedpane)*>
+<!ELEMENT center (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+<!ELEMENT north (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+<!ELEMENT south (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+<!ELEMENT east (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+<!ELEMENT west (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+<!ELEMENT page_start (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+<!ELEMENT page_end (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+<!ELEMENT line_start (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+<!ELEMENT line_end (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
 
 <!ELEMENT menubar (menu|glue|component|button|checkbox|label|selectablelabel)*>
 <!ELEMENT menu (#PCDATA|menu|menuitem|separator|checkboxmenuitem|component)*>
@@ -18,7 +18,17 @@
 <!ATTLIST scrollpane verticalpolicy (always|never|asneeded) #IMPLIED>
 <!ATTLIST scrollpane horizontalpolicy (always|never|asneeded) #IMPLIED>
 
-<!ELEMENT splitpane (panel|component|button|checkbox|label|selectablelabel)*>
+<!ELEMENT tabbedpane (panel|component|button|checkbox|label|selectablelabel|tabbedpane)*>
+<!-- The following name attribute is currently used only to give tabs in jtabbedpanes titles -->
+<!ATTLIST panel name CDATA #IMPLIED>
+<!ATTLIST component name CDATA #IMPLIED>
+<!ATTLIST button name CDATA #IMPLIED>
+<!ATTLIST checkbox name CDATA #IMPLIED>
+<!ATTLIST label name CDATA #IMPLIED>
+<!ATTLIST selectablelabel name CDATA #IMPLIED>
+<!ATTLIST tabbedpane name CDATA #IMPLIED>
+
+<!ELEMENT splitpane (panel)*>
 <!ATTLIST splitpane drawcontinuous (true|false) #IMPLIED>
 <!ATTLIST splitpane resizeweight CDATA #IMPLIED>
 <!ATTLIST splitpane split (horizontal|vertical) #IMPLIED>
@@ -45,6 +55,9 @@
 <!ATTLIST component type CDATA #REQUIRED>
 
 <!ATTLIST button nominsize (true|false) #IMPLIED>
+<!-- This attribute for panels is to override the
+	default behavior of giving panels a minimum size of zero -->
+<!ATTLIST panel nominsize (true|false) #IMPLIED>
 
 <!ATTLIST button action CDATA #IMPLIED>
 <!ATTLIST checkbox action CDATA #IMPLIED>

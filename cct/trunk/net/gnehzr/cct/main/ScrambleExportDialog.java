@@ -10,7 +10,6 @@ import java.net.URL;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -21,15 +20,15 @@ import javax.swing.JTextField;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.JSpinnerWithText;
+import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleList;
-import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 @SuppressWarnings("serial")
 public class ScrambleExportDialog extends JDialog implements ActionListener {
 	private JTextField urlField;
 	private JButton browse;
-	private JComboBox scrambleChooser;
+	private ScrambleChooserComboBox scrambleChooser;
 	private JSpinnerWithText scrambleLength, numberOfScrambles;
 	private JButton exportButton, cancelButton;
 	public ScrambleExportDialog(JFrame owner, ScrambleVariation selected) {
@@ -39,8 +38,7 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 		browse = new JButton("Browse");
 		browse.addActionListener(this);
 
-		scrambleChooser = new JComboBox(ScramblePlugin.getScrambleVariations());
-		scrambleChooser.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
+		scrambleChooser = new ScrambleChooserComboBox(false, false);
 		scrambleChooser.setSelectedItem(selected);
 		scrambleChooser.addActionListener(this);
 
@@ -120,10 +118,11 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 		return var;
 	}
 
-	private void exportScrambles(URL outputFile, int numberOfScrambles, ScrambleVariation scrambleChoice) {
+	private void exportScrambles(URL outputFile, int numberOfScrambles, ScrambleVariation scrambleVariation) {
 		try {
 			PrintWriter out = new PrintWriter(new FileWriter(new File(outputFile.toURI())));
-			ScrambleList generatedScrambles = new ScrambleList(scrambleChoice);
+			ScrambleList generatedScrambles = new ScrambleList();
+			generatedScrambles.setScrambleCustomization(new ScrambleCustomization(scrambleVariation, null));
 			for(int ch = 0; ch < numberOfScrambles; ch++, generatedScrambles.getNext()) {
 				out.println(generatedScrambles.getCurrent().toString());
 			}

@@ -195,7 +195,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		}
 		if(spaceBarOnly)
 			return key != KeyEvent.VK_SPACE;
-		return key > 123 || key < 23 || e.isAltDown() || e.isControlDown() || key == KeyEvent.VK_ESCAPE;
+		return key != KeyEvent.VK_ENTER && (key > 123 || key < 23 || e.isAltDown() || e.isControlDown() || key == KeyEvent.VK_ESCAPE);
 	}
 
 	public void reset() {
@@ -217,7 +217,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		//returns true if it actually starts
 		public boolean startTimer() {
 			start = System.currentTimeMillis();
-			if(start - current < 500) return false;
+			if(start - current < Configuration.getInt(VariableKey.DELAY_BETWEEN_SOLVES, false)) return false;
 			super.fireActionPerformed(new ActionEvent(getTimerState(), 0, "Started"));
 			reset = false;
 			super.start();

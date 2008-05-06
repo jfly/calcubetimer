@@ -14,7 +14,7 @@ public class NullScramble extends Scramble {
 	private static final Pattern TOKEN_REGEX = Pattern.compile("^(.+)()$");
 
 	public static int getDefaultScrambleLength(String variation) {
-		return 1;
+		return 0;
 	}
 
 	public static String getDefaultFaceColor(String face) {

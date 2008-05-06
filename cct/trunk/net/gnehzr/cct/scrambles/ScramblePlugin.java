@@ -12,6 +12,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
@@ -126,9 +127,18 @@ public class ScramblePlugin {
 		}
 
 		String[] customNames = Configuration.getStringArray(VariableKey.SCRAMBLE_CUSTOMIZATIONS, false);
-		for(int ch = customNames.length - 1; ch >= 0; ch--) {
-			String name = customNames[ch];
-			int delimeter = customNames[ch].indexOf(':');
+		Iterator<String> databaseCustoms = Configuration.getSelectedProfile().getPuzzleDatabase().getCustomizations().iterator();
+		int ch = customNames.length - 1;
+		while(true) {
+			String name;
+			if(databaseCustoms.hasNext()) {
+				name = databaseCustoms.next();
+			} else {
+				if(ch < 0)
+					break;
+				name = customNames[ch--];
+			}
+			int delimeter = name.indexOf(':');
 			String customizationName;
 			if(delimeter == -1) {
 				delimeter = name.length();
@@ -145,16 +155,24 @@ public class ScramblePlugin {
 			}
 			ScrambleCustomization sc;
 			if(scramCustomization != null) {
-				if(customizationName == null)
-					scrambleCustomizations.remove(scramCustomization);
 				sc = new ScrambleCustomization(scramCustomization.getScrambleVariation(), customizationName);
-				scrambleCustomizations.add(0, sc);
 			}
-			else if(variationName.equals(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation().toString())){
+			else {
+				if(!variationName.equals(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation().toString())) {
+					if(customizationName == null)
+						customizationName = variationName;
+					else
+						customizationName = variationName + ":" + customizationName;
+				}
 				sc = new ScrambleCustomization(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation(), customizationName);
+			}
+			if(!variationName.isEmpty()) {
+				if(scrambleCustomizations.contains(sc))
+					scrambleCustomizations.remove(sc);
 				scrambleCustomizations.add(0, sc);
 			}
 		}
+		Configuration.setStringArray(VariableKey.SCRAMBLE_CUSTOMIZATIONS, scrambleCustomizations.toArray());
 		return scrambleCustomizations;
 	}
 

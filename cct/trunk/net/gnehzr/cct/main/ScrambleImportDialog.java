@@ -14,11 +14,11 @@ import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
@@ -34,6 +34,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.JTextAreaWithHistory;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
+import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleList;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
@@ -46,16 +47,16 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 	private JButton browse, addToArea;
 	private JTextAreaWithHistory scrambles;
 	private JEditorPane qualityControl;
-	private JComboBox scrambleChooser;
+	private ScrambleChooserComboBox scrambleChooser;
 	private JButton importButton, cancelButton;
-	private ScrambleList scrambleList;
-	private boolean imported = false;
-	public ScrambleImportDialog(JFrame owner, ScrambleCustomization selected) {
+	private ScrambleList scramblesList;
+	public ScrambleImportDialog(JFrame owner, ScrambleList scramblesList) {
 		super(owner, "Import Scrambles", true);
 
+		this.scramblesList = scramblesList;
+		
 		JPanel contentPane = new JPanel(new BorderLayout());
 		setContentPane(contentPane);
-		
 		
 		JPanel topBot = new JPanel();
 		topBot.setLayout(new BoxLayout(topBot, BoxLayout.Y_AXIS));
@@ -73,10 +74,9 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 		sideBySide.add(addToArea);
 		topBot.add(sideBySide);
 
-		scrambleChooser = new JComboBox(ScramblePlugin.getScrambleCustomizations(false).toArray(new ScrambleCustomization[0]));
+		scrambleChooser = new ScrambleChooserComboBox(false, true);
 		scrambleChooser.addItem(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION);
-		scrambleChooser.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
-		scrambleChooser.setSelectedItem(selected);
+		scrambleChooser.setSelectedItem(scramblesList.getScrambleCustomization());
 		scrambleChooser.addActionListener(this);
 		topBot.add(scrambleChooser);
 
@@ -149,7 +149,10 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 				showErrorMessage("Error!\n" + e.toString(), "Hmmmmm...");
 			}
 		} else if(source == importButton) {
-			imported = true;
+			ScrambleCustomization sc = getScrambleCustomization();
+			if(!sc.equals(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION))
+				scramblesList.setScrambleCustomization(sc);
+			scramblesList.importScrambles(scrams);
 			setVisible(false);
 		} else if(source == cancelButton) {
 			setVisible(false);
@@ -158,28 +161,28 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 		}
 	}
 	
+	public ScrambleCustomization getScrambleCustomization() {
+		return (ScrambleCustomization) scrambleChooser.getSelectedItem();
+	}
+	
 	private void showErrorMessage(String errorMessage, String title){
 		JOptionPane.showMessageDialog(this, errorMessage, title, JOptionPane.ERROR_MESSAGE);
 	}
-	
-	public ScrambleList getScrambleList() {
-		return imported ? scrambleList : null;
-	}
+
 	public ScrambleCustomization getSelectedCustomization() {
 		return (ScrambleCustomization) scrambleChooser.getSelectedItem();
 	}
 
-	public void changedUpdate(DocumentEvent e) {
-	}
+	public void changedUpdate(DocumentEvent e) {}
 	public void insertUpdate(DocumentEvent e) {
 		validateScrambles();
 	}
 	public void removeUpdate(DocumentEvent e) {
 		validateScrambles();
 	}
+	private ArrayList<Scramble> scrams = new ArrayList<Scramble>();
 	private void validateScrambles() {
 		ScrambleCustomization sc = getSelectedCustomization();
-		scrambleList = new ScrambleList(sc.getScrambleVariation());
 		
 		Font font = scrambles.getFont();
 		String fontStyle = "";
@@ -200,12 +203,13 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 		boolean perfect = true;
 		boolean empty = true;
 		int scramNumber = 1;
+		scrams.clear();
 		for(int ch = 0; ch < importedScrams.length; ch++) {
 			boolean valid = false;
 			if(!importedScrams[ch].trim().isEmpty()) {
 				empty = false;
 				try {
-					scrambleList.add(sc.getScrambleVariation().generateScramble(importedScrams[ch]));
+					scrams.add(sc.getScrambleVariation().generateScramble(importedScrams[ch]));
 					valid = true;
 				} catch (InvalidScrambleException e) {}
 				perfect = perfect && valid;

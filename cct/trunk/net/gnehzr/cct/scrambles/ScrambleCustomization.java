@@ -31,7 +31,7 @@ public class ScrambleCustomization {
 
 	public String toString() {
 		String temp = variation.getVariation();
-		if(temp.equals(""))
+		if(temp.isEmpty())
 			temp += variation.getScramblePlugin().getPuzzleName();
 		if(customization != null)
 			temp += ":" + customization;

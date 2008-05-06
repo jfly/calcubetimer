@@ -15,7 +15,6 @@ import java.util.EventObject;
 
 import javax.swing.Action;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -28,14 +27,15 @@ import javax.swing.event.CellEditorListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
-import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.utils.SubstanceConstants;
-
+import net.gnehzr.cct.main.ScrambleChooserComboBox;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
+
+import org.jvnet.substance.SubstanceLookAndFeel;
+import org.jvnet.substance.utils.SubstanceConstants;
 
 @SuppressWarnings("serial")
 public class ScrambleCustomizationListModel extends DraggableJTableModel implements TableCellRenderer, TableCellEditor, MouseListener {
@@ -54,17 +54,12 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	public Class<?> getColumnClass(int columnIndex) {
 		return ScrambleCustomization.class;
 	}
+	private String[] columnNames = new String[]{ "Scramble Customization", "Length" };
 	public int getColumnCount() {
-		return 2;
+		return columnNames.length;
 	}
 	public String getColumnName(int column) {
-		switch(column) {
-			case 0:
-				return "Scramble Customizations";
-			case 1:
-				return "Length";
-		}
-		return null;
+		return columnNames[column];
 	}
 	public int getRowCount() {
 		return customizations == null ? 0 : customizations.size();
@@ -77,11 +72,11 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 			return true;
 		else
 			return customizations.get(rowIndex).getCustomization() != null;
+			
 	}
 	public boolean isRowDeletable(int rowIndex) {
-		if(customizations.get(rowIndex).getCustomization() == null)
-			return false;
-		return true;
+		ScrambleCustomization sc = customizations.get(rowIndex);
+		return sc.getCustomization() != null || sc.equals(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION);
 	}
 	public void removeRows(int[] indices) {
 		for(int ch = indices.length - 1; ch >=0; ch--) {
@@ -109,8 +104,6 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	public void showPopup(MouseEvent e, DraggableJTable source) {}
 
 	//******* Start of renderer/editor stuff ****************//
-
-
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		String val = value == null ? "" : value.toString();
 		if(value instanceof ScrambleCustomization) {
@@ -135,7 +128,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		if(value instanceof ScrambleCustomization) {
 			customization = (ScrambleCustomization) value;
 		} else {
-			customization = new ScrambleCustomization(ScramblePlugin.getScrambleVariations()[0], "");
+			customization = new ScrambleCustomization(ScramblePlugin.getCurrentScrambleCustomization().getScrambleVariation(), "");
 		}
 		if(column == 0) {
 			return getCustomizationPanel(customization);
@@ -145,7 +138,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	}
 
 	private ScrambleCustomization customization;
-	private JComboBox scrambleVariations;
+	private ScrambleChooserComboBox scrambleVariations;
 	private JSpinner scramLength;
 	private JTextField customField;
 	private String originalFieldText;
@@ -153,7 +146,8 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	private JPanel getCustomizationPanel(ScrambleCustomization custom) {
 		JPanel customPanel = new JPanel();
 		if(custom.getCustomization() != null) {
-			scrambleVariations = new JComboBox(ScramblePlugin.getScrambleVariations());
+			scramLength = null; //this has to be null so we know what to do when stopCellEditing() is called
+			scrambleVariations = new ScrambleChooserComboBox(false, false);
 			scrambleVariations.addItem(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation());
 			scrambleVariations.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
 			scrambleVariations.setSelectedItem(custom.getScrambleVariation());
@@ -184,7 +178,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	private JPanel getLengthPanel(ScrambleCustomization custom) {
 		JPanel lengthPanel = new JPanel();
 		customization = custom;
-		scramLength = new JSpinner(new SpinnerNumberModel(custom.getScrambleVariation().getLength(), 1, null, 1));
+		scramLength = new JSpinner(new SpinnerNumberModel(custom.getScrambleVariation().getLength(), 0, null, 1));
 		scramLength.setToolTipText("Specify the scramble length for this puzzle variation.");
 		((JSpinner.DefaultEditor) scramLength.getEditor()).getTextField().setColumns(3);
 		lengthPanel.add(scramLength);
@@ -275,7 +269,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 			} else {
 				String fullCustomName = customization.getScrambleVariation().getVariation() + ":" + customName;
 				for(ScrambleCustomization c : customizations) {
-					if(c.equals(fullCustomName)) {
+					if(c.equals(fullCustomName) && c != customization) {
 						error = "Can't have duplicate customizations!";
 						break;
 					}
@@ -293,8 +287,9 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 			}
 			customization.setCustomization(customField.getText());
 		}
-		if(scramLength != null)
+		if(scramLength != null) {
 			customization.getScrambleVariation().setLength((Integer) scramLength.getValue());
+		}
 		scramLength = null;
 		listener.editingStopped(null);
 		return true;

@@ -15,13 +15,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.gnehzr.cct.main.CALCubeTimer;
-import net.gnehzr.cct.main.Profile;
 import net.gnehzr.cct.misc.Utils;
+import net.gnehzr.cct.statistics.Profile;
 
 public final class Configuration {
 	public static final File documentationFile = new File(getRootDirectory(), "documentation/readme.html");
@@ -33,7 +34,7 @@ public final class Configuration {
 	private static final String guestName = "Guest";
 	public static final Profile guestProfile = createGuestProfile();
 	private static Profile createGuestProfile() {
-		Profile temp = new Profile(guestName);
+		Profile temp = Profile.getProfileByName(guestName);
 		temp.createProfileDirectory();
 		return temp;
 	}
@@ -80,11 +81,15 @@ public final class Configuration {
 		props.setProperty(key.toKey(), value);
 	}
 
-	public static int getInt(VariableKey<Integer> key, boolean defaultValue) {
+	public static Integer getInt(VariableKey<Integer> key, boolean defaultValue) {
 		return getInt(defaultValue ? defaults : props, key.toKey());
 	}
-	private static int getInt(Properties props, String key) {
-		return Integer.parseInt(props.getProperty(key));
+	private static Integer getInt(Properties props, String key) {
+		try {
+			return Integer.parseInt(props.getProperty(key));
+		} catch(Exception e) {
+			return null;
+		}
 	}
 	public static void setInt(VariableKey<Integer> key, int value) {
 		props.setProperty(key.toKey(), Integer.toString(value));
@@ -99,7 +104,7 @@ public final class Configuration {
 	public static void setFont(VariableKey<Font> key, Font newFont) {
 		props.setProperty(key.toKey(), Utils.fontToString(newFont));
 	}
-
+	
 	public static boolean getBoolean(VariableKey<Boolean> key, boolean defaultValue) {
 		return getBoolean(defaultValue ? defaults : props, key.toKey());
 	}
@@ -116,7 +121,12 @@ public final class Configuration {
 	private static Dimension getDimension(Properties props, String key) {
 		try {
 			String[] dims = props.getProperty(key).split("x");
-			return new Dimension(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]));
+			Dimension temp = new Dimension(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]));
+			if(temp.height <= 0) //we don't allow invisible dimensions
+				temp.height = 100;
+			if(temp.width <= 0)
+				temp.width = 100;
+			return temp;
 		} catch(Exception e) {
 			return null;
 		}
@@ -168,9 +178,36 @@ public final class Configuration {
 		}
 		props.setProperty(key.toKey(), mashed);
 	}
+	
+	public static Integer[] getIntegerArray(VariableKey<Integer[]> key, boolean defaultValue) {
+		return getIntegerArray(defaultValue ? defaults : props, key.toKey());
+	}
+	private static Integer[] getIntegerArray(Properties props, String key) {
+		try {
+			String[] s = props.getProperty(key).split("\n");
+			Integer[] i = new Integer[s.length];
+			for(int ch = 0; ch < s.length; ch++) {
+				i[ch] = Integer.parseInt(s[ch]);
+			}
+			return i;
+		} catch(NullPointerException e) {
+			return null;
+		}
+	}
+	public static void setIntegerArray(VariableKey<Integer[]> key, Integer[] arr) {
+		String mashed = "";
+		for(int i : arr) {
+			mashed += i + "\n";
+		}
+		props.setProperty(key.toKey(), mashed);
+	}
 
 	//********* End getters and setters *****************//
 
+	public static SimpleDateFormat getDateFormat() {
+		return new SimpleDateFormat(getString(VariableKey.DATE_FORMAT, false));
+	}
+	
 	private static CopyOnWriteArrayList<ConfigurationChangeListener> listeners = new CopyOnWriteArrayList<ConfigurationChangeListener>();
 	public static void addConfigurationChangeListener(ConfigurationChangeListener listener) {
 		listeners.add(listener);
@@ -229,14 +266,14 @@ public final class Configuration {
 		if(profileCache.isSaveable()) {
 			try {
 				PrintWriter profileOut = new PrintWriter(new FileWriter(startupProfileFile));
-				profileOut.print(profileCache);
+				profileOut.println(profileCache.getName());
+				profileOut.println(profileOrdering);
 				profileOut.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-
 
 	//********* Start of specialized methods ***************//
 
@@ -256,12 +293,12 @@ public final class Configuration {
 		ArrayList<Profile> profs = new ArrayList<Profile>();
 		profs.add(guestProfile);
 		for(String profDir : profDirs) {
-			profs.add(new Profile(profDir));
+			profs.add(Profile.getProfileByName(profDir));
 		}
-		if(props != null) {
-			String[] profiles = getStringArray(VariableKey.PROFILES, false);
+		if(props != null && profileOrdering != null) {
+			String[] profiles = profileOrdering.split("\\|");
 			for(int ch = profiles.length - 1; ch >= 0; ch--) {
-				Profile temp = new Profile(profiles[ch]);
+				Profile temp = Profile.getProfileByName(profiles[ch]);
 				if(profs.contains(temp)) {
 					profs.remove(temp);
 					profs.add(0, temp);
@@ -272,24 +309,29 @@ public final class Configuration {
 			profs.add(0, commandLineProfile);
 		return profs;
 	}
+	
 	public static void setProfileOrdering(ArrayList<Profile> profiles) {
-		setStringArray(VariableKey.PROFILES, profiles.toArray(new Profile[0]));
+		profileOrdering = "";
+		for(Profile p : profiles) {
+			profileOrdering += "|" + p.getName();
+		}
+		profileOrdering = profileOrdering.substring(1);
 	}
 
-
+	private static String profileOrdering;
 	private static Profile profileCache;
 	public static void setSelectedProfile(Profile p) {
 		profileCache = p;
 	}
+	//this should always be up to date with the gui
 	public static Profile getSelectedProfile() {
 		if(profileCache == null) {
 			String profileName = "";
 			try {
 				BufferedReader in = new BufferedReader(new FileReader(startupProfileFile));
 				profileName = in.readLine();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+				profileOrdering = in.readLine();
+			} catch (IOException e) {}
 			profileCache = getProfile(profileName);
 		}
 		return profileCache;
@@ -301,7 +343,6 @@ public final class Configuration {
 		}
 		return guestProfile;
 	}
-
 
 	//returns file stored in props file, if available
 	//otherwise, returns default.xml, if available
