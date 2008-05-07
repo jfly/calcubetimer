@@ -134,12 +134,12 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 		return hundredths / 100.;
 	}
 
-	public double secondsValue() { //TODO - return DOUBLE_MAX if it should
+	public double secondsValue() {
+		if(isInfiniteTime()) return Double.MAX_VALUE;
 		return value() / 100.;
 	}
 
 	private int value() {
-		if(isInfiniteTime()) return Integer.MAX_VALUE - 1; //TODO - why is this MAX-1 and not just MAX?
 		return hundredths + (type == SolveType.PLUS_TWO ? 200 : 0);
 	}
 
@@ -158,7 +158,7 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	}
 	//"true" in the sense that it was manually entered as POP or DNF
 	public boolean isTrueWorstTime(){
-		return hundredths == 0 && (type == SolveType.POP || type == SolveType.DNF);
+		return hundredths == 0 && isInfiniteTime();
 	}
 
 	public ArrayList<SolveTime> getSplits() {

@@ -128,6 +128,7 @@ changes:
 	+add dynamic string stuff/actions for puzzledatabases
 	+deal with unrecognized scramblecustomizations, and renaming customizations!
 +update global stats upon scramble customization selection
++progress time (dynamicstring) was broken
 
 TODO:
 
@@ -137,7 +138,6 @@ for release:
 -create recent history jtextfield for connecting to chat servers & downloading scrambles 
 -make scrambleplugins secure
 -clean up all critical TODOs scattered throughout the code (SolveTime, esp.)
--progress time (dynamicstring) is broken
 -internationalization (dates, too)
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html
 	http://www.eclipse.org/articles/Article-Internationalization/how2I18n.html
