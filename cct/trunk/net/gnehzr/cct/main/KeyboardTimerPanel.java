@@ -17,8 +17,10 @@ import javax.swing.Timer;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
+import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
 public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseListener {
+	private static final int INSPECTION_TIME = 15;
 	private static KeyboardTimer keyboardTimer; //static so everything will start and stop this one timer!
 	private KeyboardTimerComponent thingToListenTo;
 	public KeyboardTimerPanel(KeyboardTimerComponent thingy, ActionListener timeListener) {
@@ -149,11 +151,10 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 
 		int key = e.getKeyCode();
 		if(key == 0) {
-		} else if(keyboardTimer.isRunning()) {
+		} else if(keyboardTimer.isRunning() && !keyboardTimer.inspecting) {
 			if(Configuration.getBoolean(VariableKey.TIMING_SPLITS, false) && key == Configuration.getInt(VariableKey.SPLIT_KEY, false)) {
 				keyboardTimer.split();
-			}
-			else if(!stackmatEmulation || stackmatEmulation && stackmatKeysDown()){
+			} else if(!stackmatEmulation || stackmatEmulation && stackmatKeysDown()){
 				keyboardTimer.stop();
 				thingToListenTo.setKeysDownState();
 			}
@@ -175,14 +176,12 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 
 		if(stackmatEmulation && stackmatKeysDownCount() == 1 && (e.getKeyCode() == sekey1 || e.getKeyCode() == sekey2) || !stackmatEmulation && atMostKeysDown(0)){
 			thingToListenTo.setFocusedState();
-			if(!keyboardTimer.isRunning()) {
+			if(!keyboardTimer.isRunning() || keyboardTimer.inspecting) {
 				if(!keyboardTimer.isReset()) {
 					keyboardTimer.fireStop();
 					thingToListenTo.setStateText("Start Timer");
 				} else if(!ignoreKey(e, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false), stackmatEmulation, sekey1, sekey2)) {
-					if(keyboardTimer.startTimer()) {
-						thingToListenTo.setStateText("Stop Timer");
-					}
+					thingToListenTo.setStateText(keyboardTimer.startTimer());
 				}
 			}
 		}
@@ -203,25 +202,37 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 	}
 
 	@SuppressWarnings("serial")
-	public class KeyboardTimer extends Timer {
+	public static class KeyboardTimer extends Timer {
 		public KeyboardTimer(int period, ActionListener listener) {
 			super(period, listener);
 		}
 
 		public void reset() {
 			reset = true;
+			inspecting = false;
+			penalty = SolveType.NORMAL;
 			this.stop();
 		}
 
 		private long start;
-		//returns true if it actually starts
-		public boolean startTimer() {
+		//returns String representing state of the timer after this method
+		public String startTimer() {
+			boolean inspection = Configuration.getBoolean(VariableKey.COMPETITION_INSPECTION, false);
 			start = System.currentTimeMillis();
-			if(start - current < Configuration.getInt(VariableKey.DELAY_BETWEEN_SOLVES, false)) return false;
-			super.fireActionPerformed(new ActionEvent(getTimerState(), 0, "Started"));
-			reset = false;
-			super.start();
-			return true;
+			if(!inspecting && start - current < Configuration.getInt(VariableKey.DELAY_BETWEEN_SOLVES, false))
+				return inspection ? "Start Inspection" : "Start Timer";
+			current = start;
+			if(!isRunning())
+				super.start();
+			if(!inspection || inspecting) {
+				inspecting = false;
+				reset = false;
+				super.fireActionPerformed(new ActionEvent(getTimerState(), 0, "Started"));
+				return "Stop Timer";
+			} else {
+				inspecting = true;
+				return "Inspecting";
+			}
 		}
 
 		private long current;
@@ -230,19 +241,32 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 			super.fireActionPerformed(new ActionEvent(getTimerState(), 0, "New Time"));
 		}
 
+		private SolveType penalty = SolveType.NORMAL;
 		private TimerState getTimerState() {
-			return new TimerState((int) (100*getElapsedTimeSeconds() + .5));
+			double seconds = getElapsedTimeSeconds();
+			if(inspecting) {
+				seconds = INSPECTION_TIME - (int) seconds;
+			}
+			TimerState ts = new TimerState((int) Math.rint(100*seconds));
+			ts.setInspection(inspecting);
+			if(inspecting) {
+				penalty = ts.getPenalty();
+			} else if(penalty != null) {
+				ts.setPenalty(penalty);
+			}
+			return ts;
 		}
 
 		private double getElapsedTimeSeconds() {
-			if(isReset()) {
+			if(isReset() && !inspecting) {
 				return 0;
 			}
 			return (current - start) / 1000.;
 		}
 
 		private boolean reset = true;
-		public boolean isReset(){
+		private boolean inspecting = false;
+		public boolean isReset() {
 			return reset;
 		}
 
@@ -258,6 +282,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 		public void fireStop() {
 			super.fireActionPerformed(new ActionEvent(getTimerState(), 0, "Stopped"));
 			reset = true;
+			penalty = SolveType.NORMAL;
 		}
 	}
 

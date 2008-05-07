@@ -90,6 +90,7 @@ public class VariableKey<H> {
 	public static final VariableKey<Font> TIMER_FONT = new VariableKey<Font>("Timer_font");
 	public static final VariableKey<Font> SCRAMBLE_FONT = new VariableKey<Font>("Scramble_font");
 
+	public static final VariableKey<Boolean> COMPETITION_INSPECTION = new VariableKey<Boolean>("GUI_Timer_competitionInspection");
 	public static final VariableKey<Boolean> FOCUSABLE_BUTTONS = new VariableKey<Boolean>("GUI_focusableButtons");
 	public static final VariableKey<Boolean> CLOCK_FORMAT = new VariableKey<Boolean>("Misc_isClockFormat");
 	public static final VariableKey<Boolean> INVERTED_HUNDREDTHS = new VariableKey<Boolean>("Stackmat_isInvertedHundredths");

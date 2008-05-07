@@ -127,11 +127,14 @@ changes:
 	+comments on sessions and scrambles
 	+add dynamic string stuff/actions for puzzledatabases
 	+deal with unrecognized scramblecustomizations, and renaming customizations!
++update global stats upon scramble customization selection
 
 TODO:
 
 for release:
--create recent history jtextarea for connecting to chat servers & downloading scrambles 
+-fix nick's bug
+-fullscreen timing is broken again!
+-create recent history jtextfield for connecting to chat servers & downloading scrambles 
 -make scrambleplugins secure
 -clean up all critical TODOs scattered throughout the code (SolveTime, esp.)
 -progress time (dynamicstring) is broken
