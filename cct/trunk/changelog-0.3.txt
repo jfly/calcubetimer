@@ -129,11 +129,12 @@ changes:
 	+deal with unrecognized scramblecustomizations, and renaming customizations!
 +update global stats upon scramble customization selection
 +progress time (dynamicstring) was broken
+	+fix nick's bug (DNF as best time for a scramble customization)
++added a 15 second countdown option as in the WCA regulations
 
 TODO:
 
 for release:
--fix nick's bug
 -fullscreen timing is broken again!
 -create recent history jtextfield for connecting to chat servers & downloading scrambles 
 -make scrambleplugins secure

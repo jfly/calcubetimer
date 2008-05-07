@@ -200,7 +200,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		}
 	}
 
-	private JCheckBox clockFormat, promptForNewTime, scramblePopup, splits, metronome, showRA0, showRA1;
+	private JCheckBox clockFormat, promptForNewTime, scramblePopup, inspectionCountdown, splits, metronome, showRA0, showRA1;
 	private JSpinner minSplitTime, RASize0 = null, RASize1 = null;
 	public TickerSlider metronomeDelay = null;
 	private JColorComponent bestRA, currentAverage, currentAndRA, bestTime, worstTime = null;
@@ -225,6 +225,9 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 		scramblePopup = new JCheckBox("Display scramble in a popup.");
 		rightPanel.add(scramblePopup);
+		
+		inspectionCountdown = new JCheckBox("DAN, WHAT SHOULD I CALL THIS?");
+		rightPanel.add(inspectionCountdown);
 
 		JPanel sideBySide = new JPanel();
 		SpinnerNumberModel model = new SpinnerNumberModel(3, 3, null, 1);
@@ -831,6 +834,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		clockFormat.setSelected(Configuration.getBoolean(VariableKey.CLOCK_FORMAT, defaults));
 		promptForNewTime.setSelected(Configuration.getBoolean(VariableKey.PROMPT_FOR_NEW_TIME, defaults));
 		scramblePopup.setSelected(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, defaults));
+		inspectionCountdown.setSelected(Configuration.getBoolean(VariableKey.COMPETITION_INSPECTION, defaults));
 		bestRA.setBackground(Configuration.getColor(VariableKey.BEST_RA, defaults));
 		currentAndRA.setBackground(Configuration.getColor(VariableKey.BEST_AND_CURRENT, defaults));
 		bestTime.setBackground(Configuration.getColor(VariableKey.BEST_TIME, defaults));
@@ -939,6 +943,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setBoolean(VariableKey.CLOCK_FORMAT, clockFormat.isSelected());
 		Configuration.setBoolean(VariableKey.PROMPT_FOR_NEW_TIME, promptForNewTime.isSelected());
 		Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, scramblePopup.isSelected());
+		Configuration.setBoolean(VariableKey.COMPETITION_INSPECTION, inspectionCountdown.isSelected());
 		Configuration.setInt(VariableKey.RA_SIZE0, (Integer) RASize0.getValue());
 		Configuration.setInt(VariableKey.RA_SIZE1, (Integer) RASize1.getValue());
 		Configuration.setBoolean(VariableKey.SHOW_RA0, showRA0.isSelected());
