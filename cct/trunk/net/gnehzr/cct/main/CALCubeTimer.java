@@ -138,7 +138,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 @SuppressWarnings("serial")
 public class CALCubeTimer extends JFrame implements ActionListener, TableModelListener, ChangeListener, ConfigurationChangeListener, ItemListener, SessionListener {
-	public static final String CCT_VERSION = "0.3 beta";
+	public static final String CCT_VERSION = "b268";
 	public static final ImageIcon cubeIcon = new ImageIcon(CALCubeTimer.class.getResource("cube.png"));
 
 	public static StatisticsTableModel statsModel = new StatisticsTableModel(); //used in ProfileDatabase
@@ -157,6 +157,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private ScrambleChooserComboBox scrambleChooser = null;
 	private JPanel scrambleAttributes = null;
 	private JSpinner scrambleNumber, scrambleLength = null;
+	private DateTimeLabel currentTimeLabel = null;
 	private ScrambleList scramblesList = new ScrambleList();
 	private JComboBox profiles = null;
 	private JTextArea commentArea = null;
@@ -424,6 +425,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		});
 		tickTock = new Timer(0, null);
 
+		currentTimeLabel = new DateTimeLabel();
+		
 		scrambleChooser = new ScrambleChooserComboBox(true, true);
 		scrambleChooser.addItemListener(this);
 
@@ -843,23 +846,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				else if(temp.equalsIgnoreCase("profilecombobox")) com = profiles;
 				else if(temp.equalsIgnoreCase("commentarea")) com = commentArea;
 				else if(temp.equalsIgnoreCase("sessionslist")) com = sessionsScroller;
-				else if(temp.equalsIgnoreCase("clock")) com = new JLabel() { //TODO - is there anything wrong with this?
-					{
-						final JLabel t = this;
-						new SwingWorker<Void, Void>() {
-							protected Void doInBackground() {
-								while(true) {
-									t.setText(Configuration.getDateFormat().format(new Date()));
-									try {
-										Thread.sleep(1000);
-									} catch (InterruptedException e) {
-										e.printStackTrace();
-									}
-								}
-							}
-						}.execute();
-					}
-				};
+				else if(temp.equalsIgnoreCase("clock")) com = currentTimeLabel;
 			}
 			else if(elementName.equals("center") || elementName.equals("east") || elementName.equals("west") || elementName.equals("south") || elementName.equals("north") || elementName.equals("page_start") || elementName.equals("page_end") || elementName.equals("line_start") || elementName.equals("line_end")){
 				com = null;
@@ -1409,7 +1396,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		//apparently need to hide and then show the window for proper behavior when setting divider location
 		//TODO - there is probably a better way of doing this
-		super.setVisible(false);
+//		super.setVisible(false);
 		refreshCustomGUIMenu();
 		Component focusedComponent = this.getFocusOwner();
 		parseXML_GUI(Configuration.getXMLGUILayout());
@@ -1423,7 +1410,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			this.setLocationRelativeTo(null);
 		else
 			this.setLocation(location);
-		super.setVisible(true);
+//		super.setVisible(true);
+		splitPanes.get(0).setDividerLocation(340);
 		
 		scramblePopup.syncColorScheme();
 		scramblePopup.pack();
