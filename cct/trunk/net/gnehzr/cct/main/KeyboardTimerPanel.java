@@ -8,19 +8,25 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
+import javazoom.jl.decoder.JavaLayerException;
+
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.speaking.NumberSpeaker;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
 public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseListener {
 	private static final int INSPECTION_TIME = 15;
+	private static final int FIRST_WARNING = 8;
+	private static final int FINAL_WARNING = 12;
 	private static KeyboardTimer keyboardTimer; //static so everything will start and stop this one timer!
 	private KeyboardTimerComponent thingToListenTo;
 	public KeyboardTimerPanel(KeyboardTimerComponent thingy, ActionListener timeListener) {
@@ -241,11 +247,41 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 			super.fireActionPerformed(new ActionEvent(getTimerState(), 0, "New Time"));
 		}
 
+		private int previousInpection = -1;
 		private SolveType penalty = SolveType.NORMAL;
 		private TimerState getTimerState() {
 			double seconds = getElapsedTimeSeconds();
 			if(inspecting) {
-				seconds = INSPECTION_TIME - (int) seconds;
+				int inspectionDone = (int) seconds;
+				if(inspectionDone != previousInpection) {
+					previousInpection = inspectionDone;
+					if(inspectionDone == FIRST_WARNING) {
+						new Thread(new Runnable() {
+							public void run() {
+								try {
+									NumberSpeaker.getCurrentSpeaker().speak(false, FIRST_WARNING*100);
+								} catch (IOException e) {
+									e.printStackTrace();
+								} catch (JavaLayerException e) {
+									e.printStackTrace();
+								}
+							}
+						}).start();
+					} else if(inspectionDone == FINAL_WARNING) {
+						new Thread(new Runnable() {
+							public void run() {
+								try {
+									NumberSpeaker.getCurrentSpeaker().speak(false, FINAL_WARNING*100);
+								} catch (IOException e) {
+									e.printStackTrace();
+								} catch (JavaLayerException e) {
+									e.printStackTrace();
+								}
+							}
+						}).start();
+					}
+				}
+				seconds = INSPECTION_TIME - inspectionDone;
 			}
 			TimerState ts = new TimerState((int) Math.rint(100*seconds));
 			ts.setInspection(inspecting);

@@ -33,7 +33,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 import javax.swing.AbstractAction;
@@ -70,7 +69,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -84,6 +82,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.TransformerConfigurationException;
+
+import javazoom.jl.decoder.JavaLayerException;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
@@ -110,6 +110,7 @@ import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleList;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
+import net.gnehzr.cct.speaking.NumberSpeaker;
 import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
 import net.gnehzr.cct.stackmatInterpreter.StackmatState;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
@@ -1286,7 +1287,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	public void tableChanged(TableModelEvent e) {
-		SolveTime latestTime = statsModel.getCurrentStatistics().get(-1);
+		final SolveTime latestTime = statsModel.getCurrentStatistics().get(-1);
 		if(latestTime != null)
 			sendTime(latestTime);
 		if(e != null && e.getType() == TableModelEvent.INSERT) {
@@ -1311,6 +1312,20 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			//make the new time visible
 			Rectangle newTimeRect = timesTable.getCellRect(rows, 0, true);
 			timesTable.scrollRectToVisible(newTimeRect);
+			
+			if(Configuration.getBoolean(VariableKey.SPEAK_TIMES, false)) {
+				new Thread(new Runnable() { //speak the time
+					public void run() {
+						try {
+							NumberSpeaker.getCurrentSpeaker().speak(latestTime);
+						} catch (IOException e) {
+//							e.printStackTrace();
+						} catch (JavaLayerException e) {
+//							e.printStackTrace();
+						}
+					}
+				}).start();
+			}
 		}
 		repaintTimes();
 	}
@@ -1379,7 +1394,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		fullScreenTimingAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false));
 		profiles.setModel(new DefaultComboBoxModel(Configuration.getProfiles().toArray(new Profile[0])));
 		safeSelectItem(profiles, Configuration.getSelectedProfile());
-
+		
 		ScramblePlugin.reloadLengthsFromConfiguration(false);
 		ScrambleCustomization newCustom = ScramblePlugin.getCurrentScrambleCustomization();
 		scrambleChooser.setSelectedItem(newCustom);
@@ -1396,7 +1411,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		//apparently need to hide and then show the window for proper behavior when setting divider location
 		//TODO - there is probably a better way of doing this
-//		super.setVisible(false);
+		super.setVisible(false);
 		refreshCustomGUIMenu();
 		Component focusedComponent = this.getFocusOwner();
 		parseXML_GUI(Configuration.getXMLGUILayout());
@@ -1410,8 +1425,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			this.setLocationRelativeTo(null);
 		else
 			this.setLocation(location);
-//		super.setVisible(true);
-		splitPanes.get(0).setDividerLocation(340);
+		super.setVisible(true);
 		
 		scramblePopup.syncColorScheme();
 		scramblePopup.pack();

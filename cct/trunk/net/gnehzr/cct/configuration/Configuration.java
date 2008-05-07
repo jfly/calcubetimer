@@ -28,6 +28,7 @@ public final class Configuration {
 	public static final File documentationFile = new File(getRootDirectory(), "documentation/readme.html");
 	public static final File profilesFolder = new File(getRootDirectory(), "profiles/");
 	public static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/");
+	public static final File voicesFolder = new File(getRootDirectory(), "voices/");
 	private static final File guiLayoutsFolder = new File(getRootDirectory(), "guiLayouts/");
 	private static final File startupProfileFile = new File(profilesFolder, "startup");
 
@@ -264,14 +265,10 @@ public final class Configuration {
 		props.store(propsOut, "CCT " + CALCubeTimer.CCT_VERSION + " Properties File");
 		propsOut.close();
 		if(profileCache.isSaveable()) {
-			try {
-				PrintWriter profileOut = new PrintWriter(new FileWriter(startupProfileFile));
-				profileOut.println(profileCache.getName());
-				profileOut.println(profileOrdering);
-				profileOut.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			PrintWriter profileOut = new PrintWriter(new FileWriter(startupProfileFile));
+			profileOut.println(profileCache.getName());
+			profileOut.println(profileOrdering);
+			profileOut.close();
 		}
 	}
 
@@ -380,6 +377,8 @@ public final class Configuration {
 		}
 		return availableLayouts;
 	}
+	
+	
 
 	//********* End of specialized methods ***************//
 }

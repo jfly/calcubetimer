@@ -69,6 +69,7 @@ import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent.ColorListener;
+import net.gnehzr.cct.speaking.NumberSpeaker;
 import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
 import net.gnehzr.cct.statistics.Profile;
 
@@ -200,12 +201,13 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		}
 	}
 
-	private JCheckBox clockFormat, promptForNewTime, scramblePopup, inspectionCountdown, splits, metronome, showRA0, showRA1;
+	private JCheckBox clockFormat, promptForNewTime, scramblePopup, inspectionCountdown, speakTimes, splits, metronome, showRA0, showRA1;
 	private JSpinner minSplitTime, RASize0 = null, RASize1 = null;
 	public TickerSlider metronomeDelay = null;
 	private JColorComponent bestRA, currentAverage, currentAndRA, bestTime, worstTime = null;
 	private JPanel desktopPanel;
 	private JButton refreshDesktops;
+	private JComboBox voices;
 
 	private JPanel makeStandardOptionsPanel1() {
 		JPanel options = new JPanel();
@@ -226,10 +228,19 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		scramblePopup = new JCheckBox("Display scramble in a popup.");
 		rightPanel.add(scramblePopup);
 		
-		inspectionCountdown = new JCheckBox("DAN, WHAT SHOULD I CALL THIS?");
+		inspectionCountdown = new JCheckBox("WCA-regulation countdown.");
 		rightPanel.add(inspectionCountdown);
-
+		
+		speakTimes = new JCheckBox("Read times");
+		voices = new JComboBox(NumberSpeaker.getSpeakers());
+		
 		JPanel sideBySide = new JPanel();
+		sideBySide.add(speakTimes);
+		sideBySide.add(new JLabel("Choose voice: "));
+		sideBySide.add(voices);
+		rightPanel.add(sideBySide);
+
+		sideBySide = new JPanel();
 		SpinnerNumberModel model = new SpinnerNumberModel(3, 3, null, 1);
 		RASize0 = new JSpinner(model);
 		((JSpinner.DefaultEditor) RASize0.getEditor()).getTextField().setColumns(3);
@@ -269,14 +280,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		currentAverage.addMouseListener(this);
 		colorPanel.add(currentAverage);
 
-		sideBySide = new JPanel();
-		metronome = new JCheckBox("Enable metronome?");
-		metronome.addActionListener(this);
-		metronomeDelay = new TickerSlider(tickTock);
-		sideBySide.add(metronome);
-		sideBySide.add(new JLabel("Delay:"));
-		sideBySide.add(metronomeDelay);
-
 		desktopPanel = new JPanel();
 		refreshDesktops = new JButton("Refresh");
 		refreshDesktops.addActionListener(this);
@@ -286,7 +289,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		test.add(Box.createVerticalGlue());
 		test.add(options);
 		test.add(desktopPanel);
-		test.add(sideBySide);
 		test.add(Box.createVerticalGlue());
 		return test;
 	}
@@ -327,6 +329,15 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		sideBySide.add(splitsKeySelector);
 		panel.add(sideBySide);
 
+		sideBySide = new JPanel();
+		metronome = new JCheckBox("Enable metronome?");
+		metronome.addActionListener(this);
+		metronomeDelay = new TickerSlider(tickTock);
+		sideBySide.add(metronome);
+		sideBySide.add(new JLabel("Delay:"));
+		sideBySide.add(metronomeDelay);
+		panel.add(sideBySide);
+		
 		sideBySide = new JPanel();
 		stackmatEmulation = new JCheckBox("Emulate a stackmat with the keyboard.");
 		stackmatEmulation.addActionListener(this);
@@ -848,7 +859,9 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		metronomeDelay.setDelayBounds(Configuration.getInt(VariableKey.METRONOME_DELAY_MIN, defaults), Configuration.getInt(VariableKey.METRONOME_DELAY_MAX,
 				defaults), Configuration.getInt(VariableKey.METRONOME_DELAY, defaults));
 		metronomeDelay.setEnabled(metronome.isSelected());
-
+		speakTimes.setSelected(Configuration.getBoolean(VariableKey.SPEAK_TIMES, defaults));
+		voices.setSelectedItem(NumberSpeaker.getCurrentSpeaker());
+		
 		refreshDesktops();
 
 		// makeStandardOptionsPanel2
@@ -950,6 +963,10 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setBoolean(VariableKey.SHOW_RA1, showRA1.isSelected());
 		Configuration.setBoolean(VariableKey.METRONOME_ENABLED, metronome.isSelected());
 		Configuration.setInt(VariableKey.METRONOME_DELAY, metronomeDelay.getMilliSecondsDelay());
+		Configuration.setBoolean(VariableKey.SPEAK_TIMES, speakTimes.isSelected());
+		Object voice = voices.getSelectedItem();
+		if(voice != null)
+			Configuration.setString(VariableKey.VOICE, voice.toString());
 
 		Configuration.setInt(VariableKey.SWITCH_THRESHOLD, (Integer) stackmatValue.getValue());
 		Configuration.setBoolean(VariableKey.INVERTED_MINUTES, invertedMinutes.isSelected());

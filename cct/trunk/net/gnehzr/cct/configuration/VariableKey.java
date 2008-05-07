@@ -49,6 +49,7 @@ public class VariableKey<H> {
 		return new VariableKey<Integer[]>("GUI_xmlLayout_" + componentID + "_columns");
 	}
 	
+	public static final VariableKey<String> VOICE = new VariableKey<String>("Misc_Voices_person");
 	public static final VariableKey<String> DATE_FORMAT = new VariableKey<String>("Misc_dateFormat");
 	public static final VariableKey<String> SUNDAY_SUBMIT_URL = new VariableKey<String>("Sunday_submitURL");
 	public static final VariableKey<String> SUNDAY_NAME = new VariableKey<String>("Sunday_name");
@@ -90,6 +91,7 @@ public class VariableKey<H> {
 	public static final VariableKey<Font> TIMER_FONT = new VariableKey<Font>("Timer_font");
 	public static final VariableKey<Font> SCRAMBLE_FONT = new VariableKey<Font>("Scramble_font");
 
+	public static final VariableKey<Boolean> SPEAK_TIMES = new VariableKey<Boolean>("Misc_Voices_readTimes");
 	public static final VariableKey<Boolean> COMPETITION_INSPECTION = new VariableKey<Boolean>("GUI_Timer_competitionInspection");
 	public static final VariableKey<Boolean> FOCUSABLE_BUTTONS = new VariableKey<Boolean>("GUI_focusableButtons");
 	public static final VariableKey<Boolean> CLOCK_FORMAT = new VariableKey<Boolean>("Misc_isClockFormat");
