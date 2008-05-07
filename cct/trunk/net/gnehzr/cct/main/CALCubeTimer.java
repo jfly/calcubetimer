@@ -139,7 +139,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 @SuppressWarnings("serial")
 public class CALCubeTimer extends JFrame implements ActionListener, TableModelListener, ChangeListener, ConfigurationChangeListener, ItemListener, SessionListener {
-	public static final String CCT_VERSION = "b268";
+	public static final String CCT_VERSION = "b270";
 	public static final ImageIcon cubeIcon = new ImageIcon(CALCubeTimer.class.getResource("cube.png"));
 
 	public static StatisticsTableModel statsModel = new StatisticsTableModel(); //used in ProfileDatabase
@@ -1452,7 +1452,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 	
 	public void refreshScramblePopup() {
-		scramblePopup.setVisible(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false)  && !(scramblesList.getCurrent() instanceof NullScramble));
+		boolean oldVisibility = scramblePopup.isVisible();
+		boolean newVisibility = Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false)  && !(scramblesList.getCurrent() instanceof NullScramble);
+		//calling setVisible(true) when already visible will bring the popup on top of the fullscreen frame
+		if(oldVisibility != newVisibility)
+			scramblePopup.setVisible(newVisibility);
 	}
 
 	// Actions section {{{

@@ -132,12 +132,12 @@ changes:
 	+fix nick's bug (DNF as best time for a scramble customization)
 +added a 15 second countdown option as in the WCA regulations
 +added option to have cct read times to you
++fullscreen timing is broken again!
 
 TODO:
 
 for release:
--fullscreen timing is broken again!
--create recent history jtextfield for connecting to chat servers & downloading scrambles 
+-create recent history jtextfield for connecting to chat servers & downloading scrambles
 -make scrambleplugins secure
 -clean up all critical TODOs scattered throughout the code (SolveTime, esp.)
 -internationalization (dates, too)
