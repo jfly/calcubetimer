@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.misc.Utils;
-import net.gnehzr.cct.statistics.Profile;
 import net.gnehzr.cct.statistics.PuzzleStatistics;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.StatisticsTableModel;

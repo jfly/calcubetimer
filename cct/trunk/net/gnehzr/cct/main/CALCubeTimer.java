@@ -588,8 +588,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			scramblesList.setScrambleCustomization((ScrambleCustomization) scrambleChooser.getSelectedItem());
 			updateScramble();
 			//change current session's scramble customization
-			if(statsModel.getCurrentSession() != null)
+			if(statsModel.getCurrentSession() != null) {
 				statsModel.getCurrentSession().setCustomization(scramblesList.getScrambleCustomization().toString());
+			}
 			createScrambleAttributes();
 		} else if(source == profiles) {
 			Profile affected = (Profile)e.getItem();
@@ -1600,16 +1601,16 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false)) setFullScreen(true);
 					if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false)) startMetronome();
 					reset = false;
-					updateTime(current.toString());
+					updateTime(current);
 				} else if(event.equals("Split")) {
 					addSplit((TimerState) current);
 				} else if(event.equals("Reset")) {
-					updateTime("0:00.00");
+					updateTime(new TimerState(0));
 					reset = true;
 				} else if(event.equals("New Time")) {
 					if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false)) setFullScreen(false);
 					if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false)) stopMetronome();
-					updateTime(current.toString());
+					updateTime(current);
 					if(addTime(current))
 						lastAccepted = current;
 				} else if(event.equals("Current Display")) {
@@ -1618,19 +1619,23 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 		}
 
-		private void updateTime(String newTime) {
-			timeLabel.setText(newTime);
-			if(isFullscreen)
-				bigTimersDisplay.setText(newTime);
-			if(!reset) {
-				sendCurrentTime(newTime);
+		private void updateTime(TimerState newTime) {
+			String time = newTime.toString();
+			Color background = newTime.isInspection() ? Color.RED : Color.BLACK;
+			timeLabel.setForeground(background);
+			timeLabel.setText(time);
+			if(isFullscreen) {
+				bigTimersDisplay.setForeground(background);
+				bigTimersDisplay.setText(time);
 			}
+			if(!reset && !newTime.isInspection())
+				sendCurrentTime(time);
 		}
 
 		public void actionPerformed(ActionEvent e) {
 			String command = e.getActionCommand();
 			TimerState newTime = (TimerState) e.getSource();
-			updateTime(newTime.toString());
+			updateTime(newTime);
 			if(command.equals("Started")) {
 				if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false))
 					setFullScreen(true);

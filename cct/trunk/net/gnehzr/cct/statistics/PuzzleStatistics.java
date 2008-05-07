@@ -34,7 +34,6 @@ public class PuzzleStatistics implements StatisticsUpdateListener {
 	public void removeSession(Session s) {
 		sessions.remove(s);
 		refreshStats();
-//		pd.fireTableChanged(new TableModelEvent(pd, -1)); This screws up the table column headers
 		pd.fireTableDataChanged();
 	}
 	public boolean containsSession(Session s) {

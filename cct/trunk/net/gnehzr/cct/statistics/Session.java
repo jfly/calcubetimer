@@ -39,6 +39,7 @@ public class Session extends Commentable implements Comparable<Session> {
 			puzzStats.removeSession(this);
 			puzzStats = puzzStats.getPuzzleDatabase().getPuzzleStatistics(customization);
 			puzzStats.addSession(this);
+			s.notifyListeners(false);
 		}
 	}
 	public void delete() {
