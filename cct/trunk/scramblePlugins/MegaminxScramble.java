@@ -14,8 +14,8 @@ import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 
 public class MegaminxScramble extends Scramble {
-	public static final String[] FACE_NAMES = {"A", "B", "C", "D", "E", "F", "a",
-		"b", "c", "d", "e", "f"};
+	public static final String[] FACE_NAMES = {"A", "B", "C", "D", "E", "F", "a", "b", 
+		"f", "e", "d", "c"}; //thanks to doug li for noticing that cdef were backwards from the regulations
 	public static final String PUZZLE_NAME = "Megaminx";
 	public static final String[] VARIATIONS = {"Megaminx", "Pochmann Megaminx"};
 	public static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
