@@ -175,8 +175,8 @@ public class Statistics implements ConfigurationChangeListener {
 		}
 
 		runningTotal = runningSquareTotal = 0;
-		curSessionAvg = Double.MAX_VALUE;
-		curSessionSD = Double.MAX_VALUE;
+		curSessionAvg = 0;
+		curSessionSD = Double.POSITIVE_INFINITY;
 		
 		//zero out numPops, numDNFs, numPlus2s
 		for(int ch = 0; ch < solveCounter.length; ch++) {
@@ -214,7 +214,7 @@ public class Statistics implements ConfigurationChangeListener {
 			} else
 				tableListener.fireTableDataChanged();
 		}
-		editActions.notifyListener(); //TODO - is this needed here?
+		editActions.notifyListener();
 		if(strlisten != null) {
 			for (StatisticsUpdateListener listener : strlisten) {
 				listener.update();
@@ -322,8 +322,8 @@ public class Statistics implements ConfigurationChangeListener {
 			Double av = new Double(avg);
 			averages[k].add(av);
 
-			if (avg == Double.MAX_VALUE) {
-				s = new Double(Double.MAX_VALUE);
+			if (avg == Double.POSITIVE_INFINITY) {
+				s = new Double(Double.POSITIVE_INFINITY);
 				sds[k].add(s);
 				sortsds[k].add(s);
 			} else {
@@ -360,22 +360,19 @@ public class Statistics implements ConfigurationChangeListener {
 	private double calculateRA(int a, int b, int num) {
 		if (a < 0)
 			return -1;
-		int invalid = 0;
-		double lo, hi, rt;
-		lo = hi = rt = times.get(a).secondsValue();
-		if (times.get(a).isInfiniteTime())
-			invalid++;
-		for (int i = a + 1; i < b; i++) {
-			if (times.get(i).isInfiniteTime() && ++invalid >= 2)
-				return Double.MAX_VALUE;
-			double temp = times.get(i).secondsValue();
-			rt += temp;
-			if (lo > temp)
-				lo = temp;
-			if (hi < temp)
-				hi = temp;
+		SolveTime[] bestWorst = getBestAndWorstTimes(a, b);
+		SolveTime best = bestWorst[0];
+		SolveTime worst = bestWorst[1];
+		double total = 0;
+		for(int i = a; i < b; i++) {
+			SolveTime time = times.get(i);
+			if(time != best && time != worst) {
+				if(time.isInfiniteTime())
+					return Double.POSITIVE_INFINITY;
+				total += time.secondsValue();
+			}
 		}
-		return (rt - lo - hi) / (curRASize[num] - 2);
+		return total / (curRASize[num] - 2);
 	}
 
 	private double calculateRSD(int a, int b, int num) {
@@ -465,7 +462,7 @@ public class Statistics implements ConfigurationChangeListener {
 		if (average == 0)
 			return "N/A";
 
-		if (average == Double.MAX_VALUE)
+		if (average == Double.POSITIVE_INFINITY)
 			return "Invalid";
 
 		return Utils.formatTime(average);
@@ -486,7 +483,7 @@ public class Statistics implements ConfigurationChangeListener {
 			return false;
 		}
 
-		if (average == 0 || average == Double.MAX_VALUE)
+		if (average == 0 || average == Double.POSITIVE_INFINITY)
 			return false;
 
 		return true;
@@ -624,7 +621,7 @@ public class Statistics implements ConfigurationChangeListener {
 	}
 
 	public String standardDeviation(AverageType type, int num) {
-		double sd = Double.MAX_VALUE;
+		double sd = Double.POSITIVE_INFINITY;
 		if (type == AverageType.SESSION)
 			sd = curSessionSD;
 		else if (type == AverageType.RA)
@@ -679,7 +676,7 @@ public class Statistics implements ConfigurationChangeListener {
 			n = times.size() + n;
 
 		if (times.size() == 0 || n < 0 || n >= times.size())
-			return Double.MAX_VALUE;
+			return Double.POSITIVE_INFINITY;
 		else
 			return times.get(n).secondsValue();
 	}
@@ -692,7 +689,7 @@ public class Statistics implements ConfigurationChangeListener {
 			n = averages[num].size() + n;
 
 		if (averages[num].size() == 0 || n < 0 || n >= averages[num].size())
-			return Double.MAX_VALUE;
+			return Double.POSITIVE_INFINITY;
 		else
 			return averages[num].get(n).doubleValue();
 	}
@@ -705,7 +702,7 @@ public class Statistics implements ConfigurationChangeListener {
 			n = sds[num].size() + n;
 
 		if (sds[num].size() == 0 || n < 0 || n >= sds[num].size())
-			return Double.MAX_VALUE;
+			return Double.POSITIVE_INFINITY;
 		else
 			return sds[num].get(n).doubleValue();
 	}
@@ -715,7 +712,7 @@ public class Statistics implements ConfigurationChangeListener {
 			n = sorttimes.size() + n;
 
 		if (sorttimes.size() == 0 || n < 0 || n >= sorttimes.size())
-			return Double.MAX_VALUE;
+			return Double.POSITIVE_INFINITY;
 		else
 			return sorttimes.get(n).secondsValue();
 	}
@@ -728,7 +725,7 @@ public class Statistics implements ConfigurationChangeListener {
 			n = sortaverages[num].size() + n;
 
 		if (sortaverages[num].size() == 0 || n < 0 || n >= sortaverages[num].size())
-			return Double.MAX_VALUE;
+			return Double.POSITIVE_INFINITY;
 		else
 			return sortaverages[num].get(n).doubleValue();
 	}
@@ -741,7 +738,7 @@ public class Statistics implements ConfigurationChangeListener {
 			n = sortsds[num].size() + n;
 
 		if (sortsds[num].size() == 0 || n < 0 || n >= sortsds[num].size())
-			return Double.MAX_VALUE;
+			return Double.POSITIVE_INFINITY;
 		else
 			return sortsds[num].get(n).doubleValue();
 	}
@@ -754,7 +751,7 @@ public class Statistics implements ConfigurationChangeListener {
 			n = sortaverages[num].size() + n;
 
 		if (sortaverages[num].size() == 0 || n < 0 || n >= sortaverages[num].size())
-			return Double.MAX_VALUE;
+			return Double.POSITIVE_INFINITY;
 		else
 			return sds[num].get(averages[num].indexOf(sortaverages[num].get(n))).doubleValue();
 	}
@@ -767,7 +764,7 @@ public class Statistics implements ConfigurationChangeListener {
 			n = averages[num].size() + n;
 
 		if (averages[num].size() == 0 || n < 0 || n >= averages[num].size())
-			return Double.MAX_VALUE;
+			return Double.POSITIVE_INFINITY;
 		return bestTimeOfAverage(n, num);
 	}
 
@@ -779,7 +776,7 @@ public class Statistics implements ConfigurationChangeListener {
 			n = averages[num].size() + n;
 
 		if (averages[num].size() == 0 || n < 0 || n >= averages[num].size())
-			return Double.MAX_VALUE;
+			return Double.POSITIVE_INFINITY;
 		return worstTimeOfAverage(n, num);
 	}
 
@@ -791,7 +788,7 @@ public class Statistics implements ConfigurationChangeListener {
 			n = sortaverages[num].size() + n;
 
 		if (sortaverages[num].size() == 0 || n < 0 || n >= sortaverages[num].size())
-			return Double.MAX_VALUE;
+			return Double.POSITIVE_INFINITY;
 		return bestTimeOfAverage(averages[num].indexOf(sortaverages[num].get(n)), num);
 	}
 
@@ -803,20 +800,20 @@ public class Statistics implements ConfigurationChangeListener {
 			n = sortaverages[num].size() + n;
 
 		if (sortaverages[num].size() == 0 || n < 0 || n >= sortaverages[num].size())
-			return Double.MAX_VALUE;
+			return Double.POSITIVE_INFINITY;
 		return worstTimeOfAverage(averages[num].indexOf(sortaverages[num].get(n)), num);
 	}
 
 	public double getProgressTime() {
 		if (times.size() < 2)
-			return Double.MAX_VALUE;
+			return Double.POSITIVE_INFINITY;
 		else {
 			double t1 = getTime(-1);
-			if (t1 == Double.MAX_VALUE)
-				return Double.MAX_VALUE;
+			if (t1 == Double.POSITIVE_INFINITY)
+				return Double.POSITIVE_INFINITY;
 			double t2 = getTime(-2);
-			if (t2 == Double.MAX_VALUE)
-				return Double.MAX_VALUE;
+			if (t2 == Double.POSITIVE_INFINITY)
+				return Double.POSITIVE_INFINITY;
 			return t1 - t2;
 		}
 	}
@@ -826,14 +823,14 @@ public class Statistics implements ConfigurationChangeListener {
 		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		if (averages[num].size() < 2)
-			return Double.MAX_VALUE;
+			return Double.POSITIVE_INFINITY;
 		else {
 			double t1 = getAverage(-1, num);
-			if (t1 == Double.MAX_VALUE)
-				return Double.MAX_VALUE;
+			if (t1 == Double.POSITIVE_INFINITY)
+				return Double.POSITIVE_INFINITY;
 			double t2 = getAverage(-2, num);
-			if (t2 == Double.MAX_VALUE)
-				return Double.MAX_VALUE;
+			if (t2 == Double.POSITIVE_INFINITY)
+				return Double.POSITIVE_INFINITY;
 			return t1 - t2;
 		}
 	}

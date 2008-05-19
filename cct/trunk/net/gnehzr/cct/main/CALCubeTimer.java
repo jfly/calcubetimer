@@ -83,8 +83,6 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.TransformerConfigurationException;
 
-import javazoom.jl.decoder.JavaLayerException;
-
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.ConfigurationDialog;
@@ -139,7 +137,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 @SuppressWarnings("serial")
 public class CALCubeTimer extends JFrame implements ActionListener, TableModelListener, ChangeListener, ConfigurationChangeListener, ItemListener, SessionListener {
-	public static final String CCT_VERSION = "b270";
+	public static final String CCT_VERSION = "b272? (for Jeff)";
 	public static final ImageIcon cubeIcon = new ImageIcon(CALCubeTimer.class.getResource("cube.png"));
 
 	public static StatisticsTableModel statsModel = new StatisticsTableModel(); //used in ProfileDatabase
@@ -330,7 +328,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		fullScreenTimingAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_F);
 		actionMap.put("togglefullscreentiming", fullScreenTimingAction);
 
-		//TODO - possibly switch to anonymous inner classes?
 		actionMap.put("togglescramblepopup", new ToggleScrambleAction(this));
 
 		undo = new AbstractAction() {
@@ -603,7 +600,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			} else if(e.getStateChange() == ItemEvent.SELECTED) {
 				Configuration.setSelectedProfile(affected);
 				if(!affected.loadDatabase()) {
-					//TODO - show error messages?
+					//the user will be notified of this in the profiles combobox
 				}
 				try {
 					Configuration.loadConfiguration(affected.getConfigurationFile());
@@ -1108,7 +1105,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		sessionAverageAction.setEnabled(stats.isValid(AverageType.SESSION, 0));
 	}
 
+	public static ScramblePluginSecurityManager securityManager;
 	public static void main(String[] args) {
+		securityManager = new ScramblePluginSecurityManager();
+		System.setSecurityManager(securityManager);
+		
 		JDialog.setDefaultLookAndFeelDecorated(true);
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		try {
@@ -1318,10 +1319,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					public void run() {
 						try {
 							NumberSpeaker.getCurrentSpeaker().speak(latestTime);
-						} catch (IOException e) {
-//							e.printStackTrace();
-						} catch (JavaLayerException e) {
-//							e.printStackTrace();
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
 					}
 				}).start();
@@ -1461,9 +1460,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	// Actions section {{{
 	public void addTimeAction() {
-		timesTable.promptForNewRow();
-		Rectangle newTimeRect = timesTable.getCellRect(statsModel.getRowCount(), 0, true);
-		timesTable.scrollRectToVisible(newTimeRect);
+		if(timesTable.requestFocusInWindow()) { //if the timestable is hidden behind a tab, we don't want to let the user add times
+			timesTable.promptForNewRow();
+			Rectangle newTimeRect = timesTable.getCellRect(statsModel.getRowCount(), 0, true);
+			timesTable.scrollRectToVisible(newTimeRect);
+		}
 	}
 
 	public void resetAction(){
@@ -1703,7 +1704,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				return false;
 			}
 			statsModel.getCurrentStatistics().add(protect);
-//			repaintTimes(); //needed here too TODO - are we sure about this?
+//			repaintTimes(); //needed here too TODO - are we sure about this? (possibly stackmat related)
 			return true;
 		}
 	}

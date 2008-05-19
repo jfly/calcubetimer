@@ -377,6 +377,13 @@ public class CCTClient {
 		String[] name = s.split(Protocol.DELIMITER, 2);
 		users.getUser(name[0]).setDisplayName(name[1]);
 	}
+	
+	private SolveTime toSolveTime(String time) throws Exception {
+		if(time.equalsIgnoreCase("N/A")) {
+			return new SolveTime();
+		}
+		return new SolveTime(time, null);
+	}
 
 	private void processTime(char type, String s){
 		String[] strs = s.split("" + Protocol.DELIMITER);
@@ -386,10 +393,10 @@ public class CCTClient {
 		try{
 			switch(type){
 				case Protocol.DATA_CURRENT_TIME:
-					u.setCurrentTime(new SolveTime(time, null));
+					u.setCurrentTime(toSolveTime(time));
 					break;
 				case Protocol.DATA_TIME:
-					u.setLastTime(new SolveTime(time, null));
+					u.setLastTime(toSolveTime(time));
 					break;
 			}
 			users.fireTableDataChanged();
@@ -404,7 +411,7 @@ public class CCTClient {
 		String time = strs[1];
 		User u = users.getUser(name);
 		try{
-			u.setCurrentAverage(new SolveTime(time, null));
+			u.setCurrentAverage(toSolveTime(time));
 		} catch(Exception e){
 			System.out.println("Error in processed time " + time);
 		}
@@ -413,7 +420,7 @@ public class CCTClient {
 		for(int i = 2; i < strs.length; i++){
 			String temp = strs[i];
 			try{
-				list.add(new SolveTime(temp, null));
+				list.add(toSolveTime(temp));
 			} catch(Exception e){
 				System.out.println("Error in processed time " + time);
 			}
@@ -428,7 +435,7 @@ public class CCTClient {
 		String time = strs[1];
 		User u = users.getUser(name);
 		try{
-			u.setBestAverage(new SolveTime(time, null));
+			u.setBestAverage(toSolveTime(time));
 		} catch(Exception e){
 			System.out.println("Error in processed time " + time);
 		}
@@ -437,7 +444,7 @@ public class CCTClient {
 		for(int i = 2; i < strs.length; i++){
 			String temp = strs[i];
 			try{
-				list.add(new SolveTime(temp, null));
+				list.add(toSolveTime(temp));
 			} catch(Exception e){
 				System.out.println("Error in processed time " + time);
 			}

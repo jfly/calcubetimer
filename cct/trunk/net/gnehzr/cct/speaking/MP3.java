@@ -30,21 +30,19 @@ public class MP3 {
     private Player player; 
 
     // constructor that takes the name of an MP3 file
-    public MP3(InputStream fis) {
+    public MP3(InputStream fis) throws Exception {
     	if(fis == null) {
-    		System.out.println("File not found");
-    		return;
+    		throw new Exception("File not found!");
     	}
     	try {
 	        BufferedInputStream bis = new BufferedInputStream(fis);
 		    player = new Player(bis);
 	    } catch (Exception e) {
-	        System.out.println("Problem playing file");
-	        System.out.println(e);
+	    	throw new Exception("Problem playing file: " + e.getLocalizedMessage());
 	    }
     }
     
-    public MP3(String file) {
+    public MP3(String file) throws Exception {
 //    	this(new FileInputStream(file));
     	this(MP3.class.getResourceAsStream(file));
     }
@@ -62,8 +60,12 @@ public class MP3 {
     // test client
     public static void main(String[] args) throws FileNotFoundException, JavaLayerException {
 		for(int ch = 0; ch < 20; ch++) {
-			MP3 mp3 = new MP3(ch + ".mp3");
-			mp3.play();
+			try {
+				MP3 mp3 = new MP3(ch + ".mp3");
+				mp3.play();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
     }
 }

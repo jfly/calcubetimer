@@ -425,7 +425,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		if(e.getClickCount() == 2) {
 			int row = this.rowAtPoint(e.getPoint());
 			if(selectionListener != null) {
-				selectionListener.itemSelected(getValueAt(row, 0));
+				selectionListener.itemSelected(getValueAt(row, convertColumnIndexToView(0)));
 				this.repaint();
 			}
 		}

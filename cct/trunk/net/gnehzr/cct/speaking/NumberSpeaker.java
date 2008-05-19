@@ -14,6 +14,7 @@ import javazoom.jl.decoder.JavaLayerException;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.statistics.SolveTime;
+import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
 public class NumberSpeaker implements Comparable<NumberSpeaker> {
 	public static enum talkerType {
@@ -89,8 +90,12 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
 	}
 	
     //appends .mp3 to name
-    private MP3 getMP3FromName(String name) throws IOException {
-    	return new MP3(clips.getInputStream(new ZipEntry(name + ".mp3")));
+    private MP3 getMP3FromName(String name) throws Exception {
+    	try {
+    		return new MP3(clips.getInputStream(new ZipEntry(name + ".mp3")));
+    	} catch(Exception e) {
+    		throw new Exception("Error opening file: " + name + ".mp3 in " + this.name + ".zip");
+    	}
     }
     
     public void speak(talkerType type) {
@@ -102,17 +107,23 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
 			e.printStackTrace();
 		} catch (JavaLayerException e) {
 			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
     }
     
-    public void speak(SolveTime time) throws IOException, JavaLayerException {
-    	speak(false, (int) (time.secondsValue() * 100));
+    public void speak(SolveTime time) throws Exception {
+    	if(time.getType() == SolveType.DNF)
+    		getMP3FromName("dnf").play();
+    	else
+    		speak(false, (int) (time.secondsValue() * 100));
     }
     
     //"Your time is " + lastin.toSolveTime(null, null).value() / 100. + " seconds"
     //Speaks something of the form "xyz.ab seconds"
-    public void speak(boolean yourTime, int hundredths) throws IOException, JavaLayerException {
-    	if(clips == null) return;
+    public void speak(boolean yourTime, int hundredths) throws Exception {
+    	if(clips == null)
+    		throw new Exception("Failed to open " + name + ".zip!");
     	if(yourTime) {
     		getMP3FromName("your_time_is").play();
     	}
@@ -169,7 +180,11 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
     	NumberSpeaker carrie = getSpeaker("carrie");
 		for(int ch = 20000; ch < 60000; ch+=10) {
 			System.out.println("TIME: " + ch / 100.);
-			carrie.speak(false, ch);
+			try {
+				carrie.speak(false, ch);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
     }
 }

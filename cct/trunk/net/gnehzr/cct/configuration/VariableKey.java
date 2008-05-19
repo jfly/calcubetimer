@@ -91,6 +91,7 @@ public class VariableKey<H> {
 	public static final VariableKey<Font> TIMER_FONT = new VariableKey<Font>("Timer_font");
 	public static final VariableKey<Font> SCRAMBLE_FONT = new VariableKey<Font>("Scramble_font");
 
+	public static final VariableKey<Boolean> SPEAK_INSPECTION = new VariableKey<Boolean>("Misc_Voices_readInspection");
 	public static final VariableKey<Boolean> SPEAK_TIMES = new VariableKey<Boolean>("Misc_Voices_readTimes");
 	public static final VariableKey<Boolean> COMPETITION_INSPECTION = new VariableKey<Boolean>("GUI_Timer_competitionInspection");
 	public static final VariableKey<Boolean> FOCUSABLE_BUTTONS = new VariableKey<Boolean>("GUI_focusableButtons");
@@ -115,7 +116,6 @@ public class VariableKey<H> {
 	public static final VariableKey<Boolean> LESS_ANNOYING_DISPLAY = new VariableKey<Boolean>("GUI_Timer_isLessAnnoyingDisplay");
 	public static final VariableKey<Boolean> FULLSCREEN_TIMING = new VariableKey<Boolean>("GUI_Timer_isFullScreenWhileTiming");
 	public static final VariableKey<Boolean> METRONOME_ENABLED = new VariableKey<Boolean>("Misc_Metronome_isEnabled");
-	//TODO - merge the two guys below?
 	public static final VariableKey<Boolean> SHOW_RA0 = new VariableKey<Boolean>("Statistics_showRA0");
 	public static final VariableKey<Boolean> SHOW_RA1 = new VariableKey<Boolean>("Statistics_showRA1");
 	public static final VariableKey<Boolean> COLUMN_VISIBLE(JTable src, int index) {

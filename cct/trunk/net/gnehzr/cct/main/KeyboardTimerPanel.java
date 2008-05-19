@@ -8,14 +8,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
 import javax.swing.JComponent;
 import javax.swing.Timer;
-
-import javazoom.jl.decoder.JavaLayerException;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
@@ -253,16 +250,14 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 			double seconds = getElapsedTimeSeconds();
 			if(inspecting) {
 				int inspectionDone = (int) seconds;
-				if(inspectionDone != previousInpection) {
+				if(inspectionDone != previousInpection && Configuration.getBoolean(VariableKey.SPEAK_INSPECTION, false)) {
 					previousInpection = inspectionDone;
 					if(inspectionDone == FIRST_WARNING) {
 						new Thread(new Runnable() {
 							public void run() {
 								try {
 									NumberSpeaker.getCurrentSpeaker().speak(false, FIRST_WARNING*100);
-								} catch (IOException e) {
-									e.printStackTrace();
-								} catch (JavaLayerException e) {
+								} catch (Exception e) {
 									e.printStackTrace();
 								}
 							}
@@ -272,9 +267,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 							public void run() {
 								try {
 									NumberSpeaker.getCurrentSpeaker().speak(false, FINAL_WARNING*100);
-								} catch (IOException e) {
-									e.printStackTrace();
-								} catch (JavaLayerException e) {
+								}catch (Exception e) {
 									e.printStackTrace();
 								}
 							}

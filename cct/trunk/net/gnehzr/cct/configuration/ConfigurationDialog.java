@@ -201,7 +201,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		}
 	}
 
-	private JCheckBox clockFormat, promptForNewTime, scramblePopup, inspectionCountdown, speakTimes, splits, metronome, showRA0, showRA1;
+	private JCheckBox clockFormat, promptForNewTime, scramblePopup, inspectionCountdown, speakInspection, speakTimes, splits, metronome, showRA0, showRA1;
 	private JSpinner minSplitTime, RASize0 = null, RASize1 = null;
 	public TickerSlider metronomeDelay = null;
 	private JColorComponent bestRA, currentAverage, currentAndRA, bestTime, worstTime = null;
@@ -229,12 +229,16 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		rightPanel.add(scramblePopup);
 		
 		inspectionCountdown = new JCheckBox("WCA-regulation countdown.");
-		rightPanel.add(inspectionCountdown);
+		inspectionCountdown.addItemListener(this);
+		speakInspection = new JCheckBox("Read inspection");
+		JPanel sideBySide = new JPanel();
+		sideBySide.add(inspectionCountdown);
+		sideBySide.add(speakInspection);
+		rightPanel.add(sideBySide);
 		
 		speakTimes = new JCheckBox("Read times");
 		voices = new JComboBox(NumberSpeaker.getSpeakers());
-		
-		JPanel sideBySide = new JPanel();
+		sideBySide = new JPanel();
 		sideBySide.add(speakTimes);
 		sideBySide.add(new JLabel("Choose voice: "));
 		sideBySide.add(voices);
@@ -662,6 +666,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			}
 		} else if(source == SMTPauth) {
 			password.setEnabled(useSMTP && SMTPauth.isSelected());
+		} else if(source == inspectionCountdown) {
+			speakInspection.setEnabled(inspectionCountdown.isSelected());
 		}
 	}
 
@@ -846,6 +852,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		promptForNewTime.setSelected(Configuration.getBoolean(VariableKey.PROMPT_FOR_NEW_TIME, defaults));
 		scramblePopup.setSelected(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, defaults));
 		inspectionCountdown.setSelected(Configuration.getBoolean(VariableKey.COMPETITION_INSPECTION, defaults));
+		speakInspection.setSelected(Configuration.getBoolean(VariableKey.SPEAK_INSPECTION, defaults));
+		speakInspection.setEnabled(inspectionCountdown.isSelected());
 		bestRA.setBackground(Configuration.getColor(VariableKey.BEST_RA, defaults));
 		currentAndRA.setBackground(Configuration.getColor(VariableKey.BEST_AND_CURRENT, defaults));
 		bestTime.setBackground(Configuration.getColor(VariableKey.BEST_TIME, defaults));
@@ -957,6 +965,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setBoolean(VariableKey.PROMPT_FOR_NEW_TIME, promptForNewTime.isSelected());
 		Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, scramblePopup.isSelected());
 		Configuration.setBoolean(VariableKey.COMPETITION_INSPECTION, inspectionCountdown.isSelected());
+		Configuration.setBoolean(VariableKey.SPEAK_INSPECTION, speakInspection.isSelected());
 		Configuration.setInt(VariableKey.RA_SIZE0, (Integer) RASize0.getValue());
 		Configuration.setInt(VariableKey.RA_SIZE1, (Integer) RASize1.getValue());
 		Configuration.setBoolean(VariableKey.SHOW_RA0, showRA0.isSelected());

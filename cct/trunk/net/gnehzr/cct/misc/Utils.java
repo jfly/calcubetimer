@@ -17,7 +17,7 @@ public class Utils {
 	private Utils() {}
 
 	public static String format(double seconds) {
-		if(seconds == Double.MAX_VALUE) return "N/A";
+		if(seconds == Double.POSITIVE_INFINITY) return "N/A";
 
 		return DF.format(seconds);
 	}
@@ -30,7 +30,7 @@ public class Utils {
 	}
 	
 	private static String clockFormat(double seconds) {
-		if(seconds == Double.MAX_VALUE) return "N/A";
+		if(seconds == Double.POSITIVE_INFINITY) return "N/A";
 
 		int hours = (int) (seconds / 3600.);
 		seconds %= 3600;

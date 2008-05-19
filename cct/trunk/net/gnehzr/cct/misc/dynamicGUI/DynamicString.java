@@ -102,9 +102,9 @@ public class DynamicString{
 		//Database queries for current scramble customization
 		else {
 			PuzzleStatistics ps = CALCubeTimer.statsModel.getCurrentSession().getPuzzleStatistics();
-			if(s.equalsIgnoreCase("veryBestTime")) r = Utils.format(ps.getBestTime());
-			else if(s.equalsIgnoreCase("veryBestRA")) r = Utils.format(ps.getBestRA(num));
-			else if(s.equalsIgnoreCase("globalAverage")) r = Utils.format(ps.getGlobalAverage());
+			if(s.equalsIgnoreCase("veryBestTime")) r = Utils.formatTime(ps.getBestTime());
+			else if(s.equalsIgnoreCase("veryBestRA")) r = Utils.formatTime(ps.getBestRA(num));
+			else if(s.equalsIgnoreCase("globalAverage")) r = Utils.formatTime(ps.getGlobalAverage());
 			else if(s.equalsIgnoreCase("globalPops")) r = ""+ps.getPOPCount();
 			else if(s.equalsIgnoreCase("global+twos")) r = ""+ps.getPlusTwoCount();
 			else if(s.equalsIgnoreCase("globalDNFs")) r = ""+ps.getDNFCount();
@@ -112,7 +112,6 @@ public class DynamicString{
 			else if(s.equalsIgnoreCase("globalAttemptCount")) r = ""+ ps.getAttemptCount();
 		}
 
-		if(r.equalsIgnoreCase("" + Double.MAX_VALUE)) return "N/A";
-		else return r;
+		return r;
 	}
 }

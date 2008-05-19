@@ -57,16 +57,12 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 		setScramble(scramble);
 	}
 
-	//TODO - can time == null?
-	//TODO - should we really allow users to type in "N/A"?
 	public void setTime(String time) throws Exception {
 		time = time.trim();
 		if(time.equalsIgnoreCase("DNF"))
 			type = SolveType.DNF;
 		else if(time.isEmpty() || time.equalsIgnoreCase("POP"))
 			type = SolveType.POP;
-		else if(time.equalsIgnoreCase("N/A"))
-			hundredths = Integer.MAX_VALUE;
 		else {
 			if(time.endsWith("+")) {
 				type = SolveType.PLUS_TWO;
@@ -135,7 +131,7 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	}
 
 	public double secondsValue() {
-		if(isInfiniteTime()) return Double.MAX_VALUE;
+		if(isInfiniteTime()) return Double.POSITIVE_INFINITY;
 		return value() / 100.;
 	}
 
@@ -144,6 +140,14 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	}
 
 	public int compareTo(SolveTime o) {
+		if(o == WORST)
+			return -1;
+		if(this == WORST)
+			return 1;
+		if(o.isInfiniteTime())
+			return -1;
+		if(this.isInfiniteTime())
+			return 1;
 		return this.value() - o.value();
 	}
 

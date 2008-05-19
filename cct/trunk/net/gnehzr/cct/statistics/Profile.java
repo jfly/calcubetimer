@@ -10,6 +10,8 @@ import java.nio.channels.FileLock;
 import java.text.ParseException;
 import java.util.HashMap;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -23,6 +25,8 @@ import javax.xml.transform.stream.StreamResult;
 import net.gnehzr.cct.configuration.Configuration;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -30,7 +34,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class Profile {
 	//TODO - this will leak memory as cct runs
-	//TODO - is capitalization a problem here?
 	private static HashMap<String, Profile> profiles = new HashMap<String, Profile>();
 	public static Profile getProfileByName(String name) {
 		Profile p = profiles.get(name);
@@ -291,7 +294,11 @@ public class Profile {
 					DefaultHandler handler = new DatabaseLoader();
 					SAXParserFactory factory = SAXParserFactory.newInstance();
 					SAXParser saxParser = factory.newSAXParser();
+					String dir = System.getProperty("user.dir");
+					//need this to hack the base-uri together for resolving the dtd file
+					System.setProperty("user.dir", statistics.getParent());
 					saxParser.parse(new RandomInputStream(t), handler);
+					System.setProperty("user.dir", dir);
 				}
 				dbFile = t;
 				return true;
@@ -331,8 +338,7 @@ public class Profile {
 		TransformerHandler hd = tf.newTransformerHandler();
 		Transformer serializer = hd.getTransformer();
 		serializer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
-//		TODO - create dtd once this is finalized
-//		serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "users.dtd");
+		serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "../database.dtd");
 		serializer.setOutputProperty(OutputKeys.INDENT, "yes");
 		hd.setResult(streamResult);
 		hd.startDocument();

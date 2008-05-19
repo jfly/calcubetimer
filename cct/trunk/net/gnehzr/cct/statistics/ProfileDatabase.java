@@ -69,14 +69,7 @@ public class ProfileDatabase extends DraggableJTableModel {
 //	}
 	
 	public Session getNthSession(int n) {
-		for(PuzzleStatistics ps : getPuzzlesStatistics()) {
-			for(Session s : ps.toSessionIterable()) {
-				if(n == 0)
-					return s;
-				n--;
-			}
-		}
-		return null;
+		return sessionCache.get(n);
 	}
 	public int indexOf(Session findMe) {
 		int n = 0;
@@ -106,7 +99,16 @@ public class ProfileDatabase extends DraggableJTableModel {
 	}
 	
 	//DraggableJTableModel methods
-
+	
+	private ArrayList<Session> sessionCache = new ArrayList<Session>();
+	public void fireTableDataChanged() {
+		sessionCache.clear();
+		for(PuzzleStatistics ps : getPuzzlesStatistics())
+			for(Session s : ps.toSessionIterable())
+				sessionCache.add(s);
+		super.fireTableDataChanged();
+	}
+	
 	private String[] columnNames = new String[] { "Date Started", "Customization", "Session Average", "Best RA 0", "Best RA 1", "Best Time", "Standard Deviation", "Solve Count" };
 	private Class<?>[] columnClasses = new Class<?>[] { Session.class, ScrambleCustomization.class, SolveTime.class, SolveTime.class, SolveTime.class, SolveTime.class, SolveTime.class, Integer.class};
 	public String getColumnName(int column) {
@@ -115,17 +117,13 @@ public class ProfileDatabase extends DraggableJTableModel {
 	public int getColumnCount() {
 		return columnNames.length;
 	}
-	public int getRowCount() { //TODO - cache this?
-		int rows = 0;
-		for(PuzzleStatistics ps : getPuzzlesStatistics()) {
-			rows += ps.getSessionsCount();
-		}
-		return rows;
+	public int getRowCount() {
+		return sessionCache.size();
 	}
 	public Class<?> getColumnClass(int columnIndex) {
 		return columnClasses[columnIndex];
 	}
-	public Object getValueAt(int row, int col) { //TODO - wow, this is bad
+	public Object getValueAt(int row, int col) {
 		Session s = getNthSession(row);
 		switch(col) {
 		case 0: //data started
@@ -153,8 +151,9 @@ public class ProfileDatabase extends DraggableJTableModel {
 			ScrambleCustomization sc = (ScrambleCustomization) value;
 			Session s = getNthSession(rowIndex);
 			s.setCustomization(sc.toString());
-			rowIndex = indexOf(s); //changing the customization will change the index in the model
-			fireTableRowsUpdated(rowIndex, rowIndex);
+			fireTableDataChanged(); //need this call to update the session cache
+//			rowIndex = indexOf(s); //changing the customization will change the index in the model
+//			fireTableRowsUpdated(rowIndex, rowIndex);
 		}
 	}
 	public boolean isCellEditable(int rowIndex, int columnIndex) {

@@ -57,7 +57,7 @@ public class PuzzleStatistics implements StatisticsUpdateListener {
 	private int attemptCount;
 	private int dnfCount, popCount, plusTwoCount;
 	private void refreshStats() {
-		bestTime = Double.MAX_VALUE;
+		bestTime = Double.POSITIVE_INFINITY;
 		solveCount = 0;
 		attemptCount = 0;
 		dnfCount = 0;
@@ -65,7 +65,7 @@ public class PuzzleStatistics implements StatisticsUpdateListener {
 		plusTwoCount = 0;
 		globalAverage = 0;
 		bestRAs = new double[Statistics.RA_SIZES_COUNT];
-		Arrays.fill(bestRAs, Double.MAX_VALUE);
+		Arrays.fill(bestRAs, Double.POSITIVE_INFINITY);
 		for(Session s : sessions) {
 			Statistics stats = s.getStatistics();
 			double t = stats.getBestTime();
@@ -88,7 +88,7 @@ public class PuzzleStatistics implements StatisticsUpdateListener {
 		if(solveCount != 0)
 			globalAverage /= solveCount;
 		else
-			globalAverage = Double.MAX_VALUE;
+			globalAverage = Double.POSITIVE_INFINITY;
 	}
 	
 	//Getters for DynamicString

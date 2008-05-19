@@ -131,8 +131,6 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 				scramblePopup.setVisible(false);
 			} else if(!scramblePopup.isVisible()) {
 				scramblePopup.setVisible(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false));
-//				System.out.println("setting..." + scramblePopup.isVisible());
-				//TODO - closing popup, null scramble, then real scramble and popup is visible
 				Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, scramblePopup.isVisible());
 			}
 			int moveNum = Integer.parseInt(parts[0].substring(7));
@@ -141,7 +139,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 			scramblePane.setCaretPosition(caretPos);
 			Scramble s = null;
 			try {
-				s = sv.generateScramble(parts[1]);//.importScramble(sv.toString(), parts[1], sp.getEnabledPuzzleAttributes());
+				s = sv.generateScramble(parts[1]);
 			} catch(InvalidScrambleException e0) { //this could happen if a null scramble is imported
 				sp = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScramblePlugin();
 				try {

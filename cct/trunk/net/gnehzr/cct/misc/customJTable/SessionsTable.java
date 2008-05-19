@@ -32,7 +32,6 @@ public class SessionsTable extends DraggableJTable {
 		this.setDefaultEditor(ScrambleCustomization.class, new DefaultCellEditor(new ScrambleChooserComboBox(false, true)));
 		this.setDefaultRenderer(ScrambleCustomization.class, new ScrambleChooserComboBox(false, true));
 		this.setRowHeight(new ScrambleChooserComboBox(false, true).getPreferredSize().height);
-		//i'm pretty sure there's a better way of programmatically setting sorting
 		super.setSelectionListener(new SelectionListener() {
 			public void itemSelected(Object val) {
 				fireSessionSelected((Session) val);
