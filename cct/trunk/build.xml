@@ -39,6 +39,7 @@
 				<include name="guiLayouts/*"/>
 				<include name="scramblePlugins/*.class"/>
 				<include name="profiles/defaults.properties"/>
+				<include name="profiles/database.dtd"/>
 				<include name="documentation/*"/>
 				<include name="voices/*"/>
 			</fileset>
