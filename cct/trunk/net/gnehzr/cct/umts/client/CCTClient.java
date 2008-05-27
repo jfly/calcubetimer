@@ -147,7 +147,8 @@ public class CCTClient {
 			if(!connected){
 				gui.setTitle("CCTClient v" + VERSION + ": not connected");
 				loginStatusMessage(loginStatus);
-			}
+			} else
+				login.commitCurrentServer();
 		} while(!login.isCancelled() && !connected);
 
 		return connected && !login.isCancelled();

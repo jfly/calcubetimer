@@ -72,6 +72,8 @@ public class VariableKey<H> {
 		return new VariableKey<String>("Puzzle_Color_" + plugin.getPuzzleName() + "_face" + faceName);
 	}
 
+	public static final VariableKey<String[]> IMPORT_URLS = new VariableKey<String[]>("Misc_scrambleURLs");
+	public static final VariableKey<String[]> CHAT_SERVERS = new VariableKey<String[]>("UMTS_Client_serverURLs");
 	public static final VariableKey<String[]> SCRAMBLE_CUSTOMIZATIONS = new VariableKey<String[]>("Scramble_customizations");
 	public static final VariableKey<String[]> PUZZLE_ATTRIBUTES(ScramblePlugin plugin) {
 		return new VariableKey<String[]>("Puzzle_Attributes_" + plugin.getPuzzleName());

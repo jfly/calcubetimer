@@ -13,6 +13,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.main.URLHistoryBox;
+
 @SuppressWarnings("serial")
 public class LoginDialog extends JDialog implements ActionListener, KeyListener {
 	public LoginDialog(JFrame parent, boolean modal) {
@@ -22,7 +25,8 @@ public class LoginDialog extends JDialog implements ActionListener, KeyListener 
 		setLocationRelativeTo(parent);
 	}
 
-	private JTextField server, port, userName = null;
+	private JTextField port, userName = null;
+	private URLHistoryBox server;
 	private JButton connectButton, cancelButton = null;
 	private boolean isCancelled = false;
 	public void createGUI() {
@@ -34,7 +38,7 @@ public class LoginDialog extends JDialog implements ActionListener, KeyListener 
 		c.ipadx = 5;
 		c.ipady = 3;
 
-		server = new JTextField(10);
+		server = new URLHistoryBox(VariableKey.CHAT_SERVERS);
 		port = new JTextField("" + CCTClient.DEFAULT_PORT);
 		userName = new JTextField();
 		userName.setToolTipText("Username must not be the same as anyone already connected," +
@@ -124,9 +128,13 @@ public class LoginDialog extends JDialog implements ActionListener, KeyListener 
 	}
 
 	public String getServerName() {
-		return server.getText();
+		return server.getSelectedItem().toString();
 	}
 
+	public void commitCurrentServer() {
+		server.commitCurrentItem();
+	}
+	
 	public int getPort() {
 		return new Integer(port.getText()).intValue();
 	}

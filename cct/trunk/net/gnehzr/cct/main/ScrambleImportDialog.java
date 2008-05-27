@@ -26,7 +26,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -43,7 +42,7 @@ import org.jvnet.lafwidget.LafWidget;
 
 @SuppressWarnings("serial")
 public class ScrambleImportDialog extends JDialog implements ActionListener, DocumentListener {
-	private JTextField urlField;
+	private URLHistoryBox urlField;
 	private JButton browse, addToArea;
 	private JTextAreaWithHistory scrambles;
 	private JEditorPane qualityControl;
@@ -63,7 +62,8 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 
 		JPanel sideBySide = new JPanel();
 		sideBySide.setLayout(new BoxLayout(sideBySide, BoxLayout.X_AXIS));
-		urlField = new JTextField(Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_URL, false));
+		urlField = new URLHistoryBox(VariableKey.IMPORT_URLS);
+		urlField.setSelectedItem(Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_URL, false));
 		urlField.setToolTipText("Browse for file or type URL of desired scrambles.");
 		sideBySide.add(urlField);
 		browse = new JButton("Browse");
@@ -119,19 +119,19 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 			JFileChooser fc = new JFileChooser(".");
 			if(fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
 				File selectedFile = fc.getSelectedFile();
-				urlField.setText(selectedFile.toURI().toString());
+				urlField.setSelectedItem(selectedFile.toURI().toString());
 				if(!selectedFile.exists()) {
 					JOptionPane.showMessageDialog(this,
 							selectedFile.getName() + " does not exist!",
 							"File Not Found!",
 							JOptionPane.ERROR_MESSAGE);
-					urlField.setText("");
+					urlField.setSelectedItem("");
 				}
 			}
 		} else if(source == addToArea) {
 			URL url = null;
 			try {
-				url = new URI(urlField.getText()).toURL();
+				url = new URI(urlField.getSelectedItem().toString()).toURL();
 				BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 				String line, all = "";
 				while((line = in.readLine()) != null) {
@@ -139,6 +139,7 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 				}
 				scrambles.append(all);
 				in.close();
+				urlField.commitCurrentItem();
 			} catch(MalformedURLException ee) {
 				showErrorMessage(ee.getMessage() + "\nBad filename", "Error!");
 			} catch(ConnectException ee) {

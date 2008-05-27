@@ -145,13 +145,13 @@ changes:
 +deleting of sessions and picking new sessions now makes more sense
 +BUG: broke customization selection in the sessions table
 +BUG: deleting current profile wasn't working, now fixed
++create recent history jtextfield for connecting to chat servers & downloading scrambles
 
 TODO:
 
 for release:
 -create send to profile context menu option for sessions
 -create a countdown for use with stackmats
--create recent history jtextfield for connecting to chat servers & downloading scrambles
 -make scrambleplugins secure
 -clean up all critical TODOs scattered throughout the code
 -internationalization (dates, too)
