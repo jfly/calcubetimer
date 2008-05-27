@@ -141,14 +141,19 @@ changes:
 +fixed a bug where loading with an empty time would give a box for the session average, fixed by having new instances of statistics default to 0 for their average
 +fixed discrepancy between the definition of cdef in cct and the wca regulations
 +added dtd for the xml database files
++BUG: sorting of session table wasn't working for times over a minute, fixed to use solvetime's comparator
++deleting of sessions and picking new sessions now makes more sense
++BUG: broke customization selection in the sessions table
++BUG: deleting current profile wasn't working, now fixed
 
 TODO:
 
 for release:
+-create send to profile context menu option for sessions
 -create a countdown for use with stackmats
 -create recent history jtextfield for connecting to chat servers & downloading scrambles
 -make scrambleplugins secure
--clean up all critical TODOs scattered throughout the code (SolveTime, esp.)
+-clean up all critical TODOs scattered throughout the code
 -internationalization (dates, too)
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html
 	http://www.eclipse.org/articles/Article-Internationalization/how2I18n.html

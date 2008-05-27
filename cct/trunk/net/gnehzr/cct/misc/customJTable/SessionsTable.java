@@ -22,10 +22,9 @@ public class SessionsTable extends DraggableJTable {
 		super(null, false, true);
 		this.statsModel = statsModel;
 		this.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		this.setAutoCreateRowSorter(true);
 		//for some reason, the default preferred size is huge
 		this.setPreferredScrollableViewportSize(new Dimension(0, 0));
-
+		this.setAutoCreateRowSorter(true);
 		this.setDefaultRenderer(Session.class, new SessionRenderer(statsModel));
 		this.setDefaultRenderer(SolveTime.class, new SolveTimeRenderer(statsModel));
 		
@@ -60,9 +59,8 @@ public class SessionsTable extends DraggableJTable {
 		int modelRow = e.getFirstRow();
 		boolean oneRowSelected = (modelRow == e.getLastRow());
 		if(modelRow != -1 && e.getType() == TableModelEvent.UPDATE && oneRowSelected) {
-			int viewRow = convertRowIndexToView(modelRow);
 			ProfileDatabase pd = Configuration.getSelectedProfile().getPuzzleDatabase();
-			Session s = pd.getNthSession(viewRow);
+			Session s = pd.getNthSession(modelRow);
 			if(s != null && s == statsModel.getCurrentSession()) {
 				//this indicates that the ScrambleCustomization of the currently selected profile has been changed
 				//we deal with this by simply reselecting the current session

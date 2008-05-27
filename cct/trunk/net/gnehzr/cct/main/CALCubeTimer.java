@@ -137,7 +137,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 @SuppressWarnings("serial")
 public class CALCubeTimer extends JFrame implements ActionListener, TableModelListener, ChangeListener, ConfigurationChangeListener, ItemListener, SessionListener {
-	public static final String CCT_VERSION = "b272? (for Jeff)";
+	public static final String CCT_VERSION = "b???";
 	public static final ImageIcon cubeIcon = new ImageIcon(CALCubeTimer.class.getResource("cube.png"));
 
 	public static StatisticsTableModel statsModel = new StatisticsTableModel(); //used in ProfileDatabase
@@ -182,20 +182,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	
 	public void setSelectedProfile(Profile p) {
 		profiles.setSelectedItem(p);
-	}
-	
-	public Session getNextSession(boolean pickStartupSesh) {
-		Session nextSesh = statsModel.getCurrentSession();
-		Profile p = Configuration.getSelectedProfile();
-		if(nextSesh == null || pickStartupSesh)
-			nextSesh = p.getStartupSession();
-		String customization = ScramblePlugin.getCurrentScrambleCustomization().toString();
-		PuzzleStatistics ps = p.getPuzzleDatabase().getPuzzleStatistics(customization);
-		if(!ps.containsSession(nextSesh)) {
-			//failed to find a session to continue, so create and load a new one
-			nextSesh = createNewSession(p, customization);
-		}
-		return nextSesh;
 	}
 
 	public void setVisible(boolean b) {
@@ -565,7 +551,19 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				super.setSelectedItem(selectMe);
 		}
 	}
-	
+
+	public Session getNextSession() {
+		Session nextSesh = statsModel.getCurrentSession();
+		Profile p = Configuration.getSelectedProfile();
+		String customization = scramblesList.getScrambleCustomization().toString();
+		PuzzleStatistics ps = p.getPuzzleDatabase().getPuzzleStatistics(customization);
+		if(!ps.containsSession(nextSesh)) {
+			//failed to find a session to continue, so create and load a new one
+			nextSesh = createNewSession(p, customization);
+		}
+		return nextSesh;
+	}
+
 	public void sessionSelected(Session s) {
 		statsModel.setSession(s);
 		scrambleChooser.setSelectedItem(s.getCustomization());
@@ -577,12 +575,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scramblesList.setScrambleNumber(scramblesList.size() + 1);
 		updateScramble();
 	}
+
 	public void sessionsDeleted() {
-		Session s = getNextSession(false);
+		Session s = getNextSession();
 		statsModel.setSession(s);
 		scrambleChooser.setSelectedItem(s.getCustomization());
 	}
-	
+
 	public void itemStateChanged(ItemEvent e) {
 		Object source = e.getSource();
 		if(source == scrambleChooser && e.getStateChange() == ItemEvent.SELECTED) {
@@ -610,7 +609,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				} catch (URISyntaxException err) {
 					err.printStackTrace();
 				}
-				sessionSelected(getNextSession(true)); //we want to load this profile's startup session
+				sessionSelected(getNextSession()); //we want to load this profile's startup session
 			}
 		}
 	}
@@ -625,7 +624,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			updateScramble();
 		}
 	}
-	
+
 	private void parseXML_GUI(File xmlGUIfile) {
 		//this is needed to compute the size of the gui correctly
 		scramblePanel.resetPreferredSize();
@@ -1096,8 +1095,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	private void repaintTimes() {
 		Statistics stats = statsModel.getCurrentStatistics();
-		sendAverage(stats.average(AverageType.CURRENT, 0));
-		sendBestAverage(stats.average(AverageType.RA, 0));
+		sendAverage(stats.average(AverageType.CURRENT, 0).toString());
+		sendBestAverage(stats.average(AverageType.RA, 0).toString());
 		currentAverageAction0.setEnabled(stats.isValid(AverageType.CURRENT, 0));
 		rollingAverageAction0.setEnabled(stats.isValid(AverageType.RA, 0));
 		currentAverageAction1.setEnabled(stats.isValid(AverageType.CURRENT, 1));
@@ -1210,7 +1209,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		commentListener.sync();
 		Profile p = Configuration.getSelectedProfile();
 		try {
-			p.saveDatabase(statsModel.getCurrentSession());
+			p.saveDatabase();
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		} catch (TransformerConfigurationException e1) {

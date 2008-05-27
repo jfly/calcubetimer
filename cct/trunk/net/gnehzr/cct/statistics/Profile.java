@@ -10,8 +10,6 @@ import java.nio.channels.FileLock;
 import java.text.ParseException;
 import java.util.HashMap;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -23,10 +21,9 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.main.CALCubeTimer;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -147,6 +144,8 @@ public class Profile {
 		configuration.delete();
 		statistics.delete();
 		directory.delete();
+		if(Configuration.getSelectedProfile() == this)
+			Configuration.setSelectedProfile(null);
 	}
 	public boolean equals(Object o) {
 		if(o == null)
@@ -190,7 +189,7 @@ public class Profile {
 					throw new SAXException();
 				}
 				if(Boolean.parseBoolean(attributes.getValue("loadonstartup")))
-					loadonstartup = session;
+					CALCubeTimer.statsModel.setSession(session);
 			} else if(name.equalsIgnoreCase("solve")) {
 				if(level != 3)
 					throw new SAXException("3rd level expected for solve tag.");
@@ -251,13 +250,16 @@ public class Profile {
 	//Database stuff
 	//this maps from ScrambleVariations to PuzzleStatistics
 	private ProfileDatabase puzzleDB = new ProfileDatabase();
-	private Session loadonstartup;
 	public ProfileDatabase getPuzzleDatabase() {
 		return puzzleDB;
 	}
-	public Session getStartupSession() {
-		return loadonstartup;
-	}
+//	private Session loadonstartup;
+//	public Session getStartupSession() {
+//		return loadonstartup;
+//	}
+//	public void setStartupSession(Session loadonstartup) {
+//		this.loadonstartup = loadonstartup;
+//	}
 	
 	//I can't believe I had to create these two silly little classses
 	private class RandomInputStream extends InputStream {
@@ -325,8 +327,7 @@ public class Profile {
 		return false;
 	}
 	
-	public void saveDatabase(Session current) throws IOException, FileNotFoundException, TransformerConfigurationException, SAXException {
-		loadonstartup = current;
+	public void saveDatabase() throws IOException, FileNotFoundException, TransformerConfigurationException, SAXException {
 		puzzleDB.removeEmptySessions();
 		if(dbFile == null)
 			return;
@@ -355,7 +356,7 @@ public class Profile {
 					continue;
 				atts.clear();
 				atts.addAttribute("", "", "date", "CDATA", s.toDateString());
-				if(s == current)
+				if(s == CALCubeTimer.statsModel.getCurrentSession())
 					atts.addAttribute("", "", "loadonstartup", "CDATA", "true");
 				hd.startElement("", "", "session", atts);
 				atts.clear();

@@ -1,9 +1,10 @@
 <!ELEMENT database (puzzle)*>
 
 <!ELEMENT puzzle (session)*>
-<!ELEMENT session (solve)*>
-<!ELEMENT solve (#PCDATA|scramble)*>
+<!ELEMENT session (solve|comment)*>
+<!ELEMENT solve (#PCDATA|scramble|comment)*>
 <!ELEMENT scramble (#PCDATA)*>
+<!ELEMENT comment (#PCDATA)*>
 
 <!ATTLIST puzzle customization CDATA #REQUIRED>
 <!ATTLIST session date CDATA #REQUIRED>

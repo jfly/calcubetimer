@@ -10,7 +10,6 @@ import java.util.HashMap;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.misc.customJTable.SessionListener;
@@ -100,13 +99,16 @@ public class ProfileDatabase extends DraggableJTableModel {
 	
 	//DraggableJTableModel methods
 	
-	private ArrayList<Session> sessionCache = new ArrayList<Session>();
 	public void fireTableDataChanged() {
+		updateSessionCache();
+		super.fireTableDataChanged();
+	}
+	private ArrayList<Session> sessionCache = new ArrayList<Session>();
+	private void updateSessionCache() {
 		sessionCache.clear();
 		for(PuzzleStatistics ps : getPuzzlesStatistics())
 			for(Session s : ps.toSessionIterable())
 				sessionCache.add(s);
-		super.fireTableDataChanged();
 	}
 	
 	private String[] columnNames = new String[] { "Date Started", "Customization", "Session Average", "Best RA 0", "Best RA 1", "Best Time", "Standard Deviation", "Solve Count" };
@@ -133,11 +135,11 @@ public class ProfileDatabase extends DraggableJTableModel {
 		case 2: //session average
 			return s.getStatistics().average(AverageType.SESSION, 0);
 		case 3: //best ra0
-			return Utils.formatTime(s.getStatistics().getBestAverage(0));
+			return new SolveTime(s.getStatistics().getBestAverage(0), null);
 		case 4: //best ra1
-			return Utils.formatTime(s.getStatistics().getBestAverage(1));
+			return new SolveTime(s.getStatistics().getBestAverage(1), null);
 		case 5: //best time
-			return Utils.formatTime(s.getStatistics().getBestTime());
+			return new SolveTime(s.getStatistics().getBestTime(), null);
 		case 6: //stdev
 			return s.getStatistics().standardDeviation(AverageType.SESSION, 0);
 		case 7: //solve count
@@ -151,9 +153,9 @@ public class ProfileDatabase extends DraggableJTableModel {
 			ScrambleCustomization sc = (ScrambleCustomization) value;
 			Session s = getNthSession(rowIndex);
 			s.setCustomization(sc.toString());
-			fireTableDataChanged(); //need this call to update the session cache
-//			rowIndex = indexOf(s); //changing the customization will change the index in the model
-//			fireTableRowsUpdated(rowIndex, rowIndex);
+			updateSessionCache();
+			rowIndex = indexOf(s); //changing the customization will change the index in the model
+			fireTableRowsUpdated(rowIndex, rowIndex);
 		}
 	}
 	public boolean isCellEditable(int rowIndex, int columnIndex) {

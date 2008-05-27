@@ -444,7 +444,7 @@ public class Statistics implements ConfigurationChangeListener {
 		if(refresh) refresh();
 	}
 
-	public String average(AverageType type, int num) {
+	public SolveTime average(AverageType type, int num) {
 		double average;
 		try {
 			if (type == AverageType.SESSION)
@@ -454,18 +454,18 @@ public class Statistics implements ConfigurationChangeListener {
 			else if (type == AverageType.CURRENT)
 				average = averages[num].get(averages[num].size() - 1).doubleValue();
 			else
-				return "Invalid average type.";
+				return new SolveTime();
 		} catch (IndexOutOfBoundsException e) {
-			return "N/A";
+			return new SolveTime();
 		}
 
 		if (average == 0)
-			return "N/A";
+			return new SolveTime();
 
 		if (average == Double.POSITIVE_INFINITY)
-			return "Invalid";
+			return new SolveTime();
 
-		return Utils.formatTime(average);
+		return new SolveTime(average, null);
 	}
 
 	public boolean isValid(AverageType type, int num) {
@@ -620,7 +620,7 @@ public class Statistics implements ConfigurationChangeListener {
 						+ toTerseStringHelper(printMe, best, worst) : "");
 	}
 
-	public String standardDeviation(AverageType type, int num) {
+	public SolveTime standardDeviation(AverageType type, int num) {
 		double sd = Double.POSITIVE_INFINITY;
 		if (type == AverageType.SESSION)
 			sd = curSessionSD;
@@ -628,7 +628,7 @@ public class Statistics implements ConfigurationChangeListener {
 			sd = sds[num].get(indexOfBestRA[num]).doubleValue();
 		else if (type == AverageType.CURRENT)
 			sd = sds[num].get(sds[num].size() - 1).doubleValue();
-		return Utils.format(sd);
+		return new SolveTime(sd, null);
 	}
 
 	private double bestTimeOfAverage(int n, int num) {

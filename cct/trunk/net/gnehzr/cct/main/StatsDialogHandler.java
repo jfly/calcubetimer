@@ -76,7 +76,7 @@ public class StatsDialogHandler extends JDialog implements ActionListener {
 	private String average, terseTimes;
 	private void updateStats(Statistics times, AverageType type, int avgNum) {
 		setTitle("Detailed statistics for " + type.toString());
-		average = times.average(type, avgNum);
+		average = times.average(type, avgNum).toString();
 		terseTimes = times.toTerseString(type, avgNum);
 		SolveTime[] bestAndWorst = times.getBestAndWorstTimes(type, avgNum);
 		String stats = (type == AverageType.SESSION) ?
@@ -85,8 +85,8 @@ public class StatsDialogHandler extends JDialog implements ActionListener {
 		stats = stats.replaceAll("\\$D", Configuration.getDateFormat().format(cal.getTime()));
 		stats = stats.replaceAll("\\$C", "" + times.getSolveCount());
 		stats = stats.replaceAll("\\$P", "" + times.getPOPCount());
-		stats = stats.replaceAll("\\$A", times.average(type, avgNum));
-		stats = stats.replaceAll("\\$S", times.standardDeviation(type, avgNum));
+		stats = stats.replaceAll("\\$A", times.average(type, avgNum).toString());
+		stats = stats.replaceAll("\\$S", times.standardDeviation(type, avgNum).toString());
 		stats = stats.replaceAll("\\$B", bestAndWorst[0].toString());
 		stats = stats.replaceAll("\\$W", bestAndWorst[1].toString());
 		stats = stats.replaceAll("\\$T", times.toTerseString(type, avgNum));

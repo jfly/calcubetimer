@@ -31,7 +31,7 @@
 			<fileset dir="." includes="net/**, say/**"/>
 			<zipfileset src="mailapi.jar" excludes="META-INF/MANIFEST.MF, META-INF/SUN_MICR.RSA, META-INF/SUN_MICR.SF"/>
 			<zipfileset src="smtp.jar" excludes="META-INF/MANIFEST.MF, META-INF/SUN_MICR.RSA, META-INF/SUN_MICR.SF"/>
-			<zipfileset src="substance.jar" excludes="META-INF/MANIFEST.MF"/>
+			<zipfileset src="substance-lite-feel.jar" excludes="META-INF/MANIFEST.MF"/>
 			<zipfileset src="javazoom.jar"/>
 		</jar>
 		<copy todir="${dist}">
