@@ -22,6 +22,7 @@ public class SolveTimeEditor extends DefaultCellEditor {
 		this.editText = editText;
 	}
 
+	//TODO - http://www.pushing-pixels.org/?p=69 ?
 	public boolean stopCellEditing() {
 		String s = (String) super.getCellEditorValue();
 		try {

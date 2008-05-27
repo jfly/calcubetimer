@@ -91,6 +91,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 					fireTableChanged(e);
 					if(resetSelectedRows) {
 						lastRow++;
+						System.out.println(lastRow);
 						setRowSelectionInterval(lastRow, lastRow);
 					}
 				}

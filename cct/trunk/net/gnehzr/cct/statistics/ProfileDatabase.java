@@ -3,13 +3,20 @@ package net.gnehzr.cct.statistics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.xml.transform.TransformerConfigurationException;
 
+import org.xml.sax.SAXException;
+
+import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.misc.customJTable.SessionListener;
@@ -17,7 +24,7 @@ import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
 
 @SuppressWarnings("serial")
-public class ProfileDatabase extends DraggableJTableModel {
+public class ProfileDatabase extends DraggableJTableModel implements ActionListener {
 	private HashMap<String, PuzzleStatistics> database = new HashMap<String, PuzzleStatistics>();
 	public ProfileDatabase() {}
 	
@@ -177,6 +184,7 @@ public class ProfileDatabase extends DraggableJTableModel {
 	public void removeRows(int[] indices) {
 		deleteRows(indices);
 	}
+	private static final String SEND_TO_PROFILE = "sendToProfile";
 	public void showPopup(MouseEvent e, final DraggableJTable source) {
 		JPopupMenu jpopup = new JPopupMenu();
 
@@ -187,7 +195,55 @@ public class ProfileDatabase extends DraggableJTableModel {
 			}
 		});
 		jpopup.add(discard);
+		
+		JMenu sendTo = new JMenu("Send to");
+		for(Profile p : Configuration.getProfiles()) {
+			if(p == Configuration.getSelectedProfile())
+				continue;
+			JMenuItem profile = new JMenuItem(p.getName());
+			String rows = "";
+			for(int r : source.getSelectedRows())
+				rows += "," + source.convertRowIndexToModel(r);
+			rows = rows.substring(1);
+			profile.setActionCommand(SEND_TO_PROFILE + rows);
+			profile.addActionListener(this);
+			sendTo.add(profile);
+		}
+		jpopup.add(sendTo);
+		
 		source.requestFocusInWindow();
 		jpopup.show(e.getComponent(), e.getX(), e.getY());
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		if(e.getActionCommand().startsWith(SEND_TO_PROFILE)) {
+			//TODO will this work with command line profiles?
+			Profile to = Profile.getProfileByName(((JMenuItem)e.getSource()).getText());
+			to.loadDatabase();
+			
+			String[] rows = e.getActionCommand().substring(SEND_TO_PROFILE.length()).split(",");
+			Session[] seshs = new Session[rows.length];
+			for(int ch = 0; ch < rows.length; ch++) {
+				int row = Integer.parseInt(rows[ch]);
+				seshs[ch] = getNthSession(row);
+			}
+			for(Session s : seshs) {
+				String custom = s.getCustomization().toString();
+				to.getPuzzleDatabase().getPuzzleStatistics(custom).addSession(s);
+				s.delete();
+			}
+			fireSessionsDeleted();
+			try {
+				to.saveDatabase();
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			} catch (TransformerConfigurationException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			} catch (SAXException e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
 }

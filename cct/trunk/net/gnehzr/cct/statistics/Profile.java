@@ -253,13 +253,6 @@ public class Profile {
 	public ProfileDatabase getPuzzleDatabase() {
 		return puzzleDB;
 	}
-//	private Session loadonstartup;
-//	public Session getStartupSession() {
-//		return loadonstartup;
-//	}
-//	public void setStartupSession(Session loadonstartup) {
-//		this.loadonstartup = loadonstartup;
-//	}
 	
 	//I can't believe I had to create these two silly little classses
 	private class RandomInputStream extends InputStream {
@@ -356,6 +349,7 @@ public class Profile {
 					continue;
 				atts.clear();
 				atts.addAttribute("", "", "date", "CDATA", s.toDateString());
+				//TODO - this doesn't work for the guest profile, so you can never switch into a guest session
 				if(s == CALCubeTimer.statsModel.getCurrentSession())
 					atts.addAttribute("", "", "loadonstartup", "CDATA", "true");
 				hd.startElement("", "", "session", atts);

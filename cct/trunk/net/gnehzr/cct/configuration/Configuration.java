@@ -280,6 +280,7 @@ public final class Configuration {
 		commandLineProfile = profile;
 	}
 
+	//TODO - should this be cached?
 	public static ArrayList<Profile> getProfiles() {
 		String[] profDirs = profilesFolder.list(new FilenameFilter() {
 			public boolean accept(File f, String s) {
