@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.EventObject;
 
 import javax.swing.Action;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -145,6 +146,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 
 	private JPanel getCustomizationPanel(ScrambleCustomization custom) {
 		JPanel customPanel = new JPanel();
+		customPanel.setLayout(new BoxLayout(customPanel, BoxLayout.LINE_AXIS));
 		if(custom.getCustomization() != null) {
 			scramLength = null; //this has to be null so we know what to do when stopCellEditing() is called
 			scrambleVariations = new ScrambleChooserComboBox(false, false);
@@ -177,6 +179,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 
 	private JPanel getLengthPanel(ScrambleCustomization custom) {
 		JPanel lengthPanel = new JPanel();
+		lengthPanel.setLayout(new BoxLayout(lengthPanel, BoxLayout.LINE_AXIS));
 		customization = custom;
 		scramLength = new JSpinner(new SpinnerNumberModel(custom.getScrambleVariation().getLength(), 0, null, 1));
 		scramLength.setToolTipText("Specify the scramble length for this puzzle variation.");

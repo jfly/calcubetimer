@@ -35,6 +35,7 @@ public class PuzzleCustomizationCellRenderer extends SubstanceDefaultListCellRen
 			String bolded = sv.getVariation();
 			if(bolded.isEmpty())
 				bolded = sv.getScramblePlugin().getPuzzleName();
+			//TODO - this is wrapping undesirably in the drop down box under the session table
 			val = "<html><b>" + bolded + "</b>";
 			if(customization != null && customization.getCustomization() != null)
 				val += ":" + customization.getCustomization();
