@@ -33,6 +33,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import javax.swing.AbstractAction;
@@ -114,6 +115,7 @@ import net.gnehzr.cct.stackmatInterpreter.StackmatState;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
 import net.gnehzr.cct.statistics.Commentable;
 import net.gnehzr.cct.statistics.Profile;
+import net.gnehzr.cct.statistics.ProfileDatabase;
 import net.gnehzr.cct.statistics.PuzzleStatistics;
 import net.gnehzr.cct.statistics.Session;
 import net.gnehzr.cct.statistics.SolveTime;
@@ -552,14 +554,26 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 	}
 
+	//if we deleted the current session, should we create a new one, or load the "nearest" session?
 	public Session getNextSession() {
 		Session nextSesh = statsModel.getCurrentSession();
 		Profile p = Configuration.getSelectedProfile();
 		String customization = scramblesList.getScrambleCustomization().toString();
-		PuzzleStatistics ps = p.getPuzzleDatabase().getPuzzleStatistics(customization);
+		ProfileDatabase pd = p.getPuzzleDatabase();
+		PuzzleStatistics ps = pd.getPuzzleStatistics(customization);
 		if(!ps.containsSession(nextSesh)) {
-			//failed to find a session to continue, so create and load a new one
-			nextSesh = createNewSession(p, customization);
+			//failed to find a session to continue, so load newest session
+			int sessionCount = pd.getRowCount();
+			if(sessionCount > 0) {
+				nextSesh = Session.OLDEST_SESSION;
+				for(int ch = 0; ch < sessionCount; ch++) {
+					Session s = pd.getNthSession(ch);
+					if(s.getStatistics().getStartDate().after(nextSesh.getStatistics().getStartDate()))
+						nextSesh = s;
+				}
+			} else { //create new session if none exist
+				nextSesh = createNewSession(p, customization);
+			}
 		}
 		return nextSesh;
 	}
@@ -1537,7 +1551,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	private Session createNewSession(Profile p, String customization) {
 		PuzzleStatistics ps = p.getPuzzleDatabase().getPuzzleStatistics(customization);
-		Session s = new Session(null, ps);
+		Session s = new Session(new Date());
+		ps.addSession(s);
 		return s;
 	}
 	

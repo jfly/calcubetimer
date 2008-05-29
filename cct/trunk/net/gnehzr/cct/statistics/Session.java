@@ -8,16 +8,19 @@ import net.gnehzr.cct.scrambles.ScramblePlugin;
 
 @SuppressWarnings("serial")
 public class Session extends Commentable implements Comparable<Session> {
+	public static final Session OLDEST_SESSION = new Session(new Date(0));
 	private Statistics s;
 	private PuzzleStatistics puzzStats;
 	//adds itself to the puzzlestatistics to which it belongs
-	public Session(Date d, PuzzleStatistics ps) {
+	public Session(Date d) {
 		s = new Statistics(d);
-		puzzStats = ps;
-		puzzStats.addSession(this);
 	}
 	public Statistics getStatistics() {
 		return s;
+	}
+	//this should only be called by PuzzleStatistics
+	public void setPuzzleStatistics(PuzzleStatistics puzzStats) {
+		this.puzzStats = puzzStats;
 	}
 	public PuzzleStatistics getPuzzleStatistics() {
 		return puzzStats;

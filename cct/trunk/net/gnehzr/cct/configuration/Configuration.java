@@ -29,6 +29,7 @@ public final class Configuration {
 	public static final File profilesFolder = new File(getRootDirectory(), "profiles/");
 	public static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/");
 	public static final File voicesFolder = new File(getRootDirectory(), "voices/");
+	public static final String databaseDTD = "profiles/database.dtd";
 	private static final File guiLayoutsFolder = new File(getRootDirectory(), "guiLayouts/");
 	private static final File startupProfileFile = new File(profilesFolder, "startup");
 
@@ -280,7 +281,6 @@ public final class Configuration {
 		commandLineProfile = profile;
 	}
 
-	//TODO - should this be cached?
 	public static ArrayList<Profile> getProfiles() {
 		String[] profDirs = profilesFolder.list(new FilenameFilter() {
 			public boolean accept(File f, String s) {

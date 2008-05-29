@@ -28,6 +28,7 @@ public class PuzzleStatistics implements StatisticsUpdateListener {
 	}
 	public void addSession(Session s) {
 		sessions.add(s);
+		s.setPuzzleStatistics(this);
 		refreshStats();
 		pd.fireTableDataChanged();
 	}

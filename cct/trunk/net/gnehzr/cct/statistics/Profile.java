@@ -24,6 +24,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.main.CALCubeTimer;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -64,13 +65,13 @@ public class Profile {
 	
 	private boolean saveable = true;
 	//I assume that this will only get called once for a given directory
-	//that way, we don't have to mess with the HashMap
 	public Profile(File directory) {
 		saveable = false;
 		this.directory = directory;
 		this.name = directory.getAbsolutePath();
-		configuration = getConfiguration(directory, name);
-		statistics = getStatistics(directory, name);
+		configuration = getConfiguration(directory, directory.getName());
+		statistics = getStatistics(directory, directory.getName());
+		profiles.put(name, this);
 	}
 	public boolean isSaveable() {
 		return saveable;
@@ -161,6 +162,9 @@ public class Profile {
 	}
 	
 	private class DatabaseLoader extends DefaultHandler {
+		public InputSource resolveEntity(String publicId, String systemId) throws IOException, SAXException {
+			return new InputSource(Configuration.databaseDTD); //TODO - test within jar file!
+		}
 		private int level = 0;
 		private String customization;
 		private String seshCommentOrSolveTime;
@@ -183,7 +187,8 @@ public class Profile {
 				if(level != 2)
 					throw new SAXException("2nd level expected for session tag.");
 				try {
-					session = new Session(Configuration.getDateFormat().parse(attributes.getValue("date")), puzzleDB.getPuzzleStatistics(customization));
+					session = new Session(Configuration.getDateFormat().parse(attributes.getValue("date")));
+					puzzleDB.getPuzzleStatistics(customization).addSession(session);
 				} catch (ParseException e) {
 					e.printStackTrace();
 					throw new SAXException();
@@ -249,7 +254,7 @@ public class Profile {
 	
 	//Database stuff
 	//this maps from ScrambleVariations to PuzzleStatistics
-	private ProfileDatabase puzzleDB = new ProfileDatabase();
+	private ProfileDatabase puzzleDB = new ProfileDatabase(this);
 	public ProfileDatabase getPuzzleDatabase() {
 		return puzzleDB;
 	}
@@ -278,22 +283,26 @@ public class Profile {
 	private RandomAccessFile dbFile = null;
 	//this can only be called once, until after saveDatabase() is called
 	public boolean loadDatabase() {
-		if(this == Configuration.guestProfile) //disable logging for guest
+		if(this == Configuration.guestProfile) { //disable logging for guest
+			if(puzzleDB.getRowCount() > 0)
+				CALCubeTimer.statsModel.setSession(guestSession);
 			return false;
+		}
 		try {
 			RandomAccessFile t = new RandomAccessFile(statistics, "rw");
 			FileLock fl = t.getChannel().tryLock();
 			if(fl != null) {
-				puzzleDB = new ProfileDatabase(); //reset the database
+				puzzleDB = new ProfileDatabase(this); //reset the database
 				if(t.length() != 0) { //if the file is empty, don't bother to parse it
 					DefaultHandler handler = new DatabaseLoader();
 					SAXParserFactory factory = SAXParserFactory.newInstance();
 					SAXParser saxParser = factory.newSAXParser();
-					String dir = System.getProperty("user.dir");
-					//need this to hack the base-uri together for resolving the dtd file
-					System.setProperty("user.dir", statistics.getParent());
+//					String dir = System.getProperty("user.dir");
+//					need this to hack the base-uri together for resolving the dtd file
+					//NOTE: this doesn't work with command line profiles!
+//					System.setProperty("user.dir", statistics.getParent());
 					saxParser.parse(new RandomInputStream(t), handler);
-					System.setProperty("user.dir", dir);
+//					System.setProperty("user.dir", dir);
 				}
 				dbFile = t;
 				return true;
@@ -320,8 +329,13 @@ public class Profile {
 		return false;
 	}
 	
+	private Session guestSession = null; //need this so we can load the guest's last session, since it doesn't have a file
+	
 	public void saveDatabase() throws IOException, FileNotFoundException, TransformerConfigurationException, SAXException {
 		puzzleDB.removeEmptySessions();
+		if(this == Configuration.guestProfile) {
+			guestSession = CALCubeTimer.statsModel.getCurrentSession();
+		}
 		if(dbFile == null)
 			return;
 		dbFile.setLength(0);
@@ -349,7 +363,6 @@ public class Profile {
 					continue;
 				atts.clear();
 				atts.addAttribute("", "", "date", "CDATA", s.toDateString());
-				//TODO - this doesn't work for the guest profile, so you can never switch into a guest session
 				if(s == CALCubeTimer.statsModel.getCurrentSession())
 					atts.addAttribute("", "", "loadonstartup", "CDATA", "true");
 				hd.startElement("", "", "session", atts);

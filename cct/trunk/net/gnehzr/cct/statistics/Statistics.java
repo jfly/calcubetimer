@@ -132,10 +132,7 @@ public class Statistics implements ConfigurationChangeListener {
 		return dateStarted;
 	}
 	public Statistics(Date d) {
-		if(d == null)
-			dateStarted = new Date();
-		else
-			dateStarted = d;
+		dateStarted = d;
 		Configuration.addConfigurationChangeListener(this); //TODO - this makes me worry about garbage collection
 
 		curRASize = new int[RA_SIZES_COUNT];

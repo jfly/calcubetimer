@@ -26,7 +26,13 @@ import net.gnehzr.cct.statistics.Statistics.AverageType;
 @SuppressWarnings("serial")
 public class ProfileDatabase extends DraggableJTableModel implements ActionListener {
 	private HashMap<String, PuzzleStatistics> database = new HashMap<String, PuzzleStatistics>();
-	public ProfileDatabase() {}
+	private Profile owner;
+	public ProfileDatabase(Profile owner) {
+		this.owner = owner;
+	}
+	public Profile getOwner() {
+		return owner;
+	}
 	
 	public Collection<PuzzleStatistics> getPuzzlesStatistics() {
 		return new ArrayList<PuzzleStatistics>(database.values());
@@ -217,7 +223,6 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().startsWith(SEND_TO_PROFILE)) {
-			//TODO will this work with command line profiles?
 			Profile to = Profile.getProfileByName(((JMenuItem)e.getSource()).getText());
 			to.loadDatabase();
 			
@@ -227,10 +232,11 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 				int row = Integer.parseInt(rows[ch]);
 				seshs[ch] = getNthSession(row);
 			}
+			//TODO - I encountered some weird bug w/ guest profile where send to wouldn't delete session from guest profile
 			for(Session s : seshs) {
 				String custom = s.getCustomization().toString();
-				to.getPuzzleDatabase().getPuzzleStatistics(custom).addSession(s);
 				s.delete();
+				to.getPuzzleDatabase().getPuzzleStatistics(custom).addSession(s);
 			}
 			fireSessionsDeleted();
 			try {
