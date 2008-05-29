@@ -12,11 +12,11 @@
 	</target>
 	
 	<target name="compile" description="Compilation target">
-		<javac srcdir="net/:say/:scramblePlugins/" classpath="substance.jar:mailapi.jar" debug="true" debuglevel="lines,vars,source"/>
+		<javac srcdir="net/:say/:scramblePlugins/" classpath="substance-lite-feel.jar:mailapi.jar:javazoom.jar:." debug="true" debuglevel="lines,vars,source"/>
 	</target>
 	
 	<target name="warnings" description="Compilation target">
-		<javac srcdir="net/:say/:scramblePlugins/" classpath="substance.jar:mailapi.jar:." debug="true" debuglevel="lines,vars,source">
+		<javac srcdir="net/:say/:scramblePlugins/" classpath="substance-lite-feel.jar:mailapi.jar:javazoom.jar:." debug="true" debuglevel="lines,vars,source">
 			<compilerarg value="-Xlint:unchecked"/>
 		</javac>
 	</target>
