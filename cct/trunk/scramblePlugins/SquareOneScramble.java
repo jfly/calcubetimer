@@ -7,7 +7,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -16,19 +15,14 @@ import java.util.regex.Pattern;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 
-//not at all related to these scrambles:
-//http://www.worldcubeassociation.org/regulations/scrambles/scramble_square1.htm?num=5&len=40
 public class SquareOneScramble extends Scramble {
-	public static final String[] FACE_NAMES = { "Back", "Left", "Front", "Right",
+	public static final String[] FACE_NAMES = { "Left", "Back", "Right", "Front",
 		"Up", "Down" };
 	public static final String PUZZLE_NAME = "Square-1";
-	public static final String[] ATTRIBUTES = { "Use alternative notation" }; //credit lars?
-	public static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
-	private char[][] state;
-	private boolean even_parity = true; //this is the state of the middle pieces
+	private int[] state, turns;
+	private int twistCount = 0; //this will tell us the state of the middle pieces
 	public static final int DEFAULT_UNIT_SIZE = 32;
-	private boolean easyRead;
-	private static final Pattern TOKEN_REGEX = Pattern.compile("^(/|\\(?-?[0-6] *, *-?[0-6]*\\)?)(.*)$");
+	private static final Pattern TOKEN_REGEX = Pattern.compile("^(\\(-?[0-6] *, *-?[0-6] *\\))(.*)$");
 
 	public static int getDefaultScrambleLength(String variation) {
 		return 40;
@@ -69,11 +63,6 @@ public class SquareOneScramble extends Scramble {
 	}
 
 	public boolean setAttributes(String... attributes) {
-		easyRead = false;
-		for(String attr : attributes) {
-			if(attr.equals(ATTRIBUTES[0]))
-				easyRead = true;
-		}
 		initializeImage();
 		if(scramble != null) {
 			return validateScramble();
@@ -83,169 +72,129 @@ public class SquareOneScramble extends Scramble {
 		return true;
 	}
 
-	private int wedges(char piece) {
-		if (Character.isUpperCase(piece))
-			return 2;
-		else if (Character.isLowerCase(piece))
-			return 1;
-		else
-			return 0;
-	}
-
-	// returns -1 if this is an "odd" turn
-	private int indexOfPieceAfterTurning(char[] level, int cwTurn) {
-		if (cwTurn == 0)
-			return 0;
-		int sum = 0;
-		for (int ch = 0; ch < level.length; ch++) {
-			sum += wedges(level[ch]);
-			if (sum == cwTurn)
-				return ch + 1;
-		}
-		return -1;
-	}
-
-	private boolean isValidTurn(boolean up, int cwTurn) {
-		int sum = 0;
-		int level = up ? 0 : 1;
-		int ch = indexOfPieceAfterTurning(state[level], cwTurn % 6);
-		if (ch == -1)
-			return false;
-		for (; ch < state[level].length && sum != 6; ch++) {
-			sum += wedges(state[level][ch]);
-		}
-		return sum == 6;
+	//Ported from http://www.worldcubeassociation.org/regulations/scrambles/scramble_square1.htm by Jeremy Fleischman
+	/* Javascript written by Jaap Scherphuis,  jaapsch a t yahoo d o t com */
+	private void initializeImage() {
+		state = new int[]{ 0,0,1,2,2,3,4,4,5,6,6,7,8,9,9,10,11,11,12,13,13,14,15,15 }; //piece array
+		turns = new int[length];
 	}
 
 	private void generateScramble() {
-		boolean r = false;
-		int finalLength = length;
-		length = 0;
-		while(length < finalLength) {
-			//positive int = cwUp, neg int = cwDown, 0 = RIGHT
-			ArrayList<Integer> validTurns = new ArrayList<Integer>();
-			for(int ch = 1; ch < 12; ch++) {
-				if(u == 0 && isValidTurn(true, ch))
-					validTurns.add(ch);
-				if(d == 0 && isValidTurn(false, ch))
-					validTurns.add(-ch);
+		int i,move,ls;
+		ls=-1;
+		for(i = 0; i < length; i++) {
+			do {
+				if(ls==0) {
+					move=random(22)-11;
+					if(move>=0) move++;
+				} else if(ls==1) {
+					move=random(12)-11;
+				} else if(ls==2) {
+					move=0;
+				} else {
+					move=random(23)-11;
+				}
+				if(i == length - 1) //Added to ensure that the move count is always correct, since we end on a slash turn -Jeremy
+					move = 0;
+				// if past second twist, restrict bottom layer
+				// can't have a slash right before the end slash -Jeremy
+			} while( (twistCount>1 && move>=-6 && move<0) || (i == length-2 && move == 0) || (i == length - 3 && move < 0) || domove(i, move));
+			if(move>0) ls=1;
+			else if(move<0) ls=2;
+			else { ls=0; }
+		}
+		finalizeScrambleString();
+	}
+
+	private void finalizeScrambleString() {
+		int l=-1;
+		for(int i=0; i < turns.length; i++) {
+			int k=turns[i];
+			if(k==0) {
+				if(l==-1) scramble += "(0,0)  ";
+				if(l==1) scramble += "0)  ";
+				if(l==2) scramble += ")  ";
+				l=0;
+			}else if(k>0) {
+				scramble += "(" + (k > 6 ? k-12 : k)+",";
+				l=1;
+			}else if(k<0) {
+				if(l<=0) scramble += "(0,";
+				scramble += (k <= -6 ? k+12 : k);
+				l=2;
 			}
-			if(!r)
-				validTurns.add(0);
-			int turn = validTurns.get(random(validTurns.size()));
-			if(turn > 0) {
-				applyTurn(true, turn);
-				r = false;
-			} else if(turn < 0) {
-				applyTurn(false, -turn);
-				r = false;
-			} else {
-				doR();
-				r = true;
+		}
+		if(l==1) scramble += "0";
+		if(l!=0) scramble += ")";
+	}
+
+	private boolean domove(int index, int m) {
+		int i,c,f=m;
+		//do move f
+		if(f == 0) {
+			for(i = 0; i < 6; i++){
+				c=state[i+12];
+				state[i+12]=state[i+6];
+				state[i+6]=c;
+			}
+			twistCount++;
+		} else if(f>0) {
+			f=12-f;
+			if( state[f]==state[f-1] ) return true;
+			if( f<6 && state[f+6]==state[f+5] ) return true;
+			if( f>6 && state[f-6]==state[f-7] ) return true;
+			if( f==6 && state[0]==state[11] ) return true;
+			int[] t = new int[12];
+			for(i=0;i<12;i++) t[i]=state[i];
+			c=f;
+			for(i=0;i<12;i++){
+				state[i] = t[c];
+				if(c == 11)c=0; else c++;
+			}
+		} else if(f < 0) {
+			f=-f;
+			if( state[f+12]==state[f+11] ) return true;
+			if( f<6 && state[f+18]==state[f+17] ) return true;
+			if( f>6 && state[f+6]==state[f+5] ) return true;
+			if( f==6 && state[12]==state[23] ) return true;
+			int[] t = new int[12];
+			for(i=0;i<12;i++) t[i]=state[i+12];
+			c=f;
+			for(i=0;i<12;i++){
+				state[i+12]=t[c];
+				if(c==11)c=0; else c++;
 			}
 		}
-		finalizeScramble();
+		turns[index]=m;
+		return false;
 	}
-	private int u = 0, d = 0;
-	private void finalizeScramble() {
-		if(u == 0 && d == 0) return;
-		if(u > 6)
-			u -= 12;
-		if(d > 6)
-			d -= 12;
-		String temp = u + "," + d;
-		if(easyRead)
-			temp = "(" + temp + ")";
-		scramble += temp;
-		u = 0; d = 0;
-	}
-	private void applyTurn(boolean up, int wedgeTurns) {
-		if(up)
-			u = wedgeTurns;
-		else
-			d = wedgeTurns;
-		if(wedgeTurns != 0)
-			length++;
-		int level = up ? 0 : 1;
-		char[] old = Arrays.copyOf(state[level], state[level].length);
-		Arrays.fill(state[level], (char) 0);
-		int newStartPiece = indexOfPieceAfterTurning(old, wedgeTurns);
-		int numPieces = numPieces(old);
-		for (int ch = 0; ch < numPieces; ch++) {
-			state[level][ch] = old[(newStartPiece + ch) % numPieces];
-		}
-	}
+	//**********END JAAP's CODE***************
 
-	private int numPieces(char[] level) {
-		int ch = 0;
-		while (ch < level.length && level[ch] != (char) 0)
-			ch++;
-		return ch;
-	}
-
-	private void doR() {
-		length++;
-		even_parity = !even_parity;
-		finalizeScramble();
-		scramble += " / ";
-		// fill up the top
-		char[] oldTop = Arrays.copyOf(state[0], state[0].length);
-		Arrays.fill(state[0], indexOfPieceAfterTurning(state[0], 6),
-				state[0].length, (char) 0);
-		int pieceInBottom = indexOfPieceAfterTurning(state[1], 6);
-		int pieceInTop = indexOfPieceAfterTurning(state[0], 6);
-		for (int degrees = 0; degrees < 6; degrees += wedges(state[1][pieceInBottom++])) {
-			state[0][pieceInTop++] = state[1][pieceInBottom];
-		}
-
-		// fill up the bottom
-		Arrays.fill(state[1], indexOfPieceAfterTurning(state[1], 6),
-				state[1].length, (char) 0);
-		pieceInBottom = indexOfPieceAfterTurning(state[1], 6);
-		pieceInTop = indexOfPieceAfterTurning(state[0], 6);
-		for (int degrees = 0; degrees < 6; degrees += wedges(oldTop[pieceInTop++])) {
-			state[1][pieceInBottom++] = oldTop[pieceInTop];
-		}
-	}
-
-	private final Pattern regexp = Pattern.compile("^ *[(]?(-?[0-6]) *, *(-?[0-6])[)]? *$");
+	private final Pattern regexp = Pattern.compile("^ *(-?[0-6]) *, *(-?[0-6]) *$");
 	private boolean validateScramble() {
-		even_parity = true;
 		length = 0;
-		String[] trns = scramble.split("/", -1);
+		String[] trns = scramble.split("(\\(|\\)|\\( *\\))", -1);
 		scramble = "";
+		turns = new int[trns.length*3]; //definitely big enough, no need to trim
 		for(int ch = 0; ch < trns.length; ch++) {
 			Matcher match;
-			if(trns[ch].matches("[ ]*")) {
+			if(trns[ch].matches(" *")) {
 
 			} else if((match = regexp.matcher(trns[ch])).matches()) {
 				int top = Integer.parseInt(match.group(1));
 				int bot = Integer.parseInt(match.group(2));
 				if(top < 0) top += 12;
 				if(bot < 0) bot += 12;
-				if(!isValidTurn(true, top) || !isValidTurn(false, bot)) {
+				if(top != 0 && domove(length++, top))
 					return false;
-				}
-				applyTurn(true, top);
-				applyTurn(false, bot);
+				if(bot != 0 && domove(length++, bot-12))
+					return false;
+				domove(length++, 0);
 			} else
 				return false;
-			if(ch != trns.length - 1) {
-				doR();
-			}
 		}
-		finalizeScramble();
+		finalizeScrambleString();
 		return true;
-	}
-
-	private void initializeImage() {
-		state = new char[2][10]; // the top and bottom can hold a maximum of 10 pieces
-		for(int ch = 0; ch < 4; ch++) {
-			state[0][2*ch] = (char) ('a' + ch);
-			state[0][2*ch + 1] = (char) ('A' + ch);
-			state[1][(2*(3 - ch) + 5) % 8] = (char) ('e' + ch);
-			state[1][(2*(3 - ch) + 6) % 8] = (char) ('E' + ch);
-		}
 	}
 
 	public BufferedImage getScrambleImage(int gap,
@@ -255,14 +204,14 @@ public class SquareOneScramble extends Scramble {
 		BufferedImage buffer = new BufferedImage(width, height,
 				BufferedImage.TYPE_INT_ARGB);
 		radius = getNewUnitSize(width, height, gap);
-		
+
 		Graphics2D g = buffer.createGraphics();
 		double half_square_width = (radius * RADIUS_MULTIPLIER * multiplier) / Math.sqrt(2);
 		double edge_width = 2 * radius * multiplier * Math.sin(Math.toRadians(15));
 		double corner_width = half_square_width - edge_width / 2;
 		Rectangle2D.Double left_mid = new Rectangle2D.Double(width / 2 - half_square_width, height / 2 - radius * (multiplier - 1) / 2, corner_width, radius * (multiplier - 1));
 		Rectangle2D.Double right_mid;
-		if(even_parity) {
+		if(twistCount % 2 == 0) {
 			right_mid = new Rectangle2D.Double(width / 2 - half_square_width, height / 2 - radius * (multiplier - 1) / 2, 2*corner_width + edge_width, radius * (multiplier - 1));
 			g.setColor(colorScheme.get("Front"));
 		} else {
@@ -278,35 +227,37 @@ public class SquareOneScramble extends Scramble {
 
 		double x = width / 2.0;
 		double y = height / 4.0;
-		g.rotate(Math.toRadians(-90 + 15), x, y);
-		drawFace(g, state[0], x, y, gap,
+		g.rotate(Math.toRadians(90 + 15), x, y);
+		drawFace(g, state, x, y, gap,
 				radius, colorScheme);
 		g.dispose();
 
 		y *= 3.0;
 		g = buffer.createGraphics();
 		g.rotate(Math.toRadians(-90 - 15), x, y);
-		drawFace(g, state[1], x, y,
+		drawFace(g, Arrays.copyOfRange(state, 12, state.length), x, y,
 				gap, radius, colorScheme);
 		g.dispose();
 		return buffer;
 	}
 
-	private void drawFace(Graphics2D g, char[] face, double x, double y, int gap,
+	private void drawFace(Graphics2D g, int[] face, double x, double y, int gap,
 			int radius, HashMap<String, Color> colorScheme) {
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
-		for(int piece = 0, degree = 0; degree < 360; piece++) {
-			degree += drawPiece(g, face[piece], x, y, gap, radius, colorScheme);
+		for(int ch = 0; ch < 12; ch++) {
+			if(ch < 11 && face[ch] == face[ch+1])
+				ch++;
+			drawPiece(g, face[ch], x, y, gap, radius, colorScheme);
 		}
 		g.dispose();
 	}
 
-	private int drawPiece(Graphics2D g, char piece, double x, double y, int gap,
+	private int drawPiece(Graphics2D g, int piece, double x, double y, int gap,
 			int radius, HashMap<String, Color> colorScheme) {
-		int degree = 30 * wedges(piece);
-		g.rotate(-Math.toRadians(degree), x, y);
-		GeneralPath[] p = Character.isLowerCase(piece) ? getWedgePoly(x, y, radius) : getCornerPoly(x, y, radius);
+		boolean corner = isCornerPiece(piece);
+		int degree = 30 * (corner ? 2 : 1);
+		GeneralPath[] p = corner ? getCornerPoly(x, y, radius) : getWedgePoly(x, y, radius);
 
 		Color[] cls = getPieceColors(piece, colorScheme);
 		for(int ch = cls.length - 1; ch >= 0; ch--) {
@@ -315,23 +266,36 @@ public class SquareOneScramble extends Scramble {
 			g.setColor(Color.BLACK);
 			g.draw(p[ch]);
 		}
+		g.rotate(Math.toRadians(degree), x, y);
 		return degree;
 	}
-	private Color[] getPieceColors(char piece, HashMap<String, Color> colorScheme) {
-		boolean up = Character.toLowerCase(piece) <= 'd';
+
+	private boolean isCornerPiece(int piece) {
+		return ((piece + (piece <= 7 ? 0 : 1)) % 2) == 0;
+	}
+
+	private Color[] getPieceColors(int piece, HashMap<String, Color> colorScheme) {
+		boolean up = piece <= 7;
 		Color top = up ? colorScheme.get("Up") : colorScheme.get("Down");
-		if(Character.isUpperCase(piece)) {
-			int offset = up ? 1 : 3;
-			Color a = colorScheme.get(FACE_NAMES[(piece + offset - 'A') % 4]);
-			Color b = colorScheme.get(FACE_NAMES[(piece - 'A') % 4]);
-			return new Color[] { top, a, b };
-		}
-		else {
-			return new Color[] { top, colorScheme.get(FACE_NAMES[(piece - 'a') % 4]) };
+		if(isCornerPiece(piece)) { //corner piece
+			if(!up)
+				piece = 15 - piece;
+			Color a = colorScheme.get(FACE_NAMES[(piece/2+3) % 4]);
+			Color b = colorScheme.get(FACE_NAMES[piece/2]);
+			if(!up) { //mirror for bottom
+				Color t = a;
+				a = b;
+				b = t;
+			}
+			return new Color[] { top, a, b }; //ordered counter-clockwise
+		} else { //wedge piece
+			if(!up)
+				piece = 14 - piece;
+			return new Color[] { top, colorScheme.get(FACE_NAMES[piece/2]) };
 		}
 	}
 
-	double multiplier = 1.4;
+	private double multiplier = 1.4;
 	private GeneralPath[] getWedgePoly(double x, double y, int radius) {
 		AffineTransform trans = AffineTransform.getTranslateInstance(x, y);
 		GeneralPath p = new GeneralPath();
@@ -404,14 +368,14 @@ public class SquareOneScramble extends Scramble {
 		int height = getHeight(gap, radius);
 		double half_width = (radius * RADIUS_MULTIPLIER) / Math.sqrt(2);
 		if(isInSquare(width / 2.0, height / 4.0, half_width, x, y)) //up
-			return FACE_NAMES[4];
+			return "Up";
 		if(isInSquare(width / 2.0, 3 * height / 4.0, half_width, x, y)) //down
-			return FACE_NAMES[5];
+			return "Down";
 		if(new Rectangle2D.Double(width / 2 - half_width * multiplier, height / 2 - radius * (multiplier - 1) / 2, 2 * half_width * multiplier, radius * (multiplier - 1)).contains(x, y))
 			return "Front";
 		for(int ch = 0; ch < 4; ch++) {
-			if(isInTri(width / 2.0, height / 4.0, 2 * half_width * multiplier, ch, x, y) ||
-					isInTri(width / 2.0, 3 * height / 4.0, 2 * half_width * multiplier, (6 - ch) % 4, x, y)) {
+			if(isInTri(width / 2.0, height / 4.0, 2 * half_width * multiplier, (5-ch) % 4, x, y) ||
+					isInTri(width / 2.0, 3 * height / 4.0, 2 * half_width * multiplier, (ch+1) % 4, x, y)) {
 				return FACE_NAMES[ch];
 			}
 		}

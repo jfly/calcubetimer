@@ -5,6 +5,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.swing.JDialog;
@@ -23,11 +24,11 @@ public class ScrambleDebugger extends ScramblePlugin {
 		super(cls);
 
 		System.out.println("Puzzle name: " + super.PUZZLE_NAME);
-		System.out.println("Puzzle faces: " + arrayToString(super.FACE_NAMES));
+		System.out.println("Puzzle faces: " + Arrays.toString(super.FACE_NAMES));
 		System.out.println("Default unit size: " + super.DEFAULT_UNIT_SIZE);
-		System.out.println("Scramble variations: " + arrayToString(super.VARIATIONS));
-		System.out.println("Available scramble attributes: " + arrayToString(super.ATTRIBUTES));
-		System.out.println("Default attributes: " + arrayToString(super.DEFAULT_ATTRIBUTES));
+		System.out.println("Scramble variations: " + Arrays.toString(super.VARIATIONS));
+		System.out.println("Available scramble attributes: " + Arrays.toString(super.ATTRIBUTES));
+		System.out.println("Default attributes: " + Arrays.toString(super.DEFAULT_ATTRIBUTES));
 
 		if(length == -1) {
 			length = super.getDefaultScrambleLength(new ScrambleVariation(this, ""));
@@ -49,14 +50,6 @@ public class ScrambleDebugger extends ScramblePlugin {
 		view.setVisible(true);
 		System.out.println("New default scramble: " + s);
 	}
-	private String arrayToString(String[] array) {
-		String temp = "";
-		for(String s : array) {
-			temp += ", " + s;
-		}
-		return temp.substring(2);
-	}
-
 	private static void printUsage() {
 		System.out.println("Usage: ScrambleDebugger [class filename] (scramble length)");
 	}
