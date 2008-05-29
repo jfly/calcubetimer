@@ -28,7 +28,7 @@ public class MegaminxScramble extends Scramble {
 
 	public static int getDefaultScrambleLength(String variation) {
 		if(variation.equals(VARIATIONS[1]))
-			return 100;
+			return 70;
 		return 60;
 	}
 	public static String getDefaultFaceColor(String face) {
@@ -101,7 +101,7 @@ public class MegaminxScramble extends Scramble {
 		return validateScramble();
 	}
 	private static String regexp = "^[A-Fa-f][234]?$";
-	private static String regexp1 = "^[RDY]([+-])\\1$";
+	private static String regexp1 = "^[RDYU](?:'?|([+-])\\1)$";
 	private boolean validateScramble() {
 		String[] strs = scramble.split(" ");
 		length = strs.length;
@@ -191,18 +191,20 @@ public class MegaminxScramble extends Scramble {
 		else{
 			for(int i = 0; i < length; ){
 				int dir;
-				for(int j = 0; i < length && j < 14; i++, j++){
+				for(int j = 0; i < length && j < 10; i++, j++){
 					int side = j % 2;
 					dir = random(2);
 					scramble += ((side == 0) ? "R" : "D") + ((dir == 0) ? "++ " : "-- ");
 					bigTurn(side, (dir == 0) ? 2 : 3);
 				}
-				if(i != length){
-					dir = random(2);
-					scramble += "Y" + ((dir == 0) ? "++ " : "-- ");
-					bigTurn(1, (dir == 0) ? 2 : 3);
-					turn(0, (dir == 0) ? 3 : 2);
-				}
+				dir = random(2);
+				/*
+				scramble += "Y" + ((dir == 0) ? "++ " : "-- ");
+				bigTurn(1, (dir == 0) ? 2 : 3);
+				turn(0, (dir == 0) ? 3 : 2);
+				*/
+				scramble += "U" + ((dir == 0) ? " " : "' ");
+				turn(0, (dir == 0) ? 1 : 4);
 			}
 		}
 	}
