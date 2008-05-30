@@ -267,7 +267,7 @@ public class KeyboardTimerPanel implements FocusListener, KeyListener, MouseList
 							public void run() {
 								try {
 									NumberSpeaker.getCurrentSpeaker().speak(false, FINAL_WARNING*100);
-								}catch (Exception e) {
+								} catch (Exception e) {
 									e.printStackTrace();
 								}
 							}

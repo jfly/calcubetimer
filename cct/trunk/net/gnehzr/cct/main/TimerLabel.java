@@ -22,12 +22,13 @@ import javax.swing.border.TitledBorder;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.main.KeyboardTimerPanel.KeyboardTimerComponent;
+import net.gnehzr.cct.stackmatInterpreter.TimerState;
 
 @SuppressWarnings("serial")
 public class TimerLabel extends JLabel implements ComponentListener, KeyboardTimerComponent {
 	private KeyboardTimerPanel timer;
 	public TimerLabel(ActionListener timeListener) {
-		super("0.00", JLabel.CENTER);
+		super(TimerState.ZERO_STATE.toString(), JLabel.CENTER);
 		addComponentListener(this);
 		setGreenButton();
 		timer = new KeyboardTimerPanel(this, timeListener);

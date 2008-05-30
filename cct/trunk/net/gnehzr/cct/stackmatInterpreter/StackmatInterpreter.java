@@ -9,7 +9,7 @@ import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.ComboItem;
 
 public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implements ConfigurationChangeListener {
-	private static final int QUALITY = 2;
+	private static final int BYTES_PER_SAMPLE = 2;
 	private static final int FRAMES = 64;
 
 	private int samplingRate = 0;
@@ -43,7 +43,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 		newPeriod = samplingRate / 44;
 		signalLengthPerBit = samplingRate * 38 / 44100.;
 
-		format = new AudioFormat(samplingRate, QUALITY * 8, 1, true, false);
+		format = new AudioFormat(samplingRate, BYTES_PER_SAMPLE * 8, 2, true, false);
 		info = new DataLine.Info(TargetDataLine.class, format);
 
 		int mixerNum = Configuration.getInt(VariableKey.MIXER_NUMBER, false);
@@ -144,7 +144,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 		int lastSample = 0;
 		int currentSample = 0;
 		int lastBit = 0;
-		byte[] buffer = new byte[QUALITY*FRAMES];
+		byte[] buffer = new byte[BYTES_PER_SAMPLE*FRAMES];
 
 		ArrayList<Integer> currentPeriod = new ArrayList<Integer>(100);
 		StackmatState old = new StackmatState();
@@ -161,10 +161,14 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 			}
 
 			if(line.read(buffer, 0, buffer.length) > 0) {
-				for(int j = 0; j < FRAMES; j++){
-					currentSample = buffer[QUALITY*j];
-					for(int i = 1; i < QUALITY; i++) currentSample += buffer[QUALITY*j+i] << (8 * i);
-//					System.out.println(currentSample);
+				for(int c = 0; c < buffer.length / BYTES_PER_SAMPLE; c+=2) { //we increment by 2 to mask out 1 channel
+					//little-endian encoding, bytes are in increasing order
+					currentSample = 0;
+					int j;
+					for(j = 0; j < BYTES_PER_SAMPLE - 1; j++) {
+						currentSample |= (255 & buffer[BYTES_PER_SAMPLE*c+j]) << (j * 8);
+					}
+					currentSample |= buffer[BYTES_PER_SAMPLE*c+j] << (j * 8); //we don't mask with 255 so we don't lost the sign
 					if(timeSinceLastFlip < newPeriod * 4) timeSinceLastFlip++;
 					else if(timeSinceLastFlip == newPeriod * 4){
 						state = new StackmatState();
@@ -172,8 +176,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 						firePropertyChange("Off", null, null);
 					}
 
-					if(Math.abs(lastSample - currentSample) > (Configuration.getInt(VariableKey.SWITCH_THRESHOLD, false) << (QUALITY * 4)) && timeSinceLastFlip > noiseSpikeThreshold) {
-//						System.out.println(counter);
+					if(Math.abs(lastSample - currentSample) > (Configuration.getInt(VariableKey.SWITCH_THRESHOLD, false) << (BYTES_PER_SAMPLE * 4)) && timeSinceLastFlip > noiseSpikeThreshold) {
 						if(timeSinceLastFlip > newPeriod) {
 							if(currentPeriod.size() < 1) {
 								lastBit = bitValue(currentSample - lastSample);

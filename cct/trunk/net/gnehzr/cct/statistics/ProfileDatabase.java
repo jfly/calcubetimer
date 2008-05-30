@@ -232,7 +232,6 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 				int row = Integer.parseInt(rows[ch]);
 				seshs[ch] = getNthSession(row);
 			}
-			//TODO - I encountered some weird bug w/ guest profile where send to wouldn't delete session from guest profile
 			for(Session s : seshs) {
 				String custom = s.getCustomization().toString();
 				s.delete();

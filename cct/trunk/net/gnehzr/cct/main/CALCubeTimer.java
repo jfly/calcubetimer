@@ -1422,7 +1422,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scrambleChooser.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
 
 		//apparently need to hide and then show the window for proper behavior when setting divider location
-		//TODO - there is probably a better way of doing this
+		//TODO - there is probably a better way of doing this, it seems to be causing the config dialog to reappear on "save" sometimes, too
 		super.setVisible(false);
 		refreshCustomGUIMenu();
 		Component focusedComponent = this.getFocusOwner();
@@ -1626,7 +1626,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				} else if(event.equals("Split")) {
 					addSplit((TimerState) current);
 				} else if(event.equals("Reset")) {
-					updateTime(new TimerState(0));
+					updateTime(new StackmatState());
 					reset = true;
 				} else if(event.equals("New Time")) {
 					if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false)) setFullScreen(false);
