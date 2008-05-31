@@ -1,7 +1,5 @@
 package net.gnehzr.cct.main;
 
-import java.util.Arrays;
-
 import javax.swing.JComboBox;
 
 import net.gnehzr.cct.configuration.Configuration;

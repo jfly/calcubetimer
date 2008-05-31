@@ -110,11 +110,9 @@ public class VariableKey<H> {
 	public static final VariableKey<Boolean> TIMING_SPLITS = new VariableKey<Boolean>("Splits_isEnabled");
 	public static final VariableKey<Boolean> WATERMARK_ENABLED = new VariableKey<Boolean>("Watermark_isEnabled");
 	public static final VariableKey<Boolean> STACKMAT_ENABLED = new VariableKey<Boolean>("Stackmat_isEnabled");
-	public static final VariableKey<Boolean> INTEGRATED_TIMER_DISPLAY = new VariableKey<Boolean>("GUI_Timer_isIntegratedTimerDisplay");
 	public static final VariableKey<Boolean> HIDE_SCRAMBLES = new VariableKey<Boolean>("GUI_Timer_isHideScrambles");
 	public static final VariableKey<Boolean> SPACEBAR_ONLY = new VariableKey<Boolean>("GUI_Timer_isSpacebarOnly");
 	public static final VariableKey<Boolean> STACKMAT_EMULATION = new VariableKey<Boolean>("GUI_Timer_stackmatEmulation");
-	public static final VariableKey<Boolean> ANNOYING_DISPLAY = new VariableKey<Boolean>("GUI_Timer_isAnnoyingDisplay");
 	public static final VariableKey<Boolean> LESS_ANNOYING_DISPLAY = new VariableKey<Boolean>("GUI_Timer_isLessAnnoyingDisplay");
 	public static final VariableKey<Boolean> FULLSCREEN_TIMING = new VariableKey<Boolean>("GUI_Timer_isFullScreenWhileTiming");
 	public static final VariableKey<Boolean> METRONOME_ENABLED = new VariableKey<Boolean>("Misc_Metronome_isEnabled");

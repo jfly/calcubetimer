@@ -56,7 +56,7 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.Timer;
 
-import net.gnehzr.cct.main.KeyboardTimerPanel;
+import net.gnehzr.cct.keyboardTiming.TimerLabel;
 import net.gnehzr.cct.misc.ComboItem;
 import net.gnehzr.cct.misc.ComboListener;
 import net.gnehzr.cct.misc.ComboRenderer;
@@ -1041,7 +1041,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	}
 
 	public void keyPressed(KeyEvent e) {
-		if(!KeyboardTimerPanel.ignoreKey(e, false, false, 0, 0)) {
+		if(!TimerLabel.ignoreKey(e, false, false, 0, 0)) {
 			if(e.getSource() == splitsKeySelector){
 				splitkey = e.getKeyCode();
 				splitsKeySelector.setText(KeyEvent.getKeyText(splitkey));

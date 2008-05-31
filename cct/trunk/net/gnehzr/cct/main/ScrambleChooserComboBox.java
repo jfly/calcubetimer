@@ -53,5 +53,6 @@ public class ScrambleChooserComboBox extends JComboBox implements TableCellRende
 	
 	public void configurationChanged() {
 		this.setModel(new DefaultComboBoxModel(ScramblePlugin.getScrambleCustomizations(false).toArray(new ScrambleCustomization[0])));
+		this.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
 	}
 }

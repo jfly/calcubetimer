@@ -31,7 +31,7 @@ import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 @SuppressWarnings("serial")
-public class ScrambleArea extends JScrollPane implements ComponentListener, TimerFocusListener, HyperlinkListener {
+public class ScrambleArea extends JScrollPane implements ComponentListener, HyperlinkListener {
 	private ScrambleFrame scramblePopup;
 	private JEditorPane scramblePane = null;
 	public ScrambleArea(ScrambleFrame scramblePopup) {
@@ -152,14 +152,16 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Time
 		}
 	}
 
-	private boolean hid;
+	private boolean focused;
 	public void refresh() {
-		focusChanged(hid);
+		setTimerFocused(focused);
 		setScramble(currentScramble, currentCustomization);
 	}
-	public void focusChanged(boolean hidden) {
-		hid = hidden;
-		setBackground(hid && Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false) ? Color.BLACK: Color.WHITE);
+	//this will be called by the KeyboardTimer to hide scrambles when necessary
+	//TODO - does this work w/ stackmat?
+	public void setTimerFocused(boolean focused) {
+		this.focused = focused;
+		setBackground(!focused && Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false) ? Color.BLACK: Color.WHITE);
 	}
 
 	private void setProperSize() {

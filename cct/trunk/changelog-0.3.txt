@@ -148,10 +148,14 @@ changes:
 +create recent history jtextfield for connecting to chat servers & downloading scrambles
 +create send to profile context menu option for sessions
 +fix square-1 scrambles (http://www.worldcubeassociation.org/regulations/scrambles/scramble_square1.htm)
++stackmatinterpreter now does things in stereo, hopefully this will get cct working on many more computers
++the timer panel stuff has been cleaned up, removed the annoying status light and the unintegrated timer
+	+BUG: enabling and disabling keyboard timer doesn't change integrated timer border properly
 
 TODO:
 
 for release:
+-splits should be saved to database
 -megaminx scrambles now use U/U', possibly format with newlines? (http://www.worldcubeassociation.org/regulations/scrambles/scramble_megaminx2008.htm)
 -create a countdown for use with stackmats
 -make scrambleplugins secure
@@ -175,7 +179,6 @@ cleanup:
 -merge session stats dialog and average stats dialog w/ dynamic string
 -generalize XML syntax (get rid of Dynamic... classes) UPDATE: no idea how to do this...???
 -integrate statsdialoghandler with ui xml stuff
--the timer panel stuff has turned into a mess! (known bug: disable integrated timer, and the border will be wrong upon startup)
 
 Server stuff:
 -overhaul to get rid of threads

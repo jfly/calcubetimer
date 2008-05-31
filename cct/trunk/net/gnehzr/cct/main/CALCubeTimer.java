@@ -20,8 +20,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -89,6 +87,7 @@ import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.ConfigurationDialog;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.help.AboutScrollFrame;
+import net.gnehzr.cct.keyboardTiming.TimerLabel;
 import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.SessionListener;
@@ -150,7 +149,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private JScrollPane timesScroller = null;
 	private SessionsTable sessionsTable = null;
 	private JScrollPane sessionsScroller = null;
-	private TimerPanel startStopPanel = null;
 	private JPanel fullscreenPanel = null;
 	private TimerLabel bigTimersDisplay = null;
 	private ScrambleArea scramblePanel = null;
@@ -209,9 +207,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private KeyboardTimingAction keyboardTimingAction;
 	private SpacebarOptionAction spacebarOptionAction;
 	private FullScreenTimingAction fullScreenTimingAction;
-	private IntegratedTimerAction integratedTimerAction;
 	private HideScramblesAction hideScramblesAction;
-	private AnnoyingDisplayAction annoyingDisplayAction;
 	private LessAnnoyingDisplayAction lessAnnoyingDisplayAction;
 	private ResetAction resetAction;
 	private RequestScrambleAction requestScrambleAction;
@@ -285,16 +281,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		exitAction.putValue(Action.ACCELERATOR_KEY,
 				KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
 		actionMap.put("exit", exitAction);
-
-		integratedTimerAction = new IntegratedTimerAction(this);
-		integratedTimerAction.putValue(Action.NAME, "Integrate timer and display");
-		integratedTimerAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_I);
-		actionMap.put("toggleintegratedtimer", integratedTimerAction);
-
-		annoyingDisplayAction = new AnnoyingDisplayAction(this);
-		annoyingDisplayAction.putValue(Action.NAME, "Use annoying status light");
-		annoyingDisplayAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
-		actionMap.put("toggleannoyingdisplay", annoyingDisplayAction);
 
 		lessAnnoyingDisplayAction = new LessAnnoyingDisplayAction(this);
 		lessAnnoyingDisplayAction.putValue(Action.NAME, "Use less-annoying status light");
@@ -401,14 +387,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Changed";
 	private JMenu customGUIMenu;
 	private void initializeGUIComponents() {
-		addWindowFocusListener(new WindowFocusListener() {
-			public void windowGainedFocus(WindowEvent e){
-				timeLabel.refreshFocus();
-			}
-			public void windowLostFocus(WindowEvent e){
-				timeLabel.refreshFocus();
-			}
-		});
 		tickTock = new Timer(0, null);
 
 		currentTimeLabel = new DateTimeLabel();
@@ -463,26 +441,20 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		scramblePanel = new ScrambleArea(scramblePopup);
 		scramblePanel.setAlignmentX(.5f);
-		timeLabel = new TimerLabel(timeListener);
-		timeLabel.setTimerFocusListener(scramblePanel);
-
-		startStopPanel = new TimerPanel(timeListener, timeLabel);
-		startStopPanel.setTimerFocusListener(scramblePanel);
-		startStopPanel.setKeyboard(true);
-
-		commentArea = new JTextArea();
-		commentArea.setEnabled(false);
-		commentArea.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 		
+		timeLabel = new TimerLabel(timeListener, scramblePanel);
 		timeLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 		timeLabel.setMinimumSize(new Dimension(0, 150));
 		timeLabel.setPreferredSize(new Dimension(0, 150));
 		timeLabel.setAlignmentX(.5f);
 
+		commentArea = new JTextArea();
+		commentArea.setEnabled(false);
+		commentArea.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
+
 		fullscreenPanel = new JPanel(new BorderLayout());
-		bigTimersDisplay = new TimerLabel(timeListener);
-		bigTimersDisplay.setBackground(Color.WHITE);
-		bigTimersDisplay.setEnabledTiming(true);
+		bigTimersDisplay = new TimerLabel(timeListener, scramblePanel);
+//		bigTimersDisplay.setBackground(Color.WHITE);
 
 		fullscreenPanel.add(bigTimersDisplay, BorderLayout.CENTER);
 		JButton fullScreenButton = new JButton(flipFullScreenAction);
@@ -851,7 +823,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				else if(temp.equalsIgnoreCase("stackmatstatuslabel")) com = onLabel;
 				else if(temp.equalsIgnoreCase("scrambletext")) com = scramblePanel;
 				else if(temp.equalsIgnoreCase("timerdisplay")) com = timeLabel;
-				else if(temp.equalsIgnoreCase("startstoppanel")) com = startStopPanel;
 				else if(temp.equalsIgnoreCase("timeslist")) com = timesScroller;
 				else if(temp.equalsIgnoreCase("customguimenu")) com = customGUIMenu;
 				else if(temp.equalsIgnoreCase("profilecombobox")) com = profiles;
@@ -1398,8 +1369,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		updateWatermark();
 		boolean stackmatEnabled = Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
 		keyboardTimingAction.putValue(Action.SELECTED_KEY, !stackmatEnabled);
-		integratedTimerAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, false));
-		annoyingDisplayAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.ANNOYING_DISPLAY, false));
 		lessAnnoyingDisplayAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.LESS_ANNOYING_DISPLAY, false));
 		hideScramblesAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false));
 		spacebarOptionAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false));
@@ -1411,15 +1380,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		ScrambleCustomization newCustom = ScramblePlugin.getCurrentScrambleCustomization();
 		scrambleChooser.setSelectedItem(newCustom);
 		
-		timeLabel.setKeyboard(!stackmatEnabled);
-		timeLabel.setEnabledTiming(Configuration.getBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, false));
-		timeLabel.setOpaque(Configuration.getBoolean(VariableKey.ANNOYING_DISPLAY, false));
-		timeLabel.setFont(Configuration.getFont(VariableKey.TIMER_FONT, false));
-		bigTimersDisplay.setFont(Configuration.getFont(VariableKey.TIMER_FONT, false));
-		startStopPanel.setEnabled((Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
-		startStopPanel.setVisible(!Configuration.getBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, false));
-		bigTimersDisplay.setKeyboard(!stackmatEnabled);
-		scrambleChooser.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
+//		timeLabel.setKeyboard(!stackmatEnabled);
+//		timeLabel.setEnabledTiming(Configuration.getBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, false));
+//		timeLabel.setOpaque(Configuration.getBoolean(VariableKey.ANNOYING_DISPLAY, false));
+//		timeLabel.setFont(Configuration.getFont(VariableKey.TIMER_FONT, false));
+//		bigTimersDisplay.setFont(Configuration.getFont(VariableKey.TIMER_FONT, false));
+//		bigTimersDisplay.setKeyboard(!stackmatEnabled);
+//		scrambleChooser.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
 
 		//apparently need to hide and then show the window for proper behavior when setting divider location
 		//TODO - there is probably a better way of doing this, it seems to be causing the config dialog to reappear on "save" sometimes, too
@@ -1453,12 +1420,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timesTable.setColumnVisible(1, showRA0);
 		timesTable.setColumnVisible(2, showRA1);
 		
-		if(!stackmatEnabled) { //This is to ensure that the keyboard is focused
+		if(!stackmatEnabled) //This is to ensure that the keyboard is focused
 			timeLabel.requestFocusInWindow();
-			startStopPanel.requestFocusInWindow();
-		} else if(focusedComponent != null) {
+		else if(focusedComponent != null)
 			focusedComponent.requestFocusInWindow();
-		} else
+		else
 			scramblePanel.requestFocusInWindow();
 		timeLabel.componentResized(null);
 	}
@@ -1536,7 +1502,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	public void keyboardTimingAction(){
 		boolean selected = (Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY);
-		startStopPanel.setEnabled(selected);
 		timeLabel.setKeyboard(selected);
 		bigTimersDisplay.setKeyboard(selected);
 		stackmatTimer.enableStackmat(!selected);
@@ -1544,8 +1509,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			timeLabel.reset();
 		} else {
 			timeLabel.requestFocusInWindow();
-			timeLabel.refreshFocus(); //for some reason, adding a focus listener to the timelabel doesn't seem to be working...
-			startStopPanel.requestFocusInWindow();
+//			timeLabel.refreshFocus(); //for some reason, adding a focus listener to the timelabel doesn't seem to be working...
 		}
 	}
 
@@ -1561,27 +1525,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timeLabel.repaint();
 	}
 
-	public void integratedTimerAction(){
-		boolean isIntegrated = (Boolean)integratedTimerAction.getValue(Action.SELECTED_KEY);
-		Configuration.setBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, isIntegrated);
-		startStopPanel.setVisible(!isIntegrated);
-		timeLabel.setEnabledTiming(isIntegrated);
-		if(isIntegrated)
-			timeLabel.requestFocusInWindow();
-		else
-			startStopPanel.requestFocusInWindow();
-	}
-
 	public void hideScramblesAction(){
 		Configuration.setBoolean(VariableKey.HIDE_SCRAMBLES, (Boolean)hideScramblesAction.getValue(Action.SELECTED_KEY));
 		scramblePanel.refresh();
-	}
-
-	public void annoyingDisplayAction(){
-		boolean b = (Boolean)annoyingDisplayAction.getValue(Action.SELECTED_KEY);
-		timeLabel.setOpaque(b);
-		Configuration.setBoolean(VariableKey.ANNOYING_DISPLAY, b);
-		timeLabel.repaint();
 	}
 
 	public void requestScrambleAction(){
@@ -1880,17 +1826,17 @@ class FullScreenTimingAction extends AbstractAction{
 		Configuration.setBoolean(VariableKey.FULLSCREEN_TIMING, ((AbstractButton)e.getSource()).isSelected());
 	}
 }
-@SuppressWarnings("serial")
-class IntegratedTimerAction extends AbstractAction{
-	private CALCubeTimer cct;
-	public IntegratedTimerAction(CALCubeTimer cct){
-		this.cct = cct;
-	}
-
-	public void actionPerformed(ActionEvent e){
-		cct.integratedTimerAction();
-	}
-}
+//@SuppressWarnings("serial")
+//class IntegratedTimerAction extends AbstractAction{
+//	private CALCubeTimer cct;
+//	public IntegratedTimerAction(CALCubeTimer cct){
+//		this.cct = cct;
+//	}
+//
+//	public void actionPerformed(ActionEvent e){
+//		cct.integratedTimerAction();
+//	}
+//}
 @SuppressWarnings("serial")
 class HideScramblesAction extends AbstractAction{
 	private CALCubeTimer cct;
@@ -1902,17 +1848,17 @@ class HideScramblesAction extends AbstractAction{
 		cct.hideScramblesAction();
 	}
 }
-@SuppressWarnings("serial")
-class AnnoyingDisplayAction extends AbstractAction{
-	private CALCubeTimer cct;
-	public AnnoyingDisplayAction(CALCubeTimer cct){
-		this.cct = cct;
-	}
-
-	public void actionPerformed(ActionEvent e){
-		cct.annoyingDisplayAction();
-	}
-}
+//@SuppressWarnings("serial")
+//class AnnoyingDisplayAction extends AbstractAction{
+//	private CALCubeTimer cct;
+//	public AnnoyingDisplayAction(CALCubeTimer cct){
+//		this.cct = cct;
+//	}
+//
+//	public void actionPerformed(ActionEvent e){
+//		cct.annoyingDisplayAction();
+//	}
+//}
 @SuppressWarnings("serial")
 class LessAnnoyingDisplayAction extends AbstractAction{
 	private CALCubeTimer cct;

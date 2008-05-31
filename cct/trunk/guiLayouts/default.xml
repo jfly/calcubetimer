@@ -86,8 +86,6 @@
 			<menuitem action="redo"/>
 			<separator/>
 			<menu mnemonic="k">Keyboard Timer
-				<checkboxmenuitem action="toggleIntegratedTimer">Integrate timer and display</checkboxmenuitem>
-				<checkboxmenuitem action="toggleAnnoyingDisplay">Use annoying status light</checkboxmenuitem>
 				<checkboxmenuitem action="toggleLessAnnoyingDisplay">Use less-annoying status light</checkboxmenuitem>
 				<checkboxmenuitem action="toggleHideScrambles">Hide scrambles when timer not focused</checkboxmenuitem>
 				<checkboxmenuitem action="toggleSpacebarStartsTimer">Only spacebar starts timer</checkboxmenuitem>
