@@ -15,7 +15,7 @@ import net.gnehzr.cct.scrambles.Scramble;
 
 public class MegaminxScramble extends Scramble {
 	public static final String[] FACE_NAMES = {"A", "B", "C", "D", "E", "F", "a", "b", 
-		"f", "e", "d", "c"}; //thanks to doug li for noticing that cdef were backwards from the regulations
+		"f", "e", "d", "c"};
 	public static final String PUZZLE_NAME = "Megaminx";
 	public static final String[] VARIATIONS = {"Megaminx", "Pochmann Megaminx"};
 	public static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
@@ -101,10 +101,9 @@ public class MegaminxScramble extends Scramble {
 		return validateScramble();
 	}
 	private static String regexp = "^[A-Fa-f][234]?$";
-	private static String regexp1 = "^[RDYU](?:'?|([+-])\\1)$";
+	private static String regexp1 = "^(?:[RDY]([+-])\\1|U'?)$";
 	private boolean validateScramble() {
 		String[] strs = scramble.split(" ");
-		length = strs.length;
 
 		int c = 0;
 		for(int i = 0; i < strs.length; i++){
@@ -118,13 +117,34 @@ public class MegaminxScramble extends Scramble {
 		}
 
 		for(int i = 0; i < cstrs.length; i++){
-			if(pochmann && !cstrs[i].matches(regexp1)) return false;
-			else if(!pochmann && !cstrs[i].matches(regexp)) return false;
+			if(!cstrs[i].matches(regexp1) && !cstrs[i].matches(regexp)) return false;
 		}
 
+		//length = cstrs.length;
+
 		try{
-			if(!pochmann){
-				for(int i = 0; i < cstrs.length; i++){
+			for(int i = 0; i < cstrs.length; i++){
+				if(cstrs[i].matches(regexp1)){
+					if(cstrs[i].charAt(0) == 'U'){
+						int dir = 1;
+						if(cstrs[i].length() > 1) dir = 4;
+						turn(0, dir);
+					}
+					else{
+						int dir = cstrs[i].charAt(1) == '+' ? 2 : 3;
+						if(cstrs[i].charAt(0) == 'R'){
+							bigTurn(0, dir);
+						}
+						else if(cstrs[i].charAt(0) == 'D'){
+							bigTurn(1, dir);
+						}
+						else{
+							bigTurn(1, dir);
+							turn(0, (-dir+5)%5);
+						}
+					}
+				}
+				else{
 					int face = -1;
 					for(int ch = 0; ch < FACE_NAMES.length; ch++) {
 						if(FACE_NAMES[ch].equals(""+cstrs[i].charAt(0))) {
@@ -132,23 +152,9 @@ public class MegaminxScramble extends Scramble {
 							break;
 						}
 					}
+					if(face == -1) return false;
 					int dir = (cstrs[i].length() == 1 ? 1 : Integer.parseInt(cstrs[i].substring(1)));
 					turn(face, dir);
-				}
-			}
-			else{
-				for(int i = 0; i < cstrs.length; i++){
-					int dir = cstrs[i].charAt(1) == '+' ? 2 : 3;
-					if(cstrs[i].charAt(0) == 'R'){
-						bigTurn(0, dir);
-					}
-					else if(cstrs[i].charAt(0) == 'D'){
-						bigTurn(1, dir);
-					}
-					else{
-						bigTurn(1, dir);
-						turn(0, (-dir+5)%5);
-					}
 				}
 			}
 		} catch(Exception e){
