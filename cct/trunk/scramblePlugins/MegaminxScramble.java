@@ -24,7 +24,7 @@ public class MegaminxScramble extends Scramble {
 	public static final double UNFOLDHEIGHT = 2 + 3 * Math.sin(.3 * Math.PI) + Math.sin(.1 * Math.PI);
 	public static final double UNFOLDWIDTH = 4 * Math.cos(.1 * Math.PI) + 2 * Math.cos(.3 * Math.PI);
 	private boolean pochmann = false;
-	private static final Pattern TOKEN_REGEX = Pattern.compile("^([A-Fa-fRY](?:\\+\\+|--|[234]?))(.*)$");
+	private static final Pattern TOKEN_REGEX = Pattern.compile("^([A-Fa-fRYU](?:\\+\\+|--|'|[234]?))(.*)$");
 
 	public static int getDefaultScrambleLength(String variation) {
 		if(variation.equals(VARIATIONS[1]))
@@ -120,7 +120,7 @@ public class MegaminxScramble extends Scramble {
 			if(!cstrs[i].matches(regexp1) && !cstrs[i].matches(regexp)) return false;
 		}
 
-		//length = cstrs.length;
+		length = cstrs.length;
 
 		try{
 			for(int i = 0; i < cstrs.length; i++){
