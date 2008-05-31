@@ -116,7 +116,7 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
     	if(time.getType() == SolveType.DNF)
     		getMP3FromName("dnf").play();
     	else
-    		speak(false, (int) (time.secondsValue() * 100));
+    		speak(false, (int)Math.round(time.secondsValue() * 100));
     }
     
     //"Your time is " + lastin.toSolveTime(null, null).value() / 100. + " seconds"
