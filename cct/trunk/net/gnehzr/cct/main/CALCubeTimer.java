@@ -1220,7 +1220,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private void saveToConfiguration() {
 		Configuration.setBoolean(VariableKey.SHOW_RA0, timesTable.isColumnVisible(1));
 		Configuration.setBoolean(VariableKey.SHOW_RA1, timesTable.isColumnVisible(2));
-		Configuration.setBoolean(VariableKey.STACKMAT_ENABLED, !(Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY));
 		if(!(scramblesList.getCurrent() instanceof NullScramble))
 			Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, scramblePopup.isVisible());
 		Configuration.setString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, scramblesList.getScrambleCustomization().toString());
@@ -1380,14 +1379,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		ScrambleCustomization newCustom = ScramblePlugin.getCurrentScrambleCustomization();
 		scrambleChooser.setSelectedItem(newCustom);
 		
-//		timeLabel.setKeyboard(!stackmatEnabled);
-//		timeLabel.setEnabledTiming(Configuration.getBoolean(VariableKey.INTEGRATED_TIMER_DISPLAY, false));
-//		timeLabel.setOpaque(Configuration.getBoolean(VariableKey.ANNOYING_DISPLAY, false));
-//		timeLabel.setFont(Configuration.getFont(VariableKey.TIMER_FONT, false));
-//		bigTimersDisplay.setFont(Configuration.getFont(VariableKey.TIMER_FONT, false));
-//		bigTimersDisplay.setKeyboard(!stackmatEnabled);
-//		scrambleChooser.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
-
 		//apparently need to hide and then show the window for proper behavior when setting divider location
 		//TODO - there is probably a better way of doing this, it seems to be causing the config dialog to reappear on "save" sometimes, too
 		super.setVisible(false);
@@ -1502,6 +1493,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	public void keyboardTimingAction(){
 		boolean selected = (Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY);
+		Configuration.setBoolean(VariableKey.STACKMAT_ENABLED, !selected);
 		timeLabel.setKeyboard(selected);
 		bigTimersDisplay.setKeyboard(selected);
 		stackmatTimer.enableStackmat(!selected);
@@ -1509,7 +1501,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			timeLabel.reset();
 		} else {
 			timeLabel.requestFocusInWindow();
-//			timeLabel.refreshFocus(); //for some reason, adding a focus listener to the timelabel doesn't seem to be working...
 		}
 	}
 
@@ -1553,12 +1544,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		public void propertyChange(PropertyChangeEvent evt) {
 			String event = evt.getPropertyName();
 			boolean on = !event.equals("Off");
+			boolean stackmatEnabled = Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
 			timeLabel.setStackmatOn(on);
 			if(on)
 				onLabel.setText("Timer is ON");
-			else
+			else if(stackmatEnabled)
 				onLabel.setText("Timer is OFF");
-			if(!Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false))
+			else
+				onLabel.setText("");
+			if(!stackmatEnabled)
 				return;
 
 			if(evt.getNewValue() instanceof StackmatState){
