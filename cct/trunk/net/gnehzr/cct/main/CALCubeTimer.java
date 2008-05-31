@@ -1430,14 +1430,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	// Actions section {{{
 	public void addTimeAction() {
-		if(timesTable.requestFocusInWindow()) { //if the timestable is hidden behind a tab, we don't want to let the user add times
+		if(timesTable.isFocusOwner() || timesTable.requestFocusInWindow()) { //if the timestable is hidden behind a tab, we don't want to let the user add times
 			timesTable.promptForNewRow();
 			Rectangle newTimeRect = timesTable.getCellRect(statsModel.getRowCount(), 0, true);
 			timesTable.scrollRectToVisible(newTimeRect);
 		}
 	}
 
-	public void resetAction(){
+	public void resetAction() {
 		int choice = JOptionPane.showConfirmDialog(
 				this,
 				"Do you really want to reset?",
@@ -1497,8 +1497,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timeLabel.setKeyboard(selected);
 		bigTimersDisplay.setKeyboard(selected);
 		stackmatTimer.enableStackmat(!selected);
+		timeLabel.reset();
 		if(!selected) {
-			timeLabel.reset();
+			onLabel.setText("Timer is OFF"); //TODO - this is a nasty fix for enabling the stackmat when the stackmat is off
 		} else {
 			timeLabel.requestFocusInWindow();
 		}
@@ -1557,7 +1558,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 			if(evt.getNewValue() instanceof StackmatState){
 				StackmatState current = (StackmatState) evt.getNewValue();
-				timeLabel.setStackmatHands(current.bothHands());
+				timeLabel.setStackmatState(current);
 				if(event.equals("TimeChange")) {
 					if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false)) setFullScreen(true);
 					if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false)) startMetronome();
@@ -1658,7 +1659,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				return false;
 			}
 			statsModel.getCurrentStatistics().add(protect);
-//			repaintTimes(); //needed here too TODO - are we sure about this? (possibly stackmat related)
 			return true;
 		}
 	}

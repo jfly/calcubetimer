@@ -34,35 +34,37 @@ import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.main.ScrambleArea;
+import net.gnehzr.cct.stackmatInterpreter.StackmatState;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
+import net.gnehzr.cct.statistics.SolveTime;
 
 @SuppressWarnings("serial")
 public class TimerLabel extends JLabel implements ComponentListener, ConfigurationChangeListener, FocusListener, KeyListener, MouseListener {
-	private static KeyboardTimer keyboardTimer;
+	private static KeyboardTimer keyboardTimer = new KeyboardTimer();
 	private ScrambleArea scrambleArea;
 	public TimerLabel(ActionListener timeListener, ScrambleArea scrambleArea) {
 		super(TimerState.ZERO_STATE.toString(), JLabel.CENTER);
 		this.scrambleArea = scrambleArea;
-
-		keyboardTimer = new KeyboardTimer(timeListener);
+		keyboardTimer.removeActionListener(timeListener);
+		keyboardTimer.addActionListener(timeListener);
 		addComponentListener(this);
 		setFocusable(true);
-		setUnfocusedState();
 		addFocusListener(this);
 		addKeyListener(this);
 		addMouseListener(this);
 		setFocusTraversalKeysEnabled(false);
 		Configuration.addConfigurationChangeListener(this);
+		setUnfocusedState();
 	}
 
 	private boolean keyboard;
 	public void setKeyboard(boolean isKey) {
-		//do something with the scramble area here
 		keyboard = isKey;
 		if(!keyboard) {
 			setStateText("Keyboard disabled");
 			setUnfocusedState();
-		}
+			scrambleArea.setTimerFocused(true);
+		}	
 	}
 	public void setStackmatOn(boolean on) {
 		if(keyboard || on)
@@ -70,16 +72,57 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 		else
 			setUnfocusedState();
 	}
-	public void setStackmatHands(boolean handsOn) {
-		if(!keyboard && handsOn)
-			setKeysDownState();
+	private long leftStart = 0;
+	private long rightStart = 0;
+	private long stackmatInspecting = 0;
+	public void setStackmatState(StackmatState current) {
+		if(keyboard) //this doesn't need to be here, as this method is only called when the keyboard is disabled
+			return;
+		boolean leftHand = current.leftHand();
+		boolean rightHand = current.rightHand();
+		if(current.isReset()) {
+			if(current.isGreenLight()) {
+				setKeysDownState(); //TODO - it would be cool to have the border mimic the colors of the stackmat exactly
+			} else if(current.bothHands()) {
+				//we want this to fall down to the bottom, not get caught in the lefthand or righthand conditionals
+			} else if(leftHand) {
+				rightStart = 0;
+				if(leftStart <= 0)
+					leftStart = System.currentTimeMillis();
+				return;
+			} else if(rightHand) {
+				leftStart = 0;
+				if(rightStart <= 0)
+					rightStart = System.currentTimeMillis();
+				return;
+			} else if(stackmatInspecting == 0 && (timeToStart(leftStart) || timeToStart(rightStart))) {
+				stackmatInspecting = System.currentTimeMillis();
+			}
+		} else
+			stackmatInspecting = 0;
+		leftStart = leftHand ? -1 : 0;
+		rightStart = rightHand ? -1 : 0;
 	}
 	public void reset() {
 		keyboardTimer.reset();
+		stackmatInspecting = leftStart = rightStart = 0;
+		setText(TimerState.ZERO_STATE.toString());
+		setForeground(Color.BLACK);
 	}
 
 	public void setText(String arg0) {
-		super.setText(arg0);
+		if(stackmatInspecting != 0) { //TODO - this is a pretty nasty way of doing inspection for stackmats, I feel that there is a better way of doing this
+			setForeground(Color.RED);
+			int secondsRemaining = KeyboardTimer.getInpectionValue((System.currentTimeMillis() - stackmatInspecting) / 1000);
+			if(secondsRemaining <= 0) {
+				TimerState ts = new TimerState(secondsRemaining * 100);
+				ts.setInspection(true);
+				super.setText(ts.toString());
+			} else
+				super.setText("" + secondsRemaining);
+		} else {
+			super.setText(arg0);
+		}
 		componentResized(null);
 	}
 	public void componentHidden(ComponentEvent arg0) {
@@ -108,7 +151,6 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 	}
 	public void componentShown(ComponentEvent arg0) {}
 	public void setFocusedState() {
-		scrambleArea.setTimerFocused(true);
 		title = keyboard ? "Start Timer" : "Keyboard disabled";
 		setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createRaisedBevelBorder(),
@@ -123,7 +165,6 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 				title));
 	}
 	public void setUnfocusedState() {
-		scrambleArea.setTimerFocused(false);
 		setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createRaisedBevelBorder(),
 				keyboard ? "Click to focus" : "Keyboard disabled"));
@@ -158,7 +199,19 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 	public void paint(Graphics g) {
 		if(Configuration.getBoolean(VariableKey.LESS_ANNOYING_DISPLAY, false))
 			g.drawImage(curr, 10, 20, null);
+		g.drawImage(getImageForHand(leftStart), 10, getHeight() - 50, null);
+		g.drawImage(getImageForHand(rightStart), getWidth() - 50, getHeight() - 50, null);
 		super.paint(g);
+	}
+	private BufferedImage getImageForHand(long time) {
+		if(time == 0)
+			return null;
+		return timeToStart(time) && stackmatInspecting == 0 ? green : red;
+	}
+	private boolean timeToStart(long time) {
+		if(time <= 0 || !Configuration.getBoolean(VariableKey.COMPETITION_INSPECTION, false))
+			return false;
+		return (System.currentTimeMillis() - time >= Configuration.getInt(VariableKey.DELAY_UNTIL_INSPECTION, false));
 	}
 
 	public void configurationChanged() {
@@ -166,10 +219,12 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 		setFont(Configuration.getFont(VariableKey.TIMER_FONT, false));
 	}
 	public void focusGained(FocusEvent e) {
+		scrambleArea.setTimerFocused(true);
 		if(keyboard)
 			setFocusedState();
 	}
 	public void focusLost(FocusEvent e) {
+		scrambleArea.setTimerFocused(false);
 		keyDown.clear();
 		if(keyboard)
 			setUnfocusedState();

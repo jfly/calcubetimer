@@ -15,6 +15,7 @@ import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 public class VariableKey<H> {
+	public static final VariableKey<Integer> DELAY_UNTIL_INSPECTION = new VariableKey<Integer>("GUI_Timer_delayUntilInspection");
 	public static final VariableKey<Integer> DELAY_BETWEEN_SOLVES = new VariableKey<Integer>("GUI_Timer_delayBetweenSolves");
 	public static final VariableKey<Integer> RA_SIZE0 = new VariableKey<Integer>("Statistics_raSize0");
 	public static final VariableKey<Integer> RA_SIZE1 = new VariableKey<Integer>("Statistics_raSize1");

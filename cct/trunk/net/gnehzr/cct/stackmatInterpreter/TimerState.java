@@ -5,7 +5,7 @@ import net.gnehzr.cct.statistics.SolveTime;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
 public class TimerState implements Comparable<TimerState> {
-	public static final TimerState ZERO_STATE = new TimerState(0);
+	public static final TimerState ZERO_STATE = new TimerState();
 	private int hundredthsValue;
 
 	public TimerState() {}
@@ -32,7 +32,7 @@ public class TimerState implements Comparable<TimerState> {
 		int seconds = (int) (hundredthsValue / 100.);
 		if(seconds <= -2) //2 seconds have passed since the penalty, which indicates disqualification
 			penalty = SolveType.DNF;
-		else if(seconds < 0) //we need to allow 0 times for the initial timer state
+		else if(seconds <= 0)
 			penalty = SolveType.PLUS_TWO;
 	}
 	

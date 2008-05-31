@@ -8,7 +8,6 @@ import java.util.ListIterator;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
-import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
