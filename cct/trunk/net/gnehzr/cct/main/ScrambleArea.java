@@ -49,6 +49,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		getViewport().setOpaque(false);
 		resetPreferredSize();
 		addComponentListener(this);
+		scramblePane.setFocusable(false); //this way, we never steal focus from the keyboard timer
 	}
 	public void resetPreferredSize() {
 		setPreferredSize(new Dimension(0, 100));
@@ -158,7 +159,6 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		setScramble(currentScramble, currentCustomization);
 	}
 	//this will be called by the KeyboardTimer to hide scrambles when necessary
-	//TODO - does this work w/ stackmat?
 	public void setTimerFocused(boolean focused) {
 		this.focused = focused;
 		setBackground(!focused && Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false) ? Color.BLACK: Color.WHITE);
