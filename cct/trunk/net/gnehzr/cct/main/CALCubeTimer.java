@@ -457,7 +457,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		profiles = new LoudComboBox();
 		profiles.addItemListener(this);
 //		profiles.setMaximumSize(new Dimension(1000, 100));
-		statsModel.addTableModelListener(this);
 	}
 	
 	private void refreshCustomGUIMenu() {
@@ -1107,6 +1106,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				main.setIconImage(cubeIcon.getImage());
 				main.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				main.setSelectedProfile(Configuration.getSelectedProfile()); //this will eventually cause sessionSelected() to be called
+				statsModel.addTableModelListener(main); //we don't want to know about the loading of the most recent session, or we could possibly hear it all spoken
 				main.setVisible(true);
 			}
 		});
@@ -1248,12 +1248,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				}
 				updateScramble();
 			}
+			//TODO - for some reason, selection and scrolling to seems to be broken, I can't tell why
+			//I would really like to just turn the table upside down
 			int rows = statsModel.getRowCount();
 			if(rows > 0)
-				timesTable.setRowSelectionInterval(rows - 2, rows - 2);
-			
+				timesTable.setRowSelectionInterval(rows - 1, rows - 1);
 			//make the new time visible
-			Rectangle newTimeRect = timesTable.getCellRect(rows, 0, true);
+			Rectangle newTimeRect = timesTable.getCellRect(rows, 0, false);
 			timesTable.scrollRectToVisible(newTimeRect);
 			
 			if(Configuration.getBoolean(VariableKey.SPEAK_TIMES, false)) {
