@@ -6,8 +6,8 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 
 public class StackmatState extends TimerState {
-	private boolean rightHand = false;
-	private boolean leftHand = false;
+	private Boolean rightHand = false;
+	private Boolean leftHand = false;
 	private boolean running = false;
 	private boolean reset = true;
 	private int minutes = 0;
@@ -85,10 +85,17 @@ public class StackmatState extends TimerState {
 	public boolean isReset(){
 		return reset;
 	}
-	public boolean leftHand(){
+	//these are here so we can know if the left or right hand has been down for long enough to start inspection
+	public void clearLeftHand() {
+		leftHand = null;
+	}
+	public void clearRightHand() {
+		rightHand = null;
+	}
+	public Boolean leftHand(){
 		return leftHand;
 	}
-	public boolean rightHand(){
+	public Boolean rightHand(){
 		return rightHand;
 	}
 	public boolean isGreenLight(){
@@ -98,4 +105,3 @@ public class StackmatState extends TimerState {
 		return minutes + ":" + ((seconds < 10) ? "0" : "") + seconds + "." + ((hundredths < 10) ? "0" : "") + hundredths;
 	}
 }
-

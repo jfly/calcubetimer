@@ -21,8 +21,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -87,6 +85,7 @@ import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.ConfigurationDialog;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.help.AboutScrollFrame;
+import net.gnehzr.cct.keyboardTiming.KeyboardHandler;
 import net.gnehzr.cct.keyboardTiming.TimerLabel;
 import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
@@ -121,6 +120,7 @@ import net.gnehzr.cct.statistics.SolveTime;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.StatisticsTableModel;
 import net.gnehzr.cct.statistics.UndoRedoListener;
+import net.gnehzr.cct.statistics.SolveTime.SolveType;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
 import net.gnehzr.cct.umts.client.CCTClient;
 
@@ -137,13 +137,12 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 @SuppressWarnings("serial")
-public class CALCubeTimer extends JFrame implements ActionListener, TableModelListener, ChangeListener, ConfigurationChangeListener, ItemListener, SessionListener {
+public class CALCubeTimer extends JFrame implements ActionListener, TableModelListener, ChangeListener, ConfigurationChangeListener, ItemListener, SessionListener, TimingListener {
 	public static final String CCT_VERSION = "b???";
 	public static final ImageIcon cubeIcon = new ImageIcon(CALCubeTimer.class.getResource("cube.png"));
 
 	public static StatisticsTableModel statsModel = new StatisticsTableModel(); //used in ProfileDatabase
 
-	private TimerLabel timeLabel = null;
 	private JLabel onLabel = null;
 	private DraggableJTable timesTable = null;
 	private JScrollPane timesScroller = null;
@@ -160,21 +159,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private ScrambleList scramblesList = new ScrambleList();
 	private JComboBox profiles = null;
 	private JTextArea commentArea = null;
+	private TimerLabel timeLabel = null;
 	private StackmatInterpreter stackmatTimer = null;
-	private TimerHandler timeListener = null;
 	private CCTClient client;
 	private ConfigurationDialog configurationDialog;
 	private CommentHandler commentListener;
 
 	public CALCubeTimer() {
-		stackmatTimer = new StackmatInterpreter();
-		Configuration.addConfigurationChangeListener(stackmatTimer);
-		
-		statsModel.addTableModelListener(this);
-		
-		timeListener = new TimerHandler();
-		stackmatTimer.addPropertyChangeListener(timeListener);
-
 		this.setUndecorated(true);
 		createActions();
 		initializeGUIComponents();
@@ -441,19 +432,24 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		scramblePanel = new ScrambleArea(scramblePopup);
 		scramblePanel.setAlignmentX(.5f);
-		
-		timeLabel = new TimerLabel(timeListener, scramblePanel);
+
+		stackmatTimer = new StackmatInterpreter();
+		new StackmatHandler(this, stackmatTimer);
+		timeLabel = new TimerLabel(scramblePanel);
 		timeLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 		timeLabel.setMinimumSize(new Dimension(0, 150));
 		timeLabel.setPreferredSize(new Dimension(0, 150));
 		timeLabel.setAlignmentX(.5f);
+		KeyboardHandler keyHandler = new KeyboardHandler(this);
+		timeLabel.setKeyboardHandler(keyHandler);
 
 		commentArea = new JTextArea();
 		commentArea.setEnabled(false);
 		commentArea.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 
 		fullscreenPanel = new JPanel(new BorderLayout());
-		bigTimersDisplay = new TimerLabel(timeListener, scramblePanel);
+		bigTimersDisplay = new TimerLabel(scramblePanel);
+		bigTimersDisplay.setKeyboardHandler(keyHandler);
 //		bigTimersDisplay.setBackground(Color.WHITE);
 
 		fullscreenPanel.add(bigTimersDisplay, BorderLayout.CENTER);
@@ -465,6 +461,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		profiles = new LoudComboBox();
 		profiles.addItemListener(this);
 //		profiles.setMaximumSize(new Dimension(1000, 100));
+		statsModel.addTableModelListener(this);
 	}
 	
 	private void refreshCustomGUIMenu() {
@@ -1497,12 +1494,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timeLabel.setKeyboard(selected);
 		bigTimersDisplay.setKeyboard(selected);
 		stackmatTimer.enableStackmat(!selected);
+		inspectionStart = 0;
 		timeLabel.reset();
-		if(!selected) {
-			onLabel.setText("Timer is OFF"); //TODO - this is a nasty fix for enabling the stackmat when the stackmat is off
-		} else {
+		if(!selected)
+			stackmatOn(false); //we want to update the stackmat status display (if the timer is on, this will be set to true later)
+		else
 			timeLabel.requestFocusInWindow();
-		}
 	}
 
 	private Session createNewSession(Profile p, String customization) {
@@ -1528,138 +1525,183 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 	// End actions section }}}
 
+	private long lastSplit;
+	private void addSplit(TimerState state) {
+		long currentTime = System.currentTimeMillis();
+		if((currentTime - lastSplit) / 1000. > Configuration.getDouble(VariableKey.MIN_SPLIT_DIFFERENCE, false)) {
+			String hands = "";
+			if(state instanceof StackmatState) {
+				hands += ((StackmatState) state).leftHand() ? " Left Hand" : " Right Hand";
+			}
+			splits.add(state.toSolveTime(hands, null));
+			lastSplit = currentTime;
+		}
+	}
+
 	private void startMetronome() {
 		tickTock.setDelay(Configuration.getInt(VariableKey.METRONOME_DELAY, false));
 		tickTock.start();
 	}
-
 	private void stopMetronome() {
 		tickTock.stop();
 	}
 
-	private static String[] options = {"Accept", "+2", "POP"};
-	private class TimerHandler implements PropertyChangeListener, ActionListener {
-		private StackmatState lastAccepted = new StackmatState();
-		private boolean reset = false;
-		private ArrayList<SolveTime> splits = new ArrayList<SolveTime>();
-		public void propertyChange(PropertyChangeEvent evt) {
-			String event = evt.getPropertyName();
-			boolean on = !event.equals("Off");
-			boolean stackmatEnabled = Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
-			timeLabel.setStackmatOn(on);
-			if(on)
-				onLabel.setText("Timer is ON");
-			else if(stackmatEnabled)
-				onLabel.setText("Timer is OFF");
-			else
-				onLabel.setText("");
-			if(!stackmatEnabled)
-				return;
-
-			if(evt.getNewValue() instanceof StackmatState){
-				StackmatState current = (StackmatState) evt.getNewValue();
-				timeLabel.setStackmatState(current);
-				if(event.equals("TimeChange")) {
-					if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false)) setFullScreen(true);
-					if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false)) startMetronome();
-					reset = false;
-					updateTime(current);
-				} else if(event.equals("Split")) {
-					addSplit((TimerState) current);
-				} else if(event.equals("Reset")) {
-					updateTime(new StackmatState());
-					reset = true;
-				} else if(event.equals("New Time")) {
-					if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false)) setFullScreen(false);
-					if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false)) stopMetronome();
-					updateTime(current);
-					if(addTime(current))
-						lastAccepted = current;
-				} else if(event.equals("Current Display")) {
-					timeLabel.setText(current.toString());
-				}
-			}
-		}
-
-		private void updateTime(TimerState newTime) {
-			String time = newTime.toString();
-			Color background = newTime.isInspection() ? Color.RED : Color.BLACK;
-			timeLabel.setForeground(background);
-			timeLabel.setText(time);
-			if(isFullscreen) {
-				bigTimersDisplay.setForeground(background);
-				bigTimersDisplay.setText(time);
-			}
-			if(!reset && !newTime.isInspection())
-				sendCurrentTime(time);
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			String command = e.getActionCommand();
-			TimerState newTime = (TimerState) e.getSource();
-			updateTime(newTime);
-			if(command.equals("Started")) {
-				if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false))
-					setFullScreen(true);
-				if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false))
-					startMetronome();
-			} else if(command.equals("Stopped")) {
-				addTime(newTime);
-				if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false))
-					setFullScreen(false);
-				if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false))
-					stopMetronome();
-			} else if(command.equals("Split"))
-				addSplit(newTime);
-		}
-
-		private long lastSplit;
-		private void addSplit(TimerState state) {
-			long currentTime = System.currentTimeMillis();
-			if((currentTime - lastSplit) / 1000. > Configuration.getDouble(VariableKey.MIN_SPLIT_DIFFERENCE, false)) {
-				String hands = "";
-				if(state instanceof StackmatState) {
-					hands += ((StackmatState) state).leftHand() ? " Left Hand" : " Right Hand";
-				}
-				splits.add(state.toSolveTime(hands, null));
-				lastSplit = currentTime;
-			}
-		}
-
-		private boolean addTime(TimerState addMe) {
-			SolveTime protect = addMe.toSolveTime(null, splits);
-			splits = new ArrayList<SolveTime>();
-			boolean sameAsLast = addMe.compareTo(lastAccepted) == 0;
-			if(sameAsLast) {
-				int choice = JOptionPane.showConfirmDialog(null,
-						"This is the exact same time as last time! Are you sure you wish to add it?",
-						"Confirm Time: " + addMe.toString(),
-						JOptionPane.YES_NO_OPTION,
-						JOptionPane.QUESTION_MESSAGE);
-				if(choice != JOptionPane.YES_OPTION)
-					return false;
-			}
-			int choice = JOptionPane.YES_OPTION;
-			if(Configuration.getBoolean(VariableKey.PROMPT_FOR_NEW_TIME, false) && !sameAsLast) {
-				choice = JOptionPane.showOptionDialog(null,
-						"Your time: " + protect.toString() + "\n Hit esc or close dialog to discard.",
-						"Confirm Time",
-						JOptionPane.YES_NO_CANCEL_OPTION,
-						JOptionPane.QUESTION_MESSAGE,
-						null,
-						options,
-						options[0]);
-			}
-			if(choice == JOptionPane.YES_OPTION) {
-			} else if(choice == JOptionPane.NO_OPTION) {
-				protect.setType(SolveTime.SolveType.PLUS_TWO);
-			} else if(choice == JOptionPane.CANCEL_OPTION) {
-				protect.setType(SolveTime.SolveType.POP);
-			} else {
+	private static final String[] OPTIONS = { "Accept", "+2", "POP" };
+	private StackmatState lastAccepted = new StackmatState();
+	private ArrayList<SolveTime> splits = new ArrayList<SolveTime>();
+	private boolean addTime(TimerState addMe) {
+		SolveTime protect = addMe.toSolveTime(null, splits);
+		protect.setType(penalty);
+		penalty = SolveType.NORMAL;
+		splits = new ArrayList<SolveTime>();
+		boolean sameAsLast = addMe.compareTo(lastAccepted) == 0;
+		if(sameAsLast) {
+			int choice = JOptionPane.showConfirmDialog(null,
+					"This is the exact same time as last time! Are you sure you wish to add it?",
+					"Confirm Time: " + addMe.toString(),
+					JOptionPane.YES_NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE);
+			if(choice != JOptionPane.YES_OPTION)
 				return false;
+		}
+		int choice = JOptionPane.YES_OPTION;
+		if(Configuration.getBoolean(VariableKey.PROMPT_FOR_NEW_TIME, false) && !sameAsLast) {
+			choice = JOptionPane.showOptionDialog(null,
+					"Your time: " + protect.toString() + "\n Hit esc or close dialog to discard.",
+					"Confirm Time",
+					JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.QUESTION_MESSAGE,
+					null,
+					OPTIONS,
+					OPTIONS[0]);
+		}
+		if(choice == JOptionPane.YES_OPTION) {
+		} else if(choice == JOptionPane.NO_OPTION) {
+			protect.setType(SolveTime.SolveType.PLUS_TWO);
+		} else if(choice == JOptionPane.CANCEL_OPTION) {
+			protect.setType(SolveTime.SolveType.POP);
+		} else {
+			return false;
+		}
+		statsModel.getCurrentStatistics().add(protect);
+		return true;
+	}
+
+	private static final int INSPECTION_TIME = 15;
+	private static final int FIRST_WARNING = 8;
+	private static final int FINAL_WARNING = 12;
+	private int previousInpection = -1;
+	//this returns the amount of inspection remaining (in seconds), and will speak to the user if necessary
+	public int getInpectionValue() {
+		int inspectionDone = (int) (System.currentTimeMillis() - inspectionStart) / 1000;
+		if(inspectionDone != previousInpection && Configuration.getBoolean(VariableKey.SPEAK_INSPECTION, false)) {
+			previousInpection = inspectionDone;
+			if(inspectionDone == FIRST_WARNING) {
+				new Thread(new Runnable() {
+					public void run() {
+						try {
+							NumberSpeaker.getCurrentSpeaker().speak(false, FIRST_WARNING*100);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}).start();
+			} else if(inspectionDone == FINAL_WARNING) {
+				new Thread(new Runnable() {
+					public void run() {
+						try {
+							NumberSpeaker.getCurrentSpeaker().speak(false, FINAL_WARNING*100);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}).start();
 			}
-			statsModel.getCurrentStatistics().add(protect);
-			return true;
+		}
+		return INSPECTION_TIME - inspectionDone;
+	}
+
+	private long inspectionStart = 0;
+	public void inspectionStarted() {
+		inspectionStart = System.currentTimeMillis();
+	}
+	
+	private SolveType penalty = SolveType.NORMAL;
+	private void updateTime(TimerState newTime) {
+		String time = newTime.toString();
+		boolean inspecting = inspectionStart != 0;
+		Color background;
+		if(inspecting) {
+			int inspection = getInpectionValue();
+			if(inspection <= -2) {
+				penalty = SolveType.DNF;
+				time = "Disqualification";
+			} else if(inspection <= 0) {
+				penalty = SolveType.PLUS_TWO;
+				time = "+2 Penalty";
+			} else
+				time = "" + inspection;
+			
+		 	background = Color.RED;
+		} else
+			background = Color.BLACK;
+		timeLabel.setForeground(background);
+		timeLabel.setText(time);
+		if(isFullscreen) {
+			bigTimersDisplay.setForeground(background);
+			bigTimersDisplay.setText(time);
+		}
+//		boolean reset = false;
+		if(newTime instanceof StackmatState) {
+			StackmatState newState = (StackmatState) newTime;
+			timeLabel.setHands(newState.leftHand(), newState.rightHand());
+			timeLabel.setStackmatGreenLight(newState.isGreenLight());
+//			reset = newState.isReset();
+		}
+//		if(!reset) //TODO - test out on server!
+		if(!inspecting)
+			sendCurrentTime(time);
+	}
+
+	//I guess we could add an option to prompt the user to see if they want to keep this time
+	public void timerAccidentlyReset(TimerState lastTimeRead) {
+		penalty = SolveType.NORMAL;
+	}
+	
+	public void refreshDisplay(TimerState currTime) {
+		updateTime(currTime);
+	}
+
+	public void timerSplit(TimerState newSplit) {
+		addSplit(newSplit);
+	}
+
+	public void timerStarted() {
+		inspectionStart = 0;
+		if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false))
+			setFullScreen(true);
+		if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false))
+			startMetronome();
+	}
+
+	public void timerStopped(TimerState newTime) {
+		addTime(newTime);
+		if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false))
+			setFullScreen(false);
+		if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false))
+			stopMetronome();
+	}
+	
+	public void stackmatOn(Boolean on) {
+		if(on == null) {
+			onLabel.setText("");
+		} else {
+			timeLabel.setStackmatOn(on);
+			if(on) {
+				onLabel.setText("Timer is ON");
+			} else { //TODO - what to do with inspection here?
+				onLabel.setText("Timer is OFF");
+			}
 		}
 	}
 }
@@ -1820,17 +1862,6 @@ class FullScreenTimingAction extends AbstractAction{
 		Configuration.setBoolean(VariableKey.FULLSCREEN_TIMING, ((AbstractButton)e.getSource()).isSelected());
 	}
 }
-//@SuppressWarnings("serial")
-//class IntegratedTimerAction extends AbstractAction{
-//	private CALCubeTimer cct;
-//	public IntegratedTimerAction(CALCubeTimer cct){
-//		this.cct = cct;
-//	}
-//
-//	public void actionPerformed(ActionEvent e){
-//		cct.integratedTimerAction();
-//	}
-//}
 @SuppressWarnings("serial")
 class HideScramblesAction extends AbstractAction{
 	private CALCubeTimer cct;
@@ -1842,17 +1873,6 @@ class HideScramblesAction extends AbstractAction{
 		cct.hideScramblesAction();
 	}
 }
-//@SuppressWarnings("serial")
-//class AnnoyingDisplayAction extends AbstractAction{
-//	private CALCubeTimer cct;
-//	public AnnoyingDisplayAction(CALCubeTimer cct){
-//		this.cct = cct;
-//	}
-//
-//	public void actionPerformed(ActionEvent e){
-//		cct.annoyingDisplayAction();
-//	}
-//}
 @SuppressWarnings("serial")
 class LessAnnoyingDisplayAction extends AbstractAction{
 	private CALCubeTimer cct;

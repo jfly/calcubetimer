@@ -29,10 +29,11 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 	private static Mixer.Info[] aInfos = AudioSystem.getMixerInfo();
 
 	public StackmatInterpreter(){
-		initialize(Configuration.getInt(VariableKey.STACKMAT_SAMPLING_RATE, false));
+		this(Configuration.getInt(VariableKey.STACKMAT_SAMPLING_RATE, false));
 	}
 
 	public StackmatInterpreter(int samplingRate){
+		Configuration.addConfigurationChangeListener(this);
 		initialize(samplingRate);
 	}
 
@@ -186,7 +187,11 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 
 //							System.out.println(state.isReset() + " " + state.isRunning() + " ");
 //							System.out.println(currentPeriod.size());
-							state = new StackmatState(state, currentPeriod);
+							StackmatState newState = new StackmatState(state, currentPeriod);
+							if(state != null && state.isRunning() && newState.isReset()) { //this is indicative of an "accidental reset"
+								firePropertyChange("Accident Reset", state, newState);
+							}
+							state = newState;
 							//This is to be able to identify new times when they are "equal"
 							//to the last time
 							if(state.isReset() || state.isRunning()) old = new StackmatState();
@@ -196,7 +201,6 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 								firePropertyChange("Split", null, state);
 							}
 							previousWasSplit = thisIsSplit;
-
 							if(state.isReset())
 								firePropertyChange("Reset", null, state);
 							else if(state.isRunning())

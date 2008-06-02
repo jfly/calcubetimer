@@ -27,26 +27,21 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.Timer;
 import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.main.ScrambleArea;
-import net.gnehzr.cct.stackmatInterpreter.StackmatState;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
-import net.gnehzr.cct.statistics.SolveTime;
 
 @SuppressWarnings("serial")
 public class TimerLabel extends JLabel implements ComponentListener, ConfigurationChangeListener, FocusListener, KeyListener, MouseListener {
-	private static KeyboardTimer keyboardTimer = new KeyboardTimer();
+	private KeyboardHandler keyHandler;
 	private ScrambleArea scrambleArea;
-	public TimerLabel(ActionListener timeListener, ScrambleArea scrambleArea) {
+	public TimerLabel(ScrambleArea scrambleArea) {
 		super(TimerState.ZERO_STATE.toString(), JLabel.CENTER);
 		this.scrambleArea = scrambleArea;
-		keyboardTimer.removeActionListener(timeListener);
-		keyboardTimer.addActionListener(timeListener);
 		addComponentListener(this);
 		setFocusable(true);
 		addFocusListener(this);
@@ -54,83 +49,36 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 		addMouseListener(this);
 		setFocusTraversalKeysEnabled(false);
 		Configuration.addConfigurationChangeListener(this);
-		setUnfocusedState();
+	}
+	public void setKeyboardHandler(KeyboardHandler keyHandler) {
+		this.keyHandler = keyHandler;
 	}
 
+	private boolean keysDown;
 	private boolean keyboard;
-	public void setKeyboard(boolean isKey) {
-		keyboard = isKey;
-		if(!keyboard) {
-			setStateText("Keyboard disabled");
-			setUnfocusedState();
-			scrambleArea.setTimerFocused(true);
-		}	
+	public void setKeyboard(boolean keyboard) {
+		this.keyboard = keyboard;
+		refreshTimer();
 	}
+	private boolean on;
 	public void setStackmatOn(boolean on) {
-		if(keyboard || on)
-			setFocusedState();
-		else
-			setUnfocusedState();
+		this.on = on;
+		refreshTimer();
 	}
-	private long leftStart = 0;
-	private long rightStart = 0;
-	private long stackmatInspecting = 0;
-	public void setStackmatState(StackmatState current) {
-		if(keyboard) //this doesn't need to be here, as this method is only called when the keyboard is disabled
-			return;
-		boolean leftHand = current.leftHand();
-		boolean rightHand = current.rightHand();
-		if(current.isReset()) {
-			if(current.isGreenLight()) {
-				setKeysDownState(); //TODO - it would be cool to have the border mimic the colors of the stackmat exactly
-			} else if(current.bothHands()) {
-				//we want this to fall down to the bottom, not get caught in the lefthand or righthand conditionals
-			} else if(leftHand) {
-				rightStart = 0;
-				if(leftStart <= 0)
-					leftStart = System.currentTimeMillis();
-				return;
-			} else if(rightHand) {
-				leftStart = 0;
-				if(rightStart <= 0)
-					rightStart = System.currentTimeMillis();
-				return;
-			} else if(stackmatInspecting == 0 && (timeToStart(leftStart) || timeToStart(rightStart))) {
-				stackmatInspecting = System.currentTimeMillis();
-			}
-		} else
-			stackmatInspecting = 0;
-		leftStart = leftHand ? -1 : 0;
-		rightStart = rightHand ? -1 : 0;
+	private boolean greenLight;
+	public void setStackmatGreenLight(boolean greenLight) {
+		this.greenLight = greenLight;
 	}
 	public void reset() {
-		keyboardTimer.reset();
-		stackmatInspecting = leftStart = rightStart = 0;
-		setText(TimerState.ZERO_STATE.toString());
-		setForeground(Color.BLACK);
+		keyHandler.reset();
 	}
 
 	public void setText(String arg0) {
-		if(stackmatInspecting != 0) { //TODO - this is a pretty nasty way of doing inspection for stackmats, I feel that there is a better way of doing this
-			setForeground(Color.RED);
-			int secondsRemaining = KeyboardTimer.getInpectionValue((System.currentTimeMillis() - stackmatInspecting) / 1000);
-			if(secondsRemaining <= 0) {
-				TimerState ts = new TimerState(secondsRemaining * 100);
-				ts.setInspection(true);
-				super.setText(ts.toString());
-			} else
-				super.setText("" + secondsRemaining);
-		} else {
-			super.setText(arg0);
-		}
+		super.setText(arg0);
 		componentResized(null);
 	}
-	public void componentHidden(ComponentEvent arg0) {
-
-	}
-	public void componentMoved(ComponentEvent arg0) {
-
-	}
+	public void componentHidden(ComponentEvent arg0) {}
+	public void componentMoved(ComponentEvent arg0) {}
 
 	private Font font;
 	public void setFont(Font font) {
@@ -150,34 +98,6 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 		}
 	}
 	public void componentShown(ComponentEvent arg0) {}
-	public void setFocusedState() {
-		title = keyboard ? "Start Timer" : "Keyboard disabled";
-		setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createRaisedBevelBorder(),
-				title));
-		setBackground(Color.RED);
-		setGreenButton();
-	}
-	public void setKeysDownState() {
-		setBackground(Color.GREEN);
-		setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createLoweredBevelBorder(),
-				title));
-	}
-	public void setUnfocusedState() {
-		setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createRaisedBevelBorder(),
-				keyboard ? "Click to focus" : "Keyboard disabled"));
-		setBackground(Color.GRAY);
-		setRedButton();
-	}
-	private String title = "";
-	public void setStateText(String string) {
-		title = string;
-		Border bord = getBorder();
-		if(bord instanceof TitledBorder)
-			((TitledBorder) bord).setTitle(string);
-	}
 
 	private static BufferedImage curr, red, green;
 	static {
@@ -188,47 +108,85 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 			e.printStackTrace();
 		}
 	}
-	public void setRedButton() {
-		curr = red;
-		repaint();
-	}
-	public void setGreenButton() {
-		curr = green;
-		repaint();
-	}
 	public void paint(Graphics g) {
 		if(Configuration.getBoolean(VariableKey.LESS_ANNOYING_DISPLAY, false))
 			g.drawImage(curr, 10, 20, null);
-		g.drawImage(getImageForHand(leftStart), 10, getHeight() - 50, null);
-		g.drawImage(getImageForHand(rightStart), getWidth() - 50, getHeight() - 50, null);
+		g.drawImage(getImageForHand(leftHand), 10, getHeight() - 50, null);
+		g.drawImage(getImageForHand(rightHand), getWidth() - 50, getHeight() - 50, null);
 		super.paint(g);
 	}
-	private BufferedImage getImageForHand(long time) {
-		if(time == 0)
-			return null;
-		return timeToStart(time) && stackmatInspecting == 0 ? green : red;
+	private Boolean leftHand, rightHand;
+	public void setHands(Boolean leftHand, Boolean rightHand) {
+		this.leftHand = leftHand;
+		this.rightHand = rightHand;
 	}
-	private boolean timeToStart(long time) {
-		if(time <= 0 || !Configuration.getBoolean(VariableKey.COMPETITION_INSPECTION, false))
-			return false;
-		return (System.currentTimeMillis() - time >= Configuration.getInt(VariableKey.DELAY_UNTIL_INSPECTION, false));
+	//see StackmatState for an explanation
+	private BufferedImage getImageForHand(Boolean hand) {
+		if(!on)
+			return null;
+		if(hand == null)
+			return green;
+		return hand ? red : null;
 	}
 
 	public void configurationChanged() {
 		setKeyboard(!Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false));
 		setFont(Configuration.getFont(VariableKey.TIMER_FONT, false));
+		refreshTimer();
 	}
 	public void focusGained(FocusEvent e) {
-		scrambleArea.setTimerFocused(true);
-		if(keyboard)
-			setFocusedState();
+		refreshTimer();
 	}
 	public void focusLost(FocusEvent e) {
-		scrambleArea.setTimerFocused(false);
-		keyDown.clear();
-		if(keyboard)
-			setUnfocusedState();
+		refreshTimer();
 	}
+
+	private void refreshTimer() {
+		boolean inspectionEnabled = Configuration.getBoolean(VariableKey.COMPETITION_INSPECTION, false);
+		Border b = BorderFactory.createRaisedBevelBorder();
+		String title;
+		if(keyboard) {
+			boolean focused = isFocusOwner();
+			scrambleArea.setTimerFocused(focused);
+			if(focused) {
+				curr = green;
+				if(keysDown) {
+					b = BorderFactory.createLoweredBevelBorder();
+					setBackground(Color.GREEN);
+				} else {
+					setBackground(Color.RED);
+				}
+				if(keyHandler.isRunning())
+					title = "Stop Timer";
+				else if(keyHandler.isInspecting() || !inspectionEnabled)
+					title = "Start Timer";
+				else
+					title = "Start Inspection";
+			} else {
+				curr = red;
+				title = "Click to focus";
+				setBackground(Color.GRAY);
+				keyDown.clear();
+			}
+		} else {
+			title = "Keyboard Disabled";
+			if(on) {
+				curr = green;
+				if(greenLight) {
+					b = BorderFactory.createLoweredBevelBorder();
+					setBackground(Color.GREEN);
+				} else {
+					setBackground(Color.RED);
+				}
+			} else {
+				curr = red;
+				setBackground(Color.GRAY);
+			}
+		}
+		setBorder(BorderFactory.createTitledBorder(b, title));
+		repaint();
+	}
+	
 	public void mouseClicked(MouseEvent e) {
 		requestFocusInWindow();
 	}
@@ -307,12 +265,12 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 
 		int key = e.getKeyCode();
 		if(key == 0) {
-		} else if(keyboardTimer.isRunning() && !keyboardTimer.isInspecting()) {
+		} else if(keyHandler.isRunning() && !keyHandler.isInspecting()) {
 			if(Configuration.getBoolean(VariableKey.TIMING_SPLITS, false) && key == Configuration.getInt(VariableKey.SPLIT_KEY, false)) {
-				keyboardTimer.split();
+				keyHandler.split();
 			} else if(!stackmatEmulation || stackmatEmulation && stackmatKeysDown()){
-				keyboardTimer.stop();
-				setKeysDownState();
+				keyHandler.stop();
+				keysDown = true;
 			}
 		} else if(key == KeyEvent.VK_ESCAPE) { //this will release all keys that we think are down
 			for(int code : keyDown.keySet()) {
@@ -320,8 +278,9 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 				keyReleased(e);
 			}
 		} else if(!stackmatEmulation && !ignoreKey(e, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false), stackmatEmulation, sekey1, sekey2) || stackmatEmulation && stackmatKeysDown()){
-			setKeysDownState();
+			keysDown = true;
 		}
+		refreshTimer();
 	}
 
 	//called when a key is physically released
@@ -331,16 +290,16 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 		int sekey2 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY2, false);
 
 		if(stackmatEmulation && stackmatKeysDownCount() == 1 && (e.getKeyCode() == sekey1 || e.getKeyCode() == sekey2) || !stackmatEmulation && atMostKeysDown(0)){
-			setFocusedState();
-			if(!keyboardTimer.isRunning() || keyboardTimer.isInspecting()) {
-				if(!keyboardTimer.isReset()) {
-					keyboardTimer.fireStop();
-					setStateText("Start Timer");
+			keysDown = false;
+			if(!keyHandler.isRunning() || keyHandler.isInspecting()) {
+				if(!keyHandler.isReset()) {
+					keyHandler.fireStop();
 				} else if(!ignoreKey(e, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false), stackmatEmulation, sekey1, sekey2)) {
-					setStateText(keyboardTimer.startTimer());
+					keyHandler.startTimer();
 				}
 			}
 		}
+		refreshTimer();
 	}
 
 	public static boolean ignoreKey(KeyEvent e, boolean spaceBarOnly, boolean stackmatEmulation, int sekey1, int sekey2) {
