@@ -124,8 +124,8 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 				sessionCache.add(s);
 	}
 	
-	private String[] columnNames = new String[] { "Date Started", "Customization", "Session Average", "Best RA 0", "Best RA 1", "Best Time", "Standard Deviation", "Solve Count" };
-	private Class<?>[] columnClasses = new Class<?>[] { Session.class, ScrambleCustomization.class, SolveTime.class, SolveTime.class, SolveTime.class, SolveTime.class, SolveTime.class, Integer.class};
+	private String[] columnNames = new String[] { "Date Started", "Customization", "Session Average", "Best RA 0", "Best RA 1", "Best Time", "Standard Deviation", "Solve Count", "Comment" };
+	private Class<?>[] columnClasses = new Class<?>[] { Session.class, ScrambleCustomization.class, SolveTime.class, SolveTime.class, SolveTime.class, SolveTime.class, SolveTime.class, Integer.class, String.class};
 	public String getColumnName(int column) {
 		return columnNames[column];
 	}
@@ -157,6 +157,8 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 			return s.getStatistics().standardDeviation(AverageType.SESSION, 0);
 		case 7: //solve count
 			return s.getStatistics().getSolveCount();
+		case 8: //comment
+			return s.getComment();
 		default:
 			return null;
 		}

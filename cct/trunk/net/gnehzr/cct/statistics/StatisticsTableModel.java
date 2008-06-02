@@ -56,16 +56,16 @@ public class StatisticsTableModel extends DraggableJTableModel {
 		statsListeners.remove(l);
 	}
 	
+	private String[] columnNames = new String[] { "Times", "RA 0", "RA 1", "Comment" };
+	private Class<?>[] columnClasses = new Class<?>[] { SolveTime.class, SolveTime.class, SolveTime.class, String.class };
 	public String getColumnName(int column) {
-		if(column == 0)
-			return "Times";
-		return "RA " + (column - 1);
+		return columnNames[column];
 	}
 	public int getColumnCount() {
-		return 3;
+		return columnNames.length;
 	}
 	public Class<?> getColumnClass(int columnIndex) {
-		return SolveTime.class;
+		return columnClasses[columnIndex];
 	}
 	public int getSize() {
 		return getRowCount();
@@ -74,10 +74,16 @@ public class StatisticsTableModel extends DraggableJTableModel {
 		return stats == null ? 0 : stats.getAttemptCount();
 	}
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		if(columnIndex == 0) { //get the solvetime for this index
+		switch(columnIndex) {
+		case 0: //get the solvetime for this index
 			return stats.get(rowIndex);
-		} else { //get the RA for this index in this column
+		case 1: //falls through
+		case 2: //get the RA for this index in this column
 			return stats.getRA(rowIndex, columnIndex - 1);
+		case 3:
+			return stats.get(rowIndex).getComment();
+		default:
+			return null;
 		}
 	}
 	public boolean isCellEditable(int rowIndex, int columnIndex) {

@@ -71,8 +71,6 @@ import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.xml.parsers.ParserConfigurationException;
@@ -111,7 +109,6 @@ import net.gnehzr.cct.speaking.NumberSpeaker;
 import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
 import net.gnehzr.cct.stackmatInterpreter.StackmatState;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
-import net.gnehzr.cct.statistics.Commentable;
 import net.gnehzr.cct.statistics.Profile;
 import net.gnehzr.cct.statistics.ProfileDatabase;
 import net.gnehzr.cct.statistics.PuzzleStatistics;
@@ -163,7 +160,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private StackmatInterpreter stackmatTimer = null;
 	private CCTClient client;
 	private ConfigurationDialog configurationDialog;
-	private CommentHandler commentListener;
 
 	public CALCubeTimer() {
 		this.setUndecorated(true);
@@ -410,8 +406,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		onLabel = new JLabel("Timer is OFF");
 		onLabel.setFont(onLabel.getFont().deriveFont(AffineTransform.getScaleInstance(2, 2)));
-
-		commentListener = new CommentHandler();
 		
 		timesTable = new DraggableJTable("Add time...", false, true);
 		timesTable.setName("timesTable");
@@ -419,7 +413,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timesTable.setDefaultRenderer(SolveTime.class, new SolveTimeRenderer(statsModel));
 		timesTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		timesTable.setModel(statsModel);
-		timesTable.getSelectionModel().addListSelectionListener(commentListener);
+		//TODO - this wastes space, probably not easy to fix...
+		timesTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		timesScroller = new JScrollPane(timesTable);
 
 		sessionsTable = new SessionsTable(statsModel);
@@ -428,7 +423,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		sessionsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		sessionsScroller = new JScrollPane(sessionsTable);
 		sessionsTable.setSessionListener(this);
-		sessionsTable.getSelectionModel().addListSelectionListener(commentListener);
+
+		commentArea = new JTextArea();
+		commentArea.setEnabled(false);
+		commentArea.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
+		
+		new CommentHandler(commentArea, timesTable, sessionsTable);
 
 		scramblePanel = new ScrambleArea(scramblePopup);
 		scramblePanel.setAlignmentX(.5f);
@@ -442,10 +442,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timeLabel.setAlignmentX(.5f);
 		KeyboardHandler keyHandler = new KeyboardHandler(this);
 		timeLabel.setKeyboardHandler(keyHandler);
-
-		commentArea = new JTextArea();
-		commentArea.setEnabled(false);
-		commentArea.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 
 		fullscreenPanel = new JPanel(new BorderLayout());
 		bigTimersDisplay = new TimerLabel(scramblePanel);
@@ -474,39 +470,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			temp.addActionListener(this);
 			group.add(temp);
 			customGUIMenu.add(temp);
-		}
-	}
-
-	private class CommentHandler implements ListSelectionListener {
-		private Commentable curr;
-		public void valueChanged(ListSelectionEvent e) {
-			sync();
-			commentArea.setEnabled(false);
-			ListSelectionModel src = (ListSelectionModel) e.getSource();
-			int row = src.getMaxSelectionIndex();
-			if(row == -1 || row != src.getMinSelectionIndex()) {
-				curr = null;
-				return;
-			}
-			JTable clearMe = null;
-			if(e.getSource() == timesTable.getSelectionModel()) {
-				curr = statsModel.getCurrentStatistics().get(row);
-				clearMe = sessionsTable;
-			} else if(e.getSource() == sessionsTable.getSelectionModel()) {
-				curr = Configuration.getSelectedProfile().getPuzzleDatabase().getNthSession(row);
-				clearMe = timesTable;
-			}
-			if(curr != null) {
-				commentArea.setText(curr.getComment());
-				commentArea.setEnabled(true);
-			}
-			if(clearMe != null)
-				clearMe.clearSelection();
-		}
-		public void sync() {
-			if(curr != null) {
-				curr.setComment(commentArea.getText());
-			}
 		}
 	}
 
@@ -1188,7 +1151,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 	
 	private void prepareForProfileSwitch() {
-		commentListener.sync();
 		Profile p = Configuration.getSelectedProfile();
 		try {
 			p.saveDatabase();
@@ -1288,7 +1250,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 			int rows = statsModel.getRowCount();
 			if(rows > 0)
-				timesTable.setRowSelectionInterval(rows - 1, rows - 1);
+				timesTable.setRowSelectionInterval(rows - 2, rows - 2);
 			
 			//make the new time visible
 			Rectangle newTimeRect = timesTable.getCellRect(rows, 0, true);
@@ -1496,9 +1458,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		stackmatTimer.enableStackmat(!selected);
 		inspectionStart = 0;
 		timeLabel.reset();
-		if(!selected)
-			stackmatOn(false); //we want to update the stackmat status display (if the timer is on, this will be set to true later)
-		else
+		stackmatOn(null); //we want to update the stackmat status display (if the timer is on, this will be set to true later)
+		if(selected)
 			timeLabel.requestFocusInWindow();
 	}
 

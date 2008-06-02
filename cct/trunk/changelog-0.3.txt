@@ -152,12 +152,12 @@ changes:
 +the timer panel stuff has been cleaned up, removed the annoying status light and the unintegrated timer
 	+BUG: enabling and disabling keyboard timer doesn't change integrated timer border properly
 +create a countdown for use with stackmats
++megaminx scrambles now use U/U', possibly format with newlines? (http://www.worldcubeassociation.org/regulations/scrambles/scramble_megaminx2008.htm)
 
 TODO:
 
 for release:
 -splits should be saved to database
--megaminx scrambles now use U/U', possibly format with newlines? (http://www.worldcubeassociation.org/regulations/scrambles/scramble_megaminx2008.htm)
 -make scrambleplugins secure
 -clean up all critical TODOs scattered throughout the code
 -internationalization (dates, too)
