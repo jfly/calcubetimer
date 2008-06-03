@@ -3,7 +3,6 @@ package net.gnehzr.cct.main;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
@@ -40,7 +39,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.CellRendererPane;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -1109,6 +1107,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				main.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				main.setSelectedProfile(Configuration.getSelectedProfile()); //this will eventually cause sessionSelected() to be called
 				statsModel.addTableModelListener(main); //we don't want to know about the loading of the most recent session, or we could possibly hear it all spoken
+				main.repaintTimes(); //this needs to be here in the event that we loaded times from database
 				main.setVisible(true);
 			}
 		});
