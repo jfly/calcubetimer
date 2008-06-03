@@ -135,7 +135,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 @SuppressWarnings("serial")
 public class CALCubeTimer extends JFrame implements ActionListener, TableModelListener, ChangeListener, ConfigurationChangeListener, ItemListener, SessionListener, TimingListener {
-	public static final String CCT_VERSION = "b???";
+	public static final String CCT_VERSION = "b302";
 	public static final ImageIcon cubeIcon = new ImageIcon(CALCubeTimer.class.getResource("cube.png"));
 
 	public static StatisticsTableModel statsModel = new StatisticsTableModel(); //used in ProfileDatabase
@@ -1449,7 +1449,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		setFullScreen(!isFullscreen);
 	}
 
-	public void keyboardTimingAction(){
+	public void keyboardTimingAction() {
 		boolean selected = (Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY);
 		Configuration.setBoolean(VariableKey.STACKMAT_ENABLED, !selected);
 		timeLabel.setKeyboard(selected);
@@ -1458,6 +1458,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		inspectionStart = 0;
 		timeLabel.reset();
 		bigTimersDisplay.reset();
+		stackmatOn(null); //we clear the state here, if the stackmat is on, it will be set later
 		if(selected)
 			timeLabel.requestFocusInWindow();
 	}
