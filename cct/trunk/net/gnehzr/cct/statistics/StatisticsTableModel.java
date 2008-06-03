@@ -131,7 +131,6 @@ public class StatisticsTableModel extends DraggableJTableModel {
 				} else if (command.equals("Edit time")) {
 					timesTable.editCellAt(selectedRow, 0);
 				}
-//				refresh();
 			}
 		};
 		JPopupMenu jpopup = new JPopupMenu();

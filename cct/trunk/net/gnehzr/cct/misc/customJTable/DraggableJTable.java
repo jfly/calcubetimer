@@ -3,7 +3,6 @@ package net.gnehzr.cct.misc.customJTable;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -510,7 +509,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		Arrays.sort(selectedRows);
 		int choice = JOptionPane.YES_OPTION;
 		if(prompt)
-			choice = JOptionPane.showConfirmDialog(null,
+			choice = JOptionPane.showConfirmDialog(getParent(),
 				"Are you sure you wish to remove " + temp + "?", "Confirm",
 				JOptionPane.YES_NO_OPTION);
 		if(choice == JOptionPane.YES_OPTION) {
