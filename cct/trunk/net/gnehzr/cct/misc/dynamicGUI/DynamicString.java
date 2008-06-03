@@ -77,7 +77,7 @@ public class DynamicString{
 			double ave = stats.getSessionAvg(); //this method returns zero if there are no solves to allow the global stats to be computed nicely
 			if(ave == 0) ave = Double.POSITIVE_INFINITY;
 			r = Utils.formatTime(ave);
-		} else if(s.equalsIgnoreCase("sessionSD")) r = Utils.format(stats.getSessionSD());
+		} else if(s.equalsIgnoreCase("sessionSD")) r = Utils.formatTime(stats.getSessionSD());
 		else if(s.equalsIgnoreCase("pops")) r = "" + stats.getPOPCount();
 		else if(s.equalsIgnoreCase("+twos")) r = "" + stats.getPlus2Count();
 		else if(s.equalsIgnoreCase("dnfs")) r = "" + stats.getDNFCount();
@@ -87,18 +87,18 @@ public class DynamicString{
 		else if(s.equalsIgnoreCase("progressAverage")) r = formatProgressTime(stats.getProgressAverage(num));
 		else if(s.equalsIgnoreCase("bestTime")) r = Utils.formatTime(stats.getBestTime());
 		else if(s.equalsIgnoreCase("bestRA")) r = Utils.formatTime(stats.getBestAverage(num));
-		else if(s.equalsIgnoreCase("bestSD")) r = Utils.format(stats.getBestSD(num));
-		else if(s.equalsIgnoreCase("bestAverageSD")) r = Utils.format(stats.getBestAverageSD(num));
+		else if(s.equalsIgnoreCase("bestSD")) r = Utils.formatTime(stats.getBestSD(num));
+		else if(s.equalsIgnoreCase("bestAverageSD")) r = Utils.formatTime(stats.getBestAverageSD(num));
 		else if(s.equalsIgnoreCase("worstTime")) r = Utils.formatTime(stats.getWorstTime());
 		else if(s.equalsIgnoreCase("worstAverage")) r = Utils.formatTime(stats.getWorstAverage(num));
-		else if(s.equalsIgnoreCase("worstSD")) r = Utils.format(stats.getWorstSD(num));
-		else if(s.equalsIgnoreCase("worstAverageSD")) r = Utils.format(stats.getWorstAverageSD(num));
+		else if(s.equalsIgnoreCase("worstSD")) r = Utils.formatTime(stats.getWorstSD(num));
+		else if(s.equalsIgnoreCase("worstAverageSD")) r = Utils.formatTime(stats.getWorstAverageSD(num));
 		else if(s.equalsIgnoreCase("currentTime")) r = Utils.formatTime(stats.getCurrentTime());
 		else if(s.equalsIgnoreCase("currentAverage")) r = Utils.formatTime(stats.getCurrentAverage(num));
-		else if(s.equalsIgnoreCase("currentSD")) r = Utils.format(stats.getCurrentSD(num));
+		else if(s.equalsIgnoreCase("currentSD")) r = Utils.formatTime(stats.getCurrentSD(num));
 		else if(s.equalsIgnoreCase("lastTime")) r = Utils.formatTime(stats.getLastTime());
 		else if(s.equalsIgnoreCase("lastAverage")) r = Utils.formatTime(stats.getLastAverage(num));
-		else if(s.equalsIgnoreCase("lastSD")) r = Utils.format(stats.getLastSD(num));
+		else if(s.equalsIgnoreCase("lastSD")) r = Utils.formatTime(stats.getLastSD(num));
 		else if(s.equalsIgnoreCase("bestTimeOfCurrentAverage")) r = Utils.formatTime(stats.getBestTimeOfCurrentAverage(num));
 		else if(s.equalsIgnoreCase("worstTimeOfCurrentAverage")) r = Utils.formatTime(stats.getWorstTimeOfCurrentAverage(num));
 		else if(s.equalsIgnoreCase("bestTimeOfBestAverage")) r = Utils.formatTime(stats.getBestTimeOfBestAverage(num));

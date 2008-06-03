@@ -155,11 +155,11 @@ changes:
 +megaminx scrambles now use U/U', possibly format with newlines? (http://www.worldcubeassociation.org/regulations/scrambles/scramble_megaminx2008.htm)
 +splits are now saved to database
 +added table columns for comments, and improved behavior of the comment are
++formatTime() in Utils.java modified to round to 2 decimal places before formatting, fixes this: (26.05, 31.25, 24.38, 36.68, 23.88, 29.31, 27.80, 33.61, 32.19, 53.61, 27.75, 29.13)
 
 TODO:
 
 for release:
--test out the rounding of times/averages
 -change big cube scrambles to use new wca notation (Rw instead of r)
 -make scrambleplugins secure
 -clean up all critical TODOs scattered throughout the code

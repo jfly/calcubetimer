@@ -15,23 +15,20 @@ public class Utils {
 	}
 
 	private Utils() {}
-
-	public static String format(double seconds) {
-		if(seconds == Double.POSITIVE_INFINITY) return "N/A";
-
-		return DF.format(seconds);
-	}
-
+	
 	public static String formatTime(double seconds) {
+		if(seconds == Double.POSITIVE_INFINITY) return "N/A";
+		seconds = Math.round(seconds * 100) / 100.; //rounds to 2 decimal places
 		if(Configuration.getBoolean(VariableKey.CLOCK_FORMAT, false))
 			return clockFormat(seconds);
 		else
 			return format(seconds);
 	}
 	
+	private static String format(double seconds) {
+		return DF.format(seconds);
+	}
 	private static String clockFormat(double seconds) {
-		if(seconds == Double.POSITIVE_INFINITY) return "N/A";
-
 		int hours = (int) (seconds / 3600.);
 		seconds %= 3600;
 		int minutes = (int) (seconds / 60.);

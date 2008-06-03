@@ -140,7 +140,7 @@ public class StatisticsTableModel extends DraggableJTableModel {
 		else if(selectedSolves.length == 1) {
 			SolveTime selectedSolve = stats.get(timesTable.getSelectedRow());
 			JMenuItem rawTime = new JMenuItem("Raw Time: "
-					+ Utils.format(selectedSolve.rawSecondsValue()));
+					+ Utils.formatTime(selectedSolve.rawSecondsValue()));
 			rawTime.setEnabled(false);
 			jpopup.add(rawTime);
 
