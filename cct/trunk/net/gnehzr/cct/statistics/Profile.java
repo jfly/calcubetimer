@@ -163,7 +163,7 @@ public class Profile {
 	
 	private class DatabaseLoader extends DefaultHandler {
 		public InputSource resolveEntity(String publicId, String systemId) throws IOException, SAXException {
-			return new InputSource(Configuration.databaseDTD); //TODO - test within jar file!
+			return new InputSource(Configuration.databaseDTD);
 		}
 		private int level = 0;
 		private String customization;
@@ -295,6 +295,9 @@ public class Profile {
 			return false;
 		}
 		try {
+			//TODO - I'm almost positive that there is some bug here that is causing
+			//cct to hang indefinitely. I *hope* that it's not the call to tryLock(),
+			//as we can't do anything about it.
 			RandomAccessFile t = new RandomAccessFile(statistics, "rw");
 			FileLock fl = t.getChannel().tryLock();
 			if(fl != null) {

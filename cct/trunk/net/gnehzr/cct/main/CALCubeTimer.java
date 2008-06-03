@@ -165,15 +165,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		this.setUndecorated(true);
 		createActions();
 		initializeGUIComponents();
+		stackmatTimer.execute();
 	}
 	
 	public void setSelectedProfile(Profile p) {
 		profiles.setSelectedItem(p);
-	}
-
-	public void setVisible(boolean b) {
-		stackmatTimer.execute();
-		super.setVisible(b);
 	}
 
 	private HashMap<String, AbstractAction> actionMap;
@@ -542,6 +538,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			if(e.getStateChange() == ItemEvent.DESELECTED) {
 				prepareForProfileSwitch();
 			} else if(e.getStateChange() == ItemEvent.SELECTED) {
+				statsModel.removeTableModelListener(this); //we don't want to know about the loading of the most recent session, or we could possibly hear it all spoken
+				
 				Configuration.setSelectedProfile(affected);
 				if(!affected.loadDatabase()) {
 					//the user will be notified of this in the profiles combobox
@@ -555,6 +553,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					err.printStackTrace();
 				}
 				sessionSelected(getNextSession()); //we want to load this profile's startup session
+
+				statsModel.addTableModelListener(this); //we don't want to know about the loading of the most recent session, or we could possibly hear it all spoken
+				repaintTimes(); //this needs to be here in the event that we loaded times from database
 			}
 		}
 	}
@@ -1106,8 +1107,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				main.setIconImage(cubeIcon.getImage());
 				main.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				main.setSelectedProfile(Configuration.getSelectedProfile()); //this will eventually cause sessionSelected() to be called
-				statsModel.addTableModelListener(main); //we don't want to know about the loading of the most recent session, or we could possibly hear it all spoken
-				main.repaintTimes(); //this needs to be here in the event that we loaded times from database
 				main.setVisible(true);
 			}
 		});
@@ -1339,9 +1338,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		ScrambleCustomization newCustom = ScramblePlugin.getCurrentScrambleCustomization();
 		scrambleChooser.setSelectedItem(newCustom);
 		
-		//apparently need to hide and then show the window for proper behavior when setting divider location
-		//TODO - there is probably a better way of doing this, it seems to be causing the config dialog to reappear on "save" sometimes, too
-		super.setVisible(false);
 		refreshCustomGUIMenu();
 		Component focusedComponent = this.getFocusOwner();
 		parseXML_GUI(Configuration.getXMLGUILayout());
@@ -1355,7 +1351,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			this.setLocationRelativeTo(null);
 		else
 			this.setLocation(location);
-		super.setVisible(true);
+		this.validate(); //this is needed to get the dividers to show up in the right place
 		
 		scramblePopup.syncColorScheme();
 		scramblePopup.pack();

@@ -160,6 +160,7 @@ TODO:
 for release:
 -make scrambleplugins secure
 -clean up all critical TODOs scattered throughout the code
+	-default startup is kinda ugly
 -internationalization (dates, too)
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html
 	http://www.eclipse.org/articles/Article-Internationalization/how2I18n.html
