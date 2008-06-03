@@ -1,7 +1,6 @@
 package net.gnehzr.cct.statistics;
 
 import java.util.ArrayList;
-import java.util.ListIterator;
 
 import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
@@ -116,14 +115,22 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	public String toSplitsString() {
 		if(splits == null) return "";
 		String temp = "";
-		ListIterator<SolveTime> iter = splits.listIterator();
-		if(iter.hasNext()) {
-			temp += "\tSplits: ";
+		for(SolveTime st : splits) {
+			temp += ", " + st;
 		}
-		while(iter.hasNext()) {
-			temp += iter.next() + (iter.hasNext() ? ", " : "");
-		}
+		if(!temp.isEmpty())
+			temp = temp.substring(2);
 		return temp;
+	}
+	
+	//this follows the same formatting as the above method spits out
+	public void setSplitsFromString(String splitsString) {
+		splits = new ArrayList<SolveTime>();
+		for(String s : splitsString.split(", *")) {
+			try {
+				splits.add(new SolveTime(s, null));
+			} catch (Exception e) {}
+		}
 	}
 
 	public double rawSecondsValue() {

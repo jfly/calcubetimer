@@ -170,7 +170,7 @@ public class Profile {
 		private String seshCommentOrSolveTime;
 		private Session session;
 		private SolveTime solve;
-		private String solveCommentOrScramble;
+		private String solveCommentOrScrambleOrSplits;
 		@Override
 		public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
 			if(name.equalsIgnoreCase("database")) {
@@ -204,12 +204,17 @@ public class Profile {
 				if(level == 3)
 					seshCommentOrSolveTime = "";
 				else if(level == 4)
-					solveCommentOrScramble = "";
+					solveCommentOrScrambleOrSplits = "";
 				else
 					throw new SAXException("3rd or 4th level expected for " + name + " tag.");
 			} else if(name.equalsIgnoreCase("scramble")) {
 				if(level == 4)
-					solveCommentOrScramble = "";
+					solveCommentOrScrambleOrSplits = "";
+				else
+					throw new SAXException("4th level expected for " + name + " tag.");
+			} else if(name.equalsIgnoreCase("splits")) {
+				if(level == 4)
+					solveCommentOrScrambleOrSplits = "";
 				else
 					throw new SAXException("4th level expected for " + name + " tag.");
 			} else {
@@ -233,11 +238,12 @@ public class Profile {
 				if(level == 3) {
 					session.setComment(seshCommentOrSolveTime);
 				} else if(level == 4) {
-					solve.setComment(solveCommentOrScramble);
+					solve.setComment(solveCommentOrScrambleOrSplits);
 				}
 			} else if(name.equalsIgnoreCase("scramble")) {
-				solve.setScramble(solveCommentOrScramble);
-			}
+				solve.setScramble(solveCommentOrScrambleOrSplits);
+			} else if(name.equalsIgnoreCase("splits"))
+				solve.setSplitsFromString(solveCommentOrScrambleOrSplits);
 		}
 		@Override
 		public void characters(char[] ch, int start, int length) throws SAXException {
@@ -245,8 +251,8 @@ public class Profile {
 			case 4: //solvetime or session comment
 				seshCommentOrSolveTime += new String(ch, start, length);
 				break;
-			case 5: //comment or scramble
-				solveCommentOrScramble += new String(ch, start, length);
+			case 5: //comment or scramble or splits
+				solveCommentOrScrambleOrSplits += new String(ch, start, length);
 				break;
 			}
 		}
@@ -387,6 +393,14 @@ public class Profile {
 						chs = temp.toCharArray();
 						hd.characters(chs, 0, chs.length);
 						hd.endElement("", "", "comment");
+					}
+					temp = st.toSplitsString();
+					if(!temp.isEmpty()) {
+						atts.clear();
+						hd.startElement("", "", "splits", atts);
+						chs = temp.toCharArray();
+						hd.characters(chs, 0, chs.length);
+						hd.endElement("", "", "splits");
 					}
 					temp = st.getScramble();
 					if(!temp.isEmpty()) {

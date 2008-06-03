@@ -2,8 +2,9 @@
 
 <!ELEMENT puzzle (session)*>
 <!ELEMENT session (solve|comment)*>
-<!ELEMENT solve (#PCDATA|scramble|comment)*>
+<!ELEMENT solve (#PCDATA|scramble|comment|splits)*>
 <!ELEMENT scramble (#PCDATA)*>
+<!ELEMENT splits (#PCDATA)*>
 <!ELEMENT comment (#PCDATA)*>
 
 <!ATTLIST puzzle customization CDATA #REQUIRED>

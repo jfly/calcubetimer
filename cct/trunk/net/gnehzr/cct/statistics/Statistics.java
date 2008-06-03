@@ -577,7 +577,7 @@ public class Statistics implements ConfigurationChangeListener {
 		return times.nextIndex() + ".\t" + (parens ? "(" : "")
 				+ next.toString() + (parens ? ")" : "") + "\t"
 				+ next.getScramble()
-				+ (showSplits ? next.toSplitsString() : "")
+				+ (showSplits ? "\tSplits: " + next.toSplitsString() : "")
 				+ comment
 				+ "\n"
 				+ toStatsStringHelper(times, best, worst, showSplits);

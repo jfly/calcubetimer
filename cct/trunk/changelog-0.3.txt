@@ -153,11 +153,11 @@ changes:
 	+BUG: enabling and disabling keyboard timer doesn't change integrated timer border properly
 +create a countdown for use with stackmats
 +megaminx scrambles now use U/U', possibly format with newlines? (http://www.worldcubeassociation.org/regulations/scrambles/scramble_megaminx2008.htm)
++splits are now saved to database
 
 TODO:
 
 for release:
--splits should be saved to database
 -make scrambleplugins secure
 -clean up all critical TODOs scattered throughout the code
 -internationalization (dates, too)
