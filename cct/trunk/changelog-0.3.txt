@@ -134,7 +134,7 @@ changes:
 +added option to have cct read times to you
 +fullscreen timing is broken again!
 +fixed bug with compareTo() for SolveTimes, also DNFs and POPs are represented as Double.POSITIVE_INFINITY rather than Double.MAX_VALUE
-+add configuration option for talking with cowntdown
++add configuration option for talking with countdown
 +fixed bug where double clicking a session wouldn't open it if the first column wasn't the date
 +profiledatabase now does some simple caching, which should improve performance of the sessions table
 +addtime button now does nothing if timestable doesn't have focus
@@ -154,10 +154,13 @@ changes:
 +create a countdown for use with stackmats
 +megaminx scrambles now use U/U', possibly format with newlines? (http://www.worldcubeassociation.org/regulations/scrambles/scramble_megaminx2008.htm)
 +splits are now saved to database
++added table columns for comments, and improved behavior of the comment are
 
 TODO:
 
 for release:
+-test out the rounding of times/averages
+-change big cube scrambles to use new wca notation (Rw instead of r)
 -make scrambleplugins secure
 -clean up all critical TODOs scattered throughout the code
 	-default startup is kinda ugly
