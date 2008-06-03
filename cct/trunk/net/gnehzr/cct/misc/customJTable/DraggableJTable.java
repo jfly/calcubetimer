@@ -3,6 +3,7 @@ package net.gnehzr.cct.misc.customJTable;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -82,17 +83,10 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			this.wrapped = wrapped;
 			wrapped.addTableModelListener(new TableModelListener() {
 				public void tableChanged(TableModelEvent e) {
-					int[] rows = getSelectedRows();
-					//note that wrapped has already been updated
-					int lastRow = getRowCount() - 2;
-					//this is to prevent the selection from increasing when "add" is selected
-					//and something is added
-					boolean resetSelectedRows = rows.length == 1 && rows[0] == lastRow;
 					fireTableChanged(e);
-					if(resetSelectedRows) {
-						lastRow++;
-						setRowSelectionInterval(lastRow, lastRow);
-					}
+					int[] rows = getSelectedRows();
+					if(rows.length > 0)
+						setRowSelectionInterval(rows[0], rows[0]);
 				}
 			});
 		}

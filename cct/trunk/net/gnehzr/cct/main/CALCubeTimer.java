@@ -3,6 +3,7 @@ package net.gnehzr.cct.main;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
@@ -39,6 +40,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.CellRendererPane;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -1235,7 +1237,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			sendTime(latestTime);
 		if(e != null && e.getType() == TableModelEvent.INSERT) {
 			Scramble curr = scramblesList.getCurrent();
-			if(curr != null){
+			if(curr != null) {
 				latestTime.setScramble(curr.toString());
 				boolean outOfScrambles = curr.isImported(); //This is tricky, think before you change it
 				outOfScrambles = !scramblesList.getNext().isImported() && outOfScrambles;
@@ -1248,13 +1250,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				}
 				updateScramble();
 			}
-			//TODO - for some reason, selection and scrolling to seems to be broken, I can't tell why
-			//I would really like to just turn the table upside down
 			int rows = statsModel.getRowCount();
 			if(rows > 0)
 				timesTable.setRowSelectionInterval(rows - 1, rows - 1);
 			//make the new time visible
-			Rectangle newTimeRect = timesTable.getCellRect(rows, 0, false);
+			Rectangle newTimeRect = timesTable.getCellRect(rows, 0, true);
+			timesTable.invalidate(); //the table needs to be invalidated to force the new time to "show up"!!!
 			timesTable.scrollRectToVisible(newTimeRect);
 			
 			if(Configuration.getBoolean(VariableKey.SPEAK_TIMES, false)) {

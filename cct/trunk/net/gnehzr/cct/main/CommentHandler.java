@@ -62,7 +62,7 @@ public class CommentHandler implements ListSelectionListener, FocusListener, Doc
 			else if(curr instanceof SolveTime)
 				commentArea.setText("Click here to comment on solve: " + curr);
 			else if(curr instanceof Session)
-				commentArea.setText("Click here to comment on session");
+				commentArea.setText("Click here to comment on session: " + curr);
 			commentArea.setEnabled(true);
 		} else
 			commentArea.setText("Select solve or session to set comment");
