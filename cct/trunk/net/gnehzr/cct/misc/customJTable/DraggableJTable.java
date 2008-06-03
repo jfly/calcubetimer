@@ -327,29 +327,34 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		}
 		
 		Object render = addText;
-		for(int ch = 0; ch < columns.getColumnCount(); ch++) {				
-			columns.getColumn(ch).setPreferredWidth(getEditorPreferredSize(render, ch).width);
+		for(int ch = 0; ch < columns.getColumnCount(); ch++) {
+			if(!model.isCellEditable(0, ch))
+				columns.getColumn(ch).sizeWidthToFit();
+			else {
+				int width = Math.max(getRendererPreferredSize(render, ch).width, getEditorPreferredSize(render, ch).width);
+				columns.getColumn(ch).setPreferredWidth(width + 4); //adding 4 for the border, just a nasty fix to get things working
+			}
 			render = null;
 		}
 	}
-	private Dimension getRendererPreferredSize(Object value, int row) {
-		Component c = getCellRenderer(0, row).getTableCellRendererComponent(
+	private Dimension getRendererPreferredSize(Object value, int col) {
+		Component c = getCellRenderer(0, col).getTableCellRendererComponent(
 				this,
 				value,
 				true,
 				true,
 				0,
-				row);
+				col);
 		//c == null if the class returned by getColumnClass(0) doesn't have a constructor of 1 string
 		return c == null ? new Dimension(0, 0) : c.getPreferredSize();
 	}
-	private Dimension getEditorPreferredSize(Object value, int row) {
-		Component c = getCellEditor(0, row).getTableCellEditorComponent(
+	private Dimension getEditorPreferredSize(Object value, int col) {
+		Component c = getCellEditor(0, col).getTableCellEditorComponent(
 				this,
 				value,
 				true,
 				0,
-				row);
+				col);
 		//c == null if the class returned by getColumnClass(0) doesn't have a constructor of 1 string
 		return c == null ? new Dimension(0, 0) : c.getPreferredSize();
 	}

@@ -70,7 +70,9 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 		this.greenLight = greenLight;
 	}
 	public void reset() {
+		leftHand = rightHand = greenLight = on = false;
 		keyHandler.reset();
+		refreshTimer();
 	}
 
 	public void setText(String arg0) {

@@ -1457,7 +1457,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		stackmatTimer.enableStackmat(!selected);
 		inspectionStart = 0;
 		timeLabel.reset();
-		stackmatOn(null); //we want to update the stackmat status display (if the timer is on, this will be set to true later)
+		bigTimersDisplay.reset();
 		if(selected)
 			timeLabel.requestFocusInWindow();
 	}
