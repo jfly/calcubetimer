@@ -93,6 +93,8 @@ public class DynamicString{
 		else if(s.equalsIgnoreCase("worstTimeOfBestAverage")) r = Utils.formatTime(stats.getWorstTimeOfBestAverage(num));
 		else if(s.equalsIgnoreCase("bestTimeOfWorstAverage")) r = Utils.formatTime(stats.getBestTimeOfWorstAverage(num));
 		else if(s.equalsIgnoreCase("worstTimeOfWorstAverage")) r = Utils.formatTime(stats.getWorstTimeOfWorstAverage(num));
+		else if(s.equalsIgnoreCase("progressSessionAverage")) r = Utils.formatTime(stats.getProgressSessionAverage());
+		else if(s.equalsIgnoreCase("progressSessionSD")) r = Utils.formatTime(stats.getProgressSessionSD());
 
 		else if(s.equalsIgnoreCase("bestAverageList")) r = stats.getBestAverageList(num);
 		else if(s.equalsIgnoreCase("currentAverageList")) r = stats.getCurrentAverageList(num);

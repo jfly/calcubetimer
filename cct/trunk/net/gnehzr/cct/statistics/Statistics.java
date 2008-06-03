@@ -109,6 +109,8 @@ public class Statistics implements ConfigurationChangeListener {
 	private ArrayList<SolveTime> times;
 	private ArrayList<Double>[] averages;
 	private ArrayList<Double>[] sds;
+	private ArrayList<Double> sessionavgs;
+	private ArrayList<Double> sessionsds;
 
 	private int[] indexOfBestRA;
 
@@ -143,6 +145,9 @@ public class Statistics implements ConfigurationChangeListener {
 		sortaverages = new ArrayList[RA_SIZES_COUNT];
 		sortsds = new ArrayList[RA_SIZES_COUNT];
 		indexOfBestRA = new int[RA_SIZES_COUNT];
+
+		sessionavgs = new ArrayList<Double>();
+		sessionsds = new ArrayList<Double>();
 		
 		for(int i = 0; i < RA_SIZES_COUNT; i++){
 			averages[i] = new ArrayList<Double>();
@@ -302,10 +307,12 @@ public class Statistics implements ConfigurationChangeListener {
 			double t = s.secondsValue();
 			runningTotal += t;
 			curSessionAvg = runningTotal / getSolveCount();
+			sessionavgs.add(curSessionAvg);
 			runningSquareTotal += t * t;
 			curSessionSD = Math.sqrt(runningSquareTotal
 					/ (times.size() - numPOPs - numDNFs) - curSessionAvg
 					* curSessionAvg);
+			sessionsds.add(curSessionSD);
 		}
 	}
 
@@ -800,6 +807,24 @@ public class Statistics implements ConfigurationChangeListener {
 		return worstTimeOfAverage(averages[num].indexOf(sortaverages[num].get(n)), num);
 	}
 
+	public double getSessionAverage(int n) {
+		if (n < 0)
+			n = sessionavgs.size() + n;
+
+		if (sessionavgs.size() == 0 || n < 0 || n >= sessionavgs.size())
+			return Double.POSITIVE_INFINITY;
+		return sessionavgs.get(n);
+	}
+
+	public double getSessionSD(int n) {
+		if (n < 0)
+			n = sessionsds.size() + n;
+
+		if (sessionsds.size() == 0 || n < 0 || n >= sessionsds.size())
+			return Double.POSITIVE_INFINITY;
+		return sessionsds.get(n);
+	}
+
 	public double getProgressTime() {
 		if (times.size() < 2)
 			return Double.POSITIVE_INFINITY;
@@ -825,6 +850,34 @@ public class Statistics implements ConfigurationChangeListener {
 			if (t1 == Double.POSITIVE_INFINITY)
 				return Double.POSITIVE_INFINITY;
 			double t2 = getAverage(-2, num);
+			if (t2 == Double.POSITIVE_INFINITY)
+				return Double.POSITIVE_INFINITY;
+			return t1 - t2;
+		}
+	}
+
+	public double getProgressSessionAverage() {
+		if (sessionavgs.size() < 2)
+			return Double.POSITIVE_INFINITY;
+		else {
+			double t1 = getSessionAverage(-1);
+			if (t1 == Double.POSITIVE_INFINITY)
+				return Double.POSITIVE_INFINITY;
+			double t2 = getSessionAverage(-2);
+			if (t2 == Double.POSITIVE_INFINITY)
+				return Double.POSITIVE_INFINITY;
+			return t1 - t2;
+		}
+	}
+
+	public double getProgressSessionSD() {
+		if (sessionsds.size() < 2)
+			return Double.POSITIVE_INFINITY;
+		else {
+			double t1 = getSessionSD(-1);
+			if (t1 == Double.POSITIVE_INFINITY)
+				return Double.POSITIVE_INFINITY;
+			double t2 = getSessionSD(-2);
 			if (t2 == Double.POSITIVE_INFINITY)
 				return Double.POSITIVE_INFINITY;
 			return t1 - t2;
