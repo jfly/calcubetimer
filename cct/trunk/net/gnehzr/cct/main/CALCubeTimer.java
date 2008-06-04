@@ -319,6 +319,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 		});
 		
+		final SundayContestDialog submitter = new SundayContestDialog(this);
+		actionMap.put("submitsundaycontest", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				submitter.syncWithStats(statsModel.getCurrentStatistics(), AverageType.CURRENT, 0);
+				submitter.setVisible(true);
+			}
+		});
+
 		actionMap.put("newsession", new AbstractAction() {
 			public void actionPerformed(ActionEvent arg0) {
 				if(statsModel.getRowCount() > 0) { //only create a new session if we've added any times to the current one
@@ -1388,11 +1396,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	// Actions section {{{
 	public void addTimeAction() {
-		if(timesTable.isFocusOwner() || timesTable.requestFocusInWindow()) { //if the timestable is hidden behind a tab, we don't want to let the user add times
-			timesTable.promptForNewRow();
-			Rectangle newTimeRect = timesTable.getCellRect(statsModel.getRowCount(), 0, true);
-			timesTable.scrollRectToVisible(newTimeRect);
-		}
+		SwingUtilities.invokeLater(new Runnable() { //we schedule this for later because the file menu seems to be stealing focus when retreating
+			public void run() {
+				if(timesTable.isFocusOwner() || timesTable.requestFocusInWindow()) { //if the timestable is hidden behind a tab, we don't want to let the user add times
+					timesTable.promptForNewRow();
+					Rectangle newTimeRect = timesTable.getCellRect(statsModel.getRowCount(), 0, true);
+					timesTable.scrollRectToVisible(newTimeRect);
+				}
+			}
+		});
 	}
 
 	public void resetAction() {
@@ -1683,20 +1695,6 @@ class StatisticsAction extends AbstractAction{
 	public void actionPerformed(ActionEvent e){
 		statsHandler.syncWithStats(model, type, num);
 		statsHandler.setVisible(true);
-	}
-}
-@SuppressWarnings("serial")
-class SubmitSundayContestAction extends AbstractAction{
-	private SundayContestDialog submitter;
-	private StatisticsTableModel model;
-	public SubmitSundayContestAction(CALCubeTimer cct, StatisticsTableModel model){
-		submitter = new SundayContestDialog(cct);
-		this.model = model;
-	}
-
-	public void actionPerformed(ActionEvent e) {
-		submitter.syncWithStats(model.getCurrentStatistics(), AverageType.CURRENT, 0);
-		submitter.setVisible(true);
 	}
 }
 @SuppressWarnings("serial")

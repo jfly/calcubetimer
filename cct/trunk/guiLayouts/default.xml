@@ -23,6 +23,7 @@
 						</scrollpane>
 						<component alignmentX=".5" type="startStopPanel"/>
 						<panel layout="border">
+							<line_start><button action="submitSundayContest">Submit Sunday Contest</button></line_start>
 							<center><panel><checkbox alignmentX=".5" action="keyboardTiming"/></panel></center>
 							<line_end><panel>
 								<button action="newSession">New Session</button>
@@ -38,7 +39,7 @@
 								</panel>
 								<panel layout="box" orientation="line">
 									<label>RA of $$configuration_Statistics_raSize1$$</label>
-									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average: $$currentAverage1$$ ($$progressAverage1$$)</font></html>]]></button>
+									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average: $$currentAverage1$$ ($$progressAverage1$$)</font></font></html>]]></button>
 									<button action="bestAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">Best RA: $$bestRA1$$</font></html>]]></button>
 								</panel>
 								<panel layout="box" orientation="line">
@@ -50,7 +51,7 @@
 							<panel border=";Cubing History" layout="box" orientation="page">
 								<panel><label alignmentX=".5">Best time ever: $$veryBestTime$$</label></panel>
 								<panel><label alignmentX=".5">Best RA of $$configuration_Statistics_raSize0$$: $$veryBestRA0$$</label></panel>
-								<panel><label alignmentX=".5">$$globalSolveCount$$ solve average: $$globalAverage$$</label></panel>
+								<panel><label alignmentX=".5">$$globalSolveCount$$/$$globalAttemptCount$$ solve average: $$globalAverage$$</label></panel>
 							</panel>
 						</panel>
 						<panel layout="border" preferredsize="100x25">
