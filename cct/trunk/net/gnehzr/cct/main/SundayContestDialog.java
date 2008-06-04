@@ -1,10 +1,12 @@
 package net.gnehzr.cct.main;
 
 import java.awt.Container;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -28,14 +30,16 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.misc.JTextAreaWithHistory;
+import net.gnehzr.cct.statistics.Statistics;
+import net.gnehzr.cct.statistics.Statistics.AverageType;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import net.gnehzr.cct.configuration.Configuration;
-import net.gnehzr.cct.configuration.VariableKey;
-import net.gnehzr.cct.misc.JTextAreaWithHistory;
 
 @SuppressWarnings("serial")
 public class SundayContestDialog extends JDialog implements ActionListener {
@@ -43,13 +47,14 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 	private JTextAreaWithHistory quoteArea;
 	private JCheckBox showEmailBox;
 	private JButton submitButton, doneButton;
-	public SundayContestDialog(JDialog owner, String name, String country, String email,
-			String average, String times, String quote, boolean showemail) {
-		super(owner, "Submit Sunday Contest", true);
+	public SundayContestDialog(Window w) {
+		super(w);
+		setTitle("Submit Sunday Contest");
+		setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
+		
 		Container pane = this.getContentPane();
 		pane.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 0;
 		c.weighty = 0;
@@ -60,7 +65,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.weightx = 1;
 		c.gridx = 1;
 		c.gridy = 0;
-		nameField = new JTextField(name);
+		nameField = new JTextField();
 		pane.add(nameField, c);
 
 		c.weightx = 0;
@@ -70,7 +75,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.weightx = 1;
 		c.gridx = 1;
 		c.gridy = 1;
-		countryField = new JTextField(country);
+		countryField = new JTextField();
 		pane.add(countryField, c);
 
 		c.weightx = 0;
@@ -80,7 +85,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.weightx = 1;
 		c.gridx = 1;
 		c.gridy = 2;
-		emailField = new JTextField(email);
+		emailField = new JTextField();
 		pane.add(emailField, c);
 
 		c.weightx = 0;
@@ -90,7 +95,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.weightx = 1;
 		c.gridx = 1;
 		c.gridy = 3;
-		averageField = new JTextField(average);
+		averageField = new JTextField();
 		pane.add(averageField, c);
 
 		c.weightx = 0;
@@ -100,7 +105,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.weightx = 1;
 		c.gridx = 1;
 		c.gridy = 4;
-		timesField = new JTextField(times);
+		timesField = new JTextField();
 		pane.add(timesField, c);
 
 		c.weightx = 0;
@@ -112,7 +117,6 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.gridx = 1;
 		c.gridy = 5;
 		quoteArea = new JTextAreaWithHistory();
-		quoteArea.setText(quote);
 		pane.add(new JScrollPane(quoteArea), c);
 
 		c.weightx = 1;
@@ -133,8 +137,21 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 
 		setPreferredSize(new Dimension(500, 300));
 		pack();
-		setLocationRelativeTo(null);
-		setVisible(true);
+	}
+	
+	public void setVisible(boolean b) {
+		setLocationRelativeTo(getOwner());
+		super.setVisible(b);
+	}
+	
+	public void syncWithStats(Statistics stats, AverageType type, int aveNum) {
+		nameField.setText(Configuration.getString(VariableKey.SUNDAY_NAME, false));
+		countryField.setText(Configuration.getString(VariableKey.SUNDAY_COUNTRY, false));
+		emailField.setText(Configuration.getString(VariableKey.SUNDAY_EMAIL_ADDRESS, false));
+		averageField.setText(stats.average(type, aveNum).toString());
+		timesField.setText(stats.toTerseString(type, aveNum));
+		quoteArea.setText(Configuration.getString(VariableKey.SUNDAY_QUOTE, false));
+		showEmailBox.setSelected(Configuration.getBoolean(VariableKey.SHOW_EMAIL, false));
 	}
 
 	private static class FindResultsHandler extends DefaultHandler {

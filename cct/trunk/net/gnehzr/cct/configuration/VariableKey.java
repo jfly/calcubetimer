@@ -62,7 +62,8 @@ public class VariableKey<H> {
 	public static final VariableKey<String> SUNDAY_EMAIL_ADDRESS = new VariableKey<String>("Sunday_emailAddress");
 	public static final VariableKey<String> SUNDAY_QUOTE = new VariableKey<String>("Sunday_quote");
 	public static final VariableKey<String> SUNDAY_COUNTRY = new VariableKey<String>("Sunday_country");
-	public static final VariableKey<String> AVERAGE_STATISTICS = new VariableKey<String>("Statistics_String_average");
+	public static final VariableKey<String> BEST_RA_STATISTICS = new VariableKey<String>("Statistics_String_bestRA");
+	public static final VariableKey<String> CURRENT_AVERAGE_STATISTICS = new VariableKey<String>("Statistics_String_currentAverage");
 	public static final VariableKey<String> SESSION_STATISTICS = new VariableKey<String>("Statistics_String_session");
 	public static final VariableKey<String> WATERMARK_FILE = new VariableKey<String>("Watermark_file");
 	public static final VariableKey<String> DEFAULT_SCRAMBLE_URL = new VariableKey<String>("Misc_defaultScrambleURL");

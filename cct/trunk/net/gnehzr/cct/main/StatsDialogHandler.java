@@ -7,8 +7,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.Calendar;
-import java.util.TimeZone;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -21,19 +19,18 @@ import javax.swing.JScrollPane;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.JTextAreaWithHistory;
-import net.gnehzr.cct.statistics.SolveTime;
-import net.gnehzr.cct.statistics.Statistics;
+import net.gnehzr.cct.misc.dynamicGUI.DynamicString;
+import net.gnehzr.cct.statistics.StatisticsTableModel;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
 
 @SuppressWarnings("serial")
 public class StatsDialogHandler extends JDialog implements ActionListener {
-	private Calendar cal = Calendar.getInstance(TimeZone.getDefault());
-
 	private JButton emailButton = null;
 	private JButton submitButton = null;
 	private JButton saveButton = null;
 	private JButton doneButton = null;
 	private JTextAreaWithHistory textArea = null;
+	private SundayContestDialog sundaySubmitter = null;
 
 	public StatsDialogHandler(JFrame owner) {
 		super(owner, true);
@@ -43,7 +40,8 @@ public class StatsDialogHandler extends JDialog implements ActionListener {
 
 		emailButton = new JButton("Email");
 		emailButton.addActionListener(this);
-
+		
+		sundaySubmitter = new SundayContestDialog(this);
 		submitButton = new JButton("Sunday Contest");
 		submitButton.addActionListener(this);
 
@@ -65,39 +63,44 @@ public class StatsDialogHandler extends JDialog implements ActionListener {
 		setPreferredSize(new Dimension(600, 400));
 		setResizable(false);
 		pack();
-		setLocationRelativeTo(null);
 	}
-
-	public void setVisible(boolean b, Statistics stats, AverageType type, int avgNum) {
-		updateStats(stats, type, avgNum);
+	
+	public void setVisible(boolean b) {
+		setLocationRelativeTo(getParent());
 		super.setVisible(b);
 	}
 
-	private String average, terseTimes;
-	private void updateStats(Statistics times, AverageType type, int avgNum) {
+	public void syncWithStats(StatisticsTableModel statsModel, AverageType type, int avgNum) {
+		sundaySubmitter.syncWithStats(statsModel.getCurrentStatistics(), type, avgNum);
 		setTitle("Detailed statistics for " + type.toString());
-		average = times.average(type, avgNum).toString();
-		terseTimes = times.toTerseString(type, avgNum);
-		SolveTime[] bestAndWorst = times.getBestAndWorstTimes(type, avgNum);
-		String stats = (type == AverageType.SESSION) ?
-				Configuration.getString(VariableKey.SESSION_STATISTICS, false) :
-				Configuration.getString(VariableKey.AVERAGE_STATISTICS, false);
-		stats = stats.replaceAll("\\$D", Configuration.getDateFormat().format(cal.getTime()));
-		stats = stats.replaceAll("\\$C", "" + times.getSolveCount());
-		stats = stats.replaceAll("\\$P", "" + times.getPOPCount());
-		stats = stats.replaceAll("\\$A", times.average(type, avgNum).toString());
-		stats = stats.replaceAll("\\$S", times.standardDeviation(type, avgNum).toString());
-		stats = stats.replaceAll("\\$B", bestAndWorst[0].toString());
-		stats = stats.replaceAll("\\$W", bestAndWorst[1].toString());
-		stats = stats.replaceAll("\\$T", times.toTerseString(type, avgNum));
-		stats = stats.replaceAll("\\$I", times.toStatsString(type, false, avgNum));
-		stats = stats.replaceAll("\\$i", times.toStatsString(type, Configuration.getBoolean(VariableKey.TIMING_SPLITS, false), avgNum));
-
-		textArea.setText(stats);
-	}
-
-	public String getText() {
-		return textArea.getText();
+		switch(type) {
+		case CURRENT:
+			textArea.setText(new DynamicString(Configuration.getString(VariableKey.CURRENT_AVERAGE_STATISTICS, false), statsModel).toString(avgNum));
+			break;
+		case RA:
+			textArea.setText(new DynamicString(Configuration.getString(VariableKey.BEST_RA_STATISTICS, false), statsModel).toString(avgNum));
+			break;
+		case SESSION:
+			textArea.setText(new DynamicString(Configuration.getString(VariableKey.SESSION_STATISTICS, false), statsModel).toString());
+			break;
+		}
+		
+//		average = times.average(type, avgNum).toString();
+//		terseTimes = times.toTerseString(type, avgNum);
+//		SolveTime[] bestAndWorst = times.getBestAndWorstTimes(type, avgNum);
+//		String stats = (type == AverageType.SESSION) ?
+//				Configuration.getString(VariableKey.SESSION_STATISTICS, false) :
+//				Configuration.getString(VariableKey.AVERAGE_STATISTICS, false);
+//		stats = stats.replaceAll("\\$D", Configuration.getDateFormat().format(cal.getTime()));
+//		stats = stats.replaceAll("\\$C", "" + times.getSolveCount());
+//		stats = stats.replaceAll("\\$P", "" + times.getPOPCount());
+//		stats = stats.replaceAll("\\$A", times.average(type, avgNum).toString());
+//		stats = stats.replaceAll("\\$S", times.standardDeviation(type, avgNum).toString());
+//		stats = stats.replaceAll("\\$B", bestAndWorst[0].toString());
+//		stats = stats.replaceAll("\\$W", bestAndWorst[1].toString());
+//		stats = stats.replaceAll("\\$T", times.toTerseString(type, avgNum));
+//		stats = stats.replaceAll("\\$I", times.toStatsString(type, false, avgNum));
+//		stats = stats.replaceAll("\\$i", times.toStatsString(type, Configuration.getBoolean(VariableKey.TIMING_SPLITS, false), avgNum));
 	}
 
 	public void promptToSaveStats() {
@@ -153,19 +156,11 @@ public class StatsDialogHandler extends JDialog implements ActionListener {
 		if(source == saveButton) {
 			promptToSaveStats();
 		} else if (source == submitButton) {
-			new SundayContestDialog(this,
-					Configuration.getString(VariableKey.SUNDAY_NAME, false),
-					Configuration.getString(VariableKey.SUNDAY_COUNTRY, false),
-					Configuration.getString(VariableKey.SUNDAY_EMAIL_ADDRESS, false),
-					average,
-					terseTimes,
-					Configuration.getString(VariableKey.SUNDAY_QUOTE, false),
-					Configuration.getBoolean(VariableKey.SHOW_EMAIL, false));
+			sundaySubmitter.setVisible(true);
 		} else if (source == doneButton) {
 			this.setVisible(false);
 		} else if(source == emailButton) {
 			new EmailDialog(this, textArea.getText()).setVisible(true);
 		}
 	}
-
 }

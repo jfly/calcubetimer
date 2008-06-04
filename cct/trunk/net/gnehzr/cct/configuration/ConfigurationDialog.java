@@ -135,9 +135,12 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		tab = makeSessionSetupPanel();
 		tabbedPane.addTab("Session Stats", tab);
 
-		tab = makeAverageSetupPanel();
-		tabbedPane.addTab("Average Stats", tab);
+		tab = makeBestRASetupPanel();
+		tabbedPane.addTab("Best RA Stats", tab);
 
+		tab = makeCurrentAverageSetupPanel();
+		tabbedPane.addTab("Current RA Stats", tab);
+		
 		tab = makePuzzleColorsPanel();
 		tabbedPane.addTab("Color Schemes", tab);
 
@@ -672,7 +675,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	}
 
 	private JTextAreaWithHistory sessionStats = null;
-
 	private JPanel makeSessionSetupPanel() {
 		JPanel options = new JPanel(new BorderLayout(10, 0));
 		sessionStats = new JTextAreaWithHistory();
@@ -685,12 +687,23 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		return options;
 	}
 
-	private JTextAreaWithHistory averageStats = null;
-
-	private JPanel makeAverageSetupPanel() {
+	private JTextAreaWithHistory currentAverageStats = null;
+	private JPanel makeCurrentAverageSetupPanel() {
 		JPanel options = new JPanel(new BorderLayout(10, 0));
-		averageStats = new JTextAreaWithHistory();
-		JScrollPane scroller = new JScrollPane(averageStats);
+		currentAverageStats = new JTextAreaWithHistory();
+		JScrollPane scroller = new JScrollPane(currentAverageStats);
+		options.add(scroller, BorderLayout.CENTER);
+		options.add(new JLabel("<html><body>" + "<div align=center><u>Legend</u></div><br>" + "$D = date and time<br>" + "$C = number of solves<br>"
+				+ "$P = number of pops<br>" + "$A = average<br>" + "$S = standard deviation<br>" + "$B = best time<br>" + "$W = worst time<br>"
+				+ "$I = individual times and scrambles<br>" + "$i = times, scrambles, and splits<br>" + "$T = terse formatting of times"),
+				BorderLayout.LINE_END);
+		return options;
+	}
+	private JTextAreaWithHistory bestRAStats = null;
+	private JPanel makeBestRASetupPanel() {
+		JPanel options = new JPanel(new BorderLayout(10, 0));
+		bestRAStats = new JTextAreaWithHistory();
+		JScrollPane scroller = new JScrollPane(bestRAStats);
 		options.add(scroller, BorderLayout.CENTER);
 		options.add(new JLabel("<html><body>" + "<div align=center><u>Legend</u></div><br>" + "$D = date and time<br>" + "$A = average<br>"
 				+ "$S = standard deviation<br>" + "$B = best time<br>" + "$W = worst time<br>" + "$I = individual times and scrambles<br>"
@@ -926,8 +939,11 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		// makeSessionSetupPanel
 		sessionStats.setText(Configuration.getString(VariableKey.SESSION_STATISTICS, defaults));
 
-		// makeAverageSetupPanel
-		averageStats.setText(Configuration.getString(VariableKey.AVERAGE_STATISTICS, defaults));
+		// makeBestRASetupPanel
+		bestRAStats.setText(Configuration.getString(VariableKey.BEST_RA_STATISTICS, defaults));
+		
+		// makeCurrentAverageSetupPanel
+		currentAverageStats.setText(Configuration.getString(VariableKey.CURRENT_AVERAGE_STATISTICS, defaults));
 
 		// makePuzzleColorsPanel
 		for(ScrambleViewComponent puzzle : solvedPuzzles) {
@@ -1004,7 +1020,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setString(VariableKey.SMTP_FROM_ADDRESS, smtpEmailAddress.getText());
 
 		Configuration.setString(VariableKey.SESSION_STATISTICS, sessionStats.getText());
-		Configuration.setString(VariableKey.AVERAGE_STATISTICS, averageStats.getText());
+		Configuration.setString(VariableKey.CURRENT_AVERAGE_STATISTICS, currentAverageStats.getText());
+		Configuration.setString(VariableKey.BEST_RA_STATISTICS, bestRAStats.getText());
 
 		for(ScrambleViewComponent puzzle : solvedPuzzles) {
 			puzzle.commitColorSchemeToConfiguration();

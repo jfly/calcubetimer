@@ -1681,7 +1681,22 @@ class StatisticsAction extends AbstractAction{
 	}
 
 	public void actionPerformed(ActionEvent e){
-		statsHandler.setVisible(true, model.getCurrentStatistics(), type, num);
+		statsHandler.syncWithStats(model, type, num);
+		statsHandler.setVisible(true);
+	}
+}
+@SuppressWarnings("serial")
+class SubmitSundayContestAction extends AbstractAction{
+	private SundayContestDialog submitter;
+	private StatisticsTableModel model;
+	public SubmitSundayContestAction(CALCubeTimer cct, StatisticsTableModel model){
+		submitter = new SundayContestDialog(cct);
+		this.model = model;
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		submitter.syncWithStats(model.getCurrentStatistics(), AverageType.CURRENT, 0);
+		submitter.setVisible(true);
 	}
 }
 @SuppressWarnings("serial")

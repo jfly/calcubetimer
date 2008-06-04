@@ -1,5 +1,6 @@
 package net.gnehzr.cct.misc.dynamicGUI;
 
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,6 +10,7 @@ import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.statistics.PuzzleStatistics;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.StatisticsTableModel;
+import net.gnehzr.cct.statistics.Statistics.AverageType;
 
 public class DynamicString{
 	private static final String CONF = "configuration_";
@@ -30,10 +32,14 @@ public class DynamicString{
 	}
 	
 	public String toString(){
+		return toString(0);
+	}
+	
+	public String toString(int arg) {
 		String s = splitText[0];
 
 		for(int i = 1; i < splitText.length; i++){
-			if(i % 2 == 1) s += getReplacement(splitText[i]);
+			if(i % 2 == 1) s += getReplacement(splitText[i], arg);
 			else s += splitText[i];
 		}
 		return s;
@@ -48,7 +54,7 @@ public class DynamicString{
 		return (progress >= 0 ? "+" : "-") + r;
 	}
 
-	private String getReplacement(String s){
+	private String getReplacement(String s, int num){
 		//Configuration section
 		if(s.startsWith(CONF)) {
 			return Configuration.getValue(s.substring(CONF.length()));
@@ -56,8 +62,8 @@ public class DynamicString{
 		
 		Pattern p = Pattern.compile("([^0-9]*)([0-9]*)");
 		Matcher m = p.matcher(s);
-		int num = 0;
 
+//		num is an optional argument, in order to allow the statsdialoghandler to specify which RA we're doing
 		if(m.matches()){
 			if(m.group(2).trim().length() > 0){
 				num = Integer.parseInt(m.group(2));
@@ -89,7 +95,7 @@ public class DynamicString{
 		else if(s.equalsIgnoreCase("bestRA")) r = Utils.formatTime(stats.getBestAverage(num));
 		else if(s.equalsIgnoreCase("bestSD")) r = Utils.formatTime(stats.getBestSD(num));
 		else if(s.equalsIgnoreCase("bestAverageSD")) r = Utils.formatTime(stats.getBestAverageSD(num));
-		else if(s.equalsIgnoreCase("worstTime")) r = Utils.formatTime(stats.getWorstTime());
+		else if(s.equalsIgnoreCase("worstTime")) r = Utils.formatTime(stats.getWorstTime()); //TODO - this doesn't work when there is a POP or DNF
 		else if(s.equalsIgnoreCase("worstAverage")) r = Utils.formatTime(stats.getWorstAverage(num));
 		else if(s.equalsIgnoreCase("worstSD")) r = Utils.formatTime(stats.getWorstSD(num));
 		else if(s.equalsIgnoreCase("worstAverageSD")) r = Utils.formatTime(stats.getWorstAverageSD(num));
@@ -113,6 +119,11 @@ public class DynamicString{
 		else if(s.equalsIgnoreCase("sessionAverageList")) r = stats.getSessionAverageList();
 		else if(s.equalsIgnoreCase("worstAverageList")) r = stats.getWorstAverageList(num);
 		
+		else if(s.equalsIgnoreCase("bestAverageStats")) r = stats.toStatsString(AverageType.RA, false, num);
+		else if(s.equalsIgnoreCase("currentAverageStats")) r = stats.toStatsString(AverageType.CURRENT, false, num);
+		else if(s.equalsIgnoreCase("sessionStats")) r = stats.toStatsString(AverageType.SESSION, false, 0);
+		
+		else if(s.equalsIgnoreCase("date")) r = Configuration.getDateFormat().format(new Date());
 		//Database queries for current scramble customization
 		else {
 			PuzzleStatistics ps = CALCubeTimer.statsModel.getCurrentSession().getPuzzleStatistics();
