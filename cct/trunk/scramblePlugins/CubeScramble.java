@@ -20,7 +20,8 @@ public class CubeScramble extends Scramble {
 	private int size;
 	private int[][][] image;
 	public static final int DEFAULT_UNIT_SIZE = 11;
-	private static final Pattern TOKEN_REGEX = Pattern.compile("^([LDBRUFldbruf](?:\\(\\d+\\))?[2']?)(.*)$");
+	private static final Pattern TOKEN_REGEX = Pattern.compile("^([LDBRUFldbruf](?:\\(\\d+\\))?w?[2']?)(.*)$");
+	public static final boolean wideNotation = true;
 
 	public static int getDefaultScrambleLength(String variation) {
 		int end = variation.indexOf("x");
@@ -166,7 +167,13 @@ public class CubeScramble extends Scramble {
 		int direction = n & 3;
 
 		if(size <= 5){
-			move += FACES.charAt(face);
+			if(wideNotation){
+				move += FACES.charAt(face % 6);
+				if(face / 6 != 0) move += "w";
+			}
+			else{
+				move += FACES.charAt(face);
+			}
 		}
 		else{
 			move += FACES.charAt(face % 6);
@@ -177,7 +184,7 @@ public class CubeScramble extends Scramble {
 		return move;
 	}
 	private final static String regexp23 = "^[LDBRUF][2']?$";
-	private final static String regexp45 = "^[LDBRUFldbruf][2']?$";
+	private final static String regexp45 = "^(?:[LDBRUF]w?|[ldbruf])[2']?$";
 	private final static String regexp = "^[LDBRUF](?:\\(\\d+\\))?[2']?$";
 	private boolean validateScramble(){
 		String[] strs = scramble.split(" ");
@@ -214,6 +221,7 @@ public class CubeScramble extends Scramble {
 		try{
 			for(int i = 0; i < cstrs.length; i++){
 				int face = FACES.indexOf(cstrs[i].charAt(0) + "");
+				if(cstrs[i].indexOf("w") >= 0) face += 6;
 				int slice = face / 6;
 				int dir = 0;
 
