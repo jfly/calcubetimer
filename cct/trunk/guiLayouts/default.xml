@@ -32,17 +32,17 @@
 						<panel layout="box" orientation="line">
 							<panel border=";Session Statistics" layout="box" orientation="page">
 								<panel layout="box" orientation="line">
-									<label alignmentX=".5">RA of $$configuration_Statistics_raSize0$$</label>
+									<label>RA of $$configuration_Statistics_raSize0$$</label>
 									<button action="currentAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average: $$currentAverage0$$ ($$progressAverage0$$)</font></html>]]></button>
 									<button action="bestAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">Best RA: $$bestRA0$$</font></html>]]></button>
 								</panel>
 								<panel layout="box" orientation="line">
-									<label alignmentX=".5">RA of $$configuration_Statistics_raSize1$$</label>
+									<label>RA of $$configuration_Statistics_raSize1$$</label>
 									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average: $$currentAverage1$$ ($$progressAverage1$$)</font></html>]]></button>
 									<button action="bestAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">Best RA: $$bestRA1$$</font></html>]]></button>
 								</panel>
 								<panel layout="box" orientation="line">
-									<label alignmentX=".5">$$solves$$/$$attempts$$ (solves/attempts)</label>
+									<label>$$solves$$/$$attempts$$ (solves/attempts)</label>
 									<button action="sessionAverage"><![CDATA[<html>Session Average: $$sessionAverage$$ ($$progressSessionAverage$$)</html>]]></button>
 								</panel>
 								<panel></panel> <!-- I have no idea why this needs to be here, weird behavior without it -->

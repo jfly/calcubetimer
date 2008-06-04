@@ -35,7 +35,9 @@ public class StackmatHandler implements PropertyChangeListener {
 			StackmatState current = (StackmatState) evt.getNewValue();
 			if(event.equals("Reset")) {
 				if(current.oneHand()) {
-					if(current.leftHand()) {
+					if(stackmatInspecting) {
+						
+					} else if(current.leftHand()) {
 						rightStart = 0;
 						if(leftStart <= 0)
 							leftStart = System.currentTimeMillis();
