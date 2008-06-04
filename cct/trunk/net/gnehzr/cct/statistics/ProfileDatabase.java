@@ -167,10 +167,12 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 		if(columnIndex == 1 && value instanceof ScrambleCustomization) { //setting the customization
 			ScrambleCustomization sc = (ScrambleCustomization) value;
 			Session s = getNthSession(rowIndex);
-			s.setCustomization(sc.toString());
-			updateSessionCache();
-			rowIndex = indexOf(s); //changing the customization will change the index in the model
-			fireTableRowsUpdated(rowIndex, rowIndex);
+			if(!s.getCustomization().equals(sc)) { //we're not interested in doing anything if they select the same customization
+				s.setCustomization(sc.toString());
+				updateSessionCache();
+				rowIndex = indexOf(s); //changing the customization will change the index in the model
+				fireTableRowsUpdated(rowIndex, rowIndex);
+			}
 		}
 	}
 	public boolean isCellEditable(int rowIndex, int columnIndex) {

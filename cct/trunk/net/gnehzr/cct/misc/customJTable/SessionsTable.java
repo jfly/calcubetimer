@@ -9,6 +9,7 @@ import javax.swing.event.TableModelEvent;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.main.ScrambleChooserComboBox;
+import net.gnehzr.cct.misc.customJTable.DraggableJTable.SelectionListener;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.statistics.ProfileDatabase;
 import net.gnehzr.cct.statistics.Session;
@@ -16,7 +17,7 @@ import net.gnehzr.cct.statistics.SolveTime;
 import net.gnehzr.cct.statistics.StatisticsTableModel;
 
 @SuppressWarnings("serial")
-public class SessionsTable extends DraggableJTable {
+public class SessionsTable extends DraggableJTable implements SelectionListener {
 	private StatisticsTableModel statsModel;
 	public SessionsTable(StatisticsTableModel statsModel) {
 		super(null, false, true);
@@ -31,11 +32,7 @@ public class SessionsTable extends DraggableJTable {
 		this.setDefaultEditor(ScrambleCustomization.class, new DefaultCellEditor(new ScrambleChooserComboBox(false, true)));
 		this.setDefaultRenderer(ScrambleCustomization.class, new ScrambleChooserComboBox(false, true));
 		this.setRowHeight(new ScrambleChooserComboBox(false, true).getPreferredSize().height);
-		super.setSelectionListener(new SelectionListener() {
-			public void itemSelected(Object val) {
-				fireSessionSelected((Session) val);
-			}
-		});
+		super.setSelectionListener(this);
 		Configuration.addConfigurationChangeListener(new ConfigurationChangeListener() {
 			public void configurationChanged() {
 				refreshModel();
@@ -43,6 +40,10 @@ public class SessionsTable extends DraggableJTable {
 		});
 		super.sortByColumn(-1); //this will sort column 0 in descending order
 		refreshModel();
+	}
+	public void itemSelected(Object val) {
+		if(statsModel.getCurrentSession() != (Session) val) //we don't want to reload the current session
+			fireSessionSelected((Session) val);
 	}
 	
 	private void refreshModel() {
