@@ -53,5 +53,6 @@
 		</delete>
 		<delete dir="${dist}"/>
 		<delete dir="profiles/Guest"/>
+		<echo file="profiles/startup">Guest${line.separator}Guest</echo>
 	</target>
 </project>
