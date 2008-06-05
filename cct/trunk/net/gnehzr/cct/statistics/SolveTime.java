@@ -56,40 +56,63 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 		setScramble(scramble);
 	}
 
+	//returns true if s represents a valid solvetype
+	private boolean determineSolveType(String s) {
+		if(s.equalsIgnoreCase("DNF")) {
+			type = SolveType.DNF;
+			return true;
+		} else if(s.equalsIgnoreCase("POP")) {
+			type = SolveType.POP;
+			return true;
+		}
+		return false;
+	}
 	public void setTime(String time) throws Exception {
 		time = time.trim();
-		if(time.equalsIgnoreCase("DNF"))
-			type = SolveType.DNF;
-		else if(time.isEmpty() || time.equalsIgnoreCase("POP"))
-			type = SolveType.POP;
-		else {
-			if(time.endsWith("+")) {
-				type = SolveType.PLUS_TWO;
-				time = time.substring(0, time.length() - 1);
-			}
-			String[] temp = time.split(":");
-			if(temp.length > 3 || time.lastIndexOf(":") == time.length() - 1) throw new Exception("Time has invalid placement of colons!");
-			else if(time.indexOf(".") != time.lastIndexOf(".")) throw new Exception("Time has too many decimal points!");
-			else if(time.indexOf(".") >= 0 && time.indexOf(":") >= 0 && time.indexOf(".") < time.lastIndexOf(":")) throw new Exception("Invalid decimal point!");
-			else if(time.indexOf("-") >= 0) throw new Exception("Can't have non-positive times!");
-
-			double seconds = 0;
-			for(int i = 0; i < temp.length; i++){
-				seconds *= 60;
-				double d = 0;
-				try {
-					d = Double.parseDouble(temp[i]);
-				} catch(NumberFormatException e) {
-					throw new Exception("Invalid numeric characters!");
-				}
-				if(i != 0 && d >= 60) throw new Exception("Argument too large!");
-				seconds += d;
-			}
-			seconds -= (type == SolveType.PLUS_TWO ? 2 : 0);
-			if(seconds < 0) throw new Exception("Can't have negative times!");
-			else if(seconds > 21000000) throw new Exception("Time too large!");
-			this.hundredths = (int)(100 * seconds + .5);
+		if(time.isEmpty())
+			throw new Exception("Can't have empty times!");
+		String[] typeAndTime = time.split(" +");
+		switch(typeAndTime.length) {
+		case 1:
+			if(determineSolveType(time)) //if it was a valid solvetype we're done
+				return;
+			//otherwise, attempt to parse time
+			break;
+		case 2:
+			if(!determineSolveType(typeAndTime[0])) //we have to get a valid SolveType here
+				throw new Exception(typeAndTime[0] + " does not represent a valid SolveType!");
+			time = typeAndTime[1]; //now parse second part for the raw time
+			break;
+		default:
+			throw new Exception("Too many spaces!");
 		}
+		//parse time to determine raw seconds
+		if(time.endsWith("+")) {
+			type = SolveType.PLUS_TWO;
+			time = time.substring(0, time.length() - 1);
+		}
+		String[] temp = time.split(":");
+		if(temp.length > 3 || time.lastIndexOf(":") == time.length() - 1) throw new Exception("Time has invalid placement of colons!");
+		else if(time.indexOf(".") != time.lastIndexOf(".")) throw new Exception("Time has too many decimal points!");
+		else if(time.indexOf(".") >= 0 && time.indexOf(":") >= 0 && time.indexOf(".") < time.lastIndexOf(":")) throw new Exception("Invalid decimal point!");
+		else if(time.indexOf("-") >= 0) throw new Exception("Can't have non-positive times!");
+
+		double seconds = 0;
+		for(int i = 0; i < temp.length; i++) {
+			seconds *= 60;
+			double d = 0;
+			try {
+				d = Double.parseDouble(temp[i]);
+			} catch(NumberFormatException e) {
+				throw new Exception("Invalid numeric characters!");
+			}
+			if(i != 0 && d >= 60) throw new Exception("Argument too large!");
+			seconds += d;
+		}
+		seconds -= (type == SolveType.PLUS_TWO ? 2 : 0);
+		if(seconds < 0) throw new Exception("Can't have negative times!");
+		else if(seconds > 21000000) throw new Exception("Time too large!");
+		this.hundredths = (int)(100 * seconds + .5);
 	}
 	
 	public void setScramble(String scramble) {
@@ -99,19 +122,25 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	public String getScramble() {
 		return scramble == null ? "" : scramble;
 	}
-
+	
 	public String toString() {
+		return toString(false);
+	}
+	//this is for use by the database, and will save the raw time if the solve was a POP or DNF
+	public String toExternalizableString() {
+		return toString(true);
+	}
+	private String toString(boolean rawTime) {
 		switch(type) {
 		case DNF:
-			return "DNF";
+			return "DNF" + (rawTime ? " " + rawSecondsValue() : "");
 		case POP:
-			return "POP";
+			return "POP" + (rawTime ? " " + rawSecondsValue() : "");
 		default:
 			if(hundredths == Integer.MAX_VALUE || hundredths < 0) return "N/A";
 			else return Utils.formatTime(secondsValue()) + (type == SolveType.PLUS_TWO ? "+" : "");
 		}
 	}
-
 	public String toSplitsString() {
 		if(splits == null) return "";
 		String temp = "";

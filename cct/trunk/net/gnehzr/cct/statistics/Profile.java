@@ -190,8 +190,7 @@ public class Profile {
 					session = new Session(Configuration.getDateFormat().parse(attributes.getValue("date")));
 					puzzleDB.getPuzzleStatistics(customization).addSession(session);
 				} catch (ParseException e) {
-					e.printStackTrace();
-					throw new SAXException();
+					throw new SAXException(e);
 				}
 				if(Boolean.parseBoolean(attributes.getValue("loadonstartup")))
 					CALCubeTimer.statsModel.setSession(session);
@@ -232,7 +231,7 @@ public class Profile {
 					solve.setTime(seshCommentOrSolveTime);
 					session.getStatistics().add(solve);
 				} catch (Exception e) {
-					e.printStackTrace();
+					throw new SAXException("Unable to parse time: " + seshCommentOrSolveTime);
 				}
 			} else if(name.equalsIgnoreCase("comment")) {
 				if(level == 3) {
@@ -387,7 +386,7 @@ public class Profile {
 					SolveTime st = stats.get(ch);
 					atts.clear();
 					hd.startElement("", "", "solve", atts);
-					char[] chs = st.toString().toCharArray();
+					char[] chs = st.toExternalizableString().toCharArray();
 					hd.characters(chs, 0, chs.length);
 					temp = st.getComment();
 					if(!temp.isEmpty()) {

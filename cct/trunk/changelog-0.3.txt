@@ -160,22 +160,24 @@ changes:
 +merge session stats dialog and average stats dialog w/ dynamic string
 +scrambleplugins are now secured! the policy file will correctly handle things, regardless of the current working directory
 	-test out security! how to deal with infinite loops, or sucking up of system resources?
++fix stackmat inspection when the stackmat gets turned off (inspection now has its own rendering timer)
++clean up all critical TODOs scattered throughout the code
++save DNF/POP times to database, and reconstruct them w/ raw time
 
 TODO:
 
 for release:
+-add option to control the font size of the statsdialog
 -worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
--clean up all critical TODOs scattered throughout the code
-	-fix stackmat inspection when the stackmat gets turned off
 -internationalization (dates, too)
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html
 	http://www.eclipse.org/articles/Article-Internationalization/how2I18n.html
+-deside upon default startup layout (should we remove the progress time stuff from the default layout?)
 -open source sourceforge!
 -create license, give credit where credit is due
--deside upon default startup layout (should we remove the progress time stuff from the default layout?)
 -update FAQ, defaults.properties file, about.html
--create small diagnostic problem that will dump relevant info to a file (java
-	version, os, etc.)
+	-include documentation of the DynamicStrings & update link from showDynamicStrings() in ConfigDialog.java
+-create small diagnostic problem that will dump relevant info to a file (java version, os, etc.)
 -write scramble plugin tutorial
 
 misc:
