@@ -7,7 +7,7 @@
 				<center>
 					<panel layout="box" orientation="page">
 						<component type="timerDisplay"/>
-						<component border="" type="scrambleText"/>
+						<component type="scrambleText"/>
 					</panel>
 				</center>
 				<south>
@@ -21,7 +21,6 @@
 								<component type="scrambleAttributes"/>
 							</panel>
 						</scrollpane>
-						<component alignmentX=".5" type="startStopPanel"/>
 						<panel layout="border">
 							<line_start><button action="submitSundayContest">Submit Sunday Contest</button></line_start>
 							<center><panel><checkbox alignmentX=".5" action="keyboardTiming"/></panel></center>

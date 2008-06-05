@@ -825,6 +825,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 			else if(elementName.equals("scrollpane")){
 				JScrollPane scroll = new JScrollPane() {
+					{
+						setBorder(null);
+					}
 					public Dimension getPreferredSize() {
 						Insets i = this.getInsets();
 						Dimension d = getViewport().getView().getPreferredSize();

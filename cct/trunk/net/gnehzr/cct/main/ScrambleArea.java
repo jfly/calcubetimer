@@ -44,7 +44,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		scramblePane.setOpaque(false);
 		scramblePane.addHyperlinkListener(this);
 		setViewportView(scramblePane);
-		setOpaque(true);
+		setOpaque(false);
 		setBorder(null);
 		getViewport().setOpaque(false);
 		resetPreferredSize();
