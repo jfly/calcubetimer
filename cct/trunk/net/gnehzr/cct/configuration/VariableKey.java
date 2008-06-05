@@ -15,6 +15,7 @@ import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 public class VariableKey<H> {
+	public static final VariableKey<Integer> STATS_DIALOG_FONT_SIZE = new VariableKey<Integer>("GUI_StatsDialog_fontSize");
 	public static final VariableKey<Integer> DELAY_UNTIL_INSPECTION = new VariableKey<Integer>("GUI_Timer_delayUntilInspection");
 	public static final VariableKey<Integer> DELAY_BETWEEN_SOLVES = new VariableKey<Integer>("GUI_Timer_delayBetweenSolves");
 	public static final VariableKey<Integer> RA_SIZE0 = new VariableKey<Integer>("Statistics_raSize0");
@@ -124,6 +125,7 @@ public class VariableKey<H> {
 		return new VariableKey<Boolean>("GUI_xmlLayout_" + src.getName() + index);
 	}
 
+	public static final VariableKey<Dimension> STATS_DIALOG_DIMENSION = new VariableKey<Dimension>("GUI_StatsDialog_dimension");
 	public static final VariableKey<Dimension> SCRAMBLE_VIEW_DIMENSION = new VariableKey<Dimension>("GUI_ScrambleView_dimension");
 	public static final VariableKey<Dimension> MAIN_FRAME_DIMENSION = new VariableKey<Dimension>("GUI_MainFrame_dimension");
 	public static final VariableKey<Dimension> KEYBOARD_TIMER_DIMENSION = new VariableKey<Dimension>("GUI_KeyboardTimer_dimension");

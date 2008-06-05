@@ -1,20 +1,26 @@
 package net.gnehzr.cct.main;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
@@ -24,13 +30,14 @@ import net.gnehzr.cct.statistics.StatisticsTableModel;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
 
 @SuppressWarnings("serial")
-public class StatsDialogHandler extends JDialog implements ActionListener {
+public class StatsDialogHandler extends JDialog implements ActionListener, ChangeListener {
 	private JButton emailButton = null;
 	private JButton submitButton = null;
 	private JButton saveButton = null;
 	private JButton doneButton = null;
 	private JTextAreaWithHistory textArea = null;
 	private SundayContestDialog sundaySubmitter = null;
+	private JSpinner sizeSpinner = null;
 
 	public StatsDialogHandler(JFrame owner) {
 		super(owner, true);
@@ -50,23 +57,40 @@ public class StatsDialogHandler extends JDialog implements ActionListener {
 
 		doneButton = new JButton("Done");
 		doneButton.addActionListener(this);
+		
+		sizeSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1)) {
+			@Override
+			public void setValue(Object value) { //this makes the spinner fire statechanges even if the value remains the same
+				if(value.equals(getValue())) {
+					fireStateChanged();
+				} else
+					super.setValue(value);
+			}
+		};
+		sizeSpinner.addChangeListener(this);
 
 		JPanel bottomPanel = new JPanel();
+		bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.LINE_AXIS));
+		bottomPanel.add(Box.createHorizontalGlue());
 		bottomPanel.add(emailButton);
 		bottomPanel.add(submitButton);
 		bottomPanel.add(saveButton);
 		bottomPanel.add(doneButton);
+		bottomPanel.add(Box.createHorizontalGlue());
+		bottomPanel.add(new JLabel("Font Size "));
+		bottomPanel.add(sizeSpinner);
 
 		getContentPane().add(textScroller, BorderLayout.CENTER);
 		getContentPane().add(bottomPanel, BorderLayout.PAGE_END);
-
-		setPreferredSize(new Dimension(600, 400));
-		setResizable(false);
-		pack();
 	}
 	
 	public void setVisible(boolean b) {
-		setLocationRelativeTo(getParent());
+		if(b) {
+			setSize(Configuration.getDimension(VariableKey.STATS_DIALOG_DIMENSION, false));
+			sizeSpinner.setValue(Configuration.getInt(VariableKey.STATS_DIALOG_FONT_SIZE, false).intValue());
+			setLocationRelativeTo(getParent());
+		} else
+			Configuration.setDimension(VariableKey.STATS_DIALOG_DIMENSION, getSize());
 		super.setVisible(b);
 	}
 
@@ -162,5 +186,11 @@ public class StatsDialogHandler extends JDialog implements ActionListener {
 		} else if(source == emailButton) {
 			new EmailDialog(this, textArea.getText()).setVisible(true);
 		}
+	}
+
+	public void stateChanged(ChangeEvent e) {
+		int fontSize = (Integer) sizeSpinner.getValue();
+		Configuration.setInt(VariableKey.STATS_DIALOG_FONT_SIZE, fontSize);
+		textArea.setFont(textArea.getFont().deriveFont((float) fontSize));
 	}
 }

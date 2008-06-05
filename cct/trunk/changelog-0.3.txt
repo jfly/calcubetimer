@@ -163,11 +163,11 @@ changes:
 +fix stackmat inspection when the stackmat gets turned off (inspection now has its own rendering timer)
 +clean up all critical TODOs scattered throughout the code
 +save DNF/POP times to database, and reconstruct them w/ raw time
++add option to control the font size of the statsdialog
 
 TODO:
 
 for release:
--add option to control the font size of the statsdialog
 -worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
 -internationalization (dates, too)
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html
