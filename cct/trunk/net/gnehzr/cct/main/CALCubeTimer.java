@@ -26,19 +26,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.security.CodeSource;
-import java.security.Permission;
-import java.security.PermissionCollection;
 import java.security.Policy;
-import java.security.ProtectionDomain;
-import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 
 import javax.swing.AbstractAction;
@@ -141,8 +133,6 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import sun.security.provider.PolicyFile;
 
 @SuppressWarnings("serial")
 public class CALCubeTimer extends JFrame implements ActionListener, TableModelListener, ChangeListener, ConfigurationChangeListener, ItemListener, SessionListener, TimingListener {
@@ -1477,7 +1467,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timeLabel.setKeyboard(selected);
 		bigTimersDisplay.setKeyboard(selected);
 		stackmatTimer.enableStackmat(!selected);
-		inspectionStart = 0;
+		stopInspection();
 		timeLabel.reset();
 		bigTimersDisplay.reset();
 		stackmatOn(null); //we clear the state here, if the stackmat is on, it will be set later
@@ -1605,45 +1595,64 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	private long inspectionStart = 0;
+	private Timer updateInspectionTimer = new Timer(90, new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			updateInspection();
+		}
+	});
 	public void inspectionStarted() {
 		inspectionStart = System.currentTimeMillis();
+		updateInspectionTimer.start();
+	}
+	private void stopInspection() {
+		inspectionStart = 0;
+		updateInspectionTimer.stop();
+	}
+	private boolean isInspecting() {
+		return inspectionStart != 0;
+	}
+	
+	private void updateInspection() {
+		int inspection = getInpectionValue();
+		String time;
+		if(inspection <= -2) {
+			penalty = SolveType.DNF;
+			time = "Disqualification";
+		} else if(inspection <= 0) {
+			penalty = SolveType.PLUS_TWO;
+			time = "+2 Penalty";
+		} else
+			time = "" + inspection;
+		Color fore = Color.RED;
+		timeLabel.setForeground(fore);
+		timeLabel.setText(time);
+		if(isFullscreen) {
+			bigTimersDisplay.setForeground(fore);
+			bigTimersDisplay.setText(time);
+		}
 	}
 	
 	private SolveType penalty = SolveType.NORMAL;
 	private void updateTime(TimerState newTime) {
-		String time = newTime.toString();
-		boolean inspecting = inspectionStart != 0;
-		Color background;
-		if(inspecting) {
-			int inspection = getInpectionValue();
-			if(inspection <= -2) {
-				penalty = SolveType.DNF;
-				time = "Disqualification";
-			} else if(inspection <= 0) {
-				penalty = SolveType.PLUS_TWO;
-				time = "+2 Penalty";
-			} else
-				time = "" + inspection;
-			
-		 	background = Color.RED;
-		} else
-			background = Color.BLACK;
-		timeLabel.setForeground(background);
-		timeLabel.setText(time);
-		if(isFullscreen) {
-			bigTimersDisplay.setForeground(background);
-			bigTimersDisplay.setText(time);
-		}
-//		boolean reset = false;
 		if(newTime instanceof StackmatState) {
 			StackmatState newState = (StackmatState) newTime;
 			timeLabel.setHands(newState.leftHand(), newState.rightHand());
 			timeLabel.setStackmatGreenLight(newState.isGreenLight());
 //			reset = newState.isReset();
 		}
-//		if(!reset) //TODO - test out on server!
-		if(!inspecting)
+		if(!isInspecting()) {
+			Color fore = Color.BLACK;
+			String time = newTime.toString();
+			timeLabel.setForeground(fore);
+			timeLabel.setText(time);
+			if(isFullscreen) {
+				bigTimersDisplay.setForeground(fore);
+				bigTimersDisplay.setText(time);
+			}
+//			boolean reset = false;
+//			if(!reset) //TODO - test out on server!
 			sendCurrentTime(time);
+		}
 	}
 
 	//I guess we could add an option to prompt the user to see if they want to keep this time
@@ -1660,7 +1669,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	public void timerStarted() {
-		inspectionStart = 0;
+		stopInspection();
 		if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false))
 			setFullScreen(true);
 		if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false))
@@ -1682,7 +1691,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			timeLabel.setStackmatOn(on);
 			if(on) {
 				onLabel.setText("Timer is ON");
-			} else { //TODO - what to do with inspection here?
+			} else {
 				onLabel.setText("Timer is OFF");
 			}
 		}
