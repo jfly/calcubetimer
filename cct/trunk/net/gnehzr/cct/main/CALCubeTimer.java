@@ -26,10 +26,19 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.security.CodeSource;
+import java.security.Permission;
+import java.security.PermissionCollection;
+import java.security.Policy;
+import java.security.ProtectionDomain;
+import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 
 import javax.swing.AbstractAction;
@@ -132,6 +141,8 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import sun.security.provider.PolicyFile;
 
 @SuppressWarnings("serial")
 public class CALCubeTimer extends JFrame implements ActionListener, TableModelListener, ChangeListener, ConfigurationChangeListener, ItemListener, SessionListener, TimingListener {
@@ -1058,11 +1069,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		rollingAverageAction1.setEnabled(stats.isValid(AverageType.RA, 1));
 		sessionAverageAction.setEnabled(stats.isValid(AverageType.SESSION, 0));
 	}
-
-	public static ScramblePluginSecurityManager securityManager;
+	
 	public static void main(String[] args) {
-		securityManager = new ScramblePluginSecurityManager();
-		System.setSecurityManager(securityManager);
+		Policy.setPolicy(new CCTSecurityPolicy());
+		System.setSecurityManager(new SecurityManager());
 		
 		JDialog.setDefaultLookAndFeelDecorated(true);
 		JFrame.setDefaultLookAndFeelDecorated(true);

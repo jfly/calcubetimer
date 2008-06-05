@@ -38,6 +38,7 @@
 			<fileset dir=".">
 				<include name="guiLayouts/*"/>
 				<include name="scramblePlugins/*.class"/>
+				<include name="scramblePlugin.policy"/>
 				<include name="profiles/defaults.properties"/>
 				<include name="profiles/database.dtd"/>
 				<include name="documentation/*"/>

@@ -19,6 +19,7 @@ import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.Utils;
 
 public class ScramblePlugin {
+	public static final String SCRAMBLE_PLUGIN_PACKAGE = "";
 	public static ScrambleCustomization NULL_SCRAMBLE_CUSTOMIZATION = null;
 	static{
 		try{
@@ -50,18 +51,17 @@ public class ScramblePlugin {
 				}
 			})) {
 				Class<?> cls = null;
-				try { //I don't know enough about java to know if this is a security concern
-					cls = cl.loadClass(child.substring(0, child.indexOf(".")));
+				try {
+					cls = cl.loadClass(SCRAMBLE_PLUGIN_PACKAGE + child.substring(0, child.indexOf(".")));
+					if(cls.getSuperclass().equals(Scramble.class)) {
+						try {
+							scramblePlugins.add(new ScramblePlugin((Class<? extends Scramble>) cls));
+						} catch(Exception ee) {
+							ee.printStackTrace();
+						}
+					}
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
-					return null;
-				}
-				if(cls.getSuperclass().equals(Scramble.class)) {
-					try {
-						scramblePlugins.add(new ScramblePlugin((Class<? extends Scramble>) cls));
-					} catch(Exception ee) {
-						ee.printStackTrace();
-					}
 				}
 			}
 		}
@@ -254,59 +254,27 @@ public class ScramblePlugin {
 		return null;
 	}
 	
-//	public class ProtectedThread<E> extends Thread {
-//		private E result;
-//		public void setResult(E result) {
-//			this.result = result;
-//		}
-//		private Exception e;
-//		public void setException(Exception e) {
-//			this.e = e;
-//		}
-//		public E runAndGetResult() throws Exception {
-//			if(e != null)
-//				throw e;
-//			run();
-//			return result;
-//		}
-//		public String toString() {
-//			return "MaliciousX";
-//		}
-//	}
-
 	public Scramble importScramble(final String variation, final String scramble, final String[] attributes) throws InvalidScrambleException {
 		if(variation == null) {
 			return new NullScramble(variation, scramble);
 		}
-//		ProtectedThread<Scramble> s = new ProtectedThread<Scramble>() {
-//			public void run() {
-				try {
-//					setResult(importScrambleConstructor.newInstance(variation, scramble, attributes));
-					return importScrambleConstructor.newInstance(variation, scramble, attributes);
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					Throwable cause = e.getCause();
-					if(cause instanceof InvalidScrambleException) {
-						InvalidScrambleException invalid = (InvalidScrambleException) cause;
-//						setException(invalid);
-						throw invalid;
-					}
-					cause.printStackTrace();
-				}
-//			}
-//		};
-//		try {
-//			return s.runAndGetResult();
-//		} catch(InvalidScrambleException e) {
-//			throw e;
-//		} catch(Exception e) {
-			return null;
-//		}
+		try {
+			return importScrambleConstructor.newInstance(variation, scramble, attributes);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			Throwable cause = e.getCause();
+			if(cause instanceof InvalidScrambleException) {
+				InvalidScrambleException invalid = (InvalidScrambleException) cause;
+				throw invalid;
+			}
+			cause.printStackTrace();
+		}
+		return null;
 	}
 
 	public int getDefaultScrambleLength(ScrambleVariation var) {

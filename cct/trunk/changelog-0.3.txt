@@ -156,13 +156,17 @@ changes:
 +splits are now saved to database
 +added table columns for comments, and improved behavior of the comment are
 +formatTime() in Utils.java modified to round to 2 decimal places before formatting, fixes this: (26.05, 31.25, 24.38, 36.68, 23.88, 29.31, 27.80, 33.61, 32.19, 53.61, 27.75, 29.13)
++change big cube scrambles to use new wca notation (Rw instead of r)
++merge session stats dialog and average stats dialog w/ dynamic string
++scrambleplugins are now secured! the policy file will correctly handle things, regardless of the current working directory
+	-test out security! how to deal with infinite loops, or sucking up of system resources?
 
 TODO:
 
 for release:
--change big cube scrambles to use new wca notation (Rw instead of r)
--make scrambleplugins secure
+-worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
 -clean up all critical TODOs scattered throughout the code
+	-fix stackmat inspection when the stackmat gets turned off
 -internationalization (dates, too)
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html
 	http://www.eclipse.org/articles/Article-Internationalization/how2I18n.html
@@ -180,9 +184,7 @@ misc:
 -BUG: titled borders are not anti-aliased (substance bug!)
 
 cleanup:
--merge session stats dialog and average stats dialog w/ dynamic string
 -generalize XML syntax (get rid of Dynamic... classes) UPDATE: no idea how to do this...???
--integrate statsdialoghandler with ui xml stuff
 
 Server stuff:
 -overhaul to get rid of threads
