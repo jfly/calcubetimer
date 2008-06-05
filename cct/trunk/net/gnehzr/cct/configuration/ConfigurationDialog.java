@@ -3,6 +3,7 @@ package net.gnehzr.cct.configuration;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.FlowLayout;
@@ -27,6 +28,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -40,6 +42,7 @@ import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -55,6 +58,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.Timer;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 import net.gnehzr.cct.keyboardTiming.TimerLabel;
 import net.gnehzr.cct.misc.ComboItem;
@@ -78,7 +83,7 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 import say.swing.JFontChooser;
 
 @SuppressWarnings("serial")
-public class ConfigurationDialog extends JDialog implements KeyListener, MouseListener, ActionListener, ColorListener, ItemListener {
+public class ConfigurationDialog extends JDialog implements KeyListener, MouseListener, ActionListener, ColorListener, ItemListener, HyperlinkListener {
 	private final static float DISPLAY_FONT_SIZE = 20;
 	private final static String[] FONT_SIZES = { "8", "9", "10", "11", "12", "14", "16", "18", "20", "22", "24", "26", "28", "36" };
 
@@ -674,29 +679,49 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		}
 	}
 
+	private JEditorPane getStatsLegend() {
+		JEditorPane pane = new JEditorPane("text/html", "<html>Click <a href=''>here</a> to see all available DynamicStrings.</html>");
+		pane.setEditable(false);
+		pane.setFocusable(false);
+		pane.setOpaque(false);
+		pane.setBorder(null);
+		pane.addHyperlinkListener(this);
+		return pane;
+	}
+	public void hyperlinkUpdate(HyperlinkEvent e) {
+		if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+			showDynamicStrings();
+		}
+	}
+
+	private void showDynamicStrings() {
+		try {
+			URI uri = Configuration.documentationFile.toURI();
+			Desktop.getDesktop().browse(uri);
+		} catch(Exception error) {
+			JOptionPane.showMessageDialog(this,
+					error.getMessage(),
+					"Error!",
+					JOptionPane.WARNING_MESSAGE);
+		}
+	}
+	
 	private JTextAreaWithHistory sessionStats = null;
 	private JPanel makeSessionSetupPanel() {
 		JPanel options = new JPanel(new BorderLayout(10, 0));
 		sessionStats = new JTextAreaWithHistory();
 		JScrollPane scroller = new JScrollPane(sessionStats);
 		options.add(scroller, BorderLayout.CENTER);
-		options.add(new JLabel("<html><body>" + "<div align=center><u>Legend</u></div><br>" + "$D = date and time<br>" + "$C = number of solves<br>"
-				+ "$P = number of pops<br>" + "$A = average<br>" + "$S = standard deviation<br>" + "$B = best time<br>" + "$W = worst time<br>"
-				+ "$I = individual times and scrambles<br>" + "$i = times, scrambles, and splits<br>" + "$T = terse formatting of times"),
-				BorderLayout.LINE_END);
+		options.add(getStatsLegend(), BorderLayout.PAGE_END);
 		return options;
 	}
-
 	private JTextAreaWithHistory currentAverageStats = null;
 	private JPanel makeCurrentAverageSetupPanel() {
 		JPanel options = new JPanel(new BorderLayout(10, 0));
 		currentAverageStats = new JTextAreaWithHistory();
 		JScrollPane scroller = new JScrollPane(currentAverageStats);
 		options.add(scroller, BorderLayout.CENTER);
-		options.add(new JLabel("<html><body>" + "<div align=center><u>Legend</u></div><br>" + "$D = date and time<br>" + "$C = number of solves<br>"
-				+ "$P = number of pops<br>" + "$A = average<br>" + "$S = standard deviation<br>" + "$B = best time<br>" + "$W = worst time<br>"
-				+ "$I = individual times and scrambles<br>" + "$i = times, scrambles, and splits<br>" + "$T = terse formatting of times"),
-				BorderLayout.LINE_END);
+		options.add(getStatsLegend(), BorderLayout.PAGE_END);
 		return options;
 	}
 	private JTextAreaWithHistory bestRAStats = null;
@@ -705,9 +730,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		bestRAStats = new JTextAreaWithHistory();
 		JScrollPane scroller = new JScrollPane(bestRAStats);
 		options.add(scroller, BorderLayout.CENTER);
-		options.add(new JLabel("<html><body>" + "<div align=center><u>Legend</u></div><br>" + "$D = date and time<br>" + "$A = average<br>"
-				+ "$S = standard deviation<br>" + "$B = best time<br>" + "$W = worst time<br>" + "$I = individual times and scrambles<br>"
-				+ "$i = times, scrambles, and splits<br>" + "$T = terse formatting of times"), BorderLayout.LINE_END);
+		options.add(getStatsLegend(), BorderLayout.PAGE_END);
 		return options;
 	}
 
