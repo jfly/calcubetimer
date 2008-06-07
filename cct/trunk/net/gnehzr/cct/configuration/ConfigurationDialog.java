@@ -683,7 +683,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	}
 
 	private JEditorPane getStatsLegend() {
-		JEditorPane pane = new JEditorPane("text/html", ConfigurationMessages.getString("ConfigurationDialog.seedynamicstrings")); //$NON-NLS-1$ //$NON-NLS-2$
+		JEditorPane pane = new JEditorPane("text/html",
+				"<html><a href=''>" + ConfigurationMessages.getString("ConfigurationDialog.seedynamicstrings") + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
 		pane.setEditable(false);
 		pane.setFocusable(false);
 		pane.setOpaque(false);
