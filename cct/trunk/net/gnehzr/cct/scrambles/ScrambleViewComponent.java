@@ -30,26 +30,34 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		this.addComponentListener(this);
 	}
 
-
 	public void redo() {
-		setScramble(currentScram, currentPlugin);
+		setScramble(currentScram, currentVariation);
 	}
 	private BufferedImage buffer = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
 	private Scramble currentScram = null;
+	private ScrambleVariation currentVariation = null;
 	private ScramblePlugin currentPlugin = null;
-	public void setScramble(Scramble scramble, ScramblePlugin plugin) {
+	public void setScramble(Scramble scramble, ScrambleVariation variation) {
 		if(scramble != null) {
 			currentScram = scramble;
-			currentPlugin = plugin;
-			buffer = currentScram.getScrambleImage(GAP(), getUnitSize(currentPlugin), getColorScheme(currentPlugin));
-			repaint();
+			currentVariation = variation;
+			if(variation != null)
+				currentPlugin = currentVariation.getScramblePlugin();
+			buffer = currentScram.getScrambleImage(GAP(), getUnitSize(false), getColorScheme(currentPlugin));
+			repaint();	//this will cause the scramble to be drawn
+			invalidate(); //this forces the component to fit itself to its layout properly
 		}
+	}
+	//if this method is called to set the scramble, then we disable saving of the unit size to configuration
+	public void setScramble(Scramble scramble, ScramblePlugin plugin) {
+		currentPlugin = plugin;
+		setScramble(scramble, (ScrambleVariation) null);
 	}
 	public Scramble getScramble() {
 		return currentScram;
 	}
-	public ScramblePlugin getScramblePlugin() {
-		return currentPlugin;
+	public ScrambleVariation getScrambleVariation() {
+		return currentVariation;
 	}
 
 	public Dimension getPreferredSize() {
@@ -58,9 +66,9 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 
 	public Dimension getMinimumSize() {
 		if(currentScram != null) {
-			return currentScram.getMinimumSize(GAP(), currentPlugin.getPuzzleUnitSize(true));
-		}
-		else return new Dimension(buffer.getWidth(), buffer.getHeight());
+			return currentScram.getMinimumSize(GAP(), getUnitSize(true));
+		} else
+			return new Dimension(buffer.getWidth(), buffer.getHeight());
 	}
 
 	public Dimension getMaximumSize() {
@@ -84,8 +92,8 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	public void componentMoved(ComponentEvent arg0) {}
 	public void componentShown(ComponentEvent e) {}
 	public void componentResized(ComponentEvent e) {
-		if(currentScram != null) {
-			setUnitSize(currentPlugin, currentScram.getNewUnitSize(getWidth(), getHeight(), GAP()));
+		if(currentScram != null && currentVariation != null) {
+			currentVariation.setPuzzleUnitSize(currentScram.getNewUnitSize(getWidth(), getHeight(), GAP()));
 			redo();
 		}
 	}
@@ -96,7 +104,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		this.listener = listener;
 	}
 	public void mouseClicked(MouseEvent e) {
-		String faceClicked = currentScram.getFaceClicked(e.getX(), e.getY(), GAP(), unitSizes.get(currentPlugin));
+		String faceClicked = currentScram.getFaceClicked(e.getX(), e.getY(), GAP(), getUnitSize(false));
 		if(faceClicked != null)
 			listener.colorClicked(this, faceClicked, getColorScheme(currentPlugin));
 	}
@@ -143,16 +151,10 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 		redo();
 	}
 
-	private HashMap<ScramblePlugin, Integer> unitSizes = new HashMap<ScramblePlugin, Integer>();
-	private int getUnitSize(ScramblePlugin plugin) {
-		Integer unitSize = unitSizes.get(plugin);
-		if(unitSize == null) {
-			unitSize = plugin.getPuzzleUnitSize(false);
-			unitSizes.put(plugin, unitSize);
-		}
-		return unitSize;
-	}
-	private void setUnitSize(ScramblePlugin plugin, int unitSize) {
-		unitSizes.put(plugin, unitSize);
+	private int getUnitSize(boolean defaults) {
+		if(currentVariation != null)
+			return currentVariation.getPuzzleUnitSize(defaults);
+		else
+			return currentPlugin.DEFAULT_UNIT_SIZE;
 	}
 }

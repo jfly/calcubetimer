@@ -33,8 +33,8 @@ public class VariableKey<H> {
 	public static final VariableKey<Integer> MAX_FONTSIZE = new VariableKey<Integer>("Scramble_fontMaxSize"); //$NON-NLS-1$
 	public static final VariableKey<Integer> SCRAMBLE_COMBOBOX_ROWS = new VariableKey<Integer>("Scramble_comboboxRows"); //$NON-NLS-1$
 	public static final VariableKey<Integer> FULLSCREEN_DESKTOP = new VariableKey<Integer>("Misc_fullscreenDesktop"); //$NON-NLS-1$
-	public static final VariableKey<Integer> UNIT_SIZE(ScramblePlugin plugin) {
-		return new VariableKey<Integer>("Scramble_Popup_unitSize_" + plugin.getPuzzleName()); //$NON-NLS-1$
+	public static final VariableKey<Integer> UNIT_SIZE(ScrambleVariation variation) {
+		return new VariableKey<Integer>("Scramble_Popup_unitSize_" + variation.toString());//$NON-NLS-1$
 	}
 	public static final VariableKey<Integer> SCRAMBLE_LENGTH(ScrambleVariation var) {
 		return new VariableKey<Integer>("Puzzle_ScrambleLength_" + var.toString()); //$NON-NLS-1$
@@ -126,7 +126,6 @@ public class VariableKey<H> {
 	}
 
 	public static final VariableKey<Dimension> STATS_DIALOG_DIMENSION = new VariableKey<Dimension>("GUI_StatsDialog_dimension"); //$NON-NLS-1$
-	public static final VariableKey<Dimension> SCRAMBLE_VIEW_DIMENSION = new VariableKey<Dimension>("GUI_ScrambleView_dimension"); //$NON-NLS-1$
 	public static final VariableKey<Dimension> MAIN_FRAME_DIMENSION = new VariableKey<Dimension>("GUI_MainFrame_dimension"); //$NON-NLS-1$
 	public static final VariableKey<Dimension> KEYBOARD_TIMER_DIMENSION = new VariableKey<Dimension>("GUI_KeyboardTimer_dimension"); //$NON-NLS-1$
 

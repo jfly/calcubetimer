@@ -19,7 +19,7 @@ import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.Utils;
 
 public class ScramblePlugin {
-	public static final String SCRAMBLE_PLUGIN_PACKAGE = ""; //$NON-NLS-1$
+	private static final String SCRAMBLE_PLUGIN_PACKAGE = ""; //$NON-NLS-1$
 	public static final ScrambleCustomization NULL_SCRAMBLE_CUSTOMIZATION = getNullScramble();
 	private static ScrambleCustomization getNullScramble() {
 		try {
@@ -193,6 +193,8 @@ public class ScramblePlugin {
 		this.attributes = attributes;
 	}
 
+	private Class<? extends Scramble> pluginClass;
+	
 	private Constructor<? extends Scramble> newScrambleConstructor;
 	private Constructor<? extends Scramble> importScrambleConstructor;
 
@@ -207,6 +209,7 @@ public class ScramblePlugin {
 	private Method getDefaultFaceColor;
 
 	protected ScramblePlugin(Class<? extends Scramble> pluginClass) throws SecurityException, NoSuchMethodException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+		this.pluginClass = pluginClass;
 		newScrambleConstructor = pluginClass.getConstructor(String.class, int.class, String[].class);
 		importScrambleConstructor = pluginClass.getConstructor(String.class, String.class, String[].class);
 
@@ -235,6 +238,10 @@ public class ScramblePlugin {
 		getDefaultFaceColor = pluginClass.getMethod("getDefaultFaceColor", String.class); //$NON-NLS-1$
 		if(!getDefaultFaceColor.getReturnType().equals(String.class))
 			throw new ClassCastException();
+	}
+	
+	public Class<? extends Scramble> getPluginClass() {
+		return pluginClass;
 	}
 
 	public Scramble newScramble(String variation, int length, String[] attributes) {
@@ -323,12 +330,5 @@ public class ScramblePlugin {
 			scheme.put(face, Utils.stringToColor(col));
 		}
 		return scheme;
-	}
-
-	public int getPuzzleUnitSize(boolean defaults) {
-		try {
-			return Configuration.getInt(VariableKey.UNIT_SIZE(this), defaults);
-		} catch(Exception e) {}
-		return DEFAULT_UNIT_SIZE;
 	}
 }

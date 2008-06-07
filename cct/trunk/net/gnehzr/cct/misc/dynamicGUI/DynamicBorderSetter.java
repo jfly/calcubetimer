@@ -16,9 +16,9 @@ public class DynamicBorderSetter implements ConfigurationChangeListener, Statist
 	public DynamicBorderSetter(JComponent com, String dynamicString, StatisticsTableModel statsModel) {
 		this.com = com;
 		String[] titleAttrs = dynamicString.split(";"); //$NON-NLS-1$
-		titleString = new DynamicString(titleAttrs[0], statsModel);
+		titleString = new DynamicString(titleAttrs[0], statsModel, XMLGuiMessages.XMLGUI_ACCESSOR);
 		if(titleAttrs.length > 1) {
-			colorString = new DynamicString(titleAttrs[1], null);
+			colorString = new DynamicString(titleAttrs[1], null, XMLGuiMessages.XMLGUI_ACCESSOR);
 		}		
 		Configuration.addConfigurationChangeListener(this);
 		statsModel.addStatisticsUpdateListener(this);

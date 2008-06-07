@@ -36,7 +36,6 @@ import java.util.HashMap;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -69,7 +68,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
-import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
@@ -108,6 +106,7 @@ import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleList;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
+import net.gnehzr.cct.scrambles.ScramblePluginMessages;
 import net.gnehzr.cct.speaking.NumberSpeaker;
 import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
 import net.gnehzr.cct.stackmatInterpreter.StackmatState;
@@ -641,7 +640,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scrambleAttributes.removeAll();
 		String[] attrs = sc.getScramblePlugin().getAvailablePuzzleAttributes();
 		attributes = new JCheckBox[attrs.length];
-
+		ScramblePluginMessages.loadResources(sc.getScramblePlugin().getPluginClass().getSimpleName());
 		for(int ch = 0; ch < attrs.length; ch++) { //create checkbox for each possible attribute
 			boolean selected = false;
 			for(String attr : sc.getScramblePlugin().getEnabledPuzzleAttributes()) { //see if attribute is selected
@@ -650,7 +649,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					break;
 				}
 			}
-			attributes[ch] = new JCheckBox(attrs[ch], selected);
+			//TODO - implement some sort of listener here
+			attributes[ch] = new JCheckBox(new DynamicString(attrs[ch], null, ScramblePluginMessages.SCRAMBLE_ACCESSOR).toString(), selected);
 			attributes[ch].setFocusable(Configuration.getBoolean(VariableKey.FOCUSABLE_BUTTONS, false));
 			attributes[ch].setActionCommand(SCRAMBLE_ATTRIBUTE_CHANGED);
 			attributes[ch].addActionListener(this);
@@ -1019,7 +1019,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			if(level >= 0){
 				if(needText.get(level) && strs.get(level).length() > 0) {
 					if(componentTree.get(level) instanceof DynamicStringSettable)
-						((DynamicStringSettable)componentTree.get(level)).setDynamicString(new DynamicString(strs.get(level), statsModel));
+						((DynamicStringSettable)componentTree.get(level)).setDynamicString(new DynamicString(strs.get(level), statsModel, XMLGuiMessages.XMLGUI_ACCESSOR));
 				} 
 				if(componentTree.get(level) instanceof JTabbedPane) {
 					JTabbedPane temp = (JTabbedPane) componentTree.get(level);
@@ -1209,7 +1209,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			Configuration.setStringArray(VariableKey.PUZZLE_ATTRIBUTES(plugin),
 					plugin.getEnabledPuzzleAttributes());
 		}
-		Configuration.setDimension(VariableKey.SCRAMBLE_VIEW_DIMENSION, scramblePopup.getSize());
 		Configuration.setPoint(VariableKey.SCRAMBLE_VIEW_LOCATION, scramblePopup.getLocation());
 		Configuration.setDimension(VariableKey.MAIN_FRAME_DIMENSION, this.getSize());
 		Configuration.setPoint(VariableKey.MAIN_FRAME_LOCATION, this.getLocation());
@@ -1377,9 +1376,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		
 		scramblePopup.syncColorScheme();
 		scramblePopup.pack();
-		size = Configuration.getDimension(VariableKey.SCRAMBLE_VIEW_DIMENSION, false);
-		if(size != null)
-			scramblePopup.setSize(size);
 		location = Configuration.getPoint(VariableKey.SCRAMBLE_VIEW_LOCATION, false);
 		if(location != null)
 			scramblePopup.setLocation(location);

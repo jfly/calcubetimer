@@ -164,11 +164,11 @@ changes:
 +clean up all critical TODOs scattered throughout the code
 +save DNF/POP times to database, and reconstruct them w/ raw time
 +add option to control the font size of the statsdialog
++sqr-1 scramble size grows as cct starts and closes, fixed by saving each variation's unit size to configuration, rather than the popup's dimension
 
 TODO:
 
 for release:
--sqr-1 scramble size grows as cct starts and closes
 -worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
 -internationalization (xmlgui, source code, scramble plugins, documentation, about?, font dialog, browse dialog, color chooser)
 	http://www.famfamfam.com/lab/icons/flags/

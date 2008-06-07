@@ -104,7 +104,6 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 			String scramble = e.getDescription();
-			ScramblePlugin sp = currentCustomization.getScramblePlugin();
 			ScrambleVariation sv = currentCustomization.getScrambleVariation();
 			int caretPos = scramblePane.getCaretPosition();
 			//this is here to prevent calls to setVisible(true) when the popup is already visbile
@@ -124,14 +123,14 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 			try {
 				s = sv.generateScramble(moveAndScramble[1]);
 			} catch(InvalidScrambleException e0) { //this could happen if a null scramble is imported
-				sp = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScramblePlugin();
+				sv = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation();
 				try {
-					s = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation().generateScramble(scramble);
+					s = sv.generateScramble(scramble);
 				} catch (InvalidScrambleException e1) {
 					e1.printStackTrace();
 				}
 			}
-			scramblePopup.setScramble(s, sp);
+			scramblePopup.setScramble(s, sv);
 		}
 	}
 

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.gnehzr.cct.MessageAccessor;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.misc.Utils;
@@ -19,14 +20,15 @@ public class DynamicString{
 	
 	private String[] splitText;
 	private StatisticsTableModel statsModel;
-
-	public DynamicString(String s, StatisticsTableModel statsModel){
+	private MessageAccessor accessor;
+	public DynamicString(String s, StatisticsTableModel statsModel, MessageAccessor accessor){
 		this.statsModel = statsModel;
+		this.accessor = accessor;
 		ArrayList<String> splitUp = new ArrayList<String>();
 		splitText = s.split("\\$\\$"); //$NON-NLS-1$
 		for(int i = 0; i < splitText.length; i++){
 			splitText[i] = splitText[i].replaceAll("\\\\\\$", "\\$"); //$NON-NLS-1$ //$NON-NLS-2$
-			if(i % 2 == 1) {
+			if(i % 2 != 0) {
 				splitText[i] = splitText[i].trim();
 				if(!splitText[i].isEmpty())
 					splitUp.add(STAT + splitText[i]);
@@ -58,19 +60,22 @@ public class DynamicString{
 		String s = "";
 
 		for(int i = 0; i < splitText.length; i++){
-			String t = splitText[i];
-			if(t == null) break;
-			char c = t.charAt(0);
-			t = t.substring(1);
+			if(splitText[i] == null) break;
+			char c = splitText[i].charAt(0);
+			String t = splitText[i].substring(1);
 			switch(c) {
+			case I18N_TEXT:
+				if(accessor != null) {
+					s += accessor.getString(t);
+					break;
+				}
+			case STAT:
+				if(statsModel != null) {
+					s += getReplacement(t, arg);
+					break;
+				}
 			case RAW_TEXT:
 				s += t;
-				break;
-			case I18N_TEXT:
-				s += XMLGuiMessages.getString(t);
-				break;
-			case STAT:
-				s += getReplacement(t, arg);
 				break;
 			}
 		}

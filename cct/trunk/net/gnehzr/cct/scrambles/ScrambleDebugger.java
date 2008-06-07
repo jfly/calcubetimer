@@ -44,7 +44,7 @@ public class ScrambleDebugger extends ScramblePlugin {
 				System.out.println(face);
 			}
 		});
-		view.setScramble(s, this);
+		view.setScramble(s, new ScrambleVariation(this, null));
 		view.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		view.pack();
 		view.setVisible(true);

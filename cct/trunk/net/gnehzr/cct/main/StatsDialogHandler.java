@@ -99,13 +99,13 @@ public class StatsDialogHandler extends JDialog implements ActionListener, Chang
 		setTitle(MainMessages.getString("StatsDialogHandler.detailedstats") + " " + type.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 		switch(type) {
 		case CURRENT:
-			textArea.setText(new DynamicString(Configuration.getString(VariableKey.CURRENT_AVERAGE_STATISTICS, false), statsModel).toString(avgNum));
+			textArea.setText(new DynamicString(Configuration.getString(VariableKey.CURRENT_AVERAGE_STATISTICS, false), statsModel, null).toString(avgNum));
 			break;
 		case RA:
-			textArea.setText(new DynamicString(Configuration.getString(VariableKey.BEST_RA_STATISTICS, false), statsModel).toString(avgNum));
+			textArea.setText(new DynamicString(Configuration.getString(VariableKey.BEST_RA_STATISTICS, false), statsModel, null).toString(avgNum));
 			break;
 		case SESSION:
-			textArea.setText(new DynamicString(Configuration.getString(VariableKey.SESSION_STATISTICS, false), statsModel).toString());
+			textArea.setText(new DynamicString(Configuration.getString(VariableKey.SESSION_STATISTICS, false), statsModel, null).toString());
 			break;
 		}
 		

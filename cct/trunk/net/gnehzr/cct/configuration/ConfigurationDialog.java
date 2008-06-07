@@ -1104,7 +1104,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	public void keyTyped(KeyEvent e) {}
 
 	public void colorClicked(ScrambleViewComponent source, String face, HashMap<String, Color> colorScheme) {
-		Color selected = JColorChooser.showDialog(this, ConfigurationMessages.getString("ConfigurationDialog.choosenewcolor") + " " + face, colorScheme.get(face)); //$NON-NLS-1$ //$NON-NLS-2$
+		Color selected = JColorChooser.showDialog(this, ConfigurationMessages.getString("ConfigurationDialog.choosecolor") + ": " + face, colorScheme.get(face)); //$NON-NLS-1$ //$NON-NLS-2$
 		if(selected != null) {
 			colorScheme.put(face, selected);
 			source.redo();

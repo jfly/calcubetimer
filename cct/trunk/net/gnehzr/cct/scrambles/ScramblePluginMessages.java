@@ -1,17 +1,17 @@
-package net.gnehzr.cct.misc.dynamicGUI;
+package net.gnehzr.cct.scrambles;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import net.gnehzr.cct.MessageAccessor;
 
-public class XMLGuiMessages implements MessageAccessor {
-	private static final String BUNDLE_NAME = "guiLayouts/"; //$NON-NLS-1$
+public class ScramblePluginMessages implements MessageAccessor {
+	private static final String BUNDLE_NAME = "scramblePlugins/"; //$NON-NLS-1$
 
 	private static ResourceBundle RESOURCE_BUNDLE = null;
 
-	public static final MessageAccessor XMLGUI_ACCESSOR = new XMLGuiMessages();
-	private XMLGuiMessages() {}
+	public static final MessageAccessor SCRAMBLE_ACCESSOR = new ScramblePluginMessages();
+	private ScramblePluginMessages() {}
 	
 	private static String bundleFileName;
 	public static void loadResources(String pluginName) {

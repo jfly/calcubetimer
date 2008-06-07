@@ -18,7 +18,6 @@ public class MegaminxScramble extends Scramble {
 		"f", "e", "d", "c"};
 	public static final String PUZZLE_NAME = "Megaminx";
 	public static final String[] VARIATIONS = {"Megaminx", "Pochmann Megaminx"};
-	public static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
 	private int[][] image;
 	public static final int DEFAULT_UNIT_SIZE = 30;
 	public static final double UNFOLDHEIGHT = 2 + 3 * Math.sin(.3 * Math.PI) + Math.sin(.1 * Math.PI);

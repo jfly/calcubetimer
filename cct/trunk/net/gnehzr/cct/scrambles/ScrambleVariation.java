@@ -57,6 +57,16 @@ public class ScrambleVariation {
 		return scramblePlugin.importScramble(variation, scramble, scramblePlugin.getEnabledPuzzleAttributes());
 	}
 
+	public int getPuzzleUnitSize(boolean defaults) {
+		try {
+			return Configuration.getInt(VariableKey.UNIT_SIZE(this), defaults);
+		} catch(Exception e) {}
+		return scramblePlugin.DEFAULT_UNIT_SIZE;
+	}
+	public void setPuzzleUnitSize(int size) {
+		Configuration.setInt(VariableKey.UNIT_SIZE(this), size);
+	}
+	
 	public int hashCode() {
 		return toString().hashCode();
 	}

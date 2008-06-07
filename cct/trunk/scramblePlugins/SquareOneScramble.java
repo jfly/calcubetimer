@@ -16,8 +16,7 @@ import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 
 public class SquareOneScramble extends Scramble {
-	public static final String[] FACE_NAMES = { "Left", "Back", "Right", "Front",
-		"Up", "Down" };
+	public static final String[] FACE_NAMES = { "L", "B", "R", "F",	"U", "D" };
 	public static final String PUZZLE_NAME = "Square-1";
 	private int[] state, turns;
 	private int twistCount = 0; //this will tell us the state of the middle pieces
@@ -213,13 +212,13 @@ public class SquareOneScramble extends Scramble {
 		Rectangle2D.Double right_mid;
 		if(twistCount % 2 == 0) {
 			right_mid = new Rectangle2D.Double(width / 2 - half_square_width, height / 2 - radius * (multiplier - 1) / 2, 2*corner_width + edge_width, radius * (multiplier - 1));
-			g.setColor(colorScheme.get("Front"));
+			g.setColor(colorScheme.get(FACE_NAMES[3])); //front
 		} else {
 			right_mid = new Rectangle2D.Double(width / 2 - half_square_width, height / 2 - radius * (multiplier - 1) / 2, corner_width + edge_width, radius * (multiplier - 1));
-			g.setColor(colorScheme.get("Back"));
+			g.setColor(colorScheme.get(FACE_NAMES[1])); //back
 		}
 		g.fill(right_mid);
-		g.setColor(colorScheme.get("Front"));
+		g.setColor(colorScheme.get(FACE_NAMES[3])); //front
 		g.fill(left_mid); //this will clobber part of the other guy
 		g.setColor(Color.BLACK);
 		g.draw(right_mid);
@@ -276,7 +275,7 @@ public class SquareOneScramble extends Scramble {
 
 	private Color[] getPieceColors(int piece, HashMap<String, Color> colorScheme) {
 		boolean up = piece <= 7;
-		Color top = up ? colorScheme.get("Up") : colorScheme.get("Down");
+		Color top = up ? colorScheme.get(FACE_NAMES[4]) : colorScheme.get(FACE_NAMES[5]);
 		if(isCornerPiece(piece)) { //corner piece
 			if(!up)
 				piece = 15 - piece;
@@ -367,12 +366,12 @@ public class SquareOneScramble extends Scramble {
 		int width = getWidth(gap, radius);
 		int height = getHeight(gap, radius);
 		double half_width = (radius * RADIUS_MULTIPLIER) / Math.sqrt(2);
-		if(isInSquare(width / 2.0, height / 4.0, half_width, x, y)) //up
-			return "Up";
-		if(isInSquare(width / 2.0, 3 * height / 4.0, half_width, x, y)) //down
-			return "Down";
+		if(isInSquare(width / 2.0, height / 4.0, half_width, x, y))
+			return FACE_NAMES[4]; //up
+		if(isInSquare(width / 2.0, 3 * height / 4.0, half_width, x, y))
+			return FACE_NAMES[5]; //down
 		if(new Rectangle2D.Double(width / 2 - half_width * multiplier, height / 2 - radius * (multiplier - 1) / 2, 2 * half_width * multiplier, radius * (multiplier - 1)).contains(x, y))
-			return "Front";
+			return FACE_NAMES[3]; //front
 		for(int ch = 0; ch < 4; ch++) {
 			if(isInTri(width / 2.0, height / 4.0, 2 * half_width * multiplier, (5-ch) % 4, x, y) ||
 					isInTri(width / 2.0, 3 * height / 4.0, 2 * half_width * multiplier, (ch+1) % 4, x, y)) {

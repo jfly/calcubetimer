@@ -10,18 +10,17 @@ import net.gnehzr.cct.scrambles.Scramble;
 
 public class CubeScramble extends Scramble {
 	private static final String FACES = "LDBRUFldbruf";
-	public static final String[] FACE_NAMES = {"Left", "Down", "Back", "Right",
-		"Up", "Front"};
+	public static final String[] FACE_NAMES = {"L", "D", "B", "R", "U", "F"};
 	public static final String PUZZLE_NAME = "Cube";
 	public static final String[] VARIATIONS = {"2x2x2", "3x3x3", "4x4x4", "5x5x5",
 		"6x6x6", "7x7x7", "8x8x8", "9x9x9", "10x10x10", "11x11x11"};
-	public static final String[] ATTRIBUTES = {"Multi-slice"};
+	public static final String[] ATTRIBUTES = {"%%multislice%%"};
 	public static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
 	private int size;
 	private int[][][] image;
 	public static final int DEFAULT_UNIT_SIZE = 11;
 	private static final Pattern TOKEN_REGEX = Pattern.compile("^([LDBRUFldbruf](?:\\(\\d+\\))?w?[2']?)(.*)$");
-	public static final boolean wideNotation = true;
+	private static final boolean wideNotation = true;
 
 	public static int getDefaultScrambleLength(String variation) {
 		int end = variation.indexOf("x");
