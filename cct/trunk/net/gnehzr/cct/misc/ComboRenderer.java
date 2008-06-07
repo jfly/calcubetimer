@@ -7,7 +7,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ComboRenderer extends JLabel implements ListCellRenderer {
 	public ComboRenderer() {
 		setOpaque(true);
@@ -26,14 +26,14 @@ public class ComboRenderer extends JLabel implements ListCellRenderer {
 
 		if(!((ComboItem)value).isEnabled()) {
 			setBackground(list.getBackground());
-			setForeground(UIManager.getColor("Label.disabledForeground"));
+			setForeground(UIManager.getColor("Label.disabledForeground")); //$NON-NLS-1$
 		}
 
 		if(((ComboItem)value).isInUse()){
 			setForeground(Color.RED);
 		}
 		setFont(list.getFont());
-		setText((value == null) ? "" : value.toString());
+		setText((value == null) ? "" : value.toString()); //$NON-NLS-1$
 		return this;
 	}
 }

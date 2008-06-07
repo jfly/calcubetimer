@@ -10,7 +10,7 @@ import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ScrambleFrame extends JDialog {
 	private ScrambleViewComponent scrambleView;
 	public ScrambleFrame(JFrame parent, String title) {

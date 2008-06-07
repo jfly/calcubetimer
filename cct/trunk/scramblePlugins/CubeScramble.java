@@ -72,7 +72,7 @@ public class CubeScramble extends Scramble {
 	}
 
 	public CubeScramble(String variation, int length, String... attrs) {
-		this(variation.equals("") ? 3 : Integer.parseInt(variation.split("x")[0]), length, attrs);
+		this(variation.isEmpty() ? 3 : Integer.parseInt(variation.split("x")[0]), length, attrs);
 	}
 
 	private CubeScramble(int size, int length, String... attrs) {

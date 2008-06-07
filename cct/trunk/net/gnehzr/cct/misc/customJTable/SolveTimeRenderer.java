@@ -16,7 +16,7 @@ import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.StatisticsTableModel;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class SolveTimeRenderer extends JLabel implements TableCellRenderer {
 	// Will highlight times from current average and from best rolling average
 	private StatisticsTableModel statsModel;
@@ -57,10 +57,8 @@ public class SolveTimeRenderer extends JLabel implements TableCellRenderer {
 					foreground = Configuration.getColor(VariableKey.WORST_TIME, false);
 				}
 				
-				memberOfBestRA = times.containsTime(st,
-						AverageType.RA, 0);
-				memberOfCurrentAverage = times.containsTime(
-						st, AverageType.CURRENT, 0);
+				memberOfBestRA = times.containsTime(st,	AverageType.RA, 0);
+				memberOfCurrentAverage = times.containsTime(st, AverageType.CURRENT, 0);
 			}
 			
 			if(memberOfBestRA && memberOfCurrentAverage)
@@ -76,7 +74,7 @@ public class SolveTimeRenderer extends JLabel implements TableCellRenderer {
 			else
 				background = background.darker();
 		} else if(background == null)
-			background = Color.WHITE;			
+			background = table.getBackground();
 
 		setForeground(foreground);
 		setBackground(background);

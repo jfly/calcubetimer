@@ -38,7 +38,7 @@ import net.gnehzr.cct.scrambles.ScrambleVariation;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ScrambleCustomizationListModel extends DraggableJTableModel implements TableCellRenderer, TableCellEditor, MouseListener {
 	private ArrayList<ScrambleCustomization> customizations;
 	public void setContents(ArrayList<ScrambleCustomization> contents) {
@@ -55,7 +55,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	public Class<?> getColumnClass(int columnIndex) {
 		return ScrambleCustomization.class;
 	}
-	private String[] columnNames = new String[]{ "Scramble Customization", "Length" };
+	private String[] columnNames = new String[]{ ConfigurationMessages.getString("ScrambleCustomizationListModel.scramblecustomization"), ConfigurationMessages.getString("ScrambleCustomizationListModel.length") }; //$NON-NLS-1$ //$NON-NLS-2$
 	public int getColumnCount() {
 		return columnNames.length;
 	}
@@ -106,20 +106,20 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 
 	//******* Start of renderer/editor stuff ****************//
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		String val = value == null ? "" : value.toString();
+		String val = value == null ? "" : value.toString(); //$NON-NLS-1$
 		if(value instanceof ScrambleCustomization) {
 			ScrambleCustomization customization = (ScrambleCustomization) value;
 			ScrambleVariation v = customization.getScrambleVariation();
 			if(column == 0) {
 				String bolded = v.getVariation();
-				if(bolded.equals(""))
+				if(bolded.isEmpty())
 					bolded = customization.getScramblePlugin().getPuzzleName();
-				val = "<html><b>" + bolded + "</b>";
+				val = "<html><b>" + bolded + "</b>"; //$NON-NLS-1$ //$NON-NLS-2$
 				if(customization.getCustomization() != null)
-					val += ":" + customization.getCustomization();
-				val += "<html>";
+					val += ":" + customization.getCustomization(); //$NON-NLS-1$
+				val += "<html>"; //$NON-NLS-1$
 			} else if(column == 1) {
-				val = "" + v.getLength();
+				val = "" + v.getLength(); //$NON-NLS-1$
 			}
 		}
 		return new JLabel(val, SwingConstants.CENTER);
@@ -129,7 +129,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		if(value instanceof ScrambleCustomization) {
 			customization = (ScrambleCustomization) value;
 		} else {
-			customization = new ScrambleCustomization(ScramblePlugin.getCurrentScrambleCustomization().getScrambleVariation(), "");
+			customization = new ScrambleCustomization(ScramblePlugin.getCurrentScrambleCustomization().getScrambleVariation(), ""); //$NON-NLS-1$
 		}
 		if(column == 0) {
 			return getCustomizationPanel(customization);
@@ -160,15 +160,15 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 					}
 				}
 			});
-			scrambleVariations.setToolTipText("Select the puzzle variation.");
+			scrambleVariations.setToolTipText(ConfigurationMessages.getString("ScrambleCustomizationListModel.selectvariation")); //$NON-NLS-1$
 			customPanel.add(scrambleVariations);
 
 			originalFieldText = custom.getCustomization();
 			customField = new JTextField(originalFieldText, 15);
-			customField.setToolTipText("Specify the customization, for example: OH, BLD...");
+			customField.setToolTipText(ConfigurationMessages.getString("ScrambleCustomizationListModel.specifycustomization")); //$NON-NLS-1$
 			customPanel.add(customField);
 		} else {
-			customPanel.add(new JLabel("<html><b>" + custom.getScrambleVariation().toString() + "</b></html>"));
+			customPanel.add(new JLabel("<html><b>" + custom.getScrambleVariation().toString() + "</b></html>")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		disabledComponents = new ArrayList<Component>();
@@ -182,13 +182,13 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		lengthPanel.setLayout(new BoxLayout(lengthPanel, BoxLayout.LINE_AXIS));
 		customization = custom;
 		scramLength = new JSpinner(new SpinnerNumberModel(custom.getScrambleVariation().getLength(), 0, null, 1));
-		scramLength.setToolTipText("Specify the scramble length for this puzzle variation.");
+		scramLength.setToolTipText(ConfigurationMessages.getString("ScrambleCustomizationListModel.specifylength")); //$NON-NLS-1$
 		((JSpinner.DefaultEditor) scramLength.getEditor()).getTextField().setColumns(3);
 		lengthPanel.add(scramLength);
 
-		JButton resetButton = new JButton("Reset");
+		JButton resetButton = new JButton(ConfigurationMessages.getString("ScrambleCustomizationListModel.reset")); //$NON-NLS-1$
 		resetButton.setEnabled(false);
-		resetButton.setToolTipText("Reset the scramble length to its default.");
+		resetButton.setToolTipText(ConfigurationMessages.getString("ScrambleCustomizationListModel.resetlength")); //$NON-NLS-1$
 		resetButton.setFocusable(false);
 		resetButton.setFocusPainted(false);
 		resetButton.setMargin(new Insets(0, 0, 0, 0));
@@ -267,13 +267,13 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		if(customization.getCustomization() != null) {
 			String customName = customField.getText();
 			String error = null;
-			if(customName.equals("")) {
-				error = "Can't have an empty customization!";
+			if(customName.isEmpty()) { //$NON-NLS-1$
+				error = ConfigurationMessages.getString("ScrambleCustomizationListModel.noemptycustomization"); //$NON-NLS-1$
 			} else {
-				String fullCustomName = customization.getScrambleVariation().getVariation() + ":" + customName;
+				String fullCustomName = customization.getScrambleVariation().getVariation() + ":" + customName; //$NON-NLS-1$
 				for(ScrambleCustomization c : customizations) {
-					if(c.equals(fullCustomName) && c != customization) {
-						error = "Can't have duplicate customizations!";
+					if(c.toString().equals(fullCustomName) && c != customization) {
+						error = ConfigurationMessages.getString("ScrambleCustomizationListModel.noduplicatecustomizations"); //$NON-NLS-1$
 						break;
 					}
 				}
@@ -281,9 +281,9 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 			if(error != null) {
 				customField.setBorder(new LineBorder(Color.RED));
 				customField.setToolTipText(error);
-				Action toolTipAction = customField.getActionMap().get("postTip");
+				Action toolTipAction = customField.getActionMap().get("postTip"); //$NON-NLS-1$
 				if(toolTipAction != null) {
-					ActionEvent postTip = new ActionEvent(customField, ActionEvent.ACTION_PERFORMED, "");
+					ActionEvent postTip = new ActionEvent(customField, ActionEvent.ACTION_PERFORMED, ""); //$NON-NLS-1$
 					toolTipAction.actionPerformed(postTip);
 				}
 				return false;

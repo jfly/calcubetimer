@@ -17,8 +17,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -61,7 +59,7 @@ import javax.swing.text.Position;
 *   }
 * <pre>
 **/
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class JFontChooser extends JComponent {
 	/**
 	 * Return value from showDialog(Component parent).
@@ -78,31 +76,16 @@ public class JFontChooser extends JComponent {
 	 */
 	public static final int ERROR_OPTION = -1;
 
-	private static final Font DEFAULT_SELECTED_FONT = new Font("Serif",
+	private static final Font DEFAULT_SELECTED_FONT = new Font("Serif", //$NON-NLS-1$
 			Font.PLAIN, 12);
-	private Font DEFAULT_FONT = new Font("Dialog", Font.PLAIN, 10);
+	private Font DEFAULT_FONT = new Font("Dialog", Font.PLAIN, 10); //$NON-NLS-1$
 
 	private static final int[] FONT_STYLE_CODES = { Font.PLAIN, Font.BOLD,
 			Font.ITALIC, Font.BOLD | Font.ITALIC };
 
-	private static final String[] DEFAULT_FONT_SIZE_STRINGS = { "8", "9", "10",
-			"11", "12", "14", "16", "18", "20", "22", "24", "26", "28", "36",
-			"48", "72", };
-
-	private static ResourceBundle messageCatalog;
-
-	protected static String _(String key) {
-		String value = key;
-		try {
-			if (messageCatalog == null)
-				messageCatalog = ResourceBundle.getBundle(JFontChooser.class
-						.getName()
-						+ "Messages");
-			value = messageCatalog.getString(key);
-		} catch (MissingResourceException e) {
-		}
-		return value;
-	}
+	private static final String[] DEFAULT_FONT_SIZE_STRINGS = { "8", "9", "10", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			"11", "12", "14", "16", "18", "20", "22", "24", "26", "28", "36", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
+			"48", "72", }; //$NON-NLS-1$ //$NON-NLS-2$
 
 	protected int dialogResultValue = ERROR_OPTION;
 
@@ -271,7 +254,7 @@ public class JFontChooser extends JComponent {
 					getFontSizeTextField().setText(maxSize.toString());
 				} else if(fontSize == 0) {
 					fontSize = 1;
-					getFontSizeTextField().setText("1");
+					getFontSizeTextField().setText("1"); //$NON-NLS-1$
 				}
 				break;
 			} catch (NumberFormatException e) {
@@ -329,7 +312,7 @@ public class JFontChooser extends JComponent {
 	}
 
 	public String getVersionString() {
-		return _("Version");
+		return SwingMessages.getString("Version"); //$NON-NLS-1$
 	}
 
 	/**
@@ -395,8 +378,7 @@ public class JFontChooser extends JComponent {
 		}
 	}
 
-	protected class TextFieldKeyHandlerForListSelectionUpDown extends
-			KeyAdapter {
+	protected static class TextFieldKeyHandlerForListSelectionUpDown extends KeyAdapter {
 		private JList targetList;
 
 		public TextFieldKeyHandlerForListSelectionUpDown(JList list) {
@@ -446,7 +428,7 @@ public class JFontChooser extends JComponent {
 		}
 
 		private void update(DocumentEvent event) {
-			String newValue = "";
+			String newValue = ""; //$NON-NLS-1$
 			try {
 				Document doc = event.getDocument();
 				newValue = doc.getText(0, doc.getLength());
@@ -489,8 +471,8 @@ public class JFontChooser extends JComponent {
 
 		protected DialogOKAction(JDialog dialog) {
 			this.dialog = dialog;
-			putValue(Action.DEFAULT, "OK");
-			putValue(Action.NAME, _("OK"));
+			putValue(Action.DEFAULT, "OK"); //$NON-NLS-1$
+			putValue(Action.NAME, SwingMessages.getString("OK")); //$NON-NLS-1$
 		}
 
 		public void actionPerformed(ActionEvent e) {
@@ -504,8 +486,8 @@ public class JFontChooser extends JComponent {
 
 		protected DialogCancelAction(JDialog dialog) {
 			this.dialog = dialog;
-			putValue(Action.DEFAULT, "Cancel");
-			putValue(Action.NAME, _("Cancel"));
+			putValue(Action.DEFAULT, "Cancel"); //$NON-NLS-1$
+			putValue(Action.NAME, SwingMessages.getString("Cancel")); //$NON-NLS-1$
 		}
 
 		public void actionPerformed(ActionEvent e) {
@@ -516,8 +498,8 @@ public class JFontChooser extends JComponent {
 	
 	protected class DialogResetAction extends AbstractAction {
 		protected DialogResetAction() {
-			putValue(Action.DEFAULT, "Reset");
-			putValue(Action.NAME, _("Reset"));
+			putValue(Action.DEFAULT, "Reset"); //$NON-NLS-1$
+			putValue(Action.NAME, SwingMessages.getString("Reset")); //$NON-NLS-1$
 		}
 
 		public void actionPerformed(ActionEvent e) {
@@ -529,7 +511,7 @@ public class JFontChooser extends JComponent {
 		Frame frame = parent instanceof Frame ? (Frame) parent
 				: (Frame) SwingUtilities
 						.getAncestorOfClass(Frame.class, parent);
-		JDialog dialog = new JDialog(frame, _("SelectFont"), true);
+		JDialog dialog = new JDialog(frame, SwingMessages.getString("SelectFont"), true); //$NON-NLS-1$
 
 		Action okAction = new DialogOKAction(dialog);
 		Action cancelAction = new DialogCancelAction(dialog);
@@ -554,9 +536,9 @@ public class JFontChooser extends JComponent {
 		actionMap.put(okAction.getValue(Action.DEFAULT), okAction);
 		InputMap inputMap = buttonsPanel
 				.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-		inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), cancelAction
+		inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), cancelAction //$NON-NLS-1$
 				.getValue(Action.DEFAULT));
-		inputMap.put(KeyStroke.getKeyStroke("ENTER"), okAction
+		inputMap.put(KeyStroke.getKeyStroke("ENTER"), okAction //$NON-NLS-1$
 				.getValue(Action.DEFAULT));
 
 		JPanel dialogEastPanel = new JPanel();
@@ -593,7 +575,7 @@ public class JFontChooser extends JComponent {
 			p.add(getFontFamilyTextField(), BorderLayout.NORTH);
 			p.add(scrollPane, BorderLayout.CENTER);
 
-			JLabel label = new JLabel(_("FontName"));
+			JLabel label = new JLabel(SwingMessages.getString("FontName")); //$NON-NLS-1$
 			label.setHorizontalAlignment(JLabel.LEFT);
 			label.setHorizontalTextPosition(JLabel.LEFT);
 			label.setLabelFor(getFontFamilyTextField());
@@ -624,7 +606,7 @@ public class JFontChooser extends JComponent {
 			p.add(getFontStyleTextField(), BorderLayout.NORTH);
 			p.add(scrollPane, BorderLayout.CENTER);
 
-			JLabel label = new JLabel(_("FontStyle"));
+			JLabel label = new JLabel(SwingMessages.getString("FontStyle")); //$NON-NLS-1$
 			label.setHorizontalAlignment(JLabel.LEFT);
 			label.setHorizontalTextPosition(JLabel.LEFT);
 			label.setLabelFor(getFontStyleTextField());
@@ -654,7 +636,7 @@ public class JFontChooser extends JComponent {
 			p.add(getFontSizeTextField(), BorderLayout.NORTH);
 			p.add(scrollPane, BorderLayout.CENTER);
 
-			JLabel label = new JLabel(_("FontSize"));
+			JLabel label = new JLabel(SwingMessages.getString("FontSize")); //$NON-NLS-1$
 			label.setHorizontalAlignment(JLabel.LEFT);
 			label.setHorizontalTextPosition(JLabel.LEFT);
 			label.setLabelFor(getFontSizeTextField());
@@ -669,7 +651,7 @@ public class JFontChooser extends JComponent {
 	protected JPanel getSamplePanel() {
 		if (samplePanel == null) {
 			Border titledBorder = BorderFactory.createTitledBorder(
-					BorderFactory.createEtchedBorder(), _("Sample"));
+					BorderFactory.createEtchedBorder(), SwingMessages.getString("Sample")); //$NON-NLS-1$
 			Border empty = BorderFactory.createEmptyBorder(5, 10, 10, 10);
 			Border border = BorderFactory.createCompoundBorder(titledBorder,
 					empty);
@@ -687,7 +669,7 @@ public class JFontChooser extends JComponent {
 		if (sampleText == null) {
 			Border lowered = BorderFactory.createLoweredBevelBorder();
 
-			sampleText = new JTextField((toDisplay == null) ? _("SampleString") : toDisplay);
+			sampleText = new JTextField((toDisplay == null) ? SwingMessages.getString("SampleString") : toDisplay); //$NON-NLS-1$
 			sampleText.setBorder(lowered);
 			sampleText.setPreferredSize(new Dimension(300, 100));
 		}
@@ -707,10 +689,10 @@ public class JFontChooser extends JComponent {
 		if (fontStyleNames == null) {
 			int i = 0;
 			fontStyleNames = new String[4];
-			fontStyleNames[i++] = _("Plain");
-			fontStyleNames[i++] = _("Bold");
-			fontStyleNames[i++] = _("Italic");
-			fontStyleNames[i++] = _("BoldItalic");
+			fontStyleNames[i++] = SwingMessages.getString("Plain"); //$NON-NLS-1$
+			fontStyleNames[i++] = SwingMessages.getString("Bold"); //$NON-NLS-1$
+			fontStyleNames[i++] = SwingMessages.getString("Italic"); //$NON-NLS-1$
+			fontStyleNames[i++] = SwingMessages.getString("BoldItalic"); //$NON-NLS-1$
 		}
 		return fontStyleNames;
 	}

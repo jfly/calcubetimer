@@ -19,7 +19,7 @@ public class ScrambleVariation {
 		this.variation = variation;
 		length = getScrambleLength(false);
 		try {
-			image = new ImageIcon(new File(Configuration.scramblePluginsFolder, variation + ".png").toURI().toURL());
+			image = new ImageIcon(new File(Configuration.scramblePluginsFolder, variation + ".png").toURI().toURL()); //$NON-NLS-1$
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -57,6 +57,9 @@ public class ScrambleVariation {
 		return scramblePlugin.importScramble(variation, scramble, scramblePlugin.getEnabledPuzzleAttributes());
 	}
 
+	public int hashCode() {
+		return toString().hashCode();
+	}
 	public boolean equals(Object o) {
 		try {
 			ScrambleVariation other = (ScrambleVariation) o;
@@ -66,6 +69,6 @@ public class ScrambleVariation {
 		}
 	}
 	public String toString() {
-		return (variation == "") ? scramblePlugin.getPuzzleName() : variation;
+		return variation.isEmpty() ? scramblePlugin.getPuzzleName() : variation;
 	}
 }

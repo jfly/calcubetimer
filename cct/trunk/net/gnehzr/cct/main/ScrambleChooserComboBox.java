@@ -14,7 +14,7 @@ import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ScrambleChooserComboBox extends JComboBox implements TableCellRenderer, ConfigurationChangeListener {
 	public ScrambleChooserComboBox(boolean icons, boolean customizations) {
 		this.setRenderer(new PuzzleCustomizationCellRenderer(icons));

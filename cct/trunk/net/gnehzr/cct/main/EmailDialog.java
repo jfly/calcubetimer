@@ -32,7 +32,7 @@ import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.JTextAreaWithHistory;
 import net.gnehzr.cct.misc.SendMailUsingAuthentication;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class EmailDialog extends JDialog implements ActionListener, CaretListener {
 	private JTextField toAddress, subject = null;
 	private JTextAreaWithHistory body = null;
@@ -48,12 +48,12 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		c.gridx = 0;
 		c.gridy = 0;
 		c.insets = new Insets(2, 2, 2, 2);
-		pane.add(new JLabel("Destination address: "), c);
+		pane.add(new JLabel(MainMessages.getString("EmailDialog.destination")), c); //$NON-NLS-1$
 
 		toAddress = new JTextField();
 		toAddress.addCaretListener(this);
 		caretUpdate(null);
-		toAddress.setToolTipText("Separate multiple addresses with commas or semicolons");
+		toAddress.setToolTipText(MainMessages.getString("EmailDialog.separate")); //$NON-NLS-1$
 		c.weightx = 1;
 		c.weighty = 0;
 		c.gridx = 1;
@@ -64,7 +64,7 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		c.weighty = 0;
 		c.gridx = 0;
 		c.gridy = 1;
-		pane.add(new JLabel("Subject: "), c);
+		pane.add(new JLabel(MainMessages.getString("EmailDialog.subject")), c); //$NON-NLS-1$
 
 		c.weightx = 1;
 		c.weighty = 0;
@@ -83,10 +83,10 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		pane.add(new JScrollPane(body), c);
 
 		JPanel horiz = new JPanel();
-		sendButton = new JButton("Send");
+		sendButton = new JButton(MainMessages.getString("EmailDialog.send")); //$NON-NLS-1$
 		sendButton.addActionListener(this);
 		horiz.add(sendButton);
-		doneButton = new JButton("Done");
+		doneButton = new JButton(MainMessages.getString("EmailDialog.done")); //$NON-NLS-1$
 		doneButton.addActionListener(this);
 		horiz.add(doneButton);
 		c.weightx = 0;
@@ -101,16 +101,11 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 	}
 
 	private static String toPrettyString(String[] recievers) {
-		String result = "";
-		if(recievers.length == 1)
-			return recievers[0];
-		for(int ch = 0; ch < recievers.length; ch ++) {
-			if(ch == recievers.length - 1)
-				result += "and " + recievers[ch];
-			else
-				result += recievers[ch] + ", ";
+		String result = ""; //$NON-NLS-1$
+		for(String reciever : recievers) {
+			result += ", " + reciever; //$NON-NLS-1$
 		}
-		return result;
+		return result.substring(2);
 	}
 
 	private class EmailWorker extends SwingWorker<Void, Void> {
@@ -124,9 +119,9 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 
 			waiting = new WaitingDialog(owner, true, this);
 			waiting.setResizable(false);
-			waiting.setTitle("Working");
-			waiting.setText("Sending...");
-			waiting.setButtonText("Cancel");
+			waiting.setTitle(MainMessages.getString("EmailDialog.working")); //$NON-NLS-1$
+			waiting.setText(MainMessages.getString("EmailDialog.sending")); //$NON-NLS-1$
+			waiting.setButtonText(MainMessages.getString("EmailDialog.cancel")); //$NON-NLS-1$
 		}
 		protected Void doInBackground() {
 			SwingUtilities.invokeLater(new Runnable() {
@@ -145,13 +140,13 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 			return null;
 		}
 		protected void done() {
-			waiting.setButtonText("Ok");
+			waiting.setButtonText(MainMessages.getString("EmailDialog.ok")); //$NON-NLS-1$
 			if(error == null) {
-				waiting.setTitle("Great success!");
-				waiting.setText("Email successfully sent to " + toPrettyString(receivers) + "!");
+				waiting.setTitle(MainMessages.getString("EmailDialog.sucess")); //$NON-NLS-1$
+				waiting.setText(MainMessages.getString("EmailDialog.successmessage") + "\n" + MainMessages.getString("EmailDialog.recipients") + toPrettyString(receivers)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			} else {
-				waiting.setTitle("Error!");
-				waiting.setText("Failed to send email.\nError: " + error.getLocalizedMessage());
+				waiting.setTitle(MainMessages.getString("EmailDialog.error")); //$NON-NLS-1$
+				waiting.setText(MainMessages.getString("EmailDialog.failmessage") + "\n" + MainMessages.getString("EmailDialog.error") + ": " + error.getLocalizedMessage()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			}
 		}
 	}
@@ -194,7 +189,7 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 			if(Configuration.getBoolean(VariableKey.SMTP_ENABLED, false)) {
 				char[] pass = null;
 				if(Configuration.getBoolean(VariableKey.SMTP_ENABLED, false) &&
-						Configuration.getString(VariableKey.SMTP_PASSWORD, false).equals("")) {
+						Configuration.getString(VariableKey.SMTP_PASSWORD, false).isEmpty()) {
 					PasswordPrompt prompt = new PasswordPrompt(this);
 					prompt.setVisible(true);
 					if(prompt.isCanceled()) {
@@ -203,13 +198,13 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 					pass = prompt.getPassword();
 				}
 
-				SwingWorker<Void, Void> sendEmail = new EmailWorker(this, pass, toAddress.getText().split("[,;]"));
+				SwingWorker<Void, Void> sendEmail = new EmailWorker(this, pass, toAddress.getText().split("[,;]")); //$NON-NLS-1$
 				sendEmail.execute();
 			} else {
 				try {
-					URI mailTo = new URI("mailto",
-							toAddress.getText() + "?" +
-							"subject=" + subject.getText() + "&body=" + body.getText(),
+					URI mailTo = new URI("mailto", //$NON-NLS-1$
+							toAddress.getText() + "?" + //$NON-NLS-1$
+							"subject=" + subject.getText() + "&body=" + body.getText(), //$NON-NLS-1$ //$NON-NLS-2$
 							null);
 					Desktop.getDesktop().mail(mailTo);
 				} catch (URISyntaxException e1) {
@@ -222,20 +217,20 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 			setVisible(false);
 		}
 	}
-	@SuppressWarnings("serial")
+	@SuppressWarnings("serial") //$NON-NLS-1$
 	private class PasswordPrompt extends JDialog implements ActionListener {
 		private boolean canceled = true;
 		private JPasswordField pass = null;
 		private JButton ok, cancel = null;
 		public PasswordPrompt(JDialog parent) {
-			super(parent, "Enter Password", true);
+			super(parent, MainMessages.getString("EmailDialog.passwordprompt"), true); //$NON-NLS-1$
 			Container pane = getContentPane();
 
 			pass = new JPasswordField(20);
-			ok = new JButton("Ok");
+			ok = new JButton(MainMessages.getString("EmailDialog.ok")); //$NON-NLS-1$
 			ok.addActionListener(this);
 			getRootPane().setDefaultButton(ok);
-			cancel = new JButton("Cancel");
+			cancel = new JButton(MainMessages.getString("EmailDialog.cancel")); //$NON-NLS-1$
 			cancel.addActionListener(this);
 			JPanel okCancel = new JPanel();
 			okCancel.add(ok);
@@ -265,6 +260,6 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		}
 	}
 	public void caretUpdate(CaretEvent e) {
-		setTitle("Email to: " + toAddress.getText());
+		setTitle(MainMessages.getString("EmailDialog.emailto") + toAddress.getText()); //$NON-NLS-1$
 	}
 }

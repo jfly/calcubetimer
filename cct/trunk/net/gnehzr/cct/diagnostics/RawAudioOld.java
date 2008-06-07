@@ -2,8 +2,8 @@ package net.gnehzr.cct.diagnostics;
 import javax.sound.sampled.*;
 
 public class RawAudioOld implements Runnable{
-	private final int samplingRate = 44100;
-	private final int quality = 2;
+	private final static int samplingRate = 44100;
+	private final static int quality = 2;
 
 	private final AudioFormat format;
 	private final TargetDataLine ain;

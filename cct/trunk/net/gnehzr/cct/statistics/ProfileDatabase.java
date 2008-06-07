@@ -23,7 +23,7 @@ import net.gnehzr.cct.misc.customJTable.SessionListener;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ProfileDatabase extends DraggableJTableModel implements ActionListener {
 	private HashMap<String, PuzzleStatistics> database = new HashMap<String, PuzzleStatistics>();
 	private Profile owner;
@@ -45,21 +45,6 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 		if(t == null) {
 			t = new PuzzleStatistics(customization, this);
 			database.put(customization, t);
-		}
-		return t;
-	}
-	public String toString() {
-		String t = "";
-		for(String custom : database.keySet()) {
-			System.out.println("Customization: " + custom);
-			PuzzleStatistics ps = database.get(custom);
-			for(Session s : ps.toSessionIterable()) {
-				System.out.println("\tDate of session: " + s.toDateString());
-				Statistics stats = s.getStatistics();
-				for(int ch = 0; ch < stats.getAttemptCount(); ch++) {
-					System.out.println("\t\t" + stats.get(ch));
-				}
-			}
 		}
 		return t;
 	}
@@ -124,7 +109,7 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 				sessionCache.add(s);
 	}
 	
-	private String[] columnNames = new String[] { "Date Started", "Customization", "Session Average", "Best RA 0", "Best RA 1", "Best Time", "Standard Deviation", "Solve Count", "Comment" };
+	private String[] columnNames = new String[] { StatisticsMessages.getString("ProfileDatabase.datestarted"), StatisticsMessages.getString("ProfileDatabase.customization"), StatisticsMessages.getString("ProfileDatabase.sessionaverage"), StatisticsMessages.getString("ProfileDatabase.bestra0"), StatisticsMessages.getString("ProfileDatabase.bestra1"), StatisticsMessages.getString("ProfileDatabase.besttime"), StatisticsMessages.getString("ProfileDatabase.stdev"), StatisticsMessages.getString("ProfileDatabase.solvecount"), StatisticsMessages.getString("ProfileDatabase.comment") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$
 	private Class<?>[] columnClasses = new Class<?>[] { Session.class, ScrambleCustomization.class, SolveTime.class, SolveTime.class, SolveTime.class, SolveTime.class, SolveTime.class, Integer.class, String.class};
 	public String getColumnName(int column) {
 		return columnNames[column];
@@ -194,11 +179,11 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 	public void removeRows(int[] indices) {
 		deleteRows(indices);
 	}
-	private static final String SEND_TO_PROFILE = "sendToProfile";
+	private static final String SEND_TO_PROFILE = "sendToProfile"; //$NON-NLS-1$
 	public void showPopup(MouseEvent e, final DraggableJTable source) {
 		JPopupMenu jpopup = new JPopupMenu();
 
-		JMenuItem discard = new JMenuItem("Discard");
+		JMenuItem discard = new JMenuItem(StatisticsMessages.getString("ProfileDatabase.discard")); //$NON-NLS-1$
 		discard.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				source.deleteSelectedRows(false);
@@ -206,14 +191,14 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 		});
 		jpopup.add(discard);
 		
-		JMenu sendTo = new JMenu("Send to");
+		JMenu sendTo = new JMenu(StatisticsMessages.getString("ProfileDatabase.sendto")); //$NON-NLS-1$
 		for(Profile p : Configuration.getProfiles()) {
 			if(p == Configuration.getSelectedProfile())
 				continue;
 			JMenuItem profile = new JMenuItem(p.getName());
-			String rows = "";
+			String rows = ""; //$NON-NLS-1$
 			for(int r : source.getSelectedRows())
-				rows += "," + source.convertRowIndexToModel(r);
+				rows += "," + source.convertRowIndexToModel(r); //$NON-NLS-1$
 			rows = rows.substring(1);
 			profile.setActionCommand(SEND_TO_PROFILE + rows);
 			profile.addActionListener(this);
@@ -230,7 +215,7 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 			Profile to = Profile.getProfileByName(((JMenuItem)e.getSource()).getText());
 			to.loadDatabase();
 			
-			String[] rows = e.getActionCommand().substring(SEND_TO_PROFILE.length()).split(",");
+			String[] rows = e.getActionCommand().substring(SEND_TO_PROFILE.length()).split(","); //$NON-NLS-1$
 			Session[] seshs = new Session[rows.length];
 			for(int ch = 0; ch < rows.length; ch++) {
 				int row = Integer.parseInt(rows[ch]);

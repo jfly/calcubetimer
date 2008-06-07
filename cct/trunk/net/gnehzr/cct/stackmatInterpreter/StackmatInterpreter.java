@@ -129,9 +129,9 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 	public ComboItem[] getMixerChoices(){
 		ComboItem[] items = new ComboItem[aInfos.length+1];
 		for(int i = 0; i < aInfos.length; i++){
-			items[i] = new ComboItem("Mixer " + i + ": " + aInfos[i].getName() + " desc: " + aInfos[i].getDescription(), AudioSystem.getMixer(aInfos[i]).isLineSupported(info));
+			items[i] = new ComboItem(StackmatInterpreterMessages.getString("StackmatInterpreter.mixer") + i + ": " + aInfos[i].getName() + StackmatInterpreterMessages.getString("StackmatInterpreter.description") + aInfos[i].getDescription(), AudioSystem.getMixer(aInfos[i]).isLineSupported(info)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
-		items[items.length-1] = new ComboItem("No Mixer", true);
+		items[items.length-1] = new ComboItem(StackmatInterpreterMessages.getString("StackmatInterpreter.nomixer"), true); //$NON-NLS-1$
 
 		int current = getSelectedMixerIndex();
 		items[current].setEnabled(true);
@@ -152,7 +152,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 		boolean previousWasSplit = false;
 		while(!isCancelled()) {
 			if(!enabled || line == null){
-				firePropertyChange("Off", null, null);
+				firePropertyChange("Off", null, null); //$NON-NLS-1$
 				try{
 					synchronized(this){
 						wait();
@@ -174,7 +174,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 					else if(timeSinceLastFlip == newPeriod * 4){
 						state = new StackmatState();
 						timeSinceLastFlip++;
-						firePropertyChange("Off", null, null);
+						firePropertyChange("Off", null, null); //$NON-NLS-1$
 					}
 
 					if(Math.abs(lastSample - currentSample) > (Configuration.getInt(VariableKey.SWITCH_THRESHOLD, false) << (BYTES_PER_SAMPLE * 4)) && timeSinceLastFlip > noiseSpikeThreshold) {
@@ -189,7 +189,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 //							System.out.println(currentPeriod.size());
 							StackmatState newState = new StackmatState(state, currentPeriod);
 							if(state != null && state.isRunning() && newState.isReset()) { //this is indicative of an "accidental reset"
-								firePropertyChange("Accident Reset", state, newState);
+								firePropertyChange("Accident Reset", state, newState); //$NON-NLS-1$
 							}
 							state = newState;
 							//This is to be able to identify new times when they are "equal"
@@ -198,18 +198,18 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 
 							boolean thisIsSplit = state.isRunning() && state.oneHand();
 							if(thisIsSplit && !previousWasSplit) {
-								firePropertyChange("Split", null, state);
+								firePropertyChange("Split", null, state); //$NON-NLS-1$
 							}
 							previousWasSplit = thisIsSplit;
 							if(state.isReset())
-								firePropertyChange("Reset", null, state);
+								firePropertyChange("Reset", null, state); //$NON-NLS-1$
 							else if(state.isRunning())
-								firePropertyChange("TimeChange", null, state);
+								firePropertyChange("TimeChange", null, state); //$NON-NLS-1$
 							else if(state.compareTo(old) != 0) {
 								old = state;
-								firePropertyChange("New Time", null, state);
+								firePropertyChange("New Time", null, state); //$NON-NLS-1$
 							} else { //So we can always get the current time
-								firePropertyChange("Current Display", null, state);
+								firePropertyChange("Current Display", null, state); //$NON-NLS-1$
 							}
 							currentPeriod = new ArrayList<Integer>(100);
 						}

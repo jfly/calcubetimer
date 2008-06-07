@@ -69,10 +69,10 @@ public class SendMailUsingAuthentication {
 		// Set the host smtp address
 		Properties props = new Properties();
 
-		props.setProperty("mail.smtp.host", Configuration.getString(VariableKey.SMTP_HOST, false));
-		props.setProperty("mail.smtp.port", Configuration.getString(VariableKey.SMTP_PORT, false));
-		props.setProperty("mail.smtp.auth", Boolean.toString(Configuration.getBoolean(VariableKey.SMTP_AUTHENTICATION, false)));
-		props.put("mail.smtp.starttls.enable", "true");
+		props.setProperty("mail.smtp.host", Configuration.getString(VariableKey.SMTP_HOST, false)); //$NON-NLS-1$
+		props.setProperty("mail.smtp.port", Configuration.getString(VariableKey.SMTP_PORT, false)); //$NON-NLS-1$
+		props.setProperty("mail.smtp.auth", Boolean.toString(Configuration.getBoolean(VariableKey.SMTP_AUTHENTICATION, false))); //$NON-NLS-1$
+		props.put("mail.smtp.starttls.enable", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		Session session = null;
 		if(Configuration.getBoolean(VariableKey.SMTP_AUTHENTICATION, false)) {
@@ -97,7 +97,7 @@ public class SendMailUsingAuthentication {
 
 		// Setting the Subject and Content Type
 		msg.setSubject(subject);
-		msg.setContent(message, "text/plain");
+		msg.setContent(message, "text/plain"); //$NON-NLS-1$
 		Transport.send(msg);
 	}
 

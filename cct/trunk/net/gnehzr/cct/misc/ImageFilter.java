@@ -5,7 +5,7 @@ import javax.swing.filechooser.*;
 
 /* ImageFilter.java is a 1.4 example used by FileChooserDemo2.java. */
 public class ImageFilter extends FileFilter {
-	public static final String[] IMG_EXTS = { "png", "jpg", "jpeg", "gif", "tif", "tiff" };
+	public static final String[] IMG_EXTS = { "png", "jpg", "gif", "tif", "tiff" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 
 	/* Accept all directories and all gif, jpg, tiff, or png files. */
 	public boolean accept(File f) {
@@ -25,7 +25,7 @@ public class ImageFilter extends FileFilter {
 
 	/* The description of this filter */
 	public String getDescription() {
-		return "Image Files";
+		return MiscMessages.getString("ImageFilter.imagefiles"); //$NON-NLS-1$
 	}
 
 	/* Get the extension of a file. */

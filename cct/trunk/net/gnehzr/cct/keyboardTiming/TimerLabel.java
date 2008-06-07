@@ -35,7 +35,7 @@ import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.main.ScrambleArea;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class TimerLabel extends JLabel implements ComponentListener, ConfigurationChangeListener, FocusListener, KeyListener, MouseListener {
 	private KeyboardHandler keyHandler;
 	private ScrambleArea scrambleArea;
@@ -104,8 +104,8 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 	private static BufferedImage curr, red, green;
 	static {
 		try { //can't use TimerLabel.class because the class hasn't been loaded yet
-			red = ImageIO.read(CALCubeTimer.class.getResourceAsStream("red-button.png"));
-			green = ImageIO.read(CALCubeTimer.class.getResourceAsStream("green-button.png"));
+			red = ImageIO.read(CALCubeTimer.class.getResourceAsStream("red-button.png")); //$NON-NLS-1$
+			green = ImageIO.read(CALCubeTimer.class.getResourceAsStream("green-button.png")); //$NON-NLS-1$
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -159,19 +159,19 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 					setBackground(Color.RED);
 				}
 				if(keyHandler.isRunning())
-					title = "Stop Timer";
+					title = KeyboardTimingMessages.getString("TimerLabel.stoptimer"); //$NON-NLS-1$
 				else if(keyHandler.isInspecting() || !inspectionEnabled)
-					title = "Start Timer";
+					title = KeyboardTimingMessages.getString("TimerLabel.starttimer"); //$NON-NLS-1$
 				else
-					title = "Start Inspection";
+					title = KeyboardTimingMessages.getString("TimerLabel.startinspection"); //$NON-NLS-1$
 			} else {
 				curr = red;
-				title = "Click to focus";
+				title = KeyboardTimingMessages.getString("TimerLabel.clickme"); //$NON-NLS-1$
 				setBackground(Color.GRAY);
 				keyDown.clear();
 			}
 		} else {
-			title = "Keyboard Disabled";
+			title = KeyboardTimingMessages.getString("TimerLabel.keyboardoff"); //$NON-NLS-1$
 			if(on) {
 				curr = green;
 				if(greenLight) {

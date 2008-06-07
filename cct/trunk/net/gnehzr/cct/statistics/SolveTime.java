@@ -58,20 +58,21 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 
 	//returns true if s represents a valid solvetype
 	private boolean determineSolveType(String s) {
-		if(s.equalsIgnoreCase("DNF")) {
+		if(s.equalsIgnoreCase("DNF")) { //$NON-NLS-1$
 			type = SolveType.DNF;
 			return true;
-		} else if(s.equalsIgnoreCase("POP")) {
+		} else if(s.equalsIgnoreCase("POP")) { //$NON-NLS-1$
 			type = SolveType.POP;
 			return true;
 		}
 		return false;
 	}
+	//TODO - Does this need to be internationalized? Does everyone use decimal points?
 	public void setTime(String time) throws Exception {
 		time = time.trim();
 		if(time.isEmpty())
-			throw new Exception("Can't have empty times!");
-		String[] typeAndTime = time.split(" +");
+			throw new Exception(StatisticsMessages.getString("SolveTime.noemptytimes")); //$NON-NLS-1$
+		String[] typeAndTime = time.split(" +"); //$NON-NLS-1$
 		switch(typeAndTime.length) {
 		case 1:
 			if(determineSolveType(time)) //if it was a valid solvetype we're done
@@ -80,22 +81,22 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 			break;
 		case 2:
 			if(!determineSolveType(typeAndTime[0])) //we have to get a valid SolveType here
-				throw new Exception(typeAndTime[0] + " does not represent a valid SolveType!");
+				throw new Exception(typeAndTime[0] + StatisticsMessages.getString("SolveTime.invalid")); //$NON-NLS-1$
 			time = typeAndTime[1]; //now parse second part for the raw time
 			break;
 		default:
-			throw new Exception("Too many spaces!");
+			throw new Exception(StatisticsMessages.getString("SolveTime.spaces")); //$NON-NLS-1$
 		}
 		//parse time to determine raw seconds
-		if(time.endsWith("+")) {
+		if(time.endsWith("+")) { //$NON-NLS-1$
 			type = SolveType.PLUS_TWO;
 			time = time.substring(0, time.length() - 1);
 		}
-		String[] temp = time.split(":");
-		if(temp.length > 3 || time.lastIndexOf(":") == time.length() - 1) throw new Exception("Time has invalid placement of colons!");
-		else if(time.indexOf(".") != time.lastIndexOf(".")) throw new Exception("Time has too many decimal points!");
-		else if(time.indexOf(".") >= 0 && time.indexOf(":") >= 0 && time.indexOf(".") < time.lastIndexOf(":")) throw new Exception("Invalid decimal point!");
-		else if(time.indexOf("-") >= 0) throw new Exception("Can't have non-positive times!");
+		String[] temp = time.split(":"); //$NON-NLS-1$
+		if(temp.length > 3 || time.lastIndexOf(":") == time.length() - 1) throw new Exception(StatisticsMessages.getString("SolveTime.invalidcolons")); //$NON-NLS-1$ //$NON-NLS-2$
+		else if(time.indexOf(".") != time.lastIndexOf(".")) throw new Exception(StatisticsMessages.getString("SolveTime.toomanydecimals")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		else if(time.indexOf(".") >= 0 && time.indexOf(":") >= 0 && time.indexOf(".") < time.lastIndexOf(":")) throw new Exception(StatisticsMessages.getString("SolveTime.invaliddecimal")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+		else if(time.indexOf("-") >= 0) throw new Exception(StatisticsMessages.getString("SolveTime.nonpositive")); //$NON-NLS-1$ //$NON-NLS-2$
 
 		double seconds = 0;
 		for(int i = 0; i < temp.length; i++) {
@@ -104,14 +105,14 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 			try {
 				d = Double.parseDouble(temp[i]);
 			} catch(NumberFormatException e) {
-				throw new Exception("Invalid numeric characters!");
+				throw new Exception(StatisticsMessages.getString("SolveTime.invalidnumerals")); //$NON-NLS-1$
 			}
-			if(i != 0 && d >= 60) throw new Exception("Argument too large!");
+			if(i != 0 && d >= 60) throw new Exception(StatisticsMessages.getString("SolveTime.toolarge")); //$NON-NLS-1$
 			seconds += d;
 		}
 		seconds -= (type == SolveType.PLUS_TWO ? 2 : 0);
-		if(seconds < 0) throw new Exception("Can't have negative times!");
-		else if(seconds > 21000000) throw new Exception("Time too large!");
+		if(seconds < 0) throw new Exception(StatisticsMessages.getString("SolveTime.nonpositive")); //$NON-NLS-1$
+		else if(seconds > 21000000) throw new Exception(StatisticsMessages.getString("SolveTime.toolarge")); //$NON-NLS-1$
 		this.hundredths = (int)(100 * seconds + .5);
 	}
 	
@@ -120,7 +121,7 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	}
 
 	public String getScramble() {
-		return scramble == null ? "" : scramble;
+		return scramble == null ? "" : scramble; //$NON-NLS-1$
 	}
 	
 	public String toString() {
@@ -133,19 +134,19 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	private String toString(boolean rawTime) {
 		switch(type) {
 		case DNF:
-			return "DNF" + (rawTime ? " " + rawSecondsValue() : "");
+			return "DNF" + (rawTime ? " " + rawSecondsValue() : ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		case POP:
-			return "POP" + (rawTime ? " " + rawSecondsValue() : "");
+			return "POP" + (rawTime ? " " + rawSecondsValue() : ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		default:
-			if(hundredths == Integer.MAX_VALUE || hundredths < 0) return "N/A";
-			else return Utils.formatTime(secondsValue()) + (type == SolveType.PLUS_TWO ? "+" : "");
+			if(hundredths == Integer.MAX_VALUE || hundredths < 0) return "N/A"; //$NON-NLS-1$
+			else return Utils.formatTime(secondsValue()) + (type == SolveType.PLUS_TWO ? "+" : ""); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	public String toSplitsString() {
-		if(splits == null) return "";
-		String temp = "";
+		if(splits == null) return ""; //$NON-NLS-1$
+		String temp = ""; //$NON-NLS-1$
 		for(SolveTime st : splits) {
-			temp += ", " + st;
+			temp += ", " + st; //$NON-NLS-1$
 		}
 		if(!temp.isEmpty())
 			temp = temp.substring(2);
@@ -155,7 +156,7 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	//this follows the same formatting as the above method spits out
 	public void setSplitsFromString(String splitsString) {
 		splits = new ArrayList<SolveTime>();
-		for(String s : splitsString.split(", *")) {
+		for(String s : splitsString.split(", *")) { //$NON-NLS-1$
 			try {
 				splits.add(new SolveTime(s, null));
 			} catch (Exception e) {}

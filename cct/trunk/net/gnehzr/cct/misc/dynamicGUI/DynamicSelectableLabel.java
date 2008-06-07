@@ -8,12 +8,12 @@ import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
 import org.jvnet.lafwidget.LafWidget;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class DynamicSelectableLabel extends JEditorPane implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener{
 	private DynamicString s = null;
 
 	public DynamicSelectableLabel(){
-		super("text/html", null);
+		super("text/html", null); //$NON-NLS-1$
 		putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 		setEditable(false);
 		setBorder(null);

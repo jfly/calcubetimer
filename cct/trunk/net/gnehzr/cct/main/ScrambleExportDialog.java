@@ -24,7 +24,7 @@ import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleList;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ScrambleExportDialog extends JDialog implements ActionListener {
 	private JTextField urlField;
 	private JButton browse;
@@ -32,10 +32,10 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 	private JSpinnerWithText scrambleLength, numberOfScrambles;
 	private JButton exportButton, cancelButton;
 	public ScrambleExportDialog(JFrame owner, ScrambleVariation selected) {
-		super(owner, "Export Scrambles", true);
+		super(owner, MainMessages.getString("ScrambleExportDialog.exportscrambles"), true); //$NON-NLS-1$
 		urlField = new JTextField(40);
-		urlField.setToolTipText("Choose file to export scrambles to.");
-		browse = new JButton("Browse");
+		urlField.setToolTipText(MainMessages.getString("ScrambleExportDialog.choosefile")); //$NON-NLS-1$
+		browse = new JButton(MainMessages.getString("ScrambleExportDialog.browse")); //$NON-NLS-1$
 		browse.addActionListener(this);
 
 		scrambleChooser = new ScrambleChooserComboBox(false, false);
@@ -53,14 +53,14 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 		subPanel.add(sideBySide);
 		subPanel.add(scrambleChooser);
 
-		scrambleLength = new JSpinnerWithText(selected.getLength(), 1, "Length of scrambles");
-		numberOfScrambles = new JSpinnerWithText(Configuration.getInt(VariableKey.RA_SIZE0, false), 1, "Number of scrambles");
+		scrambleLength = new JSpinnerWithText(selected.getLength(), 1, MainMessages.getString("ScrambleExportDialog.lengthscrambles")); //$NON-NLS-1$
+		numberOfScrambles = new JSpinnerWithText(Configuration.getInt(VariableKey.RA_SIZE0, false), 1, MainMessages.getString("ScrambleExportDialog.numberscrambles")); //$NON-NLS-1$
 		subPanel.add(scrambleLength);
 		subPanel.add(numberOfScrambles);
 		
-		exportButton = new JButton("Export");
+		exportButton = new JButton(MainMessages.getString("ScrambleExportDialog.export")); //$NON-NLS-1$
 		exportButton.addActionListener(this);
-		cancelButton = new JButton("Cancel");
+		cancelButton = new JButton(MainMessages.getString("ScrambleExportDialog.cancel")); //$NON-NLS-1$
 		cancelButton.addActionListener(this);
 		sideBySide = new JPanel();
 		sideBySide.add(exportButton);
@@ -77,8 +77,8 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if(source == browse) {
-			JFileChooser fc = new JFileChooser(".");
-			if(fc.showDialog(this, "Save") == JFileChooser.APPROVE_OPTION) {
+			JFileChooser fc = new JFileChooser("."); //$NON-NLS-1$
+			if(fc.showDialog(this, MainMessages.getString("ScrambleExportDialog.save")) == JFileChooser.APPROVE_OPTION) { //$NON-NLS-1$
 				File selectedFile = fc.getSelectedFile();
 				urlField.setText(selectedFile.toURI().toString());
 			}
@@ -91,8 +91,8 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 				file = new URI(urlField.getText()).toURL();
 			} catch (Exception e1) {
 				JOptionPane.showMessageDialog(this,
-						e1.getMessage() + "\nBad filename.",
-						"Error!",
+						e1.getMessage() + "\n" + MainMessages.getString("ScrambleExportDialog.badfilename"), //$NON-NLS-1$ //$NON-NLS-2$
+						MainMessages.getString("ScrambleExportDialog.error"), //$NON-NLS-1$
 						JOptionPane.ERROR_MESSAGE);
 			}
 			if(file != null)
@@ -128,11 +128,11 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 			}
 			out.close();
 			JOptionPane.showMessageDialog(this,
-					"Scrambles successfully saved!",
+					MainMessages.getString("ScrambleExportDialog.successmessage"), //$NON-NLS-1$
 					outputFile.getPath(),
 					JOptionPane.INFORMATION_MESSAGE);
 		} catch(Exception e) {
-			showErrorMessage("Error!\n" + e.toString(), "Hmmmmm...");
+			showErrorMessage(MainMessages.getString("ScrambleExportDialog.error") + "\n" + e.toString(), MainMessages.getString(MainMessages.getString("ScrambleExportDialog.hmmm")));  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
 }

@@ -2,7 +2,7 @@ package net.gnehzr.cct.scrambles;
 
 import java.util.ArrayList;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ScrambleList extends ArrayList<Scramble> {
 	private ScrambleCustomization custom;
 	private int scrambleNumber = 0;

@@ -23,8 +23,6 @@ public class RawAudio implements Runnable{
 
 		int max = Integer.MIN_VALUE, min = Integer.MAX_VALUE;
 		while(true){
-			System.out.println(format);
-			System.exit(0);
 			if(line.read(buffer, 0, buffer.length) > 0){
 				for(int c = 0; c < buffer.length / bytesPerSample; c++) {
 					//little-endian encoding, bytes are in increasing order

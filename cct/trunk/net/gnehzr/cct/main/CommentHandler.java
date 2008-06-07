@@ -60,18 +60,17 @@ public class CommentHandler implements ListSelectionListener, FocusListener, Doc
 			if(!curr.getComment().isEmpty())
 				commentArea.setText(curr.getComment());
 			else if(curr instanceof SolveTime)
-				commentArea.setText("Click here to comment on solve: " + curr);
+				commentArea.setText(MainMessages.getString("CommentHandler.solvecomment") + curr); //$NON-NLS-1$
 			else if(curr instanceof Session)
-				commentArea.setText("Click here to comment on session: " + curr);
+				commentArea.setText(MainMessages.getString("CommentHandler.sessioncomment") + curr); //$NON-NLS-1$
 			commentArea.setEnabled(true);
 		} else
-			commentArea.setText("Select solve or session to set comment");
+			commentArea.setText(MainMessages.getString("CommentHandler.selectcomment")); //$NON-NLS-1$
 		commentArea.getDocument().addDocumentListener(this);
 	}
 	public void sync() {
-		if(curr != null) {
+		if(curr != null)
 			curr.setComment(commentArea.getText());
-		}
 	}
 	public void changedUpdate(DocumentEvent e) {}
 	public void insertUpdate(DocumentEvent e) {
@@ -81,8 +80,8 @@ public class CommentHandler implements ListSelectionListener, FocusListener, Doc
 		sync();
 	}
 	public void focusGained(FocusEvent e) {
-		if(curr != null && curr.getComment().isEmpty())
-			commentArea.setText("");
+		if(curr != null)
+			commentArea.setText(curr.getComment());
 	}
 	public void focusLost(FocusEvent e) {
 		updateText();

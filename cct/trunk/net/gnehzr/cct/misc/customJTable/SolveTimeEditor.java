@@ -13,7 +13,7 @@ import javax.swing.border.LineBorder;
 
 import net.gnehzr.cct.statistics.SolveTime;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class SolveTimeEditor extends DefaultCellEditor {
 	private SolveTime value;
 	private String editText;
@@ -31,10 +31,10 @@ public class SolveTimeEditor extends DefaultCellEditor {
 			JComponent component = (JComponent) getComponent();
 			component.setBorder(new LineBorder(Color.red));
 			component.setToolTipText(e.getMessage());
-			Action toolTipAction = component.getActionMap().get("postTip");
+			Action toolTipAction = component.getActionMap().get("postTip"); //$NON-NLS-1$
 			if (toolTipAction != null) {
 				ActionEvent postTip = new ActionEvent(component,
-						ActionEvent.ACTION_PERFORMED, "");
+						ActionEvent.ACTION_PERFORMED, ""); //$NON-NLS-1$
 				toolTipAction.actionPerformed(postTip);
 			}
 			return false;

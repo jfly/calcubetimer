@@ -15,7 +15,7 @@ import javax.swing.undo.UndoManager;
 
 import org.jvnet.lafwidget.LafWidget;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class JTextAreaWithHistory extends JTextArea {
 	public JTextAreaWithHistory() {
 		this.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
@@ -30,8 +30,8 @@ public class JTextAreaWithHistory extends JTextArea {
 		});
 
 		// Create an undo action and add it to the text component
-		this.getActionMap().put("Undo",
-				new AbstractAction("Undo") {
+		this.getActionMap().put("Undo", //$NON-NLS-1$
+				new AbstractAction("Undo") { //$NON-NLS-1$
 					public void actionPerformed(ActionEvent evt) {
 						try {
 							if (undo.canUndo()) {
@@ -43,11 +43,11 @@ public class JTextAreaWithHistory extends JTextArea {
 				});
 
 		// Bind the undo action to ctl-Z
-		this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK), "Undo");
+		this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, KeyEvent.CTRL_DOWN_MASK), "Undo"); //$NON-NLS-1$
 
 		// Create a redo action and add it to the text component
-		this.getActionMap().put("Redo",
-				new AbstractAction("Redo") {
+		this.getActionMap().put("Redo", //$NON-NLS-1$
+				new AbstractAction("Redo") { //$NON-NLS-1$
 					public void actionPerformed(ActionEvent evt) {
 						try {
 							if (undo.canRedo()) {
@@ -59,6 +59,6 @@ public class JTextAreaWithHistory extends JTextArea {
 				});
 
 		// Bind the redo action to ctl-Y
-		this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK), "Redo");
+		this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_DOWN_MASK), "Redo"); //$NON-NLS-1$
 	}
 }

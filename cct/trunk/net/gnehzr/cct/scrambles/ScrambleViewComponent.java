@@ -16,7 +16,7 @@ import net.gnehzr.cct.misc.Utils;
 
 import java.util.HashMap;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ScrambleViewComponent extends JComponent implements ComponentListener, MouseListener {
 	private static final int GAP() {
 		try {

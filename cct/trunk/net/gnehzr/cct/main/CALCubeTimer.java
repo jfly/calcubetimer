@@ -92,6 +92,7 @@ import net.gnehzr.cct.misc.customJTable.SessionListener;
 import net.gnehzr.cct.misc.customJTable.SessionsTable;
 import net.gnehzr.cct.misc.customJTable.SolveTimeEditor;
 import net.gnehzr.cct.misc.customJTable.SolveTimeRenderer;
+import net.gnehzr.cct.misc.dynamicGUI.DynamicBorderSetter;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicButton;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicCheckBox;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicCheckBoxMenuItem;
@@ -101,6 +102,7 @@ import net.gnehzr.cct.misc.dynamicGUI.DynamicMenuItem;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicSelectableLabel;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicString;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicStringSettable;
+import net.gnehzr.cct.misc.dynamicGUI.XMLGuiMessages;
 import net.gnehzr.cct.scrambles.NullScramble;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
@@ -134,12 +136,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class CALCubeTimer extends JFrame implements ActionListener, TableModelListener, ChangeListener, ConfigurationChangeListener, ItemListener, SessionListener, TimingListener {
-	public static final String CCT_VERSION = "b302";
-	public static final ImageIcon cubeIcon = new ImageIcon(CALCubeTimer.class.getResource("cube.png"));
+	public static final String CCT_VERSION = "b302"; //$NON-NLS-1$
+	public static final ImageIcon cubeIcon = new ImageIcon(CALCubeTimer.class.getResource("cube.png")); //$NON-NLS-1$
 
-	public static StatisticsTableModel statsModel = new StatisticsTableModel(); //used in ProfileDatabase
+	public final static StatisticsTableModel statsModel = new StatisticsTableModel(); //used in ProfileDatabase
 
 	private JLabel onLabel = null;
 	private DraggableJTable timesTable = null;
@@ -200,95 +202,95 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		actionMap = new HashMap<String, AbstractAction>();
 
 		keyboardTimingAction = new KeyboardTimingAction(this);
-		keyboardTimingAction.putValue(Action.NAME, "Use keyboard timer");
+		keyboardTimingAction.putValue(Action.NAME, "Use keyboard timer"); //$NON-NLS-1$
 		keyboardTimingAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_K);
-		keyboardTimingAction.putValue(Action.SHORT_DESCRIPTION, "NOTE: will disable Stackmat!");
-		actionMap.put("keyboardtiming", keyboardTimingAction);
+		keyboardTimingAction.putValue(Action.SHORT_DESCRIPTION, MainMessages.getString("CALCubeTimer.stackmatnote")); //$NON-NLS-1$
+		actionMap.put("keyboardtiming", keyboardTimingAction); //$NON-NLS-1$
 
 		addTimeAction = new AddTimeAction(this);
-		addTimeAction.putValue(Action.NAME, "Add time");
+		addTimeAction.putValue(Action.NAME, "Add time"); //$NON-NLS-1$
 		addTimeAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
 		addTimeAction.putValue(Action.ACCELERATOR_KEY,
 				KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.ALT_MASK));
-		actionMap.put("addtime", addTimeAction);
+		actionMap.put("addtime", addTimeAction); //$NON-NLS-1$
 
 		resetAction = new ResetAction(this);
-		resetAction.putValue(Action.NAME, "Reset");
+		resetAction.putValue(Action.NAME, "Reset"); //$NON-NLS-1$
 		resetAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
-		actionMap.put("reset", resetAction);
+		actionMap.put("reset", resetAction); //$NON-NLS-1$
 
 		currentAverageAction0 = new StatisticsAction(this, statsModel, AverageType.CURRENT, 0);
-		actionMap.put("currentaverage0", currentAverageAction0);
+		actionMap.put("currentaverage0", currentAverageAction0); //$NON-NLS-1$
 		rollingAverageAction0 = new StatisticsAction(this, statsModel, AverageType.RA, 0);
-		actionMap.put("bestaverage0", rollingAverageAction0);
+		actionMap.put("bestaverage0", rollingAverageAction0); //$NON-NLS-1$
 		currentAverageAction1 = new StatisticsAction(this, statsModel, AverageType.CURRENT, 1);
-		actionMap.put("currentaverage1", currentAverageAction1);
+		actionMap.put("currentaverage1", currentAverageAction1); //$NON-NLS-1$
 		rollingAverageAction1 = new StatisticsAction(this, statsModel, AverageType.RA, 1);
-		actionMap.put("bestaverage1", rollingAverageAction1);
+		actionMap.put("bestaverage1", rollingAverageAction1); //$NON-NLS-1$
 		sessionAverageAction = new StatisticsAction(this, statsModel, AverageType.SESSION, 0);
-		actionMap.put("sessionaverage", sessionAverageAction);
+		actionMap.put("sessionaverage", sessionAverageAction); //$NON-NLS-1$
 
 		flipFullScreenAction = new FlipFullScreenAction(this);
-		flipFullScreenAction.putValue(Action.NAME, "+");
-		flipFullScreenAction.putValue(Action.SHORT_DESCRIPTION, "Toggle Fullscreen");
-		actionMap.put("togglefullscreen", flipFullScreenAction);
+		flipFullScreenAction.putValue(Action.NAME, "+"); //$NON-NLS-1$
+		flipFullScreenAction.putValue(Action.SHORT_DESCRIPTION, MainMessages.getString("CALCubeTimer.togglefullscreen")); //$NON-NLS-1$
+		actionMap.put("togglefullscreen", flipFullScreenAction); //$NON-NLS-1$
 
 		importScramblesAction = new ImportScramblesAction(this);
-		importScramblesAction.putValue(Action.NAME, "Import scrambles");
+		importScramblesAction.putValue(Action.NAME, "Import scrambles"); //$NON-NLS-1$
 		importScramblesAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_I);
 		importScramblesAction.putValue(Action.ACCELERATOR_KEY,
 				KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
-		actionMap.put("importscrambles", importScramblesAction);
+		actionMap.put("importscrambles", importScramblesAction); //$NON-NLS-1$
 
 		exportScramblesAction = new ExportScramblesAction(this);
-		exportScramblesAction.putValue(Action.NAME, "Export scrambles");
+		exportScramblesAction.putValue(Action.NAME, "Export scrambles"); //$NON-NLS-1$
 		exportScramblesAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_E);
 		exportScramblesAction.putValue(Action.ACCELERATOR_KEY,
 				KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
-		actionMap.put("exportscrambles", exportScramblesAction);
+		actionMap.put("exportscrambles", exportScramblesAction); //$NON-NLS-1$
 
 		connectToServerAction = new ConnectToServerAction(this);
-		connectToServerAction.putValue(Action.NAME, "Connect to server");
+		connectToServerAction.putValue(Action.NAME, "Connect to server"); //$NON-NLS-1$
 		connectToServerAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
 		connectToServerAction.putValue(Action.ACCELERATOR_KEY,
 				KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
-		actionMap.put("connecttoserver", connectToServerAction);
+		actionMap.put("connecttoserver", connectToServerAction); //$NON-NLS-1$
 
 		showConfigurationDialogAction = new ShowConfigurationDialogAction(this);
-		showConfigurationDialogAction.putValue(Action.NAME, "Configuration");
+		showConfigurationDialogAction.putValue(Action.NAME, "Configuration"); //$NON-NLS-1$
 		showConfigurationDialogAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_C);
 		showConfigurationDialogAction.putValue(Action.ACCELERATOR_KEY,
 				KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.ALT_MASK));
-		actionMap.put("showconfiguration", showConfigurationDialogAction);
+		actionMap.put("showconfiguration", showConfigurationDialogAction); //$NON-NLS-1$
 
 		exitAction = new ExitAction(this);
-		exitAction.putValue(Action.NAME, "Exit");
+		exitAction.putValue(Action.NAME, "Exit"); //$NON-NLS-1$
 		exitAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_X);
 		exitAction.putValue(Action.ACCELERATOR_KEY,
 				KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
-		actionMap.put("exit", exitAction);
+		actionMap.put("exit", exitAction); //$NON-NLS-1$
 
 		lessAnnoyingDisplayAction = new LessAnnoyingDisplayAction(this);
-		lessAnnoyingDisplayAction.putValue(Action.NAME, "Use less-annoying status light");
+		lessAnnoyingDisplayAction.putValue(Action.NAME, "Use less-annoying status light"); //$NON-NLS-1$
 		lessAnnoyingDisplayAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_L);
-		actionMap.put("togglelessannoyingdisplay", lessAnnoyingDisplayAction);
+		actionMap.put("togglelessannoyingdisplay", lessAnnoyingDisplayAction); //$NON-NLS-1$
 
 		hideScramblesAction = new HideScramblesAction(this);
-		hideScramblesAction.putValue(Action.NAME, "Hide scrambles when timer not focused");
+		hideScramblesAction.putValue(Action.NAME, "Hide scrambles when timer not focused"); //$NON-NLS-1$
 		hideScramblesAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_H);
-		actionMap.put("togglehidescrambles", hideScramblesAction);
+		actionMap.put("togglehidescrambles", hideScramblesAction); //$NON-NLS-1$
 
 		spacebarOptionAction = new SpacebarOptionAction();
-		spacebarOptionAction.putValue(Action.NAME, "Only spacebar starts timer");
+		spacebarOptionAction.putValue(Action.NAME, "Only spacebar starts timer"); //$NON-NLS-1$
 		spacebarOptionAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
-		actionMap.put("togglespacebarstartstimer", spacebarOptionAction);
+		actionMap.put("togglespacebarstartstimer", spacebarOptionAction); //$NON-NLS-1$
 
 		fullScreenTimingAction = new FullScreenTimingAction();
-		fullScreenTimingAction.putValue(Action.NAME, "Fullscreen while timing");
+		fullScreenTimingAction.putValue(Action.NAME, "Fullscreen while timing"); //$NON-NLS-1$
 		fullScreenTimingAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_F);
-		actionMap.put("togglefullscreentiming", fullScreenTimingAction);
+		actionMap.put("togglefullscreentiming", fullScreenTimingAction); //$NON-NLS-1$
 
-		actionMap.put("togglescramblepopup", new ToggleScrambleAction(this));
+		actionMap.put("togglescramblepopup", new ToggleScrambleAction(this)); //$NON-NLS-1$
 
 		undo = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
@@ -302,7 +304,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		};
 		undo.putValue(Action.ACCELERATOR_KEY,
 				KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-		actionMap.put("undo", undo);
+		actionMap.put("undo", undo); //$NON-NLS-1$
 		redo = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				statsModel.getCurrentStatistics().redo();
@@ -310,25 +312,25 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		};
 		redo.putValue(Action.ACCELERATOR_KEY,
 				KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
-		actionMap.put("redo", redo);
+		actionMap.put("redo", redo); //$NON-NLS-1$
 		statsModel.setUndoRedoListener(new UndoRedoListener() {
 			public void undoRedoChange(int undoable, int redoable) {
 				undo.setEnabled(undoable != 0);
 				redo.setEnabled(redoable != 0);
-				undo.putValue(Action.NAME, "Undo " + undoable);
-				redo.putValue(Action.NAME, "Redo " + redoable);
+				undo.putValue(Action.NAME, MainMessages.getString("CALCubeTimer.undo") + undoable); //$NON-NLS-1$
+				redo.putValue(Action.NAME, MainMessages.getString("CALCubeTimer.redo") + redoable); //$NON-NLS-1$
 			}
 		});
 		
 		final SundayContestDialog submitter = new SundayContestDialog(this);
-		actionMap.put("submitsundaycontest", new AbstractAction() {
+		actionMap.put("submitsundaycontest", new AbstractAction() { //$NON-NLS-1$
 			public void actionPerformed(ActionEvent e) {
 				submitter.syncWithStats(statsModel.getCurrentStatistics(), AverageType.CURRENT, 0);
 				submitter.setVisible(true);
 			}
 		});
 
-		actionMap.put("newsession", new AbstractAction() {
+		actionMap.put("newsession", new AbstractAction() { //$NON-NLS-1$
 			public void actionPerformed(ActionEvent arg0) {
 				if(statsModel.getRowCount() > 0) { //only create a new session if we've added any times to the current one
 					statsModel.setSession(createNewSession(Configuration.getSelectedProfile(), scramblesList.getScrambleCustomization().toString()));
@@ -340,19 +342,24 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		});
 
 		documentationAction = new DocumentationAction(this);
-		documentationAction.putValue(Action.NAME, "View Documentation");
-		actionMap.put("showdocumentation", documentationAction);
+		documentationAction.putValue(Action.NAME, "View Documentation"); //$NON-NLS-1$
+		actionMap.put("showdocumentation", documentationAction); //$NON-NLS-1$
 
-		aboutAction = new AboutAction(new AboutScrollFrame("About CCT " + CCT_VERSION,
-						CALCubeTimer.class.getResource("about.html"),
-						cubeIcon.getImage()));
-		aboutAction.putValue(Action.NAME, "About");
-		actionMap.put("showabout", aboutAction);
+		aboutAction = new AboutAction();
+		aboutAction.putValue(Action.NAME, "About"); //$NON-NLS-1$
+		actionMap.put("showabout", aboutAction); //$NON-NLS-1$
+		try {
+			aboutAction.setAboutFrame(new AboutScrollFrame(MainMessages.getString("CALCubeTimer.about") + CCT_VERSION, //$NON-NLS-1$
+					CALCubeTimer.class.getResource("about.html"),
+					cubeIcon.getImage()));
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 
 		requestScrambleAction = new RequestScrambleAction(this);
-		requestScrambleAction.putValue(Action.NAME, "Request new scramble");
+		requestScrambleAction.putValue(Action.NAME, "Request new scramble"); //$NON-NLS-1$
 		requestScrambleAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
-		actionMap.put("requestscramble", requestScrambleAction);
+		actionMap.put("requestscramble", requestScrambleAction); //$NON-NLS-1$
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -378,7 +385,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	private Timer tickTock;
-	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Changed";
+	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Changed"; //$NON-NLS-1$
 	private JMenu customGUIMenu;
 	private void initializeGUIComponents() {
 		tickTock = new Timer(0, null);
@@ -392,7 +399,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				1,
 				1,
 				1));
-		scrambleNumber.setToolTipText("Select nth scramble");
+		scrambleNumber.setToolTipText(MainMessages.getString("CALCubeTimer.scramblenumber")); //$NON-NLS-1$
 		((JSpinner.DefaultEditor) scrambleNumber.getEditor()).getTextField().setColumns(3);
 		scrambleNumber.addChangeListener(this);
 
@@ -400,13 +407,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				1,
 				null,
 				1));
-		scrambleLength.setToolTipText("Set length of scramble");
+		scrambleLength.setToolTipText(MainMessages.getString("CALCubeTimer.scramblelength")); //$NON-NLS-1$
 		((JSpinner.DefaultEditor) scrambleLength.getEditor()).getTextField().setColumns(3);
 		scrambleLength.addChangeListener(this);
 
 		scrambleAttributes = new JPanel();
 
-		scramblePopup = new ScrambleFrame(this, "Scramble View");
+		scramblePopup = new ScrambleFrame(this, MainMessages.getString("CALCubeTimer.scrambleview")); //$NON-NLS-1$
 		scramblePopup.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		scramblePopup.setIconImage(cubeIcon.getImage());
 		scramblePopup.setFocusableWindowState(false);
@@ -414,9 +421,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		onLabel = new JLabel("Timer is OFF");
 		onLabel.setFont(onLabel.getFont().deriveFont(AffineTransform.getScaleInstance(2, 2)));
 		
-		timesTable = new DraggableJTable("Add time...", false, true);
-		timesTable.setName("timesTable");
-		timesTable.setDefaultEditor(SolveTime.class, new SolveTimeEditor("Type new time here."));
+		timesTable = new DraggableJTable(MainMessages.getString("CALCubeTimer.addtime"), false, true); //$NON-NLS-1$
+		timesTable.setName("timesTable"); //$NON-NLS-1$
+		timesTable.setDefaultEditor(SolveTime.class, new SolveTimeEditor(MainMessages.getString("CALCubeTimer.typenewtime"))); //$NON-NLS-1$
 		timesTable.setDefaultRenderer(SolveTime.class, new SolveTimeRenderer(statsModel));
 		timesTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		timesTable.setModel(statsModel);
@@ -425,7 +432,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timesScroller = new JScrollPane(timesTable);
 
 		sessionsTable = new SessionsTable(statsModel);
-		sessionsTable.setName("sessionsTable");
+		sessionsTable.setName("sessionsTable"); //$NON-NLS-1$
 		//TODO - this wastes space, probably not easy to fix...
 		sessionsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		sessionsScroller = new JScrollPane(sessionsTable);
@@ -459,7 +466,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		JButton fullScreenButton = new JButton(flipFullScreenAction);
 		fullscreenPanel.add(fullScreenButton, BorderLayout.PAGE_END);
 
-		customGUIMenu = new JMenu("Load custom GUI");
+		customGUIMenu = new JMenu(MainMessages.getString("CALCubeTimer.loadcustomgui")); //$NON-NLS-1$
 
 		profiles = new LoudComboBox();
 		profiles.addItemListener(this);
@@ -479,7 +486,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 	}
 
-	private class LoudComboBox extends JComboBox {
+	private static class LoudComboBox extends JComboBox {
 		//this is copied from ScrambleChooserComboBox.java!
 		//overriden to cause selected events to be fired even if the new item
 		//is already selected (this helps simplify cct startup logic)
@@ -585,6 +592,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private void parseXML_GUI(File xmlGUIfile) {
 		//this is needed to compute the size of the gui correctly
 		scramblePanel.resetPreferredSize();
+		//we need to load this xml gui's language properties file
+		String fileName = xmlGUIfile.getName();
+		XMLGuiMessages.loadResources(fileName.substring(0, fileName.lastIndexOf('.')));
 
 		DefaultHandler handler = new GUIParser(this);
 		SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -592,7 +602,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(xmlGUIfile, handler);
 		} catch(SAXParseException spe) {
-			System.err.println(spe.getSystemId() + ":" + spe.getLineNumber() + ": parse error: " + spe.getMessage());
+			System.err.println(spe.getSystemId() + ":" + spe.getLineNumber() + ": parse error: " + spe.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
 
 			Exception x = spe;
 			if(spe.getException() != null)
@@ -625,7 +635,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	private JCheckBox[] attributes;
-	private static final String SCRAMBLE_ATTRIBUTE_CHANGED = "Scramble Attribute Changed";
+	private static final String SCRAMBLE_ATTRIBUTE_CHANGED = "Scramble Attribute Changed"; //$NON-NLS-1$
 	private void createScrambleAttributes() {
 		ScrambleCustomization sc = scramblesList.getScrambleCustomization();
 		scrambleAttributes.removeAll();
@@ -663,7 +673,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		private ArrayList<Boolean> needText;
 		private ArrayList<String> elementNames;
 		private JFrame frame;
-
 		public GUIParser(JFrame frame){
 			this.frame = frame;
 
@@ -690,42 +699,42 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			String elementName = qName.toLowerCase();
 
 			if(level == -1){
-				if(!elementName.equals("gui")){
-					throw new SAXException("parse error: invalid root tag");
+				if(!elementName.equals("gui")){ //$NON-NLS-1$
+					throw new SAXException("parse error: invalid root tag"); //$NON-NLS-1$
 				}
 				return;
 			}
 			else if(level == 0){
-				if(!(elementName.equals("menubar") || elementName.equals("panel")))
-					throw new SAXException("parse error: level 1 must be menubar or panel");
+				if(!(elementName.equals("menubar") || elementName.equals("panel"))) //$NON-NLS-1$ //$NON-NLS-2$
+					throw new SAXException("parse error: level 1 must be menubar or panel"); //$NON-NLS-1$
 			}
 
 			//must deal with level < 0 before adding anything
 			elementNames.add(elementName);
-			needText.add(elementName.equals("label") || elementName.equals("selectablelabel") || elementName.equals("button") || elementName.equals("checkbox") || elementName.equals("menu") || elementName.equals("menuitem") || elementName.equals("checkboxmenuitem"));
-			strs.add("");
+			needText.add(elementName.equals("label") || elementName.equals("selectablelabel") || elementName.equals("button") || elementName.equals("checkbox") || elementName.equals("menu") || elementName.equals("menuitem") || elementName.equals("checkboxmenuitem")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+			strs.add(""); //$NON-NLS-1$
 
-			if(elementName.equals("label")){
+			if(elementName.equals("label")){ //$NON-NLS-1$
 				com = new DynamicLabel();
 			}
-			else if(elementName.equals("selectablelabel")) {
+			else if(elementName.equals("selectablelabel")) { //$NON-NLS-1$
 				com = new DynamicSelectableLabel();
 				try{
-					if((temp = attrs.getValue("editable")) != null)
+					if((temp = attrs.getValue("editable")) != null) //$NON-NLS-1$
 						((DynamicSelectableLabel) com).setEditable(Boolean.parseBoolean(temp));
 				} catch(Exception e){
 					throw new SAXException(e);
 				}
 			}
-			else if(elementName.equals("button")){
+			else if(elementName.equals("button")){ //$NON-NLS-1$
 				com = new DynamicButton();
 				com.setFocusable(Configuration.getBoolean(VariableKey.FOCUSABLE_BUTTONS, false));
 			}
-			else if(elementName.equals("checkbox")){
+			else if(elementName.equals("checkbox")){ //$NON-NLS-1$
 				com = new DynamicCheckBox();
 				com.setFocusable(Configuration.getBoolean(VariableKey.FOCUSABLE_BUTTONS, false));
 			}
-			else if(elementName.equals("panel")){
+			else if(elementName.equals("panel")){ //$NON-NLS-1$
 				com = new JPanel() {
 					//we're overwriting this to allow "nice" resizing of the gui with the jsplitpane
 					public Dimension getMinimumSize() {
@@ -747,83 +756,83 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				if(attrs == null) layout = new FlowLayout();
 				else{
 					try{
-						if((temp = attrs.getValue("hgap")) != null) hgap = Integer.parseInt(temp);
-						if((temp = attrs.getValue("vgap")) != null) vgap = Integer.parseInt(temp);
-						if((temp = attrs.getValue("rows")) != null) rows = Integer.parseInt(temp);
-						if((temp = attrs.getValue("cols")) != null) cols = Integer.parseInt(temp);
+						if((temp = attrs.getValue("hgap")) != null) hgap = Integer.parseInt(temp); //$NON-NLS-1$
+						if((temp = attrs.getValue("vgap")) != null) vgap = Integer.parseInt(temp); //$NON-NLS-1$
+						if((temp = attrs.getValue("rows")) != null) rows = Integer.parseInt(temp); //$NON-NLS-1$
+						if((temp = attrs.getValue("cols")) != null) cols = Integer.parseInt(temp); //$NON-NLS-1$
 					} catch(Exception e){
-						throw new SAXException("integer parse error", e);
+						throw new SAXException("integer parse error", e); //$NON-NLS-1$
 					}
 
-					if((temp = attrs.getValue("align")) != null){
-						if(temp.equalsIgnoreCase("left")) align = FlowLayout.LEFT;
-						else if(temp.equalsIgnoreCase("right")) align = FlowLayout.RIGHT;
-						else if(temp.equalsIgnoreCase("center")) align = FlowLayout.CENTER;
-						else if(temp.equalsIgnoreCase("leading")) align = FlowLayout.LEADING;
-						else if(temp.equalsIgnoreCase("trailing")) align = FlowLayout.TRAILING;
-						else throw new SAXException("parse error in align");
+					if((temp = attrs.getValue("align")) != null){ //$NON-NLS-1$
+						if(temp.equalsIgnoreCase("left")) align = FlowLayout.LEFT; //$NON-NLS-1$
+						else if(temp.equalsIgnoreCase("right")) align = FlowLayout.RIGHT; //$NON-NLS-1$
+						else if(temp.equalsIgnoreCase("center")) align = FlowLayout.CENTER; //$NON-NLS-1$
+						else if(temp.equalsIgnoreCase("leading")) align = FlowLayout.LEADING; //$NON-NLS-1$
+						else if(temp.equalsIgnoreCase("trailing")) align = FlowLayout.TRAILING; //$NON-NLS-1$
+						else throw new SAXException("parse error in align"); //$NON-NLS-1$
 					}
 
-					if((temp = attrs.getValue("orientation")) != null){
-						if(temp.equalsIgnoreCase("horizontal")) orientation = BoxLayout.X_AXIS;
-						else if(temp.equalsIgnoreCase("vertical")) orientation = BoxLayout.Y_AXIS;
-						else if(temp.equalsIgnoreCase("page")) orientation = BoxLayout.PAGE_AXIS;
-						else if(temp.equalsIgnoreCase("line")) orientation = BoxLayout.LINE_AXIS;
-						else throw new SAXException("parse error in orientation");
+					if((temp = attrs.getValue("orientation")) != null){ //$NON-NLS-1$
+						if(temp.equalsIgnoreCase("horizontal")) orientation = BoxLayout.X_AXIS; //$NON-NLS-1$
+						else if(temp.equalsIgnoreCase("vertical")) orientation = BoxLayout.Y_AXIS; //$NON-NLS-1$
+						else if(temp.equalsIgnoreCase("page")) orientation = BoxLayout.PAGE_AXIS; //$NON-NLS-1$
+						else if(temp.equalsIgnoreCase("line")) orientation = BoxLayout.LINE_AXIS; //$NON-NLS-1$
+						else throw new SAXException("parse error in orientation"); //$NON-NLS-1$
 					}
 
-					if((temp = attrs.getValue("layout")) != null) {
-						if(temp.equalsIgnoreCase("border")) layout = new BorderLayout(hgap, vgap);
-						else if(temp.equalsIgnoreCase("box")) layout = new BoxLayout(com, orientation);
-						else if(temp.equalsIgnoreCase("grid")) layout = new GridLayout(rows, cols, hgap, vgap);
-						else if(temp.equalsIgnoreCase("flow")) layout = new FlowLayout(align, hgap, vgap);
-						else throw new SAXException("parse error in layout");
+					if((temp = attrs.getValue("layout")) != null) { //$NON-NLS-1$
+						if(temp.equalsIgnoreCase("border")) layout = new BorderLayout(hgap, vgap); //$NON-NLS-1$
+						else if(temp.equalsIgnoreCase("box")) layout = new BoxLayout(com, orientation); //$NON-NLS-1$
+						else if(temp.equalsIgnoreCase("grid")) layout = new GridLayout(rows, cols, hgap, vgap); //$NON-NLS-1$
+						else if(temp.equalsIgnoreCase("flow")) layout = new FlowLayout(align, hgap, vgap); //$NON-NLS-1$
+						else throw new SAXException("parse error in layout"); //$NON-NLS-1$
 					} else
 						layout = new FlowLayout(align, hgap, vgap);
 				}
 
 				com.setLayout(layout);
 			}
-			else if(elementName.equals("component")){
-				if(attrs == null || (temp = attrs.getValue("type")) == null)
-					throw new SAXException("parse error in component");
-				else if(temp.equalsIgnoreCase("scramblechooser")) com = scrambleChooser;
-				else if(temp.equalsIgnoreCase("scramblenumber")) com = scrambleNumber;
-				else if(temp.equalsIgnoreCase("scramblelength")) com = scrambleLength;
-				else if(temp.equalsIgnoreCase("scrambleattributes")) com = scrambleAttributes;
-				else if(temp.equalsIgnoreCase("stackmatstatuslabel")) com = onLabel;
-				else if(temp.equalsIgnoreCase("scrambletext")) com = scramblePanel;
-				else if(temp.equalsIgnoreCase("timerdisplay")) com = timeLabel;
-				else if(temp.equalsIgnoreCase("timeslist")) com = timesScroller;
-				else if(temp.equalsIgnoreCase("customguimenu")) com = customGUIMenu;
-				else if(temp.equalsIgnoreCase("profilecombobox")) com = profiles;
-				else if(temp.equalsIgnoreCase("commentarea")) com = commentArea;
-				else if(temp.equalsIgnoreCase("sessionslist")) com = sessionsScroller;
-				else if(temp.equalsIgnoreCase("clock")) com = currentTimeLabel;
+			else if(elementName.equals("component")){ //$NON-NLS-1$
+				if(attrs == null || (temp = attrs.getValue("type")) == null) //$NON-NLS-1$
+					throw new SAXException("parse error in component"); //$NON-NLS-1$
+				else if(temp.equalsIgnoreCase("scramblechooser")) com = scrambleChooser; //$NON-NLS-1$
+				else if(temp.equalsIgnoreCase("scramblenumber")) com = scrambleNumber; //$NON-NLS-1$
+				else if(temp.equalsIgnoreCase("scramblelength")) com = scrambleLength; //$NON-NLS-1$
+				else if(temp.equalsIgnoreCase("scrambleattributes")) com = scrambleAttributes; //$NON-NLS-1$
+				else if(temp.equalsIgnoreCase("stackmatstatuslabel")) com = onLabel; //$NON-NLS-1$
+				else if(temp.equalsIgnoreCase("scrambletext")) com = scramblePanel; //$NON-NLS-1$
+				else if(temp.equalsIgnoreCase("timerdisplay")) com = timeLabel; //$NON-NLS-1$
+				else if(temp.equalsIgnoreCase("timeslist")) com = timesScroller; //$NON-NLS-1$
+				else if(temp.equalsIgnoreCase("customguimenu")) com = customGUIMenu; //$NON-NLS-1$
+				else if(temp.equalsIgnoreCase("profilecombobox")) com = profiles; //$NON-NLS-1$
+				else if(temp.equalsIgnoreCase("commentarea")) com = commentArea; //$NON-NLS-1$
+				else if(temp.equalsIgnoreCase("sessionslist")) com = sessionsScroller; //$NON-NLS-1$
+				else if(temp.equalsIgnoreCase("clock")) com = currentTimeLabel; //$NON-NLS-1$
 			}
-			else if(elementName.equals("center") || elementName.equals("east") || elementName.equals("west") || elementName.equals("south") || elementName.equals("north") || elementName.equals("page_start") || elementName.equals("page_end") || elementName.equals("line_start") || elementName.equals("line_end")){
+			else if(elementName.equals("center") || elementName.equals("east") || elementName.equals("west") || elementName.equals("south") || elementName.equals("north") || elementName.equals("page_start") || elementName.equals("page_end") || elementName.equals("line_start") || elementName.equals("line_end")){ //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$
 				com = null;
 			}
-			else if(elementName.equals("menubar")){
+			else if(elementName.equals("menubar")){ //$NON-NLS-1$
 				com = new JMenuBar();
 			}
-			else if(elementName.equals("menu")){
+			else if(elementName.equals("menu")){ //$NON-NLS-1$
 				JMenu menu = new DynamicMenu();
-				if((temp = attrs.getValue("mnemonic")) != null)
+				if((temp = attrs.getValue("mnemonic")) != null) //$NON-NLS-1$
 					menu.setMnemonic(temp.charAt(0));
 
 				com = menu;
 			}
-			else if(elementName.equals("menuitem")){
+			else if(elementName.equals("menuitem")){ //$NON-NLS-1$
 				com = new DynamicMenuItem();
 			}
-			else if(elementName.equals("checkboxmenuitem")){
+			else if(elementName.equals("checkboxmenuitem")){ //$NON-NLS-1$
 				com = new DynamicCheckBoxMenuItem();
 			}
-			else if(elementName.equals("separator")){
+			else if(elementName.equals("separator")){ //$NON-NLS-1$
 				com = new JSeparator();
 			}
-			else if(elementName.equals("scrollpane")){
+			else if(elementName.equals("scrollpane")){ //$NON-NLS-1$
 				JScrollPane scroll = new JScrollPane() {
 					{
 						setBorder(null);
@@ -844,89 +853,79 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 						new AlphaControlBackgroundComposite(0.3f, 0.5f));
 				com = scroll;
 			}
-			else if(elementName.equals("tabbedpane")) {
+			else if(elementName.equals("tabbedpane")) { //$NON-NLS-1$
 				com = new JTabbedPane();
-				com.setName(componentID+"");
+				com.setName(componentID+""); //$NON-NLS-1$
 				tabbedPanes.add((JTabbedPane) com);
 			}
-			else if(elementName.equals("splitpane")) {
+			else if(elementName.equals("splitpane")) { //$NON-NLS-1$
 				com = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, null, null);
-				com.setName(componentID+"");
+				com.setName(componentID+""); //$NON-NLS-1$
 				splitPanes.add((JSplitPane) com);
 			}
-			else if(elementName.equals("glue")) {
+			else if(elementName.equals("glue")) { //$NON-NLS-1$
 				Component glue = null;
-				if((temp = attrs.getValue("orientation")) != null) {
-					if(temp.equalsIgnoreCase("horizontal")) glue = Box.createHorizontalGlue();
-					else if(temp.equalsIgnoreCase("vertical")) glue = Box.createVerticalGlue();
-					else throw new SAXException("parse error in orientation");
+				if((temp = attrs.getValue("orientation")) != null) { //$NON-NLS-1$
+					if(temp.equalsIgnoreCase("horizontal")) glue = Box.createHorizontalGlue(); //$NON-NLS-1$
+					else if(temp.equalsIgnoreCase("vertical")) glue = Box.createVerticalGlue(); //$NON-NLS-1$
+					else throw new SAXException("parse error in orientation"); //$NON-NLS-1$
 				}
 				else glue = Box.createGlue();
 				com = new JPanel();
 				com.add(glue);
 			}
-			else throw new SAXException("invalid tag " + elementName);
+			else throw new SAXException("invalid tag " + elementName); //$NON-NLS-1$
 
 			if(com instanceof AbstractButton){
 				if(attrs != null){
-					if((temp = attrs.getValue("action")) != null){
+					if((temp = attrs.getValue("action")) != null){ //$NON-NLS-1$
 						AbstractAction a = actionMap.get(temp.toLowerCase());
 						if(a != null) ((AbstractButton)com).setAction(a);
-						else throw new SAXException("parse error in action: " + temp.toLowerCase());
+						else throw new SAXException("parse error in action: " + temp.toLowerCase()); //$NON-NLS-1$
 					}
 				}
 			}
 
 			if(com != null && attrs != null){
 				try{
-					if((temp = attrs.getValue("alignmentX")) != null)
+					if((temp = attrs.getValue("alignmentX")) != null) //$NON-NLS-1$
 						com.setAlignmentX(Float.parseFloat(temp));
-					if((temp = attrs.getValue("alignmentY")) != null)
+					if((temp = attrs.getValue("alignmentY")) != null) //$NON-NLS-1$
 						com.setAlignmentY(Float.parseFloat(temp));
-					if((temp = attrs.getValue("border")) != null) {
-						String[] titleAttrs = temp.split(";");
-
-						Border border = null;
-						if(titleAttrs[0].isEmpty())
-							border = BorderFactory.createEtchedBorder();
-						else
-							border = BorderFactory.createLineBorder(Utils.stringToColor(new DynamicString(titleAttrs[0], null).toString()));
-						if(titleAttrs.length > 1)
-							border = BorderFactory.createTitledBorder(border, titleAttrs[1]);
-						com.setBorder(border);
-					}
-					if((temp = attrs.getValue("minimumsize")) != null) {
-						String[] dims = temp.split("x");
+					if((temp = attrs.getValue("border")) != null) //$NON-NLS-1$
+						new DynamicBorderSetter(com, temp, statsModel);
+					if((temp = attrs.getValue("minimumsize")) != null) { //$NON-NLS-1$
+						String[] dims = temp.split("x"); //$NON-NLS-1$
 						com.setMinimumSize(new Dimension(Integer.parseInt(dims[0]), Integer.parseInt(dims[1])));
 					}
-					if((temp = attrs.getValue("preferredsize")) != null) {
-						String[] dims = temp.split("x");
+					if((temp = attrs.getValue("preferredsize")) != null) { //$NON-NLS-1$
+						String[] dims = temp.split("x"); //$NON-NLS-1$
 						com.setPreferredSize(new Dimension(Integer.parseInt(dims[0]), Integer.parseInt(dims[1])));
 					}
 					if(com instanceof JScrollPane) {
 						JScrollPane scroller = (JScrollPane) com;
-						if((temp = attrs.getValue("verticalpolicy")) != null) {
+						if((temp = attrs.getValue("verticalpolicy")) != null) { //$NON-NLS-1$
 							int policy = JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED;
-							if(temp.equalsIgnoreCase("never"))
+							if(temp.equalsIgnoreCase("never")) //$NON-NLS-1$
 								policy = JScrollPane.VERTICAL_SCROLLBAR_NEVER;
-							else if(temp.equalsIgnoreCase("always"))
+							else if(temp.equalsIgnoreCase("always")) //$NON-NLS-1$
 								policy = JScrollPane.VERTICAL_SCROLLBAR_ALWAYS;
 							scroller.setVerticalScrollBarPolicy(policy);
 						}
-						if((temp = attrs.getValue("horizontalpolicy")) != null) {
+						if((temp = attrs.getValue("horizontalpolicy")) != null) { //$NON-NLS-1$
 							int policy = JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED;
-							if(temp.equalsIgnoreCase("never"))
+							if(temp.equalsIgnoreCase("never")) //$NON-NLS-1$
 								policy = JScrollPane.HORIZONTAL_SCROLLBAR_NEVER;
-							else if(temp.equalsIgnoreCase("always"))
+							else if(temp.equalsIgnoreCase("always")) //$NON-NLS-1$
 								policy = JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS;
 							scroller.setHorizontalScrollBarPolicy(policy);
 						}
 					} else if(com instanceof JSplitPane) {
 						JSplitPane jsp = (JSplitPane) com;
-						if((temp = attrs.getValue("drawcontinuous")) != null) {
+						if((temp = attrs.getValue("drawcontinuous")) != null) { //$NON-NLS-1$
 							jsp.setContinuousLayout(Boolean.parseBoolean(temp));
 						}
-						if((temp = attrs.getValue("resizeweight")) != null) {
+						if((temp = attrs.getValue("resizeweight")) != null) { //$NON-NLS-1$
 							double resizeWeight = .5;
 							try { 
 								resizeWeight = Double.parseDouble(temp);
@@ -934,30 +933,30 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 							jsp.setResizeWeight(resizeWeight);
 						}
 					}
-					if((temp = attrs.getValue("opaque")) != null)
+					if((temp = attrs.getValue("opaque")) != null) //$NON-NLS-1$
 						com.setOpaque(Boolean.parseBoolean(temp));
-					if((temp = attrs.getValue("background")) != null)
+					if((temp = attrs.getValue("background")) != null) //$NON-NLS-1$
 						com.setBackground(Utils.stringToColor(temp));
-					if((temp = attrs.getValue("foreground")) != null)
+					if((temp = attrs.getValue("foreground")) != null) //$NON-NLS-1$
 						com.setForeground(Utils.stringToColor(temp));
-					if((temp = attrs.getValue("orientation")) != null){
+					if((temp = attrs.getValue("orientation")) != null){ //$NON-NLS-1$
 						if(com instanceof JSeparator){
-							if(temp.equalsIgnoreCase("horizontal"))
+							if(temp.equalsIgnoreCase("horizontal")) //$NON-NLS-1$
 								((JSeparator)com).setOrientation(SwingConstants.HORIZONTAL);
-							else if(temp.equalsIgnoreCase("vertical"))
+							else if(temp.equalsIgnoreCase("vertical")) //$NON-NLS-1$
 								((JSeparator)com).setOrientation(SwingConstants.VERTICAL);
 						} else if (com instanceof JSplitPane) {
 							JSplitPane jsp = (JSplitPane) com;
-							if(temp.equalsIgnoreCase("horizontal"))
+							if(temp.equalsIgnoreCase("horizontal")) //$NON-NLS-1$
 								jsp.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-							else if(temp.equalsIgnoreCase("vertical"))
+							else if(temp.equalsIgnoreCase("vertical")) //$NON-NLS-1$
 								jsp.setOrientation(JSplitPane.VERTICAL_SPLIT);
 						}
 					}
-					if((temp = attrs.getValue("nominsize")) != null) {
+					if((temp = attrs.getValue("nominsize")) != null) { //$NON-NLS-1$
 						com.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.parseBoolean(temp));
 					}
-					if((temp = attrs.getValue("name")) != null) {
+					if((temp = attrs.getValue("name")) != null) { //$NON-NLS-1$
 						com.setName(temp);
 					}
 				} catch(Exception e) {
@@ -968,10 +967,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			componentTree.add(com);
 
 			if(level == 0){
-				if(elementName.equals("panel")){
+				if(elementName.equals("panel")){ //$NON-NLS-1$
 					frame.setContentPane((JPanel)componentTree.get(level));
 				}
-				else if(elementName.equals("menubar")){
+				else if(elementName.equals("menubar")){ //$NON-NLS-1$
 					frame.setJMenuBar((JMenuBar)componentTree.get(level));
 				}
 			}
@@ -997,15 +996,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 						}
 						else{
 							String loc = null;
-							if(temp.equals("center")) loc = BorderLayout.CENTER;
-							else if(temp.equals("east")) loc = BorderLayout.EAST;
-							else if(temp.equals("west")) loc = BorderLayout.WEST;
-							else if(temp.equals("south")) loc = BorderLayout.SOUTH;
-							else if(temp.equals("north")) loc = BorderLayout.NORTH;
-							else if(temp.equals("page_start")) loc = BorderLayout.PAGE_START;
-							else if(temp.equals("page_end")) loc = BorderLayout.PAGE_END;
-							else if(temp.equals("line_start")) loc = BorderLayout.LINE_START;
-							else if(temp.equals("line_end")) loc = BorderLayout.LINE_END;
+							if(temp.equals("center")) loc = BorderLayout.CENTER; //$NON-NLS-1$
+							else if(temp.equals("east")) loc = BorderLayout.EAST; //$NON-NLS-1$
+							else if(temp.equals("west")) loc = BorderLayout.WEST; //$NON-NLS-1$
+							else if(temp.equals("south")) loc = BorderLayout.SOUTH; //$NON-NLS-1$
+							else if(temp.equals("north")) loc = BorderLayout.NORTH; //$NON-NLS-1$
+							else if(temp.equals("page_start")) loc = BorderLayout.PAGE_START; //$NON-NLS-1$
+							else if(temp.equals("page_end")) loc = BorderLayout.PAGE_END; //$NON-NLS-1$
+							else if(temp.equals("line_start")) loc = BorderLayout.LINE_START; //$NON-NLS-1$
+							else if(temp.equals("line_end")) loc = BorderLayout.LINE_END; //$NON-NLS-1$
 							c.add(com, loc);
 						}
 						break;
@@ -1039,7 +1038,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		public void characters(char buf[], int offset, int len) throws SAXException {
 			if(level >= 0 && needText.get(level)){
 				String s = new String(buf, offset, len);
-				if(!s.trim().equals("")) strs.set(level, strs.get(level) + s);
+				if(!s.trim().isEmpty()) strs.set(level, strs.get(level) + s);
 			}
 		}
 
@@ -1048,7 +1047,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 
 		public void warning(SAXParseException e) throws SAXParseException {
-			System.err.println(e.getSystemId() + ":" + e.getLineNumber() + ": warning: " + e.getMessage());
+			System.err.println(e.getSystemId() + ":" + e.getLineNumber() + ": warning: " + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	} //}}}
 
@@ -1064,6 +1063,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 	
 	public static void main(String[] args) {
+        String language = System.getProperty("user.language", "");
+        String country = System.getProperty("user.region", System.getProperty("user.country", ""));
+        System.out.println(language + " " + country);
+//        Locale currentLocale = new Locale(language, country);
+//        ResourceBundle messages = ResourceBundle.getBundle("languages/net_gnehzr_cct_main", currentLocale);
+//        System.out.println(messages.getString("greeting"));
+//        System.out.println(messages.getString("day"));
+        
 		Policy.setPolicy(new CCTSecurityPolicy());
 		System.setSecurityManager(new SecurityManager());
 		
@@ -1082,20 +1089,22 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		UIManager.put(LafWidget.ANIMATION_KIND, LafConstants.AnimationKind.NONE);
 //		UIManager.put(SubstanceLookAndFeel.WATERMARK_TO_BLEED, Boolean.TRUE);
 
+		//The error messages are not internationalized because I want people to
+		//be able to google the following messages
 		if(args.length >= 2) {
-			System.out.println("Too many arguments!");
-			System.out.println("Usage: CALCubeTimer (profile directory)");
+			System.out.println("Too many arguments!"); //$NON-NLS-1$
+			System.out.println("Usage: CALCubeTimer (profile directory)"); //$NON-NLS-1$
 		} else if(args.length == 1) {
 			File startupProfileDir = new File(args[0]);
 			if(!startupProfileDir.exists() || !startupProfileDir.isDirectory()) {
-				System.out.println("Couldn't find directory " + startupProfileDir.getAbsolutePath());
+				System.out.println("Couldn't find directory " + startupProfileDir.getAbsolutePath()); //$NON-NLS-1$
 			} else {
 				Profile commandedProfile = new Profile(startupProfileDir);
 				Configuration.setCommandLineProfile(commandedProfile);
 				Configuration.setSelectedProfile(commandedProfile);
 			}
 		}
-
+        
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				String errors = Configuration.getStartupErrors();
@@ -1103,7 +1112,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					JOptionPane.showMessageDialog(
 							null,
 							errors,
-							"Can't start CCT!",
+							"Cannot start CCT!", //$NON-NLS-1$
 							JOptionPane.ERROR_MESSAGE);
 					System.exit(1);
 				}
@@ -1116,7 +1125,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				}
 				CALCubeTimer main = new CALCubeTimer();
 				Configuration.addConfigurationChangeListener(main);
-				main.setTitle("CCT " + CCT_VERSION);
+				main.setTitle("CCT " + CCT_VERSION); //$NON-NLS-1$
 				main.setIconImage(cubeIcon.getImage());
 				main.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 				main.setSelectedProfile(Configuration.getSelectedProfile()); //this will eventually cause sessionSelected() to be called
@@ -1254,9 +1263,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				outOfScrambles = !scramblesList.getNext().isImported() && outOfScrambles;
 				if(outOfScrambles) {
 					JOptionPane.showMessageDialog(this,
-							"All imported scrambles have been used.\n" +
-							"Generated scrambles will be used from now on.",
-							"All Out of Scrambles!",
+							MainMessages.getString("CALCubeTimer.outofimported") + //$NON-NLS-1$
+							MainMessages.getString("CALCubeTimer.generatedscrambles"), //$NON-NLS-1$
+							MainMessages.getString("CALCubeTimer.outofscrambles"), //$NON-NLS-1$
 							JOptionPane.INFORMATION_MESSAGE);
 				}
 				updateScramble();
@@ -1413,8 +1422,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	public void resetAction() {
 		int choice = JOptionPane.showConfirmDialog(
 				this,
-				"Do you really want to reset?",
-				"Warning!",
+				MainMessages.getString("CALCubeTimer.confirmreset"), //$NON-NLS-1$
+				MainMessages.getString("CALCubeTimer.warning"), //$NON-NLS-1$
 				JOptionPane.YES_NO_OPTION,
 				JOptionPane.WARNING_MESSAGE);
 		if(choice == JOptionPane.YES_OPTION) {
@@ -1442,7 +1451,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		} catch(Exception error) {
 			JOptionPane.showMessageDialog(this,
 					error.getMessage(),
-					"Error!",
+					MainMessages.getString("CALCubeTimer.error"), //$NON-NLS-1$
 					JOptionPane.WARNING_MESSAGE);
 		}
 	}
@@ -1505,9 +1514,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private void addSplit(TimerState state) {
 		long currentTime = System.currentTimeMillis();
 		if((currentTime - lastSplit) / 1000. > Configuration.getDouble(VariableKey.MIN_SPLIT_DIFFERENCE, false)) {
-			String hands = "";
+			String hands = ""; //$NON-NLS-1$
 			if(state instanceof StackmatState) {
-				hands += ((StackmatState) state).leftHand() ? " Left Hand" : " Right Hand";
+				hands += ((StackmatState) state).leftHand() ? MainMessages.getString("CALCubeTimer.lefthand") : MainMessages.getString("CALCubeTimer.righthand"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			splits.add(state.toSolveTime(hands, null));
 			lastSplit = currentTime;
@@ -1522,7 +1531,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		tickTock.stop();
 	}
 
-	private static final String[] OPTIONS = { "Accept", "+2", "POP" };
+	private static final String[] OPTIONS = { MainMessages.getString("CALCubeTimer.accept"), "+2", "POP" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	private StackmatState lastAccepted = new StackmatState();
 	private ArrayList<SolveTime> splits = new ArrayList<SolveTime>();
 	private boolean addTime(TimerState addMe) {
@@ -1533,8 +1542,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		boolean sameAsLast = addMe.compareTo(lastAccepted) == 0;
 		if(sameAsLast) {
 			int choice = JOptionPane.showConfirmDialog(null,
-					"This is the exact same time as last time! Are you sure you wish to add it?",
-					"Confirm Time: " + addMe.toString(),
+					MainMessages.getString("CALCubeTimer.confirmduplicate"), //$NON-NLS-1$
+					MainMessages.getString("CALCubeTimer.confirmtime") + addMe.toString(), //$NON-NLS-1$
 					JOptionPane.YES_NO_OPTION,
 					JOptionPane.QUESTION_MESSAGE);
 			if(choice != JOptionPane.YES_OPTION)
@@ -1543,8 +1552,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		int choice = JOptionPane.YES_OPTION;
 		if(Configuration.getBoolean(VariableKey.PROMPT_FOR_NEW_TIME, false) && !sameAsLast) {
 			choice = JOptionPane.showOptionDialog(null,
-					"Your time: " + protect.toString() + "\n Hit esc or close dialog to discard.",
-					"Confirm Time",
+					MainMessages.getString("CALCubeTimer.yourtime") + protect.toString() + MainMessages.getString("CALCubeTimer.newtimedialog"), //$NON-NLS-1$ //$NON-NLS-2$
+					MainMessages.getString("CALCubeTimer.confirm"), //$NON-NLS-1$
 					JOptionPane.YES_NO_CANCEL_OPTION,
 					JOptionPane.QUESTION_MESSAGE,
 					null,
@@ -1620,12 +1629,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		String time;
 		if(inspection <= -2) {
 			penalty = SolveType.DNF;
-			time = "Disqualification";
+			time = MainMessages.getString("CALCubeTimer.disqualification"); //$NON-NLS-1$
 		} else if(inspection <= 0) {
 			penalty = SolveType.PLUS_TWO;
-			time = "+2 Penalty";
+			time = MainMessages.getString("CALCubeTimer.+2penalty"); //$NON-NLS-1$
 		} else
-			time = "" + inspection;
+			time = "" + inspection; //$NON-NLS-1$
 		Color fore = Color.RED;
 		timeLabel.setForeground(fore);
 		timeLabel.setText(time);
@@ -1689,19 +1698,19 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	
 	public void stackmatOn(Boolean on) {
 		if(on == null) {
-			onLabel.setText("");
+			onLabel.setText(""); //$NON-NLS-1$
 		} else {
 			timeLabel.setStackmatOn(on);
 			if(on) {
-				onLabel.setText("Timer is ON");
+				onLabel.setText(MainMessages.getString("CALCubeTimer.timerON")); //$NON-NLS-1$
 			} else {
-				onLabel.setText("Timer is OFF");
+				onLabel.setText(MainMessages.getString("CALCubeTimer.timerOFF")); //$NON-NLS-1$
 			}
 		}
 	}
 }
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class StatisticsAction extends AbstractAction{
 	private StatsDialogHandler statsHandler;
 	private StatisticsTableModel model;
@@ -1719,7 +1728,7 @@ class StatisticsAction extends AbstractAction{
 		statsHandler.setVisible(true);
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class AddTimeAction extends AbstractAction{
 	private CALCubeTimer cct;
 	public AddTimeAction(CALCubeTimer cct){
@@ -1730,7 +1739,7 @@ class AddTimeAction extends AbstractAction{
 		cct.addTimeAction();
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class ResetAction extends AbstractAction{
 	private CALCubeTimer cct;
 	public ResetAction(CALCubeTimer cct){
@@ -1741,7 +1750,7 @@ class ResetAction extends AbstractAction{
 		cct.resetAction();
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class ImportScramblesAction extends AbstractAction{
 	private CALCubeTimer cct;
 	public ImportScramblesAction(CALCubeTimer cct){
@@ -1752,7 +1761,7 @@ class ImportScramblesAction extends AbstractAction{
 		cct.importScramblesAction();
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class ExportScramblesAction extends AbstractAction{
 	private CALCubeTimer cct;
 	public ExportScramblesAction(CALCubeTimer cct){
@@ -1763,7 +1772,7 @@ class ExportScramblesAction extends AbstractAction{
 		cct.exportScramblesAction();
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class ExitAction extends AbstractAction{
 	private CALCubeTimer cct;
 	public ExitAction(CALCubeTimer cct){
@@ -1774,18 +1783,23 @@ class ExitAction extends AbstractAction{
 		cct.dispose();
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class AboutAction extends AbstractAction{
+	public AboutAction(){
+		setEnabled(false);
+	}
+	
 	private JFrame makeMeVisible;
-	public AboutAction(JFrame makeMeVisible){
+	public void setAboutFrame(JFrame makeMeVisible) {
 		this.makeMeVisible = makeMeVisible;
+		setEnabled(true);
 	}
 
 	public void actionPerformed(ActionEvent e){
 		makeMeVisible.setVisible(true);
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class DocumentationAction extends AbstractAction{
 	private CALCubeTimer cct;
 	public DocumentationAction(CALCubeTimer cct){
@@ -1796,7 +1810,7 @@ class DocumentationAction extends AbstractAction{
 		cct.showDocumentation();
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class ShowConfigurationDialogAction extends AbstractAction{
 	private CALCubeTimer cct;
 	public ShowConfigurationDialogAction(CALCubeTimer cct){
@@ -1807,7 +1821,7 @@ class ShowConfigurationDialogAction extends AbstractAction{
 		cct.showConfigurationDialog();
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class ConnectToServerAction extends AbstractAction{
 	private CALCubeTimer cct;
 	public ConnectToServerAction(CALCubeTimer cct){
@@ -1818,7 +1832,7 @@ class ConnectToServerAction extends AbstractAction{
 		cct.connectToServer();
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class FlipFullScreenAction extends AbstractAction{
 	private CALCubeTimer cct;
 	public FlipFullScreenAction(CALCubeTimer cct){
@@ -1829,7 +1843,7 @@ class FlipFullScreenAction extends AbstractAction{
 		cct.flipFullScreen();
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class KeyboardTimingAction extends AbstractAction{
 	private CALCubeTimer cct;
 	public KeyboardTimingAction(CALCubeTimer cct){
@@ -1840,7 +1854,7 @@ class KeyboardTimingAction extends AbstractAction{
 		cct.keyboardTimingAction();
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class SpacebarOptionAction extends AbstractAction{
 	public SpacebarOptionAction(){
 	}
@@ -1849,7 +1863,7 @@ class SpacebarOptionAction extends AbstractAction{
 		Configuration.setBoolean(VariableKey.SPACEBAR_ONLY, ((AbstractButton)e.getSource()).isSelected());
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class FullScreenTimingAction extends AbstractAction{
 	public FullScreenTimingAction(){
 	}
@@ -1858,7 +1872,7 @@ class FullScreenTimingAction extends AbstractAction{
 		Configuration.setBoolean(VariableKey.FULLSCREEN_TIMING, ((AbstractButton)e.getSource()).isSelected());
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class HideScramblesAction extends AbstractAction{
 	private CALCubeTimer cct;
 	public HideScramblesAction(CALCubeTimer cct){
@@ -1869,7 +1883,7 @@ class HideScramblesAction extends AbstractAction{
 		cct.hideScramblesAction();
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class LessAnnoyingDisplayAction extends AbstractAction{
 	private CALCubeTimer cct;
 	public LessAnnoyingDisplayAction(CALCubeTimer cct){
@@ -1880,7 +1894,7 @@ class LessAnnoyingDisplayAction extends AbstractAction{
 		cct.lessAnnoyingDisplayAction();
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class RequestScrambleAction extends AbstractAction{
 	private CALCubeTimer cct;
 	public RequestScrambleAction(CALCubeTimer cct){
@@ -1891,12 +1905,12 @@ class RequestScrambleAction extends AbstractAction{
 		cct.requestScrambleAction();
 	}
 }
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class ToggleScrambleAction extends AbstractAction implements ConfigurationChangeListener {
 	private CALCubeTimer cct;
 	public ToggleScrambleAction(CALCubeTimer cct) {
 		this.cct = cct;
-		putValue(Action.NAME, "Show scramble popup");
+		putValue(Action.NAME, "Show scramble popup"); //$NON-NLS-1$
 		Configuration.addConfigurationChangeListener(this);
 	}
 	@Override

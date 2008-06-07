@@ -11,20 +11,20 @@ import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class Statistics implements ConfigurationChangeListener {
 	public static enum AverageType {
 		CURRENT {
 			public String toString() {
-				return "Current Average";
+				return StatisticsMessages.getString("Statistics.currentaverage"); //$NON-NLS-1$
 			}
 		}, RA {
 			public String toString() {
-				return "Best Rolling Average";
+				return StatisticsMessages.getString("Statistics.bestRA"); //$NON-NLS-1$
 			}
 		}, SESSION {
 			public String toString() {
-				return "Session Average";
+				return StatisticsMessages.getString("Statistics.sessionAverage"); //$NON-NLS-1$
 			}
 		}
 	}
@@ -84,11 +84,11 @@ public class Statistics implements ConfigurationChangeListener {
 		}
 		public String toString() {
 			if(oldTimes == null) { //add newTime
-				return "added"+newTime;
+				return "added"+newTime; //$NON-NLS-1$
 			} else if(newTime == null) { //remove oldTime
-				return "removed"+Arrays.toString(oldTimes);
+				return "removed"+Arrays.toString(oldTimes); //$NON-NLS-1$
 			} else { //change oldTime to newTime
-				return "changed"+oldTimes[0]+"->"+newTime;
+				return "changed"+oldTimes[0]+"->"+newTime; //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 	}
@@ -575,20 +575,20 @@ public class Statistics implements ConfigurationChangeListener {
 	private String toStatsStringHelper(ListIterator<SolveTime> times,
 			SolveTime best, SolveTime worst, boolean showSplits) {
 		if (!times.hasNext())
-			return "";
+			return ""; //$NON-NLS-1$
 		SolveTime next = times.next();
 		String comment = next.getComment();
 		if(!comment.isEmpty())
-			comment = "\t" + comment;
+			comment = "\t" + comment; //$NON-NLS-1$
 		boolean parens = false;
 		if (next == best || next == worst)
 			parens = true;
-		return times.nextIndex() + ".\t" + (parens ? "(" : "")
-				+ next.toString() + (parens ? ")" : "") + "\t"
+		return times.nextIndex() + ".\t" + (parens ? "(" : "") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				+ next.toString() + (parens ? ")" : "") + "\t" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				+ next.getScramble()
-				+ (showSplits ? "\tSplits: " + next.toSplitsString() : "")
+				+ (showSplits ? StatisticsMessages.getString("Statistics.splits") + next.toSplitsString() : "") //$NON-NLS-1$ //$NON-NLS-2$
 				+ comment
-				+ "\n"
+				+ "\n" //$NON-NLS-1$
 				+ toStatsStringHelper(times, best, worst, showSplits);
 	}
 
@@ -601,7 +601,7 @@ public class Statistics implements ConfigurationChangeListener {
 		if (list.hasNext())
 			return toTerseStringHelper(list, bestAndWorst[0], bestAndWorst[1]);
 		else
-			return "N/A";
+			return "N/A"; //$NON-NLS-1$
 	}
 
 	public String toTerseString(AverageType type, int num) {
@@ -613,16 +613,16 @@ public class Statistics implements ConfigurationChangeListener {
 		if (list.hasNext())
 			return toTerseStringHelper(list, bestAndWorst[0], bestAndWorst[1]);
 		else
-			return "N/A";
+			return "N/A"; //$NON-NLS-1$
 	}
 
 	private String toTerseStringHelper(ListIterator<SolveTime> printMe,
 			SolveTime best, SolveTime worst) {
 		SolveTime next = printMe.next();
-		return ((next == best || next == worst) ? "(" + next.toString() + ")"
+		return ((next == best || next == worst) ? "(" + next.toString() + ")" //$NON-NLS-1$ //$NON-NLS-2$
 				: next.toString())
-				+ (printMe.hasNext() ? ", "
-						+ toTerseStringHelper(printMe, best, worst) : "");
+				+ (printMe.hasNext() ? ", " //$NON-NLS-1$
+						+ toTerseStringHelper(printMe, best, worst) : ""); //$NON-NLS-1$
 	}
 
 	public SolveTime standardDeviation(AverageType type, int num) {

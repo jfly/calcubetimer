@@ -22,35 +22,35 @@
 							</panel>
 						</scrollpane>
 						<panel layout="border">
-							<line_start><button action="submitSundayContest">Submit Sunday Contest</button></line_start>
+							<line_start><button action="submitSundayContest">%%submitsunday%%</button></line_start>
 							<center><panel><checkbox alignmentX=".5" action="keyboardTiming"/></panel></center>
 							<line_end><panel>
-								<button action="newSession">New Session</button>
-								<button action="reset">Clear Session</button>
+								<button action="newSession">%%newsession%%</button>
+								<button action="reset">%%clearsession%%</button>
 							</panel></line_end>
 						</panel>
 						<panel layout="box" orientation="line">
-							<panel border=";Session Statistics" layout="box" orientation="page">
+							<panel border="%%seshstats%%" layout="box" orientation="page">
 								<panel layout="box" orientation="line">
-									<label>RA of $$configuration_Statistics_raSize0$$</label>
-									<button action="currentAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average: $$currentAverage0$$ ($$progressAverage0$$)</font></html>]]></button>
-									<button action="bestAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">Best RA: $$bestRA0$$</font></html>]]></button>
+									<label>%%raof%% $$configuration_Statistics_raSize0$$</label>
+									<button action="currentAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$currentAverage0$$ ($$progressAverage0$$)</font></html>]]></button>
+									<button action="bestAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">%%bestra%% $$bestRA0$$</font></html>]]></button>
 								</panel>
 								<panel layout="box" orientation="line">
-									<label>RA of $$configuration_Statistics_raSize1$$</label>
-									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average: $$currentAverage1$$ ($$progressAverage1$$)</font></font></html>]]></button>
-									<button action="bestAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">Best RA: $$bestRA1$$</font></html>]]></button>
+									<label>%%raof%% $$configuration_Statistics_raSize1$$</label>
+									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$currentAverage1$$ ($$progressAverage1$$)</font></font></html>]]></button>
+									<button action="bestAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">%%bestra%% $$bestRA1$$</font></html>]]></button>
 								</panel>
 								<panel layout="box" orientation="line">
-									<label>$$solves$$/$$attempts$$ (solves/attempts)</label>
-									<button action="sessionAverage"><![CDATA[<html>Session Average: $$sessionAverage$$ ($$progressSessionAverage$$)</html>]]></button>
+									<label>$$solves$$/$$attempts$$ (%%solves%%/%%attempts%%)</label>
+									<button action="sessionAverage"><![CDATA[<html>%%seshave%% $$sessionAverage$$ ($$progressSessionAverage$$)</html>]]></button>
 								</panel>
 								<panel></panel> <!-- I have no idea why this needs to be here, weird behavior without it -->
 							</panel>
-							<panel border=";Cubing History" layout="box" orientation="page">
-								<panel><label alignmentX=".5">Best time ever: $$veryBestTime$$</label></panel>
-								<panel><label alignmentX=".5">Best RA of $$configuration_Statistics_raSize0$$: $$veryBestRA0$$</label></panel>
-								<panel><label alignmentX=".5">$$globalSolveCount$$/$$globalAttemptCount$$ solve average: $$globalAverage$$</label></panel>
+							<panel border="%%history%% $$veryBestTime$$" layout="box" orientation="page">
+								<panel><label alignmentX=".5">%%bestever%% $$veryBestTime$$</label></panel>
+								<panel><label alignmentX=".5">%%bestraof%% $$configuration_Statistics_raSize0$$: $$veryBestRA0$$</label></panel>
+								<panel><label alignmentX=".5">$$globalSolveCount$$/$$globalAttemptCount$$ %%globalaverage%% $$globalAverage$$</label></panel>
 							</panel>
 						</panel>
 						<panel layout="border" preferredsize="100x25">
@@ -70,27 +70,27 @@
 		</splitpane>
 	</panel>
 	<menubar>
-		<menu mnemonic="f">File
-			<menuitem action="importScrambles">Import scrambles</menuitem>
-			<menuitem action="exportScrambles">Export scrambles</menuitem>
+		<menu mnemonic="f">%%file%%
+			<menuitem action="importScrambles">%%import%%</menuitem>
+			<menuitem action="exportScrambles">%%export%%</menuitem>
 			<separator/>
-			<menuitem action="addTime">Add time</menuitem>
+			<menuitem action="addTime">%%addtime%%</menuitem>
 			<separator/>
-			<menuitem action="connectToServer">Connect to server</menuitem>
+			<menuitem action="connectToServer">%%connect%%</menuitem>
 			<separator/>
-			<menuitem action="showConfiguration">Configuration</menuitem>
+			<menuitem action="showConfiguration">%%configuration%%</menuitem>
 			<separator/>
-			<menuitem action="exit">Exit</menuitem>
+			<menuitem action="exit">%%exit%%</menuitem>
 		</menu>
-		<menu mnemonic="o">Options
+		<menu mnemonic="o">%%options%%
 			<menuitem action="undo"/>
 			<menuitem action="redo"/>
 			<separator/>
-			<menu mnemonic="k">Keyboard Timer
-				<checkboxmenuitem action="toggleLessAnnoyingDisplay">Use less-annoying status light</checkboxmenuitem>
-				<checkboxmenuitem action="toggleHideScrambles">Hide scrambles when timer not focused</checkboxmenuitem>
-				<checkboxmenuitem action="toggleSpacebarStartsTimer">Only spacebar starts timer</checkboxmenuitem>
-				<checkboxmenuitem action="toggleFullscreenTiming">Fullscreen while timing</checkboxmenuitem>
+			<menu mnemonic="k">%%keyboardtimer%%
+				<checkboxmenuitem action="toggleLessAnnoyingDisplay">%%lessannoying%%</checkboxmenuitem>
+				<checkboxmenuitem action="toggleHideScrambles">%%hidescrambles%%</checkboxmenuitem>
+				<checkboxmenuitem action="toggleSpacebarStartsTimer">%%spacebaronly%%</checkboxmenuitem>
+				<checkboxmenuitem action="toggleFullscreenTiming">%%fullscreentiming%%</checkboxmenuitem>
 			</menu>
 			<component type="customGUIMenu"/>
 		</menu>
@@ -99,9 +99,9 @@
 		<glue orientation="horizontal"/>
 		<component type="profilecombobox"/>
 		<component type="clock"/> <!-- Probably want to add a gui option for empty borders, to create blank space -->
-		<menu mnemonic="h">Help
-			<menuitem action="showDocumentation">View Documentation</menuitem>
-			<menuitem action="showAbout">About</menuitem>
+		<menu mnemonic="h">%%help%%
+			<menuitem action="showDocumentation">%%documentation%%</menuitem>
+			<menuitem action="showAbout">%%about%%</menuitem>
 		</menu>
 		<button nominsize="true" action="togglefullscreen">+</button>
 	</menubar>

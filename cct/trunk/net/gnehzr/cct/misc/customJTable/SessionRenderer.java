@@ -11,7 +11,7 @@ import javax.swing.table.TableCellRenderer;
 import net.gnehzr.cct.statistics.Session;
 import net.gnehzr.cct.statistics.StatisticsTableModel;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class SessionRenderer extends JLabel implements TableCellRenderer {
 	private StatisticsTableModel statsModel;
 	public SessionRenderer(StatisticsTableModel statsModel) {

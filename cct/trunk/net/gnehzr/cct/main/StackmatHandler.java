@@ -25,7 +25,7 @@ public class StackmatHandler implements PropertyChangeListener {
 	private boolean stackmatInspecting;
 	public void propertyChange(PropertyChangeEvent evt) {
 		String event = evt.getPropertyName();
-		boolean on = !event.equals("Off");
+		boolean on = !event.equals("Off"); //$NON-NLS-1$
 		boolean stackmatEnabled = Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
 		tl.stackmatOn(stackmatEnabled ? on : null);
 		if(!stackmatEnabled)
@@ -33,7 +33,7 @@ public class StackmatHandler implements PropertyChangeListener {
 
 		if(evt.getNewValue() instanceof StackmatState) {
 			StackmatState current = (StackmatState) evt.getNewValue();
-			if(event.equals("Reset")) {
+			if(event.equals("Reset")) { //$NON-NLS-1$
 				if(current.oneHand()) {
 					if(stackmatInspecting) {
 						
@@ -62,14 +62,14 @@ public class StackmatHandler implements PropertyChangeListener {
 			} else {
 				tl.refreshDisplay(current);
 				stackmatInspecting = false;
-				if(event.equals("TimeChange")) {
+				if(event.equals("TimeChange")) { //$NON-NLS-1$
 					tl.timerStarted();
-				} else if(event.equals("Split")) {
+				} else if(event.equals("Split")) { //$NON-NLS-1$
 					tl.timerSplit(current);
-				} else if(event.equals("New Time")) {
+				} else if(event.equals("New Time")) { //$NON-NLS-1$
 					tl.timerStopped(current);
-				} else if(event.equals("Current Display")) {
-				} else if(event.equals("Accident Reset")) {
+				} else if(event.equals("Current Display")) { //$NON-NLS-1$
+				} else if(event.equals("Accident Reset")) { //$NON-NLS-1$
 					tl.timerAccidentlyReset((StackmatState) evt.getOldValue());
 				}
 			}

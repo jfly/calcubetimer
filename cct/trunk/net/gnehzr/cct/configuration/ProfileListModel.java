@@ -7,7 +7,7 @@ import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.statistics.Profile;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ProfileListModel extends DraggableJTableModel {
 	private enum editAction {ADDED, RENAMED, REMOVED};
 	private static class ProfileEditAction {
@@ -59,7 +59,7 @@ public class ProfileListModel extends DraggableJTableModel {
 		removeRows(indices);
 	}
 	public String getColumnName(int column) {
-		return "Profiles";
+		return ConfigurationMessages.getString("ProfileListModel.profiles"); //$NON-NLS-1$
 	}
 	public Class<?> getColumnClass(int columnIndex) {
 		return Profile.class;

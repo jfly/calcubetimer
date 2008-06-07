@@ -102,6 +102,6 @@ public class StackmatState extends TimerState {
 		return greenLight;
 	}
 	public String toString() {
-		return minutes + ":" + ((seconds < 10) ? "0" : "") + seconds + "." + ((hundredths < 10) ? "0" : "") + hundredths;
+		return minutes + ":" + ((seconds < 10) ? "0" : "") + seconds + "." + ((hundredths < 10) ? "0" : "") + hundredths; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 	}
 }

@@ -19,12 +19,13 @@ import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.Utils;
 
 public class ScramblePlugin {
-	public static final String SCRAMBLE_PLUGIN_PACKAGE = "";
-	public static ScrambleCustomization NULL_SCRAMBLE_CUSTOMIZATION = null;
-	static{
-		try{
-			NULL_SCRAMBLE_CUSTOMIZATION = new ScrambleCustomization(new ScrambleVariation(new ScramblePlugin(NullScramble.class), ""), null);
+	public static final String SCRAMBLE_PLUGIN_PACKAGE = ""; //$NON-NLS-1$
+	public static final ScrambleCustomization NULL_SCRAMBLE_CUSTOMIZATION = getNullScramble();
+	private static ScrambleCustomization getNullScramble() {
+		try {
+			return new ScrambleCustomization(new ScrambleVariation(new ScramblePlugin(NullScramble.class), ""), null); //$NON-NLS-1$
 		} catch(Exception e){}
+		return null;
 	}
 
 	private static ArrayList<ScramblePlugin> scramblePlugins;
@@ -45,14 +46,14 @@ public class ScramblePlugin {
 			for(String child : pluginFolder.list(new FilenameFilter() {
 				public boolean accept(File dir, String name) {
 					if(new File(dir, name).isFile()) {
-						return name.endsWith(".class");
+						return name.endsWith(".class"); //$NON-NLS-1$
 					}
 					return false;
 				}
 			})) {
 				Class<?> cls = null;
 				try {
-					cls = cl.loadClass(SCRAMBLE_PLUGIN_PACKAGE + child.substring(0, child.indexOf(".")));
+					cls = cl.loadClass(SCRAMBLE_PLUGIN_PACKAGE + child.substring(0, child.indexOf("."))); //$NON-NLS-1$
 					if(cls.getSuperclass().equals(Scramble.class)) {
 						try {
 							scramblePlugins.add(new ScramblePlugin((Class<? extends Scramble>) cls));
@@ -99,7 +100,7 @@ public class ScramblePlugin {
 
 		//now we'll try to match the variation, if we couldn't match the customization
 		if(sc == null && scName.indexOf(':') != -1) {
-			scName = scName.substring(0, scName.indexOf(":"));
+			scName = scName.substring(0, scName.indexOf(":")); //$NON-NLS-1$
 			sc = getCustomizationFromString(scName);
 		}
 		if(sc == null) {
@@ -113,7 +114,7 @@ public class ScramblePlugin {
 	public static ScrambleCustomization getCustomizationFromString(String customName) {
 		ArrayList<ScrambleCustomization> scrambleCustomizations = getScrambleCustomizations(false);
 		for(ScrambleCustomization custom : scrambleCustomizations) {
-			if(custom.equals(customName)) {
+			if(custom.toString().equals(customName)) {
 				return custom;
 			}
 		}
@@ -162,7 +163,7 @@ public class ScramblePlugin {
 					if(customizationName == null)
 						customizationName = variationName;
 					else
-						customizationName = variationName + ":" + customizationName;
+						customizationName = variationName + ":" + customizationName; //$NON-NLS-1$
 				}
 				sc = new ScrambleCustomization(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation(), customizationName);
 			}
@@ -209,29 +210,29 @@ public class ScramblePlugin {
 		newScrambleConstructor = pluginClass.getConstructor(String.class, int.class, String[].class);
 		importScrambleConstructor = pluginClass.getConstructor(String.class, String.class, String[].class);
 
-		Field f = pluginClass.getField("PUZZLE_NAME");
+		Field f = pluginClass.getField("PUZZLE_NAME"); //$NON-NLS-1$
 		PUZZLE_NAME = (String) f.get(null);
 
-		f = pluginClass.getField("FACE_NAMES");
+		f = pluginClass.getField("FACE_NAMES"); //$NON-NLS-1$
 		FACE_NAMES = (String[]) f.get(null);
 
-		f = pluginClass.getField("DEFAULT_UNIT_SIZE");
+		f = pluginClass.getField("DEFAULT_UNIT_SIZE"); //$NON-NLS-1$
 		DEFAULT_UNIT_SIZE = f.getInt(null);
 
-		f = pluginClass.getField("VARIATIONS");
+		f = pluginClass.getField("VARIATIONS"); //$NON-NLS-1$
 		VARIATIONS = (String[]) f.get(null);
 
-		f = pluginClass.getField("ATTRIBUTES");
+		f = pluginClass.getField("ATTRIBUTES"); //$NON-NLS-1$
 		ATTRIBUTES = (String[]) f.get(null);
 
-		f = pluginClass.getField("DEFAULT_ATTRIBUTES");
+		f = pluginClass.getField("DEFAULT_ATTRIBUTES"); //$NON-NLS-1$
 		DEFAULT_ATTRIBUTES = (String[]) f.get(null);
 
-		getDefaultScrambleLength = pluginClass.getMethod("getDefaultScrambleLength", String.class);
+		getDefaultScrambleLength = pluginClass.getMethod("getDefaultScrambleLength", String.class); //$NON-NLS-1$
 		if(!getDefaultScrambleLength.getReturnType().equals(int.class))
 			throw new ClassCastException();
 
-		getDefaultFaceColor = pluginClass.getMethod("getDefaultFaceColor", String.class);
+		getDefaultFaceColor = pluginClass.getMethod("getDefaultFaceColor", String.class); //$NON-NLS-1$
 		if(!getDefaultFaceColor.getReturnType().equals(String.class))
 			throw new ClassCastException();
 	}
@@ -248,7 +249,6 @@ public class ScramblePlugin {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
-			System.out.println("*HIYA");
 			e.printStackTrace();
 		}
 		return null;
@@ -256,7 +256,7 @@ public class ScramblePlugin {
 	
 	public Scramble importScramble(final String variation, final String scramble, final String[] attributes) throws InvalidScrambleException {
 		if(variation == null) {
-			return new NullScramble(variation, scramble);
+			return new NullScramble(null, scramble);
 		}
 		try {
 			return importScrambleConstructor.newInstance(variation, scramble, attributes);
@@ -306,6 +306,7 @@ public class ScramblePlugin {
 			try {
 				col = Configuration.getString(VariableKey.PUZZLE_COLOR(this, face), defaults);
 			} catch(Exception e) {}
+			//Config.getString() will return null if the key was undefined
 			if(col == null) {
 				try {
 					col = (String) getDefaultFaceColor.invoke(null, face);

@@ -10,7 +10,7 @@ import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 import org.jvnet.substance.SubstanceDefaultListCellRenderer;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class PuzzleCustomizationCellRenderer extends SubstanceDefaultListCellRenderer {
 	private boolean icons;
 	public PuzzleCustomizationCellRenderer(boolean i) {
@@ -36,12 +36,12 @@ public class PuzzleCustomizationCellRenderer extends SubstanceDefaultListCellRen
 			if(bolded.isEmpty())
 				bolded = sv.getScramblePlugin().getPuzzleName();
 			//TODO - this is wrapping undesirably in the drop down box under the session table
-			val = "<html><b>" + bolded + "</b>";
+			val = "<html><b>" + bolded + "</b>"; //$NON-NLS-1$ //$NON-NLS-2$
 			if(customization != null && customization.getCustomization() != null)
-				val += ":" + customization.getCustomization();
-			val += "</html>";
+				val += ":" + customization.getCustomization(); //$NON-NLS-1$
+			val += "</html>"; //$NON-NLS-1$
 		} else
-			val = "";
+			val = ""; //$NON-NLS-1$
 		Component c = super.getListCellRendererComponent(list, val, index, isSelected, cellHasFocus);
 		setIcon(i);
 		return c;

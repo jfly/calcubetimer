@@ -5,7 +5,7 @@ import java.awt.*;
 import java.io.File;
 
 /* ImagePreview.java is a 1.4 example used by FileChooserDemo2.java. */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ImagePreview extends JComponent implements PropertyChangeListener {
 	ImageIcon thumbnail = null;
 	File file = null;

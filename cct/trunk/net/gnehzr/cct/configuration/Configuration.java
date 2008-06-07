@@ -25,24 +25,25 @@ import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.statistics.Profile;
 
 public final class Configuration {
+	//TODO - how to get the right file to open up, if it does exist?
 	public static final File documentationFile = new File(getRootDirectory(), "documentation/readme.html");
-	public static final File profilesFolder = new File(getRootDirectory(), "profiles/");
-	public static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/");
-	public static final File voicesFolder = new File(getRootDirectory(), "voices/");
-	public static final String databaseDTD = "profiles/database.dtd";
-	private static final File guiLayoutsFolder = new File(getRootDirectory(), "guiLayouts/");
-	private static final File startupProfileFile = new File(profilesFolder, "startup");
+	public static final File profilesFolder = new File(getRootDirectory(), "profiles/"); //$NON-NLS-1$
+	public static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/"); //$NON-NLS-1$
+	public static final File voicesFolder = new File(getRootDirectory(), "voices/"); //$NON-NLS-1$
+	public static final String databaseDTD = "profiles/database.dtd"; //$NON-NLS-1$
+	private static final File guiLayoutsFolder = new File(getRootDirectory(), "guiLayouts/"); //$NON-NLS-1$
+	private static final File startupProfileFile = new File(profilesFolder, "startup"); //$NON-NLS-1$
 
-	private static final String guestName = "Guest";
+	private static final String guestName = "Guest"; //$NON-NLS-1$
 	public static final Profile guestProfile = createGuestProfile();
 	private static Profile createGuestProfile() {
 		Profile temp = Profile.getProfileByName(guestName);
 		temp.createProfileDirectory();
 		return temp;
 	}
-	private static final String DEFAULT_XML_GUI = "default.xml";
+	private static final String DEFAULT_XML_GUI = "default.xml"; //$NON-NLS-1$
 
-	private static File defaultsFile = new File(profilesFolder, "defaults.properties");
+	private static File defaultsFile = new File(profilesFolder, "defaults.properties"); //$NON-NLS-1$
 
 	private Configuration() {}
 
@@ -50,7 +51,7 @@ public final class Configuration {
 
 	public static String getValue(String key) {
 		String val = props.getProperty(key);
-		return val == null ? "Couldn't find key " + key : val;
+		return val == null ? "Couldn't find key " + key : val; //$NON-NLS-1$
 	}
 	
 	public static double getDouble(VariableKey<Double> key, boolean defaultValue) {
@@ -122,7 +123,7 @@ public final class Configuration {
 	}
 	private static Dimension getDimension(Properties props, String key) {
 		try {
-			String[] dims = props.getProperty(key).split("x");
+			String[] dims = props.getProperty(key).split("x"); //$NON-NLS-1$
 			Dimension temp = new Dimension(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]));
 			if(temp.height <= 0) //we don't allow invisible dimensions
 				temp.height = 100;
@@ -134,7 +135,7 @@ public final class Configuration {
 		}
 	}
 	public static void setDimension(VariableKey<Dimension> key, Dimension newValue) {
-		props.setProperty(key.toKey(), newValue.width + "x" + newValue.height);
+		props.setProperty(key.toKey(), newValue.width + "x" + newValue.height); //$NON-NLS-1$
 	}
 
 	public static Point getPoint(VariableKey<Point> key, boolean defaultValue) {
@@ -142,14 +143,14 @@ public final class Configuration {
 	}
 	private static Point getPoint(Properties props, String key) {
 		try {
-			String[] dims = props.getProperty(key).split(",");
+			String[] dims = props.getProperty(key).split(","); //$NON-NLS-1$
 			return new Point(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]));
 		} catch(Exception e) {
 			return null;
 		}
 	}
 	public static void setPoint(VariableKey<Point> key, Point newValue) {
-		props.setProperty(key.toKey(), newValue.x + "," + newValue.y);
+		props.setProperty(key.toKey(), newValue.x + "," + newValue.y); //$NON-NLS-1$
 	}
 
 	public static Color getColor(VariableKey<Color> key, boolean defaultValue) {
@@ -168,15 +169,15 @@ public final class Configuration {
 	}
 	private static String[] getStringArray(Properties props, String key) {
 		try {
-			return props.getProperty(key).split("\n");
+			return props.getProperty(key).split("\n"); //$NON-NLS-1$
 		} catch(NullPointerException e) {
 			return null;
 		}
 	}
 	public static void setStringArray(VariableKey<String[]> key, Object[] arr) {
-		String mashed = "";
+		String mashed = ""; //$NON-NLS-1$
 		for(Object o : arr) {
-			mashed += o.toString() + "\n";
+			mashed += o.toString() + "\n"; //$NON-NLS-1$
 		}
 		props.setProperty(key.toKey(), mashed);
 	}
@@ -186,7 +187,7 @@ public final class Configuration {
 	}
 	private static Integer[] getIntegerArray(Properties props, String key) {
 		try {
-			String[] s = props.getProperty(key).split("\n");
+			String[] s = props.getProperty(key).split("\n"); //$NON-NLS-1$
 			Integer[] i = new Integer[s.length];
 			for(int ch = 0; ch < s.length; ch++) {
 				i[ch] = Integer.parseInt(s[ch]);
@@ -197,9 +198,9 @@ public final class Configuration {
 		}
 	}
 	public static void setIntegerArray(VariableKey<Integer[]> key, Integer[] arr) {
-		String mashed = "";
+		String mashed = ""; //$NON-NLS-1$
 		for(int i : arr) {
-			mashed += i + "\n";
+			mashed += i + "\n"; //$NON-NLS-1$
 		}
 		props.setProperty(key.toKey(), mashed);
 	}
@@ -236,13 +237,13 @@ public final class Configuration {
 
 	//returns empty string if everything is fine, error message otherwise
 	public static String getStartupErrors() {
-		String seriousError = "";
+		String seriousError = ""; //$NON-NLS-1$
 		if (!defaultsFile.exists()) {
-			seriousError += "Couldn't find " + defaultsFile.getAbsolutePath() + "\n";
+			seriousError += ConfigurationMessages.getString("Configuration.couldnotfind") + "\n" + defaultsFile.getAbsolutePath() + "\n"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		File[] layouts = getXMLLayoutsAvailable();
 		if (layouts == null || layouts.length == 0) {
-			seriousError += "Could not find " + guiLayoutsFolder.getAbsolutePath() + "\n";
+			seriousError += ConfigurationMessages.getString("Configuration.couldnotfind") + "\n" + guiLayoutsFolder.getAbsolutePath() + "\n"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		return seriousError;
 	}
@@ -263,7 +264,7 @@ public final class Configuration {
 
 	public static void saveConfigurationToFile(File f) throws IOException {
 		FileOutputStream propsOut = new FileOutputStream(f);
-		props.store(propsOut, "CCT " + CALCubeTimer.CCT_VERSION + " Properties File");
+		props.store(propsOut, "CCT " + CALCubeTimer.CCT_VERSION + " Properties File"); //$NON-NLS-1$ //$NON-NLS-2$
 		propsOut.close();
 		if(profileCache.isSaveable()) {
 			PrintWriter profileOut = new PrintWriter(new FileWriter(startupProfileFile));
@@ -294,7 +295,7 @@ public final class Configuration {
 			profs.add(Profile.getProfileByName(profDir));
 		}
 		if(props != null && profileOrdering != null) {
-			String[] profiles = profileOrdering.split("\\|");
+			String[] profiles = profileOrdering.split("\\|"); //$NON-NLS-1$
 			for(int ch = profiles.length - 1; ch >= 0; ch--) {
 				Profile temp = Profile.getProfileByName(profiles[ch]);
 				if(profs.contains(temp)) {
@@ -309,9 +310,9 @@ public final class Configuration {
 	}
 	
 	public static void setProfileOrdering(ArrayList<Profile> profiles) {
-		profileOrdering = "";
+		profileOrdering = ""; //$NON-NLS-1$
 		for(Profile p : profiles) {
-			profileOrdering += "|" + p.getName();
+			profileOrdering += "|" + p.getName(); //$NON-NLS-1$
 		}
 		profileOrdering = profileOrdering.substring(1);
 	}
@@ -324,7 +325,7 @@ public final class Configuration {
 	//this should always be up to date with the gui
 	public static Profile getSelectedProfile() {
 		if(profileCache == null) {
-			String profileName = "";
+			String profileName = ""; //$NON-NLS-1$
 			try {
 				BufferedReader in = new BufferedReader(new FileReader(startupProfileFile));
 				profileName = in.readLine();
@@ -372,7 +373,7 @@ public final class Configuration {
 		if(availableLayouts == null) {
 			availableLayouts = guiLayoutsFolder.listFiles(new FilenameFilter() {
 				public boolean accept(File dir, String name) {
-					return name.endsWith(".xml") && new File(dir, name).isFile();
+					return name.endsWith(".xml") && new File(dir, name).isFile(); //$NON-NLS-1$
 				}
 			});
 		}

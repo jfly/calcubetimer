@@ -8,10 +8,10 @@ import java.util.regex.Pattern;
 
 public class NullScramble extends Scramble {
 	public static final String[] FACE_NAMES = {};
-	public static final String PUZZLE_NAME = "Null Scramble";
+	public static final String PUZZLE_NAME = "Null Scramble"; //$NON-NLS-1$
 	public static final String[] VARIATIONS = {};
 	public static final int DEFAULT_UNIT_SIZE = 0;
-	private static final Pattern TOKEN_REGEX = Pattern.compile("^(.+)()$");
+	private static final Pattern TOKEN_REGEX = Pattern.compile("^(.+)()$"); //$NON-NLS-1$
 
 	public static int getDefaultScrambleLength(String variation) {
 		return 0;
@@ -22,7 +22,7 @@ public class NullScramble extends Scramble {
 	}
 
 	public NullScramble(String variation, int length, String... attrs) {
-		this.scramble = "";
+		this.scramble = ""; //$NON-NLS-1$
 	}
 
 	public NullScramble(String variation, String s, String... attrs) throws InvalidScrambleException {

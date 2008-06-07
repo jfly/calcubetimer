@@ -5,7 +5,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class SortedProperties extends Properties {
 	public SortedProperties(SortedProperties defaults) {
 		super(defaults);
@@ -13,7 +13,7 @@ public class SortedProperties extends Properties {
 
 	public SortedProperties() {}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") //$NON-NLS-1$
 	public synchronized Enumeration keys() {
 		Enumeration keysEnum = super.keys();
 		Vector keyList = new Vector();

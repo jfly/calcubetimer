@@ -9,6 +9,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 
 public class Utils {
+	//TODO - how should this be internationalized?
 	private static final DecimalFormat DF = new DecimalFormat("0.00");
 	static {
 		DF.setRoundingMode(RoundingMode.HALF_UP);
@@ -17,7 +18,7 @@ public class Utils {
 	private Utils() {}
 	
 	public static String formatTime(double seconds) {
-		if(seconds == Double.POSITIVE_INFINITY) return "N/A";
+		if(seconds == Double.POSITIVE_INFINITY) return "N/A"; //$NON-NLS-1$
 		seconds = Math.round(seconds * 100) / 100.; //rounds to 2 decimal places
 		if(Configuration.getBoolean(VariableKey.CLOCK_FORMAT, false))
 			return clockFormat(seconds);
@@ -42,8 +43,8 @@ public class Utils {
 			hours++;
 		}
 		return (hours == 0 ?
-				(minutes == 0 ? "" : minutes + ":" + (seconds < 10 ? "0" : "")) :
-				hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "" ))
+				(minutes == 0 ? "" : minutes + ":" + (seconds < 10 ? "0" : "")) : //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "" )) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 			+ format(seconds);
 	}
 
@@ -54,7 +55,7 @@ public class Utils {
 	private static String padWith0s(String s) {
 		int pad = 6 - s.length();
 		if(pad > 0){
-			for(int i = 0; i < pad; i++) s = "0" + s;
+			for(int i = 0; i < pad; i++) s = "0" + s; //$NON-NLS-1$
 		}
 		return s;
 	}
@@ -68,15 +69,15 @@ public class Utils {
 	}
 
 	public static String fontToString(Font f) {
-		String style = "";
+		String style = ""; //$NON-NLS-1$
 		if(f.isPlain())
-			style = "plain";
+			style = "plain"; //$NON-NLS-1$
 		else {
 			if(f.isBold())
-				style += "bold";
+				style += "bold"; //$NON-NLS-1$
 			if(f.isItalic())
-				style += "italic";
+				style += "italic"; //$NON-NLS-1$
 		}
-		return f.getFontName() + "-" + style + "-" + f.getSize();
+		return f.getFontName() + "-" + style + "-" + f.getSize(); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }

@@ -22,12 +22,12 @@ public class CCTSecurityPolicy extends Policy {
 		//with a security manager even if it is invoked from a different directory than
 		//the one that contains CALCubeTimer.jar
 		try {
-			Policy f = new PolicyFile(new File(Configuration.getRootDirectory(), "scramblePlugin.policy").toURI().toURL());
-			rootPerms = f.getPermissions(new ProtectionDomain(new CodeSource(new URL("file:cctRoot"), (Certificate[]) null), null));
-			pluginsPerms = f.getPermissions(new ProtectionDomain(new CodeSource(new URL("file:cctScramblePlugins"), (Certificate[]) null), null));
-			URL root = new URL(Configuration.getRootDirectory().toURI().toURL(), "*");
+			Policy f = new PolicyFile(new File(Configuration.getRootDirectory(), "scramblePlugin.policy").toURI().toURL()); //$NON-NLS-1$
+			rootPerms = f.getPermissions(new ProtectionDomain(new CodeSource(new URL("file:cctRoot"), (Certificate[]) null), null)); //$NON-NLS-1$
+			pluginsPerms = f.getPermissions(new ProtectionDomain(new CodeSource(new URL("file:cctScramblePlugins"), (Certificate[]) null), null)); //$NON-NLS-1$
+			URL root = new URL(Configuration.getRootDirectory().toURI().toURL(), "*"); //$NON-NLS-1$
 			rootSource = new CodeSource(root, (Certificate[]) null);
-			root = new URL(Configuration.scramblePluginsFolder.toURI().toURL(), "*");
+			root = new URL(Configuration.scramblePluginsFolder.toURI().toURL(), "*"); //$NON-NLS-1$
 			pluginsSource = new CodeSource(root, (Certificate[]) null);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();

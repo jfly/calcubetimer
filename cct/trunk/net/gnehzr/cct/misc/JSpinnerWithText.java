@@ -10,7 +10,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.JTextComponent;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class JSpinnerWithText extends JPanel implements ChangeListener {
 	private JSpinner integerSpinner = null;
 

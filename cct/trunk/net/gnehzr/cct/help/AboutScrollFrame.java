@@ -17,11 +17,11 @@ import javax.swing.Timer;
 
 import org.jvnet.lafwidget.LafWidget;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class AboutScrollFrame extends JFrame implements ActionListener, WindowListener {
 	private JScrollPane editorScrollPane;
 	private Timer autoscroll;
-	public AboutScrollFrame(String title, URL helpURL, Image icon) {
+	public AboutScrollFrame(String title, URL helpURL, Image icon) throws Exception {
 		super(title);
 		this.setIconImage(icon);
 		this.setAlwaysOnTop(true);
@@ -33,10 +33,10 @@ public class AboutScrollFrame extends JFrame implements ActionListener, WindowLi
 			try {
 				pane.setPage(helpURL);
 			} catch (IOException e) {
-				System.err.println("Attempted to read a bad URL: " + helpURL);
+				throw new Exception("Could not find: " + helpURL); //$NON-NLS-1$
 			}
 		} else {
-			System.err.println("Couldn't find help file");
+			throw new Exception("Couldn't find help file"); //$NON-NLS-1$
 		}
 
 		editorScrollPane = new JScrollPane(pane);

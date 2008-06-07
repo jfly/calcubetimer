@@ -32,13 +32,13 @@ public class MP3 {
     // constructor that takes the name of an MP3 file
     public MP3(InputStream fis) throws Exception {
     	if(fis == null) {
-    		throw new Exception("File not found!");
+    		throw new Exception("File not found!"); //$NON-NLS-1$
     	}
     	try {
 	        BufferedInputStream bis = new BufferedInputStream(fis);
 		    player = new Player(bis);
 	    } catch (Exception e) {
-	    	throw new Exception("Problem playing file: " + e.getLocalizedMessage());
+	    	throw new Exception("Problem playing file: " + e.getLocalizedMessage()); //$NON-NLS-1$
 	    }
     }
     
@@ -61,7 +61,7 @@ public class MP3 {
     public static void main(String[] args) throws FileNotFoundException, JavaLayerException {
 		for(int ch = 0; ch < 20; ch++) {
 			try {
-				MP3 mp3 = new MP3(ch + ".mp3");
+				MP3 mp3 = new MP3(ch + ".mp3"); //$NON-NLS-1$
 				mp3.play();
 			} catch (Exception e) {
 				e.printStackTrace();

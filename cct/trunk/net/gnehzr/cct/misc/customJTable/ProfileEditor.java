@@ -14,7 +14,7 @@ import javax.swing.border.LineBorder;
 import net.gnehzr.cct.configuration.ProfileListModel;
 import net.gnehzr.cct.statistics.Profile;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ProfileEditor extends DefaultCellEditor {
 	private Profile value;
 	private ProfileListModel model;
@@ -25,25 +25,25 @@ public class ProfileEditor extends DefaultCellEditor {
 		this.editText = editText;
 	}
 
-	private static final String INVALID_CHARACTERS = "\\/:*?<>|\"";
+	private static final String INVALID_CHARACTERS = "\\/:*?<>|\""; //$NON-NLS-1$
 	public boolean stopCellEditing() {
 		String s = (String) super.getCellEditorValue();
 		value = Profile.getProfileByName(s);
-		if(!value.equals(originalValue)) {
+		if(!value.toString().equals(originalValue)) {
 			String error = null;
 			if(stringContainsCharacters(s, INVALID_CHARACTERS))
-				error = "Invalid profile name. Name cannot contain any of the following characters: " + INVALID_CHARACTERS;
+				error = CustomJTableMessages.getString("ProfileEditor.invalidname") + INVALID_CHARACTERS; //$NON-NLS-1$
 			if(model.getContents().contains(value)) {
-				error = value + " already exists!";
+				error = CustomJTableMessages.getString("ProfileEditor.alreadyexists"); //$NON-NLS-1$
 			}
 			if(error != null) {
 				JComponent component = (JComponent) getComponent();
 				component.setBorder(new LineBorder(Color.RED));
 				component.setToolTipText(error);
-				Action toolTipAction = component.getActionMap().get("postTip");
+				Action toolTipAction = component.getActionMap().get("postTip"); //$NON-NLS-1$
 				if (toolTipAction != null) {
 					ActionEvent postTip = new ActionEvent(component,
-							ActionEvent.ACTION_PERFORMED, "");
+							ActionEvent.ACTION_PERFORMED, ""); //$NON-NLS-1$
 					toolTipAction.actionPerformed(postTip);
 				}
 				return false;

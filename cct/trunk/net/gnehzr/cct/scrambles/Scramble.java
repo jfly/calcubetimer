@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 public abstract class Scramble {
@@ -25,12 +26,13 @@ public abstract class Scramble {
 		return length;
 	}
 
+	private static Random r = new Random();
 	protected static int random(int choices) {
-		return (int)(choices * Math.random());
+		return r.nextInt(choices);
 	}
 
 	public String htmlIfy(String temps) {
-		return "<span>" + temps + "</span>";
+		return "<span>" + temps + "</span>"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public String toString() {
@@ -61,7 +63,7 @@ public abstract class Scramble {
 	public abstract Pattern getTokenRegex();
 
 	/* Optional fields */
-	public static final String[] VARIATIONS = {""}; //OPTIONAL, this is so one class can handle 3x3x3-11x11x11, cannot contain the character ":"
+	public static final String[] VARIATIONS = {""}; //OPTIONAL, this is so one class can handle 3x3x3-11x11x11, cannot contain the character ":" //$NON-NLS-1$
 	//As of now, there is support for named booleans to affect scrambles.
 	//This was introduced as a way of adding a multi-slice option for cubes
 	//without coding a special case.

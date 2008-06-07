@@ -34,10 +34,12 @@ public class ScrambleCustomization {
 		if(temp.isEmpty())
 			temp += variation.getScramblePlugin().getPuzzleName();
 		if(customization != null)
-			temp += ":" + customization;
+			temp += ":" + customization; //$NON-NLS-1$
 		return temp;
 	}
-
+	public int hashCode() {
+		return toString().hashCode();
+	}
 	public boolean equals(Object o) {
 		if(o == null)
 			return false;

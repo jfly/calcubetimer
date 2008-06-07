@@ -7,8 +7,6 @@ import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,8 +17,6 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 
-import org.jvnet.lafwidget.LafWidget;
-
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
@@ -30,7 +26,9 @@ import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 
-@SuppressWarnings("serial")
+import org.jvnet.lafwidget.LafWidget;
+
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ScrambleArea extends JScrollPane implements ComponentListener, HyperlinkListener {
 	private ScrambleFrame scramblePopup;
 	private JEditorPane scramblePane = null;
@@ -38,7 +36,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		super(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		this.scramblePopup = scramblePopup;
 		this.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
-		scramblePane = new JEditorPane("text/html", null);
+		scramblePane = new JEditorPane("text/html", null); //$NON-NLS-1$
 		scramblePane.setEditable(false);
 		scramblePane.setBorder(null);
 		scramblePane.setOpaque(false);
@@ -64,48 +62,39 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		currentCustomization = sc;
 
 		Font font = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
-		String fontStyle = "";
+		String fontStyle = ""; //$NON-NLS-1$
 		if(font.isItalic())
-			fontStyle += "font-style: italic; ";
+			fontStyle += "font-style: italic; "; //$NON-NLS-1$
 		else if(font.isPlain())
-			fontStyle += "font-style: normal; ";
+			fontStyle += "font-style: normal; "; //$NON-NLS-1$
 		if(font.isBold())
-			fontStyle += "font-weight: bold; ";
+			fontStyle += "font-weight: bold; "; //$NON-NLS-1$
 		else
-			fontStyle += "font-weight: normal; ";
-		part1 = "<html><head><style type=\"text/css\">" +
-			"a {color: black;text-decoration: none;}" +
-			"a#";
-		part2 = " { color: red; }" +
-			"span { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "; " + fontStyle + "; }" +
-			"sub { font-size: " + (font.getSize() / 2 + 1) + "; }" +
-			"</style></head><body>";
+			fontStyle += "font-weight: normal; "; //$NON-NLS-1$
+		part1 = "<html><head><style type=\"text/css\">" + //$NON-NLS-1$
+			"a {color: black;text-decoration: none;}" + //$NON-NLS-1$
+			"a#"; //$NON-NLS-1$
+		part2 = " { color: red; }" + //$NON-NLS-1$
+			"span { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "; " + fontStyle + "; }" + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			"sub { font-size: " + (font.getSize() / 2 + 1) + "; }" + //$NON-NLS-1$ //$NON-NLS-2$
+			"</style></head><body>"; //$NON-NLS-1$
 		String s = newScramble.toString().trim();
-		URL currScram = null;
-		try {
-			currScram = new URL("http://");
-		} catch(MalformedURLException e) {
-			e.printStackTrace();
-		}
-		String plainScramble = "";
+		String plainScramble = ""; //$NON-NLS-1$
 		Matcher m;
 		int num = 0;
 		Pattern regex = newScramble.getTokenRegex();
+		String description = ""; //$NON-NLS-1$
 		while((m = regex.matcher(s)).matches()){
 			String str = m.group(1).trim();
-			plainScramble += " " + str;
-			try {
-				currScram = new URL("http://" + num + plainScramble);
-			} catch(MalformedURLException e) {
-				e.printStackTrace();
-			}
-			part2 += "<a id='" + num + "' href=\"" + currScram.toExternalForm() + "\">" + newScramble.htmlIfy(" " + str) + "</a>";
+			plainScramble += " " + str; //$NON-NLS-1$
+			description = num + " " + plainScramble; //$NON-NLS-1$
+			part2 += "<a id='" + num + "' href=\"" + description + "\">" + newScramble.htmlIfy(" " + str) + "</a>"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 			s = m.group(2).trim();
 			num++;
 		}
-		part2 += "</body></html>";
+		part2 += "</body></html>"; //$NON-NLS-1$
 		scramblePane.setCaretPosition(0);
-		hyperlinkUpdate(new HyperlinkEvent(scramblePane, HyperlinkEvent.EventType.ACTIVATED, currScram));
+		hyperlinkUpdate(new HyperlinkEvent(scramblePane, HyperlinkEvent.EventType.ACTIVATED, null, description));
 		setProperSize();
 		Container par = getParent();
 		if(par != null)
@@ -114,18 +103,10 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-			URL url = e.getURL();
+			String scramble = e.getDescription();
 			ScramblePlugin sp = currentCustomization.getScramblePlugin();
 			ScrambleVariation sv = currentCustomization.getScrambleVariation();
 			int caretPos = scramblePane.getCaretPosition();
-			//parts[0] = http://#, parts[1] = scramble
-			String[] parts = url.toString().split(" ", 2);
-			if(parts.length < 2) {
-				scramblePane.setDocument(new HTMLDocument());
-				scramblePane.setText("");
-				scramblePane.setCaretPosition(0);
-				return;
-			}
 			//this is here to prevent calls to setVisible(true) when the popup is already visbile
 			//if we were to allow these, then the main gui could pop up on top of our fullscreen panel
 			if(currentScramble instanceof NullScramble) {
@@ -134,17 +115,18 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 				scramblePopup.setVisible(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false));
 				Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, scramblePopup.isVisible());
 			}
-			int moveNum = Integer.parseInt(parts[0].substring(7));
+			String[] moveAndScramble = scramble.split(" ", 2); //$NON-NLS-1$
+			int moveNum = Integer.parseInt(moveAndScramble[0]);
 			scramblePane.setDocument(new HTMLDocument());
 			scramblePane.setText(part1 + moveNum + part2);
 			scramblePane.setCaretPosition(caretPos);
 			Scramble s = null;
 			try {
-				s = sv.generateScramble(parts[1]);
+				s = sv.generateScramble(moveAndScramble[1]);
 			} catch(InvalidScrambleException e0) { //this could happen if a null scramble is imported
 				sp = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScramblePlugin();
 				try {
-					s = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation().generateScramble(parts[1]);
+					s = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation().generateScramble(scramble);
 				} catch (InvalidScrambleException e1) {
 					e1.printStackTrace();
 				}

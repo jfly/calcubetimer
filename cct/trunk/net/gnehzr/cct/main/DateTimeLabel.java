@@ -11,11 +11,10 @@ import javax.swing.Timer;
 
 import net.gnehzr.cct.configuration.Configuration;
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class DateTimeLabel extends JLabel implements ActionListener, HierarchyListener {
 	private Timer updateTimer;
 	public DateTimeLabel() {
-		super("HIYA");
 		updateTimer = new Timer(90, this);
 		this.addHierarchyListener(this);
 		updateDisplay();
