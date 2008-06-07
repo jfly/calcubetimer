@@ -592,7 +592,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	private void parseXML_GUI(File xmlGUIfile) {
 		//this is needed to compute the size of the gui correctly
+		//before reloading the gui, we must discard any old state these components may have had
+		//TODO - this is clearly incomplete,
+		//maybe all pervasive gui components should be added to a list?
 		scramblePanel.resetPreferredSize();
+		scramblePanel.setBorder(null);
+		
 		//we need to load this xml gui's language properties file
 		String fileName = xmlGUIfile.getName();
 		XMLGuiMessages.loadResources(fileName.substring(0, fileName.lastIndexOf('.')));
