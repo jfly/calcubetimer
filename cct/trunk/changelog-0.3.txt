@@ -170,7 +170,7 @@ TODO:
 
 for release:
 -worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
--internationalization (xmlgui, source code, scramble plugins, documentation, about?, font dialog, browse dialog, color chooser)
+-internationalization (xmlgui, source code, scramble plugins, font dialog, browse dialog, color chooser, documentation, about?)
 	http://www.famfamfam.com/lab/icons/flags/
 	http://beradrian.wordpress.com/tag/i18n/
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html

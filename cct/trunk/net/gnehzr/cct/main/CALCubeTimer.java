@@ -32,6 +32,8 @@ import java.security.Policy;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -1066,10 +1068,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
         String language = System.getProperty("user.language", "");
         String country = System.getProperty("user.region", System.getProperty("user.country", ""));
         System.out.println(language + " " + country);
-//        Locale currentLocale = new Locale(language, country);
-//        ResourceBundle messages = ResourceBundle.getBundle("languages/net_gnehzr_cct_main", currentLocale);
-//        System.out.println(messages.getString("greeting"));
-//        System.out.println(messages.getString("day"));
+        Locale currentLocale = new Locale(language, country);
+        //this loads the strings for the swing components we use (JColorChooser and JFileChooser)
+        ResourceBundle messages = ResourceBundle.getBundle("languages/javax_swing", currentLocale);
+        for(String key : messages.keySet()) {
+        	UIManager.put(key, messages.getString(key));
+        }
         
 		Policy.setPolicy(new CCTSecurityPolicy());
 		System.setSecurityManager(new SecurityManager());
