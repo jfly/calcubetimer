@@ -18,14 +18,15 @@ public class DynamicMenuItem extends JMenuItem implements StatisticsUpdateListen
 		setDynamicString(s);
 	}
 
-	//TODO - Ryan, i need you to verify that this does what the previous version did (around revision 134)
 	public void setDynamicString(DynamicString s){
+		if(this.s != null) {
+			this.s.getStatisticsModel().removeStatisticsUpdateListener(this);
+		}
 		this.s = s;
-		if(s != null) {
-			s.getStatisticsModel().addStatisticsUpdateListener(this);
+		if(this.s != null) {
+			this.s.getStatisticsModel().addStatisticsUpdateListener(this);
 			update();
-		} else
-			s.getStatisticsModel().removeStatisticsUpdateListener(this);
+		}
 	}
 
 	public void update(){
