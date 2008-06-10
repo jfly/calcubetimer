@@ -689,8 +689,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	}
 
 	private JEditorPane getStatsLegend() {
-		JEditorPane pane = new JEditorPane("text/html",
-				"<html><a href=''>" + StringAccessor.getString("ConfigurationDialog.seedynamicstrings") + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
+		JEditorPane pane = new JEditorPane("text/html", "");
+		pane.setText("<html><font face='" + pane.getFont().getFontName() + "'><a href=''>" + StringAccessor.getString("ConfigurationDialog.seedynamicstrings") + "</a></font>"); //$NON-NLS-1$ //$NON-NLS-2$
 		pane.setEditable(false);
 		pane.setFocusable(false);
 		pane.setOpaque(false);
@@ -700,6 +700,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	}
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+			System.out.println("\t" + ((JComponent)e.getSource()).getFont());
 			showDynamicStrings();
 		}
 	}

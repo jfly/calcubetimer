@@ -27,7 +27,7 @@ public class StackmatHandler implements PropertyChangeListener {
 		String event = evt.getPropertyName();
 		boolean on = !event.equals("Off"); //$NON-NLS-1$
 		boolean stackmatEnabled = Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
-		tl.stackmatOn(stackmatEnabled ? on : null);
+		tl.stackmatOn(on);
 		if(!stackmatEnabled)
 			return;
 

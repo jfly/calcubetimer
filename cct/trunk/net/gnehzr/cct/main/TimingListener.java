@@ -9,5 +9,5 @@ public interface TimingListener {
 	public void timerAccidentlyReset(TimerState lastTimeRead);
 	public void timerStopped(TimerState newTime);
 	public void timerSplit(TimerState newSplit);
-	public void stackmatOn(Boolean on);
+	public void stackmatOn(boolean on);
 }

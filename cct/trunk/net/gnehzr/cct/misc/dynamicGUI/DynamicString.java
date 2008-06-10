@@ -18,10 +18,12 @@ public class DynamicString{
 	private static final char RAW_TEXT = 'a', I18N_TEXT = 'b', STAT = 'c';
 	private static final String CONF = "configuration_"; //$NON-NLS-1$
 	
+	private String rawString;
 	private String[] splitText;
 	private StatisticsTableModel statsModel;
 	private MessageAccessor accessor;
 	public DynamicString(String s, StatisticsTableModel statsModel, MessageAccessor accessor){
+		rawString = s;
 		this.statsModel = statsModel;
 		this.accessor = accessor;
 		ArrayList<String> splitUp = new ArrayList<String>();
@@ -57,7 +59,7 @@ public class DynamicString{
 	}
 	
 	public String toString(int arg) {
-		String s = "";
+		StringBuilder s = new StringBuilder();
 
 		for(int i = 0; i < splitText.length; i++){
 			if(splitText[i] == null) break;
@@ -66,20 +68,24 @@ public class DynamicString{
 			switch(c) {
 			case I18N_TEXT:
 				if(accessor != null) {
-					s += accessor.getString(t);
+					s.append(accessor.getString(t));
 					break;
 				}
 			case STAT:
 				if(statsModel != null) {
-					s += getReplacement(t, arg);
+					s.append(getReplacement(t, arg));
 					break;
 				}
 			case RAW_TEXT:
-				s += t;
+				s.append(t);
 				break;
 			}
 		}
-		return s;
+		return s.toString();
+	}
+	
+	public String getRawText() {
+		return rawString;
 	}
 	
 	private String formatProgressTime(double progress) {

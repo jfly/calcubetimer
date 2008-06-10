@@ -1,10 +1,8 @@
 package net.gnehzr.cct.main;
 
 import java.awt.Component;
-import java.awt.event.ItemEvent;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
@@ -15,7 +13,7 @@ import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 
 @SuppressWarnings("serial") //$NON-NLS-1$
-public class ScrambleChooserComboBox extends JComboBox implements TableCellRenderer, ConfigurationChangeListener {
+public class ScrambleChooserComboBox extends LoudComboBox implements TableCellRenderer, ConfigurationChangeListener {
 	public ScrambleChooserComboBox(boolean icons, boolean customizations) {
 		this.setRenderer(new PuzzleCustomizationCellRenderer(icons));
 		DefaultComboBoxModel model;
@@ -40,15 +38,6 @@ public class ScrambleChooserComboBox extends JComboBox implements TableCellRende
 		// Select the current value
 		setSelectedItem(value);
 		return this;
-	}
-
-	//overriden to cause selected events to be fired even if the new item
-	//is already selected (this helps simplify cct startup logic)
-	public void setSelectedItem(Object selectMe) {
-		if(selectMe != null && selectMe.equals(getSelectedItem())) {
-			fireItemStateChanged(new ItemEvent(this, 0, selectMe, ItemEvent.SELECTED));
-		} else
-			super.setSelectedItem(selectMe);
 	}
 	
 	public void configurationChanged() {

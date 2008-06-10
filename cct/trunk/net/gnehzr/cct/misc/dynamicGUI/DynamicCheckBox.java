@@ -18,6 +18,10 @@ public class DynamicCheckBox extends JCheckBox implements StatisticsUpdateListen
 		setDynamicString(s);
 	}
 
+	public DynamicString getDynamicString() {
+		return s;
+	}
+	
 	public void setDynamicString(DynamicString s){
 		if(this.s != null) {
 			this.s.getStatisticsModel().removeStatisticsUpdateListener(this);

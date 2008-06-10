@@ -165,25 +165,26 @@ changes:
 +save DNF/POP times to database, and reconstruct them w/ raw time
 +add option to control the font size of the statsdialog
 +sqr-1 scramble size grows as cct starts and closes, fixed by saving each variation's unit size to configuration, rather than the popup's dimension
-
 +fixed bug with addtime, the replaceAll() was turning all characters into "."
 +fixed bug where stackmat left hand and right hand buttons were stuck on
-
-TODO:
-
-for release:
--reset persistent component's attributes before parsing gui
--worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
--internationalization (xmlgui, source code, scramble plugins, font dialog, browse dialog, color chooser, documentation, about?)
++internationalization (xmlgui, source code, scramble plugins, font dialog, browse dialog, color chooser, documentation, about?)
 	https://native2ascii.dev.java.net/
 	http://www.famfamfam.com/lab/icons/flags/
 	http://beradrian.wordpress.com/tag/i18n/
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html
 	http://www.eclipse.org/articles/Article-Internationalization/how2I18n.html
+
+TODO:
+
+for release:
+-reset persistent component's attributes before parsing gui
+-clean up cct start as best as possible!
+-save gui state before changing language
+-worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
 -decide upon default startup layout (should we remove the progress time stuff from the default layout?)
 -open source sourceforge!
 -create license, give credit where credit is due
--update FAQ, defaults.properties file, about.html
+-update defaults.properties file, about.html (translate), FAQ (translate)
 	-include documentation of the DynamicStrings & update link from showDynamicStrings() in ConfigDialog.java
 -create small diagnostic problem that will dump relevant info to a file (java version, os, etc.)
 -write scramble plugin tutorial

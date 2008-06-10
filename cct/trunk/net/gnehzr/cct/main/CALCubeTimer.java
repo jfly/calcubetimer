@@ -21,7 +21,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -46,7 +45,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -71,14 +69,12 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.plaf.FontUIResource;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -137,8 +133,6 @@ import net.gnehzr.cct.umts.client.CCTClient;
 import org.jvnet.lafwidget.LafWidget;
 import org.jvnet.lafwidget.utils.LafConstants;
 import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.fonts.FontPolicy;
-import org.jvnet.substance.fonts.FontSet;
 import org.jvnet.substance.painter.AlphaControlBackgroundComposite;
 import org.jvnet.substance.utils.SubstanceConstants;
 import org.jvnet.substance.watermark.SubstanceImageWatermark;
@@ -387,9 +381,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		Object source = e.getSource();
 		if(e.getActionCommand().equals(SCRAMBLE_ATTRIBUTE_CHANGED)) {
 			ArrayList<String> attrs = new ArrayList<String>();
-			for(JCheckBox attr : attributes) {
+			for(DynamicCheckBox attr : attributes) {
 				if(attr.isSelected())
-					attrs.add(attr.getText());
+					attrs.add(attr.getDynamicString().getRawText());
 			}
 			String[] attributes = new String[attrs.size()];
 			attributes = attrs.toArray(attributes);
@@ -439,9 +433,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scramblePopup.setIconImage(cubeIcon.getImage());
 		scramblePopup.setFocusableWindowState(false);
 
-		onLabel = new JLabel("Timer is OFF");
-		onLabel.setFont(onLabel.getFont().deriveFont(AffineTransform.getScaleInstance(2, 2)));
-		
+		onLabel = new JLabel() {
+			public void setFont(Font font) { //this will double the size of the font whenever updateUI() is called
+				super.setFont(font.deriveFont(font.getSize2D() * 2));
+			}
+		};
+
 		timesTable = new DraggableJTable(false, true); //$NON-NLS-1$
 		timesTable.setName("timesTable"); //$NON-NLS-1$
 		timesTable.setDefaultEditor(SolveTime.class, new SolveTimeEditor(StringAccessor.getString("CALCubeTimer.typenewtime"))); //$NON-NLS-1$
@@ -509,19 +506,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			temp.addActionListener(this);
 			group.add(temp);
 			customGUIMenu.add(temp);
-		}
-	}
-
-	private static class LoudComboBox extends JComboBox {
-		//this is copied from ScrambleChooserComboBox.java!
-		//overriden to cause selected events to be fired even if the new item
-		//is already selected (this helps simplify cct startup logic)
-		public void setSelectedItem(Object selectMe) {
-			Object selected = getSelectedItem();
-			if(selectMe.equals(getSelectedItem()) || selected == null) {
-				fireItemStateChanged(new ItemEvent(this, 0, selectMe, ItemEvent.SELECTED));
-			} else
-				super.setSelectedItem(selectMe);
 		}
 	}
 
@@ -602,22 +586,24 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				repaintTimes(); //this needs to be here in the event that we loaded times from database
 			}
 		} else if(source == languages) {
-			Locale newLocale = ((LocaleAndIcon) e.getItem()).getLocale();
+			final LocaleAndIcon newLocale = ((LocaleAndIcon) e.getItem());
 			if(e.getStateChange() == ItemEvent.SELECTED) {
+				loadXMLGUI(); //this needs to be here so we reload the gui when configuration is changed
 				if(!newLocale.equals(loadedLocale)) {
+					loadedLocale = newLocale;
 					Configuration.setDefaultLocale(newLocale);
-					Locale.setDefault(newLocale);
-					loadStringsFromDefaultLocale();
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							loadStringsFromDefaultLocale();
+						}
+					});
 				}
-				loadXMLGUI();
 			}
 		}
 	}
 	
-	private Locale loadedLocale;
+	private LocaleAndIcon loadedLocale;
 	private void loadStringsFromDefaultLocale() {
-		loadedLocale = Locale.getDefault();
-
 		//this loads the strings for the swing components we use (JColorChooser and JFileChooser)
 		UIManager.getDefaults().setDefaultLocale(Locale.getDefault());
 		AppContext.getAppContext().put("JComponent.defaultLocale", Locale.getDefault());
@@ -635,14 +621,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			e.printStackTrace();
 		}
 		StringAccessor.clearResources();
-		XMLGuiMessages.reloadResources(); //TODO - we'll probably have to reparse the gui to handle left-right, up-down differences
-		statsModel.fireStringUpdates();
+		XMLGuiMessages.reloadResources();
+		statsModel.fireStringUpdates(); //this is necessary to update the undo-redo actions
 		timeLabel.refreshTimer();
 		commenter.updateText();
-		customGUIMenu.setText(StringAccessor.getString("CALCubeTimer.loadcustomgui"));
-
+		customGUIMenu.setText(StringAccessor.getString("CALCubeTimer.loadcustomgui")); //$NON-NLS-1$
 		timesTable.setAddText(StringAccessor.getString("CALCubeTimer.addtime")); //$NON-NLS-1$
-		
+		stackmatOn(false);
 		timesTable.refreshColumnNames();
 		sessionsTable.refreshColumnNames();
 		
@@ -654,21 +639,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		createScrambleAttributes();
 		configurationDialog = null; //this will force the config dialog to reload when necessary
 		
-//		JMenuBar menuBar = getJMenuBar();
-//		System.out.println(menuBar);
-//		if(menuBar != null) {
-//			DynamicMenu menu = (DynamicMenu) menuBar.getComponent(1);
-//			System.out.println(menu.getSize());
-////			for(Component c : menuBar.getComponents()) {
-////				System.out.println("\t" + c);
-////			}
-//		}
-//		this.pack();
-//		saveToConfiguration();
-//		parseXML_GUI(Configuration.getXMLGUILayout());
-//		parseXML_GUI(Configuration.getXMLGUILayout());
-//		validateTree();
-//		SwingUtilities.updateComponentTreeUI(this); //This is causing odd behavior w/ some components, and I'm not sure it's needed
+//		SwingUtilities.updateComponentTreeUI(this);
+		SwingUtilities.updateComponentTreeUI(scramblePopup);
 	}
 
 	public void stateChanged(ChangeEvent e) {
@@ -729,14 +701,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		return new Dimension(235, 30);
 	}
 
-	private JCheckBox[] attributes;
+	private DynamicCheckBox[] attributes;
 	private static final String SCRAMBLE_ATTRIBUTE_CHANGED = "Scramble Attribute Changed"; //$NON-NLS-1$
 	public void createScrambleAttributes() {
 		ScrambleCustomization sc = scramblesList.getScrambleCustomization();
 		scrambleAttributes.removeAll();
 		if(sc == null)	return;
 		String[] attrs = sc.getScramblePlugin().getAvailablePuzzleAttributes();
-		attributes = new JCheckBox[attrs.length];
+		attributes = new DynamicCheckBox[attrs.length];
 		ScramblePluginMessages.loadResources(sc.getScramblePlugin().getPluginClass().getSimpleName());
 		for(int ch = 0; ch < attrs.length; ch++) { //create checkbox for each possible attribute
 			boolean selected = false;
@@ -746,8 +718,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					break;
 				}
 			}
-			//TODO - implement some sort of listener here
-			attributes[ch] = new JCheckBox(new DynamicString(attrs[ch], null, ScramblePluginMessages.SCRAMBLE_ACCESSOR).toString(), selected);
+			attributes[ch] = new DynamicCheckBox(new DynamicString(attrs[ch], statsModel, ScramblePluginMessages.SCRAMBLE_ACCESSOR));
+			attributes[ch].setSelected(selected);
 			attributes[ch].setFocusable(Configuration.getBoolean(VariableKey.FOCUSABLE_BUTTONS, false));
 			attributes[ch].setActionCommand(SCRAMBLE_ATTRIBUTE_CHANGED);
 			attributes[ch].addActionListener(this);
@@ -1201,38 +1173,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		        //here we force substance/swing to use a font that can (hopefully)
 		        //display all the languages the user has installed
-		        Font newFont = Configuration.getI18NFont();
-		        if(newFont != null) {
-		        	final FontUIResource f = new FontUIResource(newFont);
-					try {
-						SubstanceLookAndFeel.setFontPolicy(new FontPolicy() {
-							public FontSet getFontSet(String arg0, UIDefaults arg1) {
-								return new FontSet() {
-									public FontUIResource getControlFont() {
-										return f;
-									}
-									public FontUIResource getMenuFont() {
-										return f;
-									}
-									public FontUIResource getMessageFont() {
-										return f;
-									}
-									public FontUIResource getSmallFont() {
-										return f;
-									}
-									public FontUIResource getTitleFont() {
-										return f;
-									}
-									public FontUIResource getWindowTitleFont() {
-										return f;
-									}
-								};
-							}
-						});
-					} catch(Exception e) {
-						e.printStackTrace();
-					}
-		        }
+//		        Font newFont = Configuration.getI18NFont();
+//		        if(newFont != null) {
+//		        	final FontUIResource f = new FontUIResource(newFont);
+//					try {
+//						SubstanceLookAndFeel.setFontPolicy();
+//					} catch(Exception e) {
+//						e.printStackTrace();
+//					}
+//		        }
 //		        loadStringsFromDefaultLocale(null);
 //		        Locale.setDefault(Configuration.getDefaultLocale().getLocale());
 		        
@@ -1332,8 +1281,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		Configuration.setString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, scramblesList.getScrambleCustomization().toString());
 		ScramblePlugin.saveLengthsToConfiguration();
 		for(ScramblePlugin plugin : ScramblePlugin.getScramblePlugins()) {
-			Configuration.setStringArray(VariableKey.PUZZLE_ATTRIBUTES(plugin),
-					plugin.getEnabledPuzzleAttributes());
+			Configuration.setStringArray(VariableKey.PUZZLE_ATTRIBUTES(plugin), plugin.getEnabledPuzzleAttributes());
 		}
 		Configuration.setPoint(VariableKey.SCRAMBLE_VIEW_LOCATION, scramblePopup.getLocation());
 		Configuration.setDimension(VariableKey.MAIN_FRAME_DIMENSION, this.getSize());
@@ -1470,39 +1418,38 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 	
 	private void loadXMLGUI() {
-		refreshCustomGUIMenu();
-		Component focusedComponent = this.getFocusOwner();
-
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				refreshCustomGUIMenu();
+				Component focusedComponent = CALCubeTimer.this.getFocusOwner();
 				parseXML_GUI(Configuration.getXMLGUILayout());
+				Dimension size = Configuration.getDimension(VariableKey.MAIN_FRAME_DIMENSION, false);
+				if(size == null)
+					CALCubeTimer.this.pack();
+				else
+					CALCubeTimer.this.setSize(size);
+				Point location = Configuration.getPoint(VariableKey.MAIN_FRAME_LOCATION, false);
+				if(location == null)
+					CALCubeTimer.this.setLocationRelativeTo(null);
+				else
+					CALCubeTimer.this.setLocation(location);
+				CALCubeTimer.this.validate(); //this is needed to get the dividers to show up in the right place
+				
+				scramblePopup.syncColorScheme();
+				scramblePopup.pack();
+				location = Configuration.getPoint(VariableKey.SCRAMBLE_VIEW_LOCATION, false);
+				if(location != null)
+					scramblePopup.setLocation(location);
+
+				if(!Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false)) //This is to ensure that the keyboard is focused
+					timeLabel.requestFocusInWindow();
+				else if(focusedComponent != null)
+					focusedComponent.requestFocusInWindow();
+				else
+					scramblePanel.requestFocusInWindow();
+				timeLabel.componentResized(null);
 			}
 		});
-		Dimension size = Configuration.getDimension(VariableKey.MAIN_FRAME_DIMENSION, false);
-		if(size == null)
-			this.pack();
-		else
-			this.setSize(size);
-		Point location = Configuration.getPoint(VariableKey.MAIN_FRAME_LOCATION, false);
-		if(location == null)
-			this.setLocationRelativeTo(null);
-		else
-			this.setLocation(location);
-		this.validate(); //this is needed to get the dividers to show up in the right place
-		
-		scramblePopup.syncColorScheme();
-		scramblePopup.pack();
-		location = Configuration.getPoint(VariableKey.SCRAMBLE_VIEW_LOCATION, false);
-		if(location != null)
-			scramblePopup.setLocation(location);
-
-		if(!Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false)) //This is to ensure that the keyboard is focused
-			timeLabel.requestFocusInWindow();
-		else if(focusedComponent != null)
-			focusedComponent.requestFocusInWindow();
-		else
-			scramblePanel.requestFocusInWindow();
-		timeLabel.componentResized(null);
 	}
 	
 	public void configurationChanged() {
@@ -1608,7 +1555,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		stopInspection();
 		timeLabel.reset();
 		bigTimersDisplay.reset();
-		stackmatOn(null); //we clear the state here, if the stackmat is on, it will be set later
+		stackmatOn(false); //we clear the state here, if the stackmat is on, it will be set later
 		if(selected)
 			timeLabel.requestFocusInWindow();
 	}
@@ -1822,8 +1769,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			stopMetronome();
 	}
 	
-	public void stackmatOn(Boolean on) {
-		if(on == null) {
+	public void stackmatOn(boolean on) {
+		if(!Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false)) {
 			onLabel.setText(""); //$NON-NLS-1$
 		} else {
 			timeLabel.setStackmatOn(on);

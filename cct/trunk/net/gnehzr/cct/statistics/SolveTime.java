@@ -94,7 +94,7 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 			type = SolveType.PLUS_TWO;
 			time = time.substring(0, time.length() - 1);
 		}
-		time = time.replaceAll(Pattern.quote(Utils.getDecimalSeparator()), "."); //$NON-NLS-1$
+		time = toUSFormatting(time);
 		String[] temp = time.split(":"); //$NON-NLS-1$
 		if(temp.length > 3 || time.lastIndexOf(":") == time.length() - 1) throw new Exception(StringAccessor.getString("SolveTime.invalidcolons")); //$NON-NLS-1$ //$NON-NLS-2$
 		else if(time.indexOf(".") != time.lastIndexOf(".")) throw new Exception(StringAccessor.getString("SolveTime.toomanydecimals")); //$NON-NLS-1$
@@ -117,6 +117,9 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 		if(seconds < 0) throw new Exception(StringAccessor.getString("SolveTime.nonpositive")); //$NON-NLS-1$
 		else if(seconds > 21000000) throw new Exception(StringAccessor.getString("SolveTime.toolarge")); //$NON-NLS-1$
 		this.hundredths = (int)(100 * seconds + .5);
+	}
+	private String toUSFormatting(String time) {
+		return time.replaceAll(Pattern.quote(Utils.getDecimalSeparator()), "."); //$NON-NLS-1$
 	}
 	
 	public void setScramble(String scramble) {
@@ -142,7 +145,12 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 			return "POP" + (rawTime ? " " + rawSecondsValue() : ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		default:
 			if(hundredths == Integer.MAX_VALUE || hundredths < 0) return "N/A"; //$NON-NLS-1$
-			else return Utils.formatTime(secondsValue()) + (type == SolveType.PLUS_TWO ? "+" : ""); //$NON-NLS-1$ //$NON-NLS-2$
+			else {
+				String t = Utils.formatTime(secondsValue()) + (type == SolveType.PLUS_TWO ? "+" : ""); //$NON-NLS-1$ //$NON-NLS-2$
+				if(rawTime)
+					t = toUSFormatting(t);
+				return t;
+			}
 		}
 	}
 	public String toSplitsString() {

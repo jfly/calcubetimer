@@ -235,7 +235,7 @@ public class Profile {
 					solve.setTime(seshCommentOrSolveTime);
 					session.getStatistics().add(solve);
 				} catch (Exception e) {
-					throw new SAXException("Unable to parse time: " + seshCommentOrSolveTime); //$NON-NLS-1$
+					throw new SAXException("Unable to parse time: " + seshCommentOrSolveTime + " " + e.toString()); //$NON-NLS-1$
 				}
 			} else if(name.equalsIgnoreCase("comment")) { //$NON-NLS-1$
 				if(level == 3) {
@@ -292,17 +292,20 @@ public class Profile {
 	private RandomAccessFile dbFile = null;
 	//this can only be called once, until after saveDatabase() is called
 	public boolean loadDatabase() {
+		System.out.println("Entering loadDatabase()");
 		if(this == Configuration.guestProfile) { //disable logging for guest
 			if(puzzleDB.getRowCount() > 0)
 				CALCubeTimer.statsModel.setSession(guestSession);
+			System.out.println("Exiting loadDatabase() = false");
 			return false;
 		}
+		FileLock fl = null;
 		try {
 			//TODO - I'm almost positive that there is some bug here that is causing
 			//cct to hang indefinitely. I *hope* that it's not the call to tryLock(),
 			//as we can't do anything about it.
 			RandomAccessFile t = new RandomAccessFile(statistics, "rw"); //$NON-NLS-1$
-			FileLock fl = t.getChannel().tryLock();
+			fl = t.getChannel().tryLock();
 			if(fl != null) {
 				puzzleDB = new ProfileDatabase(this); //reset the database
 				if(t.length() != 0) { //if the file is empty, don't bother to parse it
@@ -317,6 +320,8 @@ public class Profile {
 //					System.setProperty("user.dir", dir);
 				}
 				dbFile = t;
+
+				System.out.println("Exiting loadDatabase() = true");
 				return true;
 			}
 		} catch (FileNotFoundException e) {
@@ -338,6 +343,14 @@ public class Profile {
 		} catch(ParserConfigurationException pce) {
 			pce.printStackTrace();
 		}
+
+		System.out.println("Exiting loadDatabase() = false");
+		if(fl != null)
+			try {
+				fl.release();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		return false;
 	}
 	

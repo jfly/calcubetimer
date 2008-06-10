@@ -22,6 +22,13 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.swing.UIDefaults;
+import javax.swing.plaf.FontUIResource;
+
+import org.jvnet.substance.SubstanceLookAndFeel;
+import org.jvnet.substance.fonts.FontPolicy;
+import org.jvnet.substance.fonts.FontSet;
+
 import net.gnehzr.cct.i18n.LocaleAndIcon;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.misc.Utils;
@@ -393,20 +400,17 @@ public final class Configuration {
 		return availableLayouts;
 	}
 	
-	//TODO - add gui options to choose between acceptable fonts?
-	public static Font getI18NFont() {
-		getAvailableLocales(); //this forces an update of the languages string
-		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		Font newFont = null;
-        for(Font f : env.getAllFonts()) {
-        	if(f.canDisplayUpTo(languages) == -1) {
-        		newFont = f.deriveFont(12f);
-        		break;
-        	}
-        }
-        return newFont;
+	public static Font getFontForLocale(LocaleAndIcon l) {
+		Font newFont = defaultSwingFont;
+		if(defaultSwingFont.canDisplayUpTo(l.toString()) != -1)
+			for(Font f : GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts())
+				if(f.canDisplayUpTo(l.toString()) == -1) {
+					newFont = f;
+					break;
+				}
+		return newFont.deriveFont(12f);
 	}
-	
+
 	private static final LocaleAndIcon jvmDefaultLocale = new LocaleAndIcon(Locale.getDefault(), null);
 	public static LocaleAndIcon getDefaultLocale() {
 		LocaleAndIcon l = new LocaleAndIcon(new Locale(getString(VariableKey.LANGUAGE, false), getString(VariableKey.REGION, false)), null);
@@ -415,18 +419,51 @@ public final class Configuration {
 		return jvmDefaultLocale;
 	}
 	
-	public static void setDefaultLocale(Locale l) {
+	private static class SubstanceFontPolicy implements FontPolicy {
+		private FontUIResource f;
+		public void setFont(Font f) {
+			this.f = new FontUIResource(f);
+		}
+		public FontSet getFontSet(String arg0, UIDefaults arg1) {
+			return new FontSet() {
+				public FontUIResource getControlFont() {
+					return f;
+				}
+				public FontUIResource getMenuFont() {
+					return f;
+				}
+				public FontUIResource getMessageFont() {
+					return f;
+				}
+				public FontUIResource getSmallFont() {
+					return f;
+				}
+				public FontUIResource getTitleFont() {
+					return f;
+				}
+				public FontUIResource getWindowTitleFont() {
+					return f;
+				}
+			};
+		}
+	}
+
+	private static SubstanceFontPolicy currentFontPolicy = new SubstanceFontPolicy();
+	private static Font defaultSwingFont = SubstanceLookAndFeel.getFontPolicy().getFontSet(null, null).getTitleFont();
+	public static void setDefaultLocale(LocaleAndIcon li) {
+		Locale l = li.getLocale();
 		setString(VariableKey.LANGUAGE, l.getLanguage());
 		setString(VariableKey.REGION, l.getCountry());
+		Locale.setDefault(l);
+		currentFontPolicy.setFont(getFontForLocale(li));
+		SubstanceLookAndFeel.setFontPolicy(currentFontPolicy);
 	}
 	
 	private static ArrayList<LocaleAndIcon> locales;
-	private static String languages;
 	public static ArrayList<LocaleAndIcon> getAvailableLocales() {
 		if(locales == null) {
 			locales = new ArrayList<LocaleAndIcon>();
 			Locale l;
-			languages = "";
 			FileInputStream in = null;
 			try {
 				Properties p = new Properties();
@@ -443,7 +480,6 @@ public final class Configuration {
 					LocaleAndIcon li = new LocaleAndIcon(l, p.getProperty((String) o));
 					if(!locales.contains(li)) {
 						locales.add(li);
-						languages += li.toString();
 					}
 				}
 			} catch (IOException e) {

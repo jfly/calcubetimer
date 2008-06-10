@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -36,7 +37,11 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		super(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		this.scramblePopup = scramblePopup;
 		this.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
-		scramblePane = new JEditorPane("text/html", null); //$NON-NLS-1$
+		scramblePane = new JEditorPane("text/html", null) {
+			public void updateUI() {
+				super.updateUI();
+			}
+		}; //$NON-NLS-1$
 		scramblePane.setEditable(false);
 		scramblePane.setBorder(null);
 		scramblePane.setOpaque(false);
@@ -48,6 +53,10 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		resetPreferredSize();
 		addComponentListener(this);
 		scramblePane.setFocusable(false); //this way, we never steal focus from the keyboard timer
+	}
+	
+	public void updateUI() {
+		super.updateUI();
 	}
 	public void resetPreferredSize() {
 		setPreferredSize(new Dimension(0, 100));
@@ -151,9 +160,14 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 			return;
 		}
 		try {
+			int height = 0;
+			if(getBorder() != null) {
+				Insets i = getBorder().getBorderInsets(this);
+				height += i.top + i.bottom;
+			}
 			Rectangle r = scramblePane.modelToView(scramblePane.getDocument().getLength());
 			if(r != null) {
-				setPreferredSize(new Dimension(0, r.y + r.height + 5));
+				setPreferredSize(new Dimension(0, height + r.y + r.height + 5));
 			} else
 				resetPreferredSize(); //this will call setProperSize() again, with r != null
 		} catch (BadLocationException e) {
