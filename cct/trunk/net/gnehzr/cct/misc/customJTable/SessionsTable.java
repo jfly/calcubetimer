@@ -20,7 +20,7 @@ import net.gnehzr.cct.statistics.StatisticsTableModel;
 public class SessionsTable extends DraggableJTable implements SelectionListener {
 	private StatisticsTableModel statsModel;
 	public SessionsTable(StatisticsTableModel statsModel) {
-		super(null, false, true);
+		super(false, true);
 		this.statsModel = statsModel;
 		this.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		//for some reason, the default preferred size is huge
@@ -46,7 +46,7 @@ public class SessionsTable extends DraggableJTable implements SelectionListener 
 			fireSessionSelected((Session) val);
 	}
 	
-	private void refreshModel() {
+	public void refreshModel() {
 		if(getModel() instanceof ProfileDatabase) {
 			ProfileDatabase pd = (ProfileDatabase) getModel();
 			pd.setSessionListener(null);

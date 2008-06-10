@@ -5,8 +5,8 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.gnehzr.cct.MessageAccessor;
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.i18n.MessageAccessor;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.statistics.PuzzleStatistics;

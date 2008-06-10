@@ -11,6 +11,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
@@ -55,11 +56,17 @@ public class StatisticsTableModel extends DraggableJTableModel {
 	public void removeStatisticsUpdateListener(StatisticsUpdateListener l) {
 		statsListeners.remove(l);
 	}
+	//this is needed to update the i18n text
+	public void fireStringUpdates() {
+		for(StatisticsUpdateListener sul : statsListeners)
+			sul.update();
+		l.refresh();
+	}
 	
-	private String[] columnNames = new String[] { StatisticsMessages.getString("StatisticsTableModel.times"), StatisticsMessages.getString("StatisticsTableModel.ra0"), StatisticsMessages.getString("StatisticsTableModel.ra1"), StatisticsMessages.getString("StatisticsTableModel.comment") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	private String[] columnNames = new String[] { "StatisticsTableModel.times", "StatisticsTableModel.ra0", "StatisticsTableModel.ra1", "StatisticsTableModel.comment" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	private Class<?>[] columnClasses = new Class<?>[] { SolveTime.class, SolveTime.class, SolveTime.class, String.class };
 	public String getColumnName(int column) {
-		return columnNames[column];
+		return StringAccessor.getString(columnNames[column]);
 	}
 	public int getColumnCount() {
 		return columnNames.length;
@@ -126,9 +133,9 @@ public class StatisticsTableModel extends DraggableJTableModel {
 				}
 				if(newType != null) {
 					stats.setSolveType(selectedRow, newType);
-				} else if (command.equals(StatisticsMessages.getString("StatisticsTableModel.discard"))) { //$NON-NLS-1$
+				} else if (command.equals(StringAccessor.getString("StatisticsTableModel.discard"))) { //$NON-NLS-1$
 					timesTable.deleteSelectedRows(false);
-				} else if (command.equals(StatisticsMessages.getString("StatisticsTableModel.edittime"))) { //$NON-NLS-1$
+				} else if (command.equals(StringAccessor.getString("StatisticsTableModel.edittime"))) { //$NON-NLS-1$
 					timesTable.editCellAt(selectedRow, 0);
 				}
 			}
@@ -139,7 +146,7 @@ public class StatisticsTableModel extends DraggableJTableModel {
 			return;
 		else if(selectedSolves.length == 1) {
 			SolveTime selectedSolve = stats.get(timesTable.getSelectedRow());
-			JMenuItem rawTime = new JMenuItem(StatisticsMessages.getString("StatisticsTableModel.rawtime") //$NON-NLS-1$
+			JMenuItem rawTime = new JMenuItem(StringAccessor.getString("StatisticsTableModel.rawtime") //$NON-NLS-1$
 					+ Utils.formatTime(selectedSolve.rawSecondsValue()));
 			rawTime.setEnabled(false);
 			jpopup.add(rawTime);
@@ -149,7 +156,7 @@ public class StatisticsTableModel extends DraggableJTableModel {
 				ListIterator<SolveTime> splits = split.listIterator();
 				while (splits.hasNext()) {
 					SolveTime next = splits.next();
-					rawTime = new JMenuItem(StatisticsMessages.getString("StatisticsTableModel.split") + splits.nextIndex() //$NON-NLS-1$
+					rawTime = new JMenuItem(StringAccessor.getString("StatisticsTableModel.split") + splits.nextIndex() //$NON-NLS-1$
 							+ ": " + next + "\t" + next.getScramble()); //$NON-NLS-1$ //$NON-NLS-2$
 					rawTime.setEnabled(false);
 					jpopup.add(rawTime);
@@ -160,7 +167,7 @@ public class StatisticsTableModel extends DraggableJTableModel {
 
 			ButtonGroup group = new ButtonGroup();
 
-			none = new JRadioButtonMenuItem(StatisticsMessages.getString("StatisticsTableModel.none"), selectedSolve.getType() == SolveTime.SolveType.NORMAL); //$NON-NLS-1$
+			none = new JRadioButtonMenuItem(StringAccessor.getString("StatisticsTableModel.none"), selectedSolve.getType() == SolveTime.SolveType.NORMAL); //$NON-NLS-1$
 			group.add(none);
 			none.addActionListener(al);
 			jpopup.add(none);
@@ -186,14 +193,14 @@ public class StatisticsTableModel extends DraggableJTableModel {
 
 			jpopup.addSeparator();
 
-			JMenuItem edit = new JMenuItem(StatisticsMessages.getString("StatisticsTableModel.edittime")); //$NON-NLS-1$
+			JMenuItem edit = new JMenuItem(StringAccessor.getString("StatisticsTableModel.edittime")); //$NON-NLS-1$
 			edit.addActionListener(al);
 			jpopup.add(edit);
 
 			jpopup.addSeparator();
 		}
 
-		JMenuItem discard = new JMenuItem(StatisticsMessages.getString("StatisticsTableModel.discard")); //$NON-NLS-1$
+		JMenuItem discard = new JMenuItem(StringAccessor.getString("StatisticsTableModel.discard")); //$NON-NLS-1$
 		discard.addActionListener(al);
 		jpopup.add(discard);
 		timesTable.requestFocusInWindow();

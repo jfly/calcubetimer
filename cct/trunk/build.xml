@@ -38,11 +38,14 @@
 			<fileset dir=".">
 				<include name="guiLayouts/*"/>
 				<include name="scramblePlugins/*.class"/>
+				<include name="scramblePlugins/*.png"/>
+				<include name="scramblePlugins/*.properties"/>
 				<include name="scramblePlugin.policy"/>
 				<include name="profiles/defaults.properties"/>
 				<include name="profiles/database.dtd"/>
 				<include name="documentation/*"/>
 				<include name="voices/*"/>
+				<include name="languages/**"/>
 			</fileset>
 		</copy>
 	</target>

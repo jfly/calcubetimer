@@ -31,6 +31,7 @@ import javax.swing.event.DocumentListener;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.JTextAreaWithHistory;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
@@ -50,7 +51,7 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 	private JButton importButton, cancelButton;
 	private ScrambleList scramblesList;
 	public ScrambleImportDialog(JFrame owner, ScrambleList scramblesList) {
-		super(owner, MainMessages.getString("ScrambleImportDialog.importscrambles"), true); //$NON-NLS-1$
+		super(owner, StringAccessor.getString("ScrambleImportDialog.importscrambles"), true); //$NON-NLS-1$
 
 		this.scramblesList = scramblesList;
 		
@@ -64,12 +65,12 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 		sideBySide.setLayout(new BoxLayout(sideBySide, BoxLayout.X_AXIS));
 		urlField = new URLHistoryBox(VariableKey.IMPORT_URLS);
 		urlField.setSelectedItem(Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_URL, false));
-		urlField.setToolTipText(MainMessages.getString("ScrambleImportDialog.browsescrambles")); //$NON-NLS-1$
+		urlField.setToolTipText(StringAccessor.getString("ScrambleImportDialog.browsescrambles")); //$NON-NLS-1$
 		sideBySide.add(urlField);
-		browse = new JButton(MainMessages.getString("ScrambleImportDialog.browse")); //$NON-NLS-1$
+		browse = new JButton(StringAccessor.getString("ScrambleImportDialog.browse")); //$NON-NLS-1$
 		browse.addActionListener(this);
 		sideBySide.add(browse);
-		addToArea = new JButton(MainMessages.getString("ScrambleImportDialog.add")); //$NON-NLS-1$
+		addToArea = new JButton(StringAccessor.getString("ScrambleImportDialog.add")); //$NON-NLS-1$
 		addToArea.addActionListener(this);
 		sideBySide.add(addToArea);
 		topBot.add(sideBySide);
@@ -96,10 +97,10 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 		qualityControl.setMinimumSize(new Dimension(25, 0));
 		contentPane.add(scramblePane, BorderLayout.CENTER);
 		
-		importButton = new JButton(MainMessages.getString("ScrambleImportDialog.import")); //$NON-NLS-1$
+		importButton = new JButton(StringAccessor.getString("ScrambleImportDialog.import")); //$NON-NLS-1$
 		importButton.setEnabled(false);
 		importButton.addActionListener(this);
-		cancelButton = new JButton(MainMessages.getString("ScrambleImportDialog.cancel")); //$NON-NLS-1$
+		cancelButton = new JButton(StringAccessor.getString("ScrambleImportDialog.cancel")); //$NON-NLS-1$
 		cancelButton.addActionListener(this);
 		sideBySide = new JPanel();
 		sideBySide.add(importButton);
@@ -117,13 +118,13 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 		Object source = e.getSource();
 		if(source == browse) {
 			JFileChooser fc = new JFileChooser("."); //$NON-NLS-1$
-			if(fc.showDialog(this, MainMessages.getString("ScrambleImportDialog.open")) == JFileChooser.APPROVE_OPTION) { //$NON-NLS-1$
+			if(fc.showDialog(this, StringAccessor.getString("ScrambleImportDialog.open")) == JFileChooser.APPROVE_OPTION) { //$NON-NLS-1$
 				File selectedFile = fc.getSelectedFile();
 				urlField.setSelectedItem(selectedFile.toURI().toString());
 				if(!selectedFile.exists()) {
 					JOptionPane.showMessageDialog(this,
-							MainMessages.getString("ScrambleImportDialog.filenotfound") + " " + selectedFile.getName(), //$NON-NLS-1$ //$NON-NLS-2$
-							MainMessages.getString("ScrambleImportDialog.filenotfound"), //$NON-NLS-1$
+							StringAccessor.getString("ScrambleImportDialog.filenotfound") + " " + selectedFile.getName(), //$NON-NLS-1$ //$NON-NLS-2$
+							StringAccessor.getString("ScrambleImportDialog.filenotfound"), //$NON-NLS-1$
 							JOptionPane.ERROR_MESSAGE);
 					urlField.setSelectedItem(""); //$NON-NLS-1$
 				}
@@ -141,13 +142,13 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 				in.close();
 				urlField.commitCurrentItem();
 			} catch(MalformedURLException ee) {
-				showErrorMessage(ee.getMessage() + "\n" + MainMessages.getString("ScrambleImportDialog.badname"), MainMessages.getString("ScrambleImportDialog.error")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				showErrorMessage(ee.getMessage() + "\n" + StringAccessor.getString("ScrambleImportDialog.badname"), StringAccessor.getString("ScrambleImportDialog.error")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			} catch(ConnectException ee) {
-				showErrorMessage(MainMessages.getString("ScrambleImportDialog.connectionrefused"), MainMessages.getString("ScrambleImportDialog.error")); //$NON-NLS-1$ //$NON-NLS-2$
+				showErrorMessage(StringAccessor.getString("ScrambleImportDialog.connectionrefused"), StringAccessor.getString("ScrambleImportDialog.error")); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch(FileNotFoundException ee) {
-				showErrorMessage(url + "\n" + MainMessages.getString("ScrambleImportDialog.notfound"), MainMessages.getString("ScrambleImportDialog.four-oh-foured")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				showErrorMessage(url + "\n" + StringAccessor.getString("ScrambleImportDialog.notfound"), StringAccessor.getString("ScrambleImportDialog.four-oh-foured")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			} catch(Exception ee) {
-				showErrorMessage(MainMessages.getString("ScrambleImportDialog.error") + "\n" + e.toString(), MainMessages.getString("ScrambleImportDialog.hmmm")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				showErrorMessage(StringAccessor.getString("ScrambleImportDialog.error") + "\n" + e.toString(), StringAccessor.getString("ScrambleImportDialog.hmmm")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		} else if(source == importButton) {
 			ScrambleCustomization sc = getScrambleCustomization();

@@ -17,6 +17,7 @@ import javax.xml.transform.TransformerConfigurationException;
 import org.xml.sax.SAXException;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.misc.customJTable.SessionListener;
@@ -109,10 +110,10 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 				sessionCache.add(s);
 	}
 	
-	private String[] columnNames = new String[] { StatisticsMessages.getString("ProfileDatabase.datestarted"), StatisticsMessages.getString("ProfileDatabase.customization"), StatisticsMessages.getString("ProfileDatabase.sessionaverage"), StatisticsMessages.getString("ProfileDatabase.bestra0"), StatisticsMessages.getString("ProfileDatabase.bestra1"), StatisticsMessages.getString("ProfileDatabase.besttime"), StatisticsMessages.getString("ProfileDatabase.stdev"), StatisticsMessages.getString("ProfileDatabase.solvecount"), StatisticsMessages.getString("ProfileDatabase.comment") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$
+	private String[] columnNames = new String[] { "ProfileDatabase.datestarted", "ProfileDatabase.customization", "ProfileDatabase.sessionaverage", "ProfileDatabase.bestra0", "ProfileDatabase.bestra1", "ProfileDatabase.besttime", "ProfileDatabase.stdev", "ProfileDatabase.solvecount", "ProfileDatabase.comment" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$
 	private Class<?>[] columnClasses = new Class<?>[] { Session.class, ScrambleCustomization.class, SolveTime.class, SolveTime.class, SolveTime.class, SolveTime.class, SolveTime.class, Integer.class, String.class};
 	public String getColumnName(int column) {
-		return columnNames[column];
+		return StringAccessor.getString(columnNames[column]);
 	}
 	public int getColumnCount() {
 		return columnNames.length;
@@ -183,7 +184,7 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 	public void showPopup(MouseEvent e, final DraggableJTable source) {
 		JPopupMenu jpopup = new JPopupMenu();
 
-		JMenuItem discard = new JMenuItem(StatisticsMessages.getString("ProfileDatabase.discard")); //$NON-NLS-1$
+		JMenuItem discard = new JMenuItem(StringAccessor.getString("ProfileDatabase.discard")); //$NON-NLS-1$
 		discard.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				source.deleteSelectedRows(false);
@@ -191,7 +192,7 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 		});
 		jpopup.add(discard);
 		
-		JMenu sendTo = new JMenu(StatisticsMessages.getString("ProfileDatabase.sendto")); //$NON-NLS-1$
+		JMenu sendTo = new JMenu(StringAccessor.getString("ProfileDatabase.sendto")); //$NON-NLS-1$
 		for(Profile p : Configuration.getProfiles()) {
 			if(p == Configuration.getSelectedProfile())
 				continue;

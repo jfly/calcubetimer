@@ -32,6 +32,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.JTextAreaWithHistory;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
@@ -49,7 +50,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 	private JButton submitButton, doneButton;
 	public SundayContestDialog(Window w) {
 		super(w);
-		setTitle(MainMessages.getString("SundayContestDialog.submit")); //$NON-NLS-1$
+		setTitle(StringAccessor.getString("SundayContestDialog.submit")); //$NON-NLS-1$
 		setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
 		
 		Container pane = this.getContentPane();
@@ -61,7 +62,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.gridx = 0;
 		c.gridy = 0;
 		c.insets = new Insets(2, 2, 2, 2);
-		pane.add(new JLabel(MainMessages.getString("SundayContestDialog.name")), c); //$NON-NLS-1$
+		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.name")), c); //$NON-NLS-1$
 		c.weightx = 1;
 		c.gridx = 1;
 		c.gridy = 0;
@@ -71,7 +72,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.weightx = 0;
 		c.gridx = 0;
 		c.gridy = 1;
-		pane.add(new JLabel(MainMessages.getString("SundayContestDialog.country")), c); //$NON-NLS-1$
+		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.country")), c); //$NON-NLS-1$
 		c.weightx = 1;
 		c.gridx = 1;
 		c.gridy = 1;
@@ -81,7 +82,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.weightx = 0;
 		c.gridx = 0;
 		c.gridy = 2;
-		pane.add(new JLabel(MainMessages.getString("SundayContestDialog.email")), c); //$NON-NLS-1$
+		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.email")), c); //$NON-NLS-1$
 		c.weightx = 1;
 		c.gridx = 1;
 		c.gridy = 2;
@@ -91,7 +92,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.weightx = 0;
 		c.gridx = 0;
 		c.gridy = 3;
-		pane.add(new JLabel(MainMessages.getString("SundayContestDialog.average")), c); //$NON-NLS-1$
+		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.average")), c); //$NON-NLS-1$
 		c.weightx = 1;
 		c.gridx = 1;
 		c.gridy = 3;
@@ -101,7 +102,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.weightx = 0;
 		c.gridx = 0;
 		c.gridy = 4;
-		pane.add(new JLabel(MainMessages.getString("SundayContestDialog.times")), c); //$NON-NLS-1$
+		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.times")), c); //$NON-NLS-1$
 		c.weightx = 1;
 		c.gridx = 1;
 		c.gridy = 4;
@@ -111,7 +112,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.weightx = 0;
 		c.gridx = 0;
 		c.gridy = 5;
-		pane.add(new JLabel(MainMessages.getString("SundayContestDialog.quote")), c); //$NON-NLS-1$
+		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.quote")), c); //$NON-NLS-1$
 		c.weighty = 1;
 		c.weightx = 1;
 		c.gridx = 1;
@@ -125,12 +126,12 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.gridx = 0;
 		c.gridy = 6;
 		JPanel sideBySide = new JPanel();
-		showEmailBox = new JCheckBox(MainMessages.getString("SundayContestDialog.showemail")); //$NON-NLS-1$
+		showEmailBox = new JCheckBox(StringAccessor.getString("SundayContestDialog.showemail")); //$NON-NLS-1$
 		sideBySide.add(showEmailBox);
-		submitButton = new JButton(MainMessages.getString("SundayContestDialog.submittimes")); //$NON-NLS-1$
+		submitButton = new JButton(StringAccessor.getString("SundayContestDialog.submittimes")); //$NON-NLS-1$
 		submitButton.addActionListener(this);
 		sideBySide.add(submitButton);
-		doneButton = new JButton(MainMessages.getString("SundayContestDialog.done")); //$NON-NLS-1$
+		doneButton = new JButton(StringAccessor.getString("SundayContestDialog.done")); //$NON-NLS-1$
 		doneButton.addActionListener(this);
 		sideBySide.add(doneButton);
 		pane.add(sideBySide, c);
@@ -225,7 +226,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(new ByteArrayInputStream(str.getBytes()), handler);
 		} catch(SAXParseException spe) {
-			System.err.println(spe.getSystemId() + ":" + spe.getLineNumber() + MainMessages.getString("SundayContestDialog.parseerror") + spe.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+			System.err.println(spe.getSystemId() + ":" + spe.getLineNumber() + StringAccessor.getString("SundayContestDialog.parseerror") + spe.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
 
 			Exception x = spe;
 			if(spe.getException() != null)
@@ -260,11 +261,11 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 						quoteArea.getText(),
 						showEmailBox.isSelected());
 				JOptionPane.showMessageDialog(this,
-						MainMessages.getString("SundayContestDialog.serverresponse") + "\n" + result, //$NON-NLS-1$ //$NON-NLS-2$
-						MainMessages.getString("SundayContestDialog.submissionresults"), //$NON-NLS-1$
+						StringAccessor.getString("SundayContestDialog.serverresponse") + "\n" + result, //$NON-NLS-1$ //$NON-NLS-2$
+						StringAccessor.getString("SundayContestDialog.submissionresults"), //$NON-NLS-1$
 						JOptionPane.INFORMATION_MESSAGE);
 			} catch (IOException e1) {
-				JOptionPane.showMessageDialog(this, e1.getLocalizedMessage(), MainMessages.getString("SundayContestDialog.submissionfailure"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+				JOptionPane.showMessageDialog(this, e1.getLocalizedMessage(), StringAccessor.getString("SundayContestDialog.submissionfailure"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
 				e1.printStackTrace();
 			}
 		} else if(source == doneButton) {

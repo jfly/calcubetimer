@@ -3,6 +3,7 @@ package net.gnehzr.cct.configuration;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,9 +18,11 @@ import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import net.gnehzr.cct.i18n.LocaleAndIcon;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.statistics.Profile;
@@ -32,6 +35,9 @@ public final class Configuration {
 	public static final File voicesFolder = new File(getRootDirectory(), "voices/"); //$NON-NLS-1$
 	public static final String databaseDTD = "profiles/database.dtd"; //$NON-NLS-1$
 	private static final File guiLayoutsFolder = new File(getRootDirectory(), "guiLayouts/"); //$NON-NLS-1$
+	public static final File languagesFolder = new File(getRootDirectory(), "languages/"); //$NON-NLS-1$
+	public static final File flagsFolder = new File(languagesFolder, "flags/"); //$NON-NLS-1$
+	private static final File installedLanguagesFile = new File(languagesFolder, "installed.properties"); //$NON-NLS-1$
 	private static final File startupProfileFile = new File(profilesFolder, "startup"); //$NON-NLS-1$
 
 	private static final String guestName = "Guest"; //$NON-NLS-1$
@@ -239,27 +245,34 @@ public final class Configuration {
 	public static String getStartupErrors() {
 		String seriousError = ""; //$NON-NLS-1$
 		if (!defaultsFile.exists()) {
-			seriousError += ConfigurationMessages.getString("Configuration.couldnotfind") + "\n" + defaultsFile.getAbsolutePath() + "\n"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			seriousError += "Couldn't find file!\n" + defaultsFile.getAbsolutePath() + "\n"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		File[] layouts = getXMLLayoutsAvailable();
 		if (layouts == null || layouts.length == 0) {
-			seriousError += ConfigurationMessages.getString("Configuration.couldnotfind") + "\n" + guiLayoutsFolder.getAbsolutePath() + "\n"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			seriousError += "Couldn't find file!\n" + guiLayoutsFolder.getAbsolutePath() + "\n"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return seriousError;
 	}
 
 	private static SortedProperties defaults, props;
 	public static void loadConfiguration(File f) throws IOException, URISyntaxException {
-		InputStream in = new FileInputStream(defaultsFile);
-		defaults = new SortedProperties();
-		defaults.load(in);
-		in.close();
-		props = new SortedProperties(defaults);
-
-		f.createNewFile();
-		in = new FileInputStream(f);
-		props.load(in);
-		in.close();
+		InputStream in = null;
+		try {
+			in = new FileInputStream(defaultsFile);
+			defaults = new SortedProperties();
+			defaults.load(in);
+			in.close();
+			props = new SortedProperties(defaults);
+	
+			f.createNewFile();
+			in = new FileInputStream(f);
+			props.load(in);
+			in.close();
+		} finally {
+			if(in != null) {
+				in.close();
+			}
+		}
 	}
 
 	public static void saveConfigurationToFile(File f) throws IOException {
@@ -380,7 +393,73 @@ public final class Configuration {
 		return availableLayouts;
 	}
 	
+	//TODO - add gui options to choose between acceptable fonts?
+	public static Font getI18NFont() {
+		getAvailableLocales(); //this forces an update of the languages string
+		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		Font newFont = null;
+        for(Font f : env.getAllFonts()) {
+        	if(f.canDisplayUpTo(languages) == -1) {
+        		newFont = f.deriveFont(12f);
+        		break;
+        	}
+        }
+        return newFont;
+	}
 	
+	private static final LocaleAndIcon jvmDefaultLocale = new LocaleAndIcon(Locale.getDefault(), null);
+	public static LocaleAndIcon getDefaultLocale() {
+		LocaleAndIcon l = new LocaleAndIcon(new Locale(getString(VariableKey.LANGUAGE, false), getString(VariableKey.REGION, false)), null);
+		if(getAvailableLocales().contains(l))
+			return l;
+		return jvmDefaultLocale;
+	}
+	
+	public static void setDefaultLocale(Locale l) {
+		setString(VariableKey.LANGUAGE, l.getLanguage());
+		setString(VariableKey.REGION, l.getCountry());
+	}
+	
+	private static ArrayList<LocaleAndIcon> locales;
+	private static String languages;
+	public static ArrayList<LocaleAndIcon> getAvailableLocales() {
+		if(locales == null) {
+			locales = new ArrayList<LocaleAndIcon>();
+			Locale l;
+			languages = "";
+			FileInputStream in = null;
+			try {
+				Properties p = new Properties();
+				in = new FileInputStream(installedLanguagesFile);
+				p.load(in);
+				for(Object o : p.keySet()) {
+					String[] languageAndRegion = ((String) o).split("_");
+					if(languageAndRegion.length == 1)
+						l = new Locale(languageAndRegion[0]);
+					else if(languageAndRegion.length == 2)
+						l = new Locale(languageAndRegion[0], languageAndRegion[1]);
+					else
+						continue;
+					LocaleAndIcon li = new LocaleAndIcon(l, p.getProperty((String) o));
+					if(!locales.contains(li)) {
+						locales.add(li);
+						languages += li.toString();
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if(in != null) {
+					try {
+						in.close();
+					} catch(Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		return locales;
+	}
 
 	//********* End of specialized methods ***************//
 }

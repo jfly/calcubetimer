@@ -11,6 +11,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.statistics.Commentable;
 import net.gnehzr.cct.statistics.Session;
 import net.gnehzr.cct.statistics.SolveTime;
@@ -25,6 +26,7 @@ public class CommentHandler implements ListSelectionListener, FocusListener, Doc
 		timesTable.getSelectionModel().addListSelectionListener(this);
 		sessionsTable.getSelectionModel().addListSelectionListener(this);
 		commentArea.addFocusListener(this);
+		updateText();
 	}
 	
 	private Commentable curr;
@@ -39,33 +41,34 @@ public class CommentHandler implements ListSelectionListener, FocusListener, Doc
 			Object commentable = null;
 			if(e.getSource() == timesTable.getSelectionModel()) {
 				commentable = timesTable.getValueAt(row, timesTable.convertColumnIndexToView(0));
-	//			curr = CALCubeTimer.statsModel.getCurrentStatistics().get(row);
+				//			curr = CALCubeTimer.statsModel.getCurrentStatistics().get(row);
 				clearMe = sessionsTable;
 			} else if(e.getSource() == sessionsTable.getSelectionModel()) {
 				commentable = sessionsTable.getValueAt(row, sessionsTable.convertColumnIndexToView(0));
-	//			curr = Configuration.getSelectedProfile().getPuzzleDatabase().getNthSession(row);
+				//			curr = Configuration.getSelectedProfile().getPuzzleDatabase().getNthSession(row);
 				clearMe = timesTable;
 			}
-			if(commentable instanceof Commentable) {
+			if(commentable instanceof Commentable)
 				curr = (Commentable) commentable;
-			}
+			else
+				curr = null;
 			if(clearMe != null)
 				clearMe.clearSelection();
-			}
+		}
 		updateText();
 	}
-	private void updateText() {
+	public void updateText() {
 		commentArea.getDocument().removeDocumentListener(this);
 		if(curr != null) {
 			if(!curr.getComment().isEmpty())
 				commentArea.setText(curr.getComment());
 			else if(curr instanceof SolveTime)
-				commentArea.setText(MainMessages.getString("CommentHandler.solvecomment") + curr); //$NON-NLS-1$
+				commentArea.setText(StringAccessor.getString("CommentHandler.solvecomment") + curr); //$NON-NLS-1$
 			else if(curr instanceof Session)
-				commentArea.setText(MainMessages.getString("CommentHandler.sessioncomment") + curr); //$NON-NLS-1$
+				commentArea.setText(StringAccessor.getString("CommentHandler.sessioncomment") + curr); //$NON-NLS-1$
 			commentArea.setEnabled(true);
 		} else
-			commentArea.setText(MainMessages.getString("CommentHandler.selectcomment")); //$NON-NLS-1$
+			commentArea.setText(StringAccessor.getString("CommentHandler.selectcomment")); //$NON-NLS-1$
 		commentArea.getDocument().addDocumentListener(this);
 	}
 	public void sync() {

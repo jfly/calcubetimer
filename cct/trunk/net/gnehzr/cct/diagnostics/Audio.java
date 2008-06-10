@@ -1,7 +1,11 @@
 package net.gnehzr.cct.diagnostics;
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.Mixer;
+import javax.sound.sampled.TargetDataLine;
 
-import net.gnehzr.cct.main.MainMessages;
 public class Audio{
 	public static void main(String[] args){
 		Mixer.Info[]    aInfos = AudioSystem.getMixerInfo();

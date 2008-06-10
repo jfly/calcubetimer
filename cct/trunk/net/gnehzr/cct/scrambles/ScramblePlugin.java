@@ -69,7 +69,7 @@ public class ScramblePlugin {
 		return scramblePlugins;
 	}
 
-	public static void saveLengthsToConfiguraiton() {
+	public static void saveLengthsToConfiguration() {
 		for(ScrambleVariation variation : getScrambleVariations()) {
 			Configuration.setInt(VariableKey.SCRAMBLE_LENGTH(variation), variation.getLength());
 		}

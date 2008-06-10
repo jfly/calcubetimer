@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.JSpinnerWithText;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleList;
@@ -32,10 +33,10 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 	private JSpinnerWithText scrambleLength, numberOfScrambles;
 	private JButton exportButton, cancelButton;
 	public ScrambleExportDialog(JFrame owner, ScrambleVariation selected) {
-		super(owner, MainMessages.getString("ScrambleExportDialog.exportscrambles"), true); //$NON-NLS-1$
+		super(owner, StringAccessor.getString("ScrambleExportDialog.exportscrambles"), true); //$NON-NLS-1$
 		urlField = new JTextField(40);
-		urlField.setToolTipText(MainMessages.getString("ScrambleExportDialog.choosefile")); //$NON-NLS-1$
-		browse = new JButton(MainMessages.getString("ScrambleExportDialog.browse")); //$NON-NLS-1$
+		urlField.setToolTipText(StringAccessor.getString("ScrambleExportDialog.choosefile")); //$NON-NLS-1$
+		browse = new JButton(StringAccessor.getString("ScrambleExportDialog.browse")); //$NON-NLS-1$
 		browse.addActionListener(this);
 
 		scrambleChooser = new ScrambleChooserComboBox(false, false);
@@ -53,14 +54,14 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 		subPanel.add(sideBySide);
 		subPanel.add(scrambleChooser);
 
-		scrambleLength = new JSpinnerWithText(selected.getLength(), 1, MainMessages.getString("ScrambleExportDialog.lengthscrambles")); //$NON-NLS-1$
-		numberOfScrambles = new JSpinnerWithText(Configuration.getInt(VariableKey.RA_SIZE0, false), 1, MainMessages.getString("ScrambleExportDialog.numberscrambles")); //$NON-NLS-1$
+		scrambleLength = new JSpinnerWithText(selected.getLength(), 1, StringAccessor.getString("ScrambleExportDialog.lengthscrambles")); //$NON-NLS-1$
+		numberOfScrambles = new JSpinnerWithText(Configuration.getInt(VariableKey.RA_SIZE0, false), 1, StringAccessor.getString("ScrambleExportDialog.numberscrambles")); //$NON-NLS-1$
 		subPanel.add(scrambleLength);
 		subPanel.add(numberOfScrambles);
 		
-		exportButton = new JButton(MainMessages.getString("ScrambleExportDialog.export")); //$NON-NLS-1$
+		exportButton = new JButton(StringAccessor.getString("ScrambleExportDialog.export")); //$NON-NLS-1$
 		exportButton.addActionListener(this);
-		cancelButton = new JButton(MainMessages.getString("ScrambleExportDialog.cancel")); //$NON-NLS-1$
+		cancelButton = new JButton(StringAccessor.getString("ScrambleExportDialog.cancel")); //$NON-NLS-1$
 		cancelButton.addActionListener(this);
 		sideBySide = new JPanel();
 		sideBySide.add(exportButton);
@@ -78,7 +79,7 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 		Object source = e.getSource();
 		if(source == browse) {
 			JFileChooser fc = new JFileChooser("."); //$NON-NLS-1$
-			if(fc.showDialog(this, MainMessages.getString("ScrambleExportDialog.save")) == JFileChooser.APPROVE_OPTION) { //$NON-NLS-1$
+			if(fc.showDialog(this, StringAccessor.getString("ScrambleExportDialog.save")) == JFileChooser.APPROVE_OPTION) { //$NON-NLS-1$
 				File selectedFile = fc.getSelectedFile();
 				urlField.setText(selectedFile.toURI().toString());
 			}
@@ -91,8 +92,8 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 				file = new URI(urlField.getText()).toURL();
 			} catch (Exception e1) {
 				JOptionPane.showMessageDialog(this,
-						e1.getMessage() + "\n" + MainMessages.getString("ScrambleExportDialog.badfilename"), //$NON-NLS-1$ //$NON-NLS-2$
-						MainMessages.getString("ScrambleExportDialog.error"), //$NON-NLS-1$
+						e1.getMessage() + "\n" + StringAccessor.getString("ScrambleExportDialog.badfilename"), //$NON-NLS-1$ //$NON-NLS-2$
+						StringAccessor.getString("ScrambleExportDialog.error"), //$NON-NLS-1$
 						JOptionPane.ERROR_MESSAGE);
 			}
 			if(file != null)
@@ -128,11 +129,11 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 			}
 			out.close();
 			JOptionPane.showMessageDialog(this,
-					MainMessages.getString("ScrambleExportDialog.successmessage"), //$NON-NLS-1$
+					StringAccessor.getString("ScrambleExportDialog.successmessage"), //$NON-NLS-1$
 					outputFile.getPath(),
 					JOptionPane.INFORMATION_MESSAGE);
 		} catch(Exception e) {
-			showErrorMessage(MainMessages.getString("ScrambleExportDialog.error") + "\n" + e.toString(), MainMessages.getString(MainMessages.getString("ScrambleExportDialog.hmmm")));  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+			showErrorMessage(StringAccessor.getString("ScrambleExportDialog.error") + "\n" + e.toString(), StringAccessor.getString("ScrambleExportDialog.hmmm"));  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
 }

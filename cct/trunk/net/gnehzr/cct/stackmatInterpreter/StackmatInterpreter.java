@@ -6,6 +6,7 @@ import javax.swing.SwingWorker;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.ComboItem;
 
 public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implements ConfigurationChangeListener {
@@ -129,9 +130,9 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 	public ComboItem[] getMixerChoices(){
 		ComboItem[] items = new ComboItem[aInfos.length+1];
 		for(int i = 0; i < aInfos.length; i++){
-			items[i] = new ComboItem(StackmatInterpreterMessages.getString("StackmatInterpreter.mixer") + i + ": " + aInfos[i].getName() + StackmatInterpreterMessages.getString("StackmatInterpreter.description") + aInfos[i].getDescription(), AudioSystem.getMixer(aInfos[i]).isLineSupported(info)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			items[i] = new ComboItem(StringAccessor.getString("StackmatInterpreter.mixer") + i + ": " + aInfos[i].getName() + StringAccessor.getString("StackmatInterpreter.description") + aInfos[i].getDescription(), AudioSystem.getMixer(aInfos[i]).isLineSupported(info)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
-		items[items.length-1] = new ComboItem(StackmatInterpreterMessages.getString("StackmatInterpreter.nomixer"), true); //$NON-NLS-1$
+		items[items.length-1] = new ComboItem(StringAccessor.getString("StackmatInterpreter.nomixer"), true); //$NON-NLS-1$
 
 		int current = getSelectedMixerIndex();
 		items[current].setEnabled(true);

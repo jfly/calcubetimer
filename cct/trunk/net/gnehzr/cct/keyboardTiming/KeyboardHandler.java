@@ -6,7 +6,6 @@ import javax.swing.Timer;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
-import net.gnehzr.cct.main.MainMessages;
 import net.gnehzr.cct.main.TimingListener;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
 

@@ -3,6 +3,7 @@ package net.gnehzr.cct.configuration;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.statistics.Profile;
@@ -59,7 +60,7 @@ public class ProfileListModel extends DraggableJTableModel {
 		removeRows(indices);
 	}
 	public String getColumnName(int column) {
-		return ConfigurationMessages.getString("ProfileListModel.profiles"); //$NON-NLS-1$
+		return StringAccessor.getString("ProfileListModel.profiles"); //$NON-NLS-1$
 	}
 	public Class<?> getColumnClass(int columnIndex) {
 		return Profile.class;

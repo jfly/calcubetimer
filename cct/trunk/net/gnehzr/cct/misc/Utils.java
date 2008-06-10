@@ -9,10 +9,13 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 
 public class Utils {
-	//TODO - how should this be internationalized?
-	private static final DecimalFormat DF = new DecimalFormat("0.00");
-	static {
-		DF.setRoundingMode(RoundingMode.HALF_UP);
+	public static DecimalFormat getDecimalFormat() {
+		DecimalFormat df = new DecimalFormat("0.00"); //$NON-NLS-1$
+		df.setRoundingMode(RoundingMode.HALF_UP);
+		return df;
+	}
+	public static String getDecimalSeparator() {
+		return ""+getDecimalFormat().getDecimalFormatSymbols().getDecimalSeparator(); //$NON-NLS-1$
 	}
 
 	private Utils() {}
@@ -27,7 +30,7 @@ public class Utils {
 	}
 	
 	private static String format(double seconds) {
-		return DF.format(seconds);
+		return getDecimalFormat().format(seconds);
 	}
 	private static String clockFormat(double seconds) {
 		int hours = (int) (seconds / 3600.);

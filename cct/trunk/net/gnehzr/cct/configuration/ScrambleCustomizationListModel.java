@@ -28,6 +28,7 @@ import javax.swing.event.CellEditorListener;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.main.ScrambleChooserComboBox;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
@@ -55,7 +56,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	public Class<?> getColumnClass(int columnIndex) {
 		return ScrambleCustomization.class;
 	}
-	private String[] columnNames = new String[]{ ConfigurationMessages.getString("ScrambleCustomizationListModel.scramblecustomization"), ConfigurationMessages.getString("ScrambleCustomizationListModel.length") }; //$NON-NLS-1$ //$NON-NLS-2$
+	private String[] columnNames = new String[]{ StringAccessor.getString("ScrambleCustomizationListModel.scramblecustomization"), StringAccessor.getString("ScrambleCustomizationListModel.length") }; //$NON-NLS-1$ //$NON-NLS-2$
 	public int getColumnCount() {
 		return columnNames.length;
 	}
@@ -160,12 +161,12 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 					}
 				}
 			});
-			scrambleVariations.setToolTipText(ConfigurationMessages.getString("ScrambleCustomizationListModel.selectvariation")); //$NON-NLS-1$
+			scrambleVariations.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.selectvariation")); //$NON-NLS-1$
 			customPanel.add(scrambleVariations);
 
 			originalFieldText = custom.getCustomization();
 			customField = new JTextField(originalFieldText, 15);
-			customField.setToolTipText(ConfigurationMessages.getString("ScrambleCustomizationListModel.specifycustomization")); //$NON-NLS-1$
+			customField.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.specifycustomization")); //$NON-NLS-1$
 			customPanel.add(customField);
 		} else {
 			customPanel.add(new JLabel("<html><b>" + custom.getScrambleVariation().toString() + "</b></html>")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -182,13 +183,13 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		lengthPanel.setLayout(new BoxLayout(lengthPanel, BoxLayout.LINE_AXIS));
 		customization = custom;
 		scramLength = new JSpinner(new SpinnerNumberModel(custom.getScrambleVariation().getLength(), 0, null, 1));
-		scramLength.setToolTipText(ConfigurationMessages.getString("ScrambleCustomizationListModel.specifylength")); //$NON-NLS-1$
+		scramLength.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.specifylength")); //$NON-NLS-1$
 		((JSpinner.DefaultEditor) scramLength.getEditor()).getTextField().setColumns(3);
 		lengthPanel.add(scramLength);
 
-		JButton resetButton = new JButton(ConfigurationMessages.getString("ScrambleCustomizationListModel.reset")); //$NON-NLS-1$
+		JButton resetButton = new JButton(StringAccessor.getString("ScrambleCustomizationListModel.reset")); //$NON-NLS-1$
 		resetButton.setEnabled(false);
-		resetButton.setToolTipText(ConfigurationMessages.getString("ScrambleCustomizationListModel.resetlength")); //$NON-NLS-1$
+		resetButton.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.resetlength")); //$NON-NLS-1$
 		resetButton.setFocusable(false);
 		resetButton.setFocusPainted(false);
 		resetButton.setMargin(new Insets(0, 0, 0, 0));
@@ -268,12 +269,12 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 			String customName = customField.getText();
 			String error = null;
 			if(customName.isEmpty()) { //$NON-NLS-1$
-				error = ConfigurationMessages.getString("ScrambleCustomizationListModel.noemptycustomization"); //$NON-NLS-1$
+				error = StringAccessor.getString("ScrambleCustomizationListModel.noemptycustomization"); //$NON-NLS-1$
 			} else {
 				String fullCustomName = customization.getScrambleVariation().getVariation() + ":" + customName; //$NON-NLS-1$
 				for(ScrambleCustomization c : customizations) {
 					if(c.toString().equals(fullCustomName) && c != customization) {
-						error = ConfigurationMessages.getString("ScrambleCustomizationListModel.noduplicatecustomizations"); //$NON-NLS-1$
+						error = StringAccessor.getString("ScrambleCustomizationListModel.noduplicatecustomizations"); //$NON-NLS-1$
 						break;
 					}
 				}

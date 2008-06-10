@@ -54,6 +54,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
@@ -61,6 +62,7 @@ import javax.swing.Timer;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.keyboardTiming.TimerLabel;
 import net.gnehzr.cct.misc.ComboItem;
 import net.gnehzr.cct.misc.ComboListener;
@@ -94,11 +96,13 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private ComboItem[] items;
 	private StackmatInterpreter stackmat;
 	private Timer tickTock;
+	private JTable timesTable;
 
-	public ConfigurationDialog(JFrame parent, boolean modal, StackmatInterpreter stackmat, Timer tickTock) {
+	public ConfigurationDialog(JFrame parent, boolean modal, StackmatInterpreter stackmat, Timer tickTock, JTable timesTable) {
 		super(parent, modal);
 		this.stackmat = stackmat;
 		this.tickTock = tickTock;
+		this.timesTable = timesTable;
 		createGUI();
 		setLocationRelativeTo(parent);
 	}
@@ -123,45 +127,45 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		pane.add(tabbedPane, BorderLayout.CENTER);
 
 		JComponent tab = makeStandardOptionsPanel1();
-		tabbedPane.addTab(ConfigurationMessages.getString("ConfigurationDialog.options"), tab); //$NON-NLS-1$
+		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.options"), tab); //$NON-NLS-1$
 
 		tab = makeStandardOptionsPanel2();
-		tabbedPane.addTab(ConfigurationMessages.getString("ConfigurationDialog.moreoptions"), tab); //$NON-NLS-1$
+		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.moreoptions"), tab); //$NON-NLS-1$
 
 		tab = makeScrambleTypeOptionsPanel();
-		tabbedPane.addTab(ConfigurationMessages.getString("ConfigurationDialog.profilesettings"), tab); //$NON-NLS-1$
+		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.profilesettings"), tab); //$NON-NLS-1$
 
 		tab = makeStackmatOptionsPanel();
-		tabbedPane.addTab(ConfigurationMessages.getString("ConfigurationDialog.stackmatsettings"), tab); //$NON-NLS-1$
+		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.stackmatsettings"), tab); //$NON-NLS-1$
 
 		tab = makeSundaySetupPanel();
-		tabbedPane.addTab(ConfigurationMessages.getString("ConfigurationDialog.sundaycontest/email"), tab); //$NON-NLS-1$
+		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.sundaycontest/email"), tab); //$NON-NLS-1$
 
 		tab = makeSessionSetupPanel();
-		tabbedPane.addTab(ConfigurationMessages.getString("ConfigurationDialog.sessionstats"), tab); //$NON-NLS-1$
+		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.sessionstats"), tab); //$NON-NLS-1$
 
 		tab = makeBestRASetupPanel();
-		tabbedPane.addTab(ConfigurationMessages.getString("ConfigurationDialog.bestrastats"), tab); //$NON-NLS-1$
+		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.bestrastats"), tab); //$NON-NLS-1$
 
 		tab = makeCurrentAverageSetupPanel();
-		tabbedPane.addTab(ConfigurationMessages.getString("ConfigurationDialog.currrastats"), tab); //$NON-NLS-1$
+		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.currrastats"), tab); //$NON-NLS-1$
 		
 		tab = makePuzzleColorsPanel();
-		tabbedPane.addTab(ConfigurationMessages.getString("ConfigurationDialog.colors"), tab); //$NON-NLS-1$
+		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.colors"), tab); //$NON-NLS-1$
 
-		applyButton = new JButton(ConfigurationMessages.getString("ConfigurationDialog.apply")); //$NON-NLS-1$
+		applyButton = new JButton(StringAccessor.getString("ConfigurationDialog.apply")); //$NON-NLS-1$
 		applyButton.setMnemonic(KeyEvent.VK_A);
 		applyButton.addActionListener(this);
 
-		saveButton = new JButton(ConfigurationMessages.getString("ConfigurationDialog.save")); //$NON-NLS-1$
+		saveButton = new JButton(StringAccessor.getString("ConfigurationDialog.save")); //$NON-NLS-1$
 		saveButton.setMnemonic(KeyEvent.VK_S);
 		saveButton.addActionListener(this);
 
-		cancelButton = new JButton(ConfigurationMessages.getString("ConfigurationDialog.cancel")); //$NON-NLS-1$
+		cancelButton = new JButton(StringAccessor.getString("ConfigurationDialog.cancel")); //$NON-NLS-1$
 		cancelButton.setMnemonic(KeyEvent.VK_C);
 		cancelButton.addActionListener(this);
 
-		resetButton = new JButton(ConfigurationMessages.getString("ConfigurationDialog.reset")); //$NON-NLS-1$
+		resetButton = new JButton(StringAccessor.getString("ConfigurationDialog.reset")); //$NON-NLS-1$
 		resetButton.setMnemonic(KeyEvent.VK_R);
 		resetButton.addActionListener(this);
 
@@ -225,30 +229,30 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		JPanel rightPanel = new JPanel(new GridLayout(0, 1));
 		options.add(rightPanel);
 
-		clockFormat = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.clockformat")); //$NON-NLS-1$
+		clockFormat = new JCheckBox(StringAccessor.getString("ConfigurationDialog.clockformat")); //$NON-NLS-1$
 		clockFormat.setMnemonic(KeyEvent.VK_U);
 		rightPanel.add(clockFormat);
 
-		promptForNewTime = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.promptnewtime")); //$NON-NLS-1$
+		promptForNewTime = new JCheckBox(StringAccessor.getString("ConfigurationDialog.promptnewtime")); //$NON-NLS-1$
 		promptForNewTime.setMnemonic(KeyEvent.VK_P);
 		rightPanel.add(promptForNewTime);
 
-		scramblePopup = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.scramblepopup")); //$NON-NLS-1$
+		scramblePopup = new JCheckBox(StringAccessor.getString("ConfigurationDialog.scramblepopup")); //$NON-NLS-1$
 		rightPanel.add(scramblePopup);
 		
-		inspectionCountdown = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.inspection")); //$NON-NLS-1$
+		inspectionCountdown = new JCheckBox(StringAccessor.getString("ConfigurationDialog.inspection")); //$NON-NLS-1$
 		inspectionCountdown.addItemListener(this);
-		speakInspection = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.readinspection")); //$NON-NLS-1$
+		speakInspection = new JCheckBox(StringAccessor.getString("ConfigurationDialog.readinspection")); //$NON-NLS-1$
 		JPanel sideBySide = new JPanel();
 		sideBySide.add(inspectionCountdown);
 		sideBySide.add(speakInspection);
 		rightPanel.add(sideBySide);
 		
-		speakTimes = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.readtimes")); //$NON-NLS-1$
+		speakTimes = new JCheckBox(StringAccessor.getString("ConfigurationDialog.readtimes")); //$NON-NLS-1$
 		voices = new JComboBox(NumberSpeaker.getSpeakers());
 		sideBySide = new JPanel();
 		sideBySide.add(speakTimes);
-		sideBySide.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.voicechoice"))); //$NON-NLS-1$
+		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.voicechoice"))); //$NON-NLS-1$
 		sideBySide.add(voices);
 		rightPanel.add(sideBySide);
 
@@ -256,8 +260,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		SpinnerNumberModel model = new SpinnerNumberModel(3, 3, null, 1);
 		RASize0 = new JSpinner(model);
 		((JSpinner.DefaultEditor) RASize0.getEditor()).getTextField().setColumns(3);
-		showRA0 = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.showra")); //$NON-NLS-1$
-		sideBySide.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.sizera0"))); //$NON-NLS-1$
+		showRA0 = new JCheckBox(StringAccessor.getString("ConfigurationDialog.showra")); //$NON-NLS-1$
+		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.sizera0"))); //$NON-NLS-1$
 		sideBySide.add(RASize0);
 		sideBySide.add(showRA0);
 		rightPanel.add(sideBySide);
@@ -266,34 +270,34 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		model = new SpinnerNumberModel(3, 3, null, 1);
 		RASize1 = new JSpinner(model);
 		((JSpinner.DefaultEditor) RASize1.getEditor()).getTextField().setColumns(3);
-		showRA1 = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.showra")); //$NON-NLS-1$
-		sideBySide.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.sizera1"))); //$NON-NLS-1$
+		showRA1 = new JCheckBox(StringAccessor.getString("ConfigurationDialog.showra")); //$NON-NLS-1$
+		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.sizera1"))); //$NON-NLS-1$
 		sideBySide.add(RASize1);
 		sideBySide.add(showRA1);
 		rightPanel.add(sideBySide);
 
-		bestRA = new JColorComponent(ConfigurationMessages.getString("ConfigurationDialog.bestra")); //$NON-NLS-1$
+		bestRA = new JColorComponent(StringAccessor.getString("ConfigurationDialog.bestra")); //$NON-NLS-1$
 		bestRA.addMouseListener(this);
 		colorPanel.add(bestRA);
 
-		currentAndRA = new JColorComponent(ConfigurationMessages.getString("ConfigurationDialog.bestandcurrentra")); //$NON-NLS-1$
+		currentAndRA = new JColorComponent(StringAccessor.getString("ConfigurationDialog.bestandcurrentra")); //$NON-NLS-1$
 		currentAndRA.addMouseListener(this);
 		colorPanel.add(currentAndRA);
 
-		bestTime = new JColorComponent(ConfigurationMessages.getString("ConfigurationDialog.besttime")); //$NON-NLS-1$
+		bestTime = new JColorComponent(StringAccessor.getString("ConfigurationDialog.besttime")); //$NON-NLS-1$
 		bestTime.addMouseListener(this);
 		colorPanel.add(bestTime);
 
-		worstTime = new JColorComponent(ConfigurationMessages.getString("ConfigurationDialog.worsttime")); //$NON-NLS-1$
+		worstTime = new JColorComponent(StringAccessor.getString("ConfigurationDialog.worsttime")); //$NON-NLS-1$
 		worstTime.addMouseListener(this);
 		colorPanel.add(worstTime);
 
-		currentAverage = new JColorComponent(ConfigurationMessages.getString("ConfigurationDialog.currentaverage")); //$NON-NLS-1$
+		currentAverage = new JColorComponent(StringAccessor.getString("ConfigurationDialog.currentaverage")); //$NON-NLS-1$
 		currentAverage.addMouseListener(this);
 		colorPanel.add(currentAverage);
 
 		desktopPanel = new JPanel();
-		refreshDesktops = new JButton(ConfigurationMessages.getString("ConfigurationDialog.refresh")); //$NON-NLS-1$
+		refreshDesktops = new JButton(StringAccessor.getString("ConfigurationDialog.refresh")); //$NON-NLS-1$
 		refreshDesktops.addActionListener(this);
 
 		JPanel test = new JPanel();
@@ -326,82 +330,82 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		minSplitTime.setEditor(doubleModel);
 		((JSpinner.DefaultEditor) minSplitTime.getEditor()).getTextField().setColumns(4);
 
-		splits = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.splits")); //$NON-NLS-1$
+		splits = new JCheckBox(StringAccessor.getString("ConfigurationDialog.splits")); //$NON-NLS-1$
 		splits.addActionListener(this);
 
 		splitsKeySelector = new JTextArea();
 		splitsKeySelector.setColumns(10);
 		splitsKeySelector.setEditable(false);
-		splitsKeySelector.setToolTipText(ConfigurationMessages.getString("ConfigurationDialog.clickhere")); //$NON-NLS-1$
+		splitsKeySelector.setToolTipText(StringAccessor.getString("ConfigurationDialog.clickhere")); //$NON-NLS-1$
 		splitsKeySelector.addKeyListener(this);
 
 		sideBySide.add(splits);
-		sideBySide.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.minsplittime"))); //$NON-NLS-1$
+		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.minsplittime"))); //$NON-NLS-1$
 		sideBySide.add(minSplitTime);
-		sideBySide.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.splitkey"))); //$NON-NLS-1$
+		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.splitkey"))); //$NON-NLS-1$
 		sideBySide.add(splitsKeySelector);
 		panel.add(sideBySide);
 
 		sideBySide = new JPanel();
-		metronome = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.metronome")); //$NON-NLS-1$
+		metronome = new JCheckBox(StringAccessor.getString("ConfigurationDialog.metronome")); //$NON-NLS-1$
 		metronome.addActionListener(this);
 		metronomeDelay = new TickerSlider(tickTock);
 		sideBySide.add(metronome);
-		sideBySide.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.delay"))); //$NON-NLS-1$
+		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.delay"))); //$NON-NLS-1$
 		sideBySide.add(metronomeDelay);
 		panel.add(sideBySide);
 		
 		sideBySide = new JPanel();
-		stackmatEmulation = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.emulatestackmat")); //$NON-NLS-1$
+		stackmatEmulation = new JCheckBox(StringAccessor.getString("ConfigurationDialog.emulatestackmat")); //$NON-NLS-1$
 		stackmatEmulation.addActionListener(this);
 
 		stackmatKeySelector1 = new JTextArea();
 		stackmatKeySelector1.setColumns(10);
 		stackmatKeySelector1.setEditable(false);
-		stackmatKeySelector1.setToolTipText(ConfigurationMessages.getString("ConfigurationDialog.clickhere")); //$NON-NLS-1$
+		stackmatKeySelector1.setToolTipText(StringAccessor.getString("ConfigurationDialog.clickhere")); //$NON-NLS-1$
 		stackmatKeySelector1.addKeyListener(this);
 
 		stackmatKeySelector2 = new JTextArea();
 		stackmatKeySelector2.setColumns(10);
 		stackmatKeySelector2.setEditable(false);
-		stackmatKeySelector2.setToolTipText(ConfigurationMessages.getString("ConfigurationDialog.clickhere")); //$NON-NLS-1$
+		stackmatKeySelector2.setToolTipText(StringAccessor.getString("ConfigurationDialog.clickhere")); //$NON-NLS-1$
 		stackmatKeySelector2.addKeyListener(this);
 
 		sideBySide.add(stackmatEmulation);
-		sideBySide.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.stackmatkeys"))); //$NON-NLS-1$
+		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.stackmatkeys"))); //$NON-NLS-1$
 		sideBySide.add(stackmatKeySelector1);
 		sideBySide.add(stackmatKeySelector2);
 		panel.add(sideBySide);
 
-		flashyWindow = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.flashchatwindow")); //$NON-NLS-1$
+		flashyWindow = new JCheckBox(StringAccessor.getString("ConfigurationDialog.flashchatwindow")); //$NON-NLS-1$
 		flashyWindow.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel.add(flashyWindow);
 
 		sideBySide = new JPanel();
-		isBackground = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.watermark")); //$NON-NLS-1$
+		isBackground = new JCheckBox(StringAccessor.getString("ConfigurationDialog.watermark")); //$NON-NLS-1$
 		isBackground.addActionListener(this);
 		backgroundFile = new JTextField(30);
-		backgroundFile.setToolTipText(ConfigurationMessages.getString("ConfigurationDialog.clearfordefault")); //$NON-NLS-1$
-		browse = new JButton(ConfigurationMessages.getString("ConfigurationDialog.browse")); //$NON-NLS-1$
+		backgroundFile.setToolTipText(StringAccessor.getString("ConfigurationDialog.clearfordefault")); //$NON-NLS-1$
+		browse = new JButton(StringAccessor.getString("ConfigurationDialog.browse")); //$NON-NLS-1$
 		browse.addActionListener(this);
 		sideBySide.add(isBackground);
-		sideBySide.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.file"))); //$NON-NLS-1$
+		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.file"))); //$NON-NLS-1$
 		sideBySide.add(backgroundFile);
 		sideBySide.add(browse);
 		panel.add(sideBySide);
 
 		sideBySide = new JPanel();
 		opacity = new JSlider(JSlider.HORIZONTAL, 0, 10, 0);
-		sideBySide.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.opacity"))); //$NON-NLS-1$
+		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.opacity"))); //$NON-NLS-1$
 		sideBySide.add(opacity);
 		panel.add(sideBySide);
 
 		sideBySide = new JPanel();
-		scrambleFontButton = new JButton(ConfigurationMessages.getString("ConfigurationDialog.scramblefont")); //$NON-NLS-1$
+		scrambleFontButton = new JButton(StringAccessor.getString("ConfigurationDialog.scramblefont")); //$NON-NLS-1$
 		scrambleFontButton.addActionListener(this);
 		sideBySide.add(scrambleFontButton);
 
-		timerFontButton = new JButton(ConfigurationMessages.getString("ConfigurationDialog.timerfont")); //$NON-NLS-1$
+		timerFontButton = new JButton(StringAccessor.getString("ConfigurationDialog.timerfont")); //$NON-NLS-1$
 		timerFontButton.addActionListener(this);
 		sideBySide.add(timerFontButton);
 
@@ -415,12 +419,14 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private JPanel makeScrambleTypeOptionsPanel() {
 		JPanel panel = new JPanel(new BorderLayout(10, 10));
 
-		DraggableJTable profilesTable = new DraggableJTable(ConfigurationMessages.getString("ConfigurationDialog.addprofile"), true, false); //$NON-NLS-1$
+		DraggableJTable profilesTable = new DraggableJTable(true, false);
+		profilesTable.setAddText(StringAccessor.getString("ConfigurationDialog.addprofile")); //$NON-NLS-1$
 		profilesTable.getTableHeader().setReorderingAllowed(false);
 		profilesTable.setModel(profilesModel);
-		profilesTable.setDefaultEditor(Profile.class, new ProfileEditor(ConfigurationMessages.getString("ConfigurationDialog.newprofile"), profilesModel)); //$NON-NLS-1$
+		profilesTable.setDefaultEditor(Profile.class, new ProfileEditor(StringAccessor.getString("ConfigurationDialog.newprofile"), profilesModel)); //$NON-NLS-1$
 
-		DraggableJTable scramTable = new DraggableJTable(ConfigurationMessages.getString("ConfigurationDialog.addpuzzle"), true, false); //$NON-NLS-1$
+		DraggableJTable scramTable = new DraggableJTable(true, false);
+		scramTable.setAddText(StringAccessor.getString("ConfigurationDialog.addpuzzle")); //$NON-NLS-1$
 		scramTable.getTableHeader().setReorderingAllowed(false);
 		scramTable.putClientProperty(SubstanceLookAndFeel.WATERMARK_IGNORE, Boolean.TRUE);
 		scramTable.setShowGrid(false);
@@ -452,24 +458,24 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		JPanel sideBySide = new JPanel();
 		options.add(sideBySide);
 
-		sideBySide.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.stackmatvalue"))); //$NON-NLS-1$
+		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.stackmatvalue"))); //$NON-NLS-1$
 
 		SpinnerNumberModel integerModel = new SpinnerNumberModel(1, 1, 256, 1);
 		stackmatValue = new JSpinner(integerModel);
 		((JSpinner.DefaultEditor) stackmatValue.getEditor()).getTextField().setColumns(5);
 		sideBySide.add(stackmatValue);
-		options.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.stackmatvaluedescription"))); //$NON-NLS-1$
+		options.add(new JLabel(StringAccessor.getString("ConfigurationDialog.stackmatvaluedescription"))); //$NON-NLS-1$
 
-		options.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.stackmatminsechund"))); //$NON-NLS-1$
+		options.add(new JLabel(StringAccessor.getString("ConfigurationDialog.stackmatminsechund"))); //$NON-NLS-1$
 		sideBySide = new JPanel();
 		options.add(sideBySide);
-		invertedMinutes = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.15minutes")); //$NON-NLS-1$
+		invertedMinutes = new JCheckBox(StringAccessor.getString("ConfigurationDialog.15minutes")); //$NON-NLS-1$
 		invertedMinutes.setMnemonic(KeyEvent.VK_I);
 		sideBySide.add(invertedMinutes);
-		invertedSeconds = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.165seconds")); //$NON-NLS-1$
+		invertedSeconds = new JCheckBox(StringAccessor.getString("ConfigurationDialog.165seconds")); //$NON-NLS-1$
 		invertedSeconds.setMnemonic(KeyEvent.VK_I);
 		sideBySide.add(invertedSeconds);
-		invertedHundredths = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.165hundredths")); //$NON-NLS-1$
+		invertedHundredths = new JCheckBox(StringAccessor.getString("ConfigurationDialog.165hundredths")); //$NON-NLS-1$
 		invertedHundredths.setMnemonic(KeyEvent.VK_I);
 		sideBySide.add(invertedHundredths);
 
@@ -486,14 +492,14 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			mixerPanel.add(lines);
 		}
 
-		stackmatRefresh = new JButton(ConfigurationMessages.getString("ConfigurationDialog.refreshmixers")); //$NON-NLS-1$
+		stackmatRefresh = new JButton(StringAccessor.getString("ConfigurationDialog.refreshmixers")); //$NON-NLS-1$
 		stackmatRefresh.addActionListener(this);
 		mixerPanel.add(stackmatRefresh);
 
 		options.add(mixerPanel);
 
 		sideBySide = new JPanel();
-		sideBySide.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.samplingrate"))); //$NON-NLS-1$
+		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.samplingrate"))); //$NON-NLS-1$
 		stackmatSamplingRate = new JTextField(6); //TODO - is it possible to make this a dropdown box?
 		sideBySide.add(stackmatSamplingRate);
 		options.add(sideBySide);
@@ -514,7 +520,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 	private JPanel makeSundaySetupPanel() {
 		JPanel sundayOptions = new JPanel(new GridBagLayout());
-		sundayOptions.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), ConfigurationMessages.getString("ConfigurationDialog.sundaycontest"))); //$NON-NLS-1$
+		sundayOptions.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), StringAccessor.getString("ConfigurationDialog.sundaycontest"))); //$NON-NLS-1$
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(2, 2, 2, 2);
 		c.fill = GridBagConstraints.BOTH;
@@ -525,7 +531,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 0;
-		sundayOptions.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.name")), c); //$NON-NLS-1$
+		sundayOptions.add(new JLabel(StringAccessor.getString("ConfigurationDialog.name")), c); //$NON-NLS-1$
 		c.weightx = 1;
 		c.gridwidth = 2;
 		c.gridx = 1;
@@ -536,7 +542,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridwidth = 1;
 		c.gridx = 4;
 		c.gridy = 0;
-		sundayOptions.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.country")), c); //$NON-NLS-1$
+		sundayOptions.add(new JLabel(StringAccessor.getString("ConfigurationDialog.country")), c); //$NON-NLS-1$
 		country = new JTextField(5);
 		c.weightx = 0;
 		c.gridwidth = 1;
@@ -549,7 +555,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 1;
-		sundayOptions.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.defaultquote")), c); //$NON-NLS-1$
+		sundayOptions.add(new JLabel(StringAccessor.getString("ConfigurationDialog.defaultquote")), c); //$NON-NLS-1$
 		c.weightx = 1;
 		c.gridwidth = 5;
 		c.gridx = 1;
@@ -561,7 +567,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 2;
-		sundayOptions.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.email")), c); //$NON-NLS-1$
+		sundayOptions.add(new JLabel(StringAccessor.getString("ConfigurationDialog.email")), c); //$NON-NLS-1$
 		c.weightx = 1;
 		c.gridwidth = 3;
 		c.gridx = 1;
@@ -571,17 +577,17 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridwidth = 2;
 		c.gridx = 4;
 		c.gridy = 2;
-		showEmail = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.address")); //$NON-NLS-1$
+		showEmail = new JCheckBox(StringAccessor.getString("ConfigurationDialog.address")); //$NON-NLS-1$
 		sundayOptions.add(showEmail, c);
 
 		emailOptions = new JPanel(new GridBagLayout());
-		emailOptions.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), ConfigurationMessages.getString("ConfigurationDialog.emailsetup"))); //$NON-NLS-1$
+		emailOptions.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), StringAccessor.getString("ConfigurationDialog.emailsetup"))); //$NON-NLS-1$
 		c = new GridBagConstraints();
 		c.insets = new Insets(2, 2, 2, 2);
 		c.fill = GridBagConstraints.BOTH;
 		c.ipady = 5;
 
-		useSMTPServer = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.smtpserver")); //$NON-NLS-1$
+		useSMTPServer = new JCheckBox(StringAccessor.getString("ConfigurationDialog.smtpserver")); //$NON-NLS-1$
 		useSMTPServer.addItemListener(this);
 
 		c.weightx = 0;
@@ -595,7 +601,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 2;
-		emailOptions.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.emailaddress")), c); //$NON-NLS-1$
+		emailOptions.add(new JLabel(StringAccessor.getString("ConfigurationDialog.emailaddress")), c); //$NON-NLS-1$
 		c.weightx = 1;
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.gridx = 1;
@@ -607,7 +613,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 3;
-		emailOptions.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.smtphost")), c); //$NON-NLS-1$
+		emailOptions.add(new JLabel(StringAccessor.getString("ConfigurationDialog.smtphost")), c); //$NON-NLS-1$
 		c.weightx = 1;
 		c.gridwidth = 3;
 		c.gridx = 1;
@@ -618,7 +624,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridwidth = 1;
 		c.gridx = 4;
 		c.gridy = 3;
-		emailOptions.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.port")), c); //$NON-NLS-1$
+		emailOptions.add(new JLabel(StringAccessor.getString("ConfigurationDialog.port")), c); //$NON-NLS-1$
 		port = new JTextField(3);
 		c.weightx = 0;
 		c.gridwidth = 1;
@@ -631,14 +637,14 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridwidth = 1;
 		c.gridx = 0;
 		c.gridy = 4;
-		emailOptions.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.username")), c); //$NON-NLS-1$
+		emailOptions.add(new JLabel(StringAccessor.getString("ConfigurationDialog.username")), c); //$NON-NLS-1$
 		c.weightx = 1;
 		c.gridwidth = 2;
 		c.gridx = 1;
 		c.gridy = 4;
 		emailOptions.add(username, c);
 
-		SMTPauth = new JCheckBox(ConfigurationMessages.getString("ConfigurationDialog.smtpauth")); //$NON-NLS-1$
+		SMTPauth = new JCheckBox(StringAccessor.getString("ConfigurationDialog.smtpauth")); //$NON-NLS-1$
 		SMTPauth.addItemListener(this);
 		c.weightx = 0;
 		c.gridwidth = 1;
@@ -650,13 +656,13 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridwidth = 1;
 		c.gridx = 4;
 		c.gridy = 4;
-		emailOptions.add(new JLabel(ConfigurationMessages.getString("ConfigurationDialog.password")), c); //$NON-NLS-1$
+		emailOptions.add(new JLabel(StringAccessor.getString("ConfigurationDialog.password")), c); //$NON-NLS-1$
 
 		c.weightx = 1;
 		c.gridx = 5;
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		password = new JPasswordField();
-		password.setToolTipText(ConfigurationMessages.getString("ConfigurationDialog.typepassword")); //$NON-NLS-1$
+		password.setToolTipText(StringAccessor.getString("ConfigurationDialog.typepassword")); //$NON-NLS-1$
 		emailOptions.add(password, c);
 		useSMTPServer.setSelected(true);
 		useSMTPServer.setSelected(false); // need both to ensure that an itemStateChanged event is fired
@@ -684,7 +690,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 	private JEditorPane getStatsLegend() {
 		JEditorPane pane = new JEditorPane("text/html",
-				"<html><a href=''>" + ConfigurationMessages.getString("ConfigurationDialog.seedynamicstrings") + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
+				"<html><a href=''>" + StringAccessor.getString("ConfigurationDialog.seedynamicstrings") + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
 		pane.setEditable(false);
 		pane.setFocusable(false);
 		pane.setOpaque(false);
@@ -705,7 +711,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		} catch(Exception error) {
 			JOptionPane.showMessageDialog(this,
 					error.getMessage(),
-					ConfigurationMessages.getString("ConfigurationDialog.error"), //$NON-NLS-1$
+					StringAccessor.getString("ConfigurationDialog.error"), //$NON-NLS-1$
 					JOptionPane.WARNING_MESSAGE);
 		}
 	}
@@ -770,7 +776,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Object source = e.getSource();
 		if(source instanceof JColorComponent) {
 			JColorComponent label = (JColorComponent) source;
-			Color selected = JColorChooser.showDialog(this, ConfigurationMessages.getString("ConfigurationDialog.choosecolor"), label.getBackground()); //$NON-NLS-1$
+			Color selected = JColorChooser.showDialog(this, StringAccessor.getString("ConfigurationDialog.choosecolor"), label.getBackground()); //$NON-NLS-1$
 			if(selected != null)
 				label.setBackground(selected);
 		}
@@ -804,7 +810,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			setVisible(false);
 			cancel();
 		} else if(source == resetButton) {
-			int choice = JOptionPane.showConfirmDialog(this, ConfigurationMessages.getString("ConfigurationDialog.resetall"), ConfigurationMessages.getString("ConfigurationDialog.warning"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$ //$NON-NLS-2$
+			int choice = JOptionPane.showConfirmDialog(this, StringAccessor.getString("ConfigurationDialog.resetall"), StringAccessor.getString("ConfigurationDialog.warning"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$ //$NON-NLS-2$
 			if(choice == JOptionPane.YES_OPTION)
 				syncGUIwithConfig(true);
 		} else if(source == splits) {
@@ -817,7 +823,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			JFileChooser fc = new JFileChooser("."); //$NON-NLS-1$
 			fc.setFileFilter(new ImageFilter());
 			fc.setAccessory(new ImagePreview(fc));
-			if(fc.showDialog(this, ConfigurationMessages.getString("ConfigurationDialog.open")) == JFileChooser.APPROVE_OPTION) { //$NON-NLS-1$
+			if(fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) { //$NON-NLS-1$
 				backgroundFile.setText(fc.getSelectedFile().getAbsolutePath());
 			}
 		} else if(source == isBackground) {
@@ -874,7 +880,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		for(int ch = 0; ch < gs.length; ch++) {
 			GraphicsDevice gd = gs[ch];
 			DisplayMode screenSize = gd.getDisplayMode();
-			JRadioButton temp = new JRadioButton((ch + 1) + ":" + screenSize.getWidth() + "x" + screenSize.getHeight() + " (" + ConfigurationMessages.getString("ConfigurationDialog.desktopresolution") + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+			JRadioButton temp = new JRadioButton((ch + 1) + ":" + screenSize.getWidth() + "x" + screenSize.getHeight() + " (" + StringAccessor.getString("ConfigurationDialog.desktopresolution") + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 			if(ch == Configuration.getInt(VariableKey.FULLSCREEN_DESKTOP, false))
 				temp.setSelected(true);
 			g.add(temp);
@@ -901,8 +907,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		currentAverage.setBackground(Configuration.getColor(VariableKey.CURRENT_AVERAGE, defaults));
 		RASize0.setValue(Configuration.getInt(VariableKey.RA_SIZE0, defaults));
 		RASize1.setValue(Configuration.getInt(VariableKey.RA_SIZE1, defaults));
-		showRA0.setSelected(Configuration.getBoolean(VariableKey.SHOW_RA0, defaults));
-		showRA1.setSelected(Configuration.getBoolean(VariableKey.SHOW_RA1, defaults));
+		showRA0.setSelected(Configuration.getBoolean(VariableKey.COLUMN_VISIBLE(timesTable, 1), defaults));
+		showRA1.setSelected(Configuration.getBoolean(VariableKey.COLUMN_VISIBLE(timesTable, 2), defaults));
 		metronome.setSelected(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, defaults));
 		metronomeDelay.setDelayBounds(Configuration.getInt(VariableKey.METRONOME_DELAY_MIN, defaults), Configuration.getInt(VariableKey.METRONOME_DELAY_MAX,
 				defaults), Configuration.getInt(VariableKey.METRONOME_DELAY, defaults));
@@ -981,7 +987,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private Profile currProfile;
 
 	public void setVisible(boolean visible, Profile currProfile) {
-		setTitle(ConfigurationMessages.getString("ConfigurationDialog.cctoptions") + " " + currProfile.getName()); //$NON-NLS-1$ //$NON-NLS-2$
+		setTitle(StringAccessor.getString("ConfigurationDialog.cctoptions") + " " + currProfile.getName()); //$NON-NLS-1$ //$NON-NLS-2$
 		this.currProfile = currProfile;
 		/*
 		 * if (visible && tabbedPane == null) createGUI(); else
@@ -1011,8 +1017,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setBoolean(VariableKey.SPEAK_INSPECTION, speakInspection.isSelected());
 		Configuration.setInt(VariableKey.RA_SIZE0, (Integer) RASize0.getValue());
 		Configuration.setInt(VariableKey.RA_SIZE1, (Integer) RASize1.getValue());
-		Configuration.setBoolean(VariableKey.SHOW_RA0, showRA0.isSelected());
-		Configuration.setBoolean(VariableKey.SHOW_RA1, showRA1.isSelected());
+		Configuration.setBoolean(VariableKey.COLUMN_VISIBLE(timesTable, 1), showRA0.isSelected());
+		Configuration.setBoolean(VariableKey.COLUMN_VISIBLE(timesTable, 2), showRA1.isSelected());
 		Configuration.setBoolean(VariableKey.METRONOME_ENABLED, metronome.isSelected());
 		Configuration.setInt(VariableKey.METRONOME_DELAY, metronomeDelay.getMilliSecondsDelay());
 		Configuration.setBoolean(VariableKey.SPEAK_TIMES, speakTimes.isSelected());
@@ -1071,7 +1077,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setFont(VariableKey.TIMER_FONT, timerFontButton.getFont());
 
 		Configuration.setStringArray(VariableKey.SCRAMBLE_CUSTOMIZATIONS, puzzlesModel.getContents().toArray(new ScrambleCustomization[0]));
-		ScramblePlugin.saveLengthsToConfiguraiton();
+		ScramblePlugin.saveLengthsToConfiguration();
 
 		profilesModel.commitChanges();
 		Configuration.setProfileOrdering(profilesModel.getContents());
@@ -1104,7 +1110,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	public void keyTyped(KeyEvent e) {}
 
 	public void colorClicked(ScrambleViewComponent source, String face, HashMap<String, Color> colorScheme) {
-		Color selected = JColorChooser.showDialog(this, ConfigurationMessages.getString("ConfigurationDialog.choosecolor") + ": " + face, colorScheme.get(face)); //$NON-NLS-1$ //$NON-NLS-2$
+		Color selected = JColorChooser.showDialog(this, StringAccessor.getString("ConfigurationDialog.choosecolor") + ": " + face, colorScheme.get(face)); //$NON-NLS-1$ //$NON-NLS-2$
 		if(selected != null) {
 			colorScheme.put(face, selected);
 			source.redo();

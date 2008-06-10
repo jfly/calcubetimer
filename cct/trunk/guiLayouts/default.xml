@@ -23,7 +23,7 @@
 						</scrollpane>
 						<panel layout="border">
 							<line_start><button action="submitSundayContest">%%submitsunday%%</button></line_start>
-							<center><panel><checkbox alignmentX=".5" action="keyboardTiming"/></panel></center>
+							<center><panel><checkbox alignmentX=".5" action="keyboardTiming">%%usekeyboard%%</checkbox></panel></center>
 							<line_end><panel>
 								<button action="newSession">%%newsession%%</button>
 								<button action="reset">%%clearsession%%</button>
@@ -47,7 +47,7 @@
 								</panel>
 								<panel></panel> <!-- I have no idea why this needs to be here, weird behavior without it -->
 							</panel>
-							<panel border="%%history%% $$veryBestTime$$" layout="box" orientation="page">
+							<panel border="%%history%%" layout="box" orientation="page">
 								<panel><label alignmentX=".5">%%bestever%% $$veryBestTime$$</label></panel>
 								<panel><label alignmentX=".5">%%bestraof%% $$configuration_Statistics_raSize0$$: $$veryBestRA0$$</label></panel>
 								<panel><label alignmentX=".5">$$globalSolveCount$$/$$globalAttemptCount$$ %%globalaverage%% $$globalAverage$$</label></panel>
@@ -63,8 +63,8 @@
 			</panel>
 			<panel nominsize="false" layout="border">
 				<tabbedpane>
-					<component name="Times" type="timesList"/>
-					<component name="Sessions" type="sessionsList"/>
+					<component name="%%times%%" type="timesList"/>
+					<component name="%%sessions%%" type="sessionsList"/>
 				</tabbedpane>
 			</panel>
 		</splitpane>
@@ -97,6 +97,7 @@
 		<button nominsize="true" action="undo"/>
 		<button nominsize="true" action="redo"/>
 		<glue orientation="horizontal"/>
+		<component type="languagecombobox"/>
 		<component type="profilecombobox"/>
 		<component type="clock"/> <!-- Probably want to add a gui option for empty borders, to create blank space -->
 		<menu mnemonic="h">%%help%%

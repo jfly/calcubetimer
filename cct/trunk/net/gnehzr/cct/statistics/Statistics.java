@@ -8,6 +8,7 @@ import java.util.ListIterator;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
@@ -16,15 +17,15 @@ public class Statistics implements ConfigurationChangeListener {
 	public static enum AverageType {
 		CURRENT {
 			public String toString() {
-				return StatisticsMessages.getString("Statistics.currentaverage"); //$NON-NLS-1$
+				return StringAccessor.getString("Statistics.currentaverage"); //$NON-NLS-1$
 			}
 		}, RA {
 			public String toString() {
-				return StatisticsMessages.getString("Statistics.bestRA"); //$NON-NLS-1$
+				return StringAccessor.getString("Statistics.bestRA"); //$NON-NLS-1$
 			}
 		}, SESSION {
 			public String toString() {
-				return StatisticsMessages.getString("Statistics.sessionAverage"); //$NON-NLS-1$
+				return StringAccessor.getString("Statistics.sessionAverage"); //$NON-NLS-1$
 			}
 		}
 	}
@@ -586,7 +587,7 @@ public class Statistics implements ConfigurationChangeListener {
 		return times.nextIndex() + ".\t" + (parens ? "(" : "") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				+ next.toString() + (parens ? ")" : "") + "\t" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				+ next.getScramble()
-				+ (showSplits ? StatisticsMessages.getString("Statistics.splits") + next.toSplitsString() : "") //$NON-NLS-1$ //$NON-NLS-2$
+				+ (showSplits ? StringAccessor.getString("Statistics.splits") + next.toSplitsString() : "") //$NON-NLS-1$ //$NON-NLS-2$
 				+ comment
 				+ "\n" //$NON-NLS-1$
 				+ toStatsStringHelper(times, best, worst, showSplits);

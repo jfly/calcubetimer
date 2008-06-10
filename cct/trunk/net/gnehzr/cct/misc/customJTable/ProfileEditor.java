@@ -12,6 +12,7 @@ import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
 import net.gnehzr.cct.configuration.ProfileListModel;
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.statistics.Profile;
 
 @SuppressWarnings("serial") //$NON-NLS-1$
@@ -32,9 +33,9 @@ public class ProfileEditor extends DefaultCellEditor {
 		if(!value.toString().equals(originalValue)) {
 			String error = null;
 			if(stringContainsCharacters(s, INVALID_CHARACTERS))
-				error = CustomJTableMessages.getString("ProfileEditor.invalidname") + INVALID_CHARACTERS; //$NON-NLS-1$
+				error = StringAccessor.getString("ProfileEditor.invalidname") + INVALID_CHARACTERS; //$NON-NLS-1$
 			if(model.getContents().contains(value)) {
-				error = CustomJTableMessages.getString("ProfileEditor.alreadyexists"); //$NON-NLS-1$
+				error = StringAccessor.getString("ProfileEditor.alreadyexists"); //$NON-NLS-1$
 			}
 			if(error != null) {
 				JComponent component = (JComponent) getComponent();

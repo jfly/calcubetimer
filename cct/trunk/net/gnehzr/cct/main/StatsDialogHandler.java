@@ -24,6 +24,7 @@ import javax.swing.event.ChangeListener;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.JTextAreaWithHistory;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicString;
 import net.gnehzr.cct.statistics.StatisticsTableModel;
@@ -45,17 +46,17 @@ public class StatsDialogHandler extends JDialog implements ActionListener, Chang
 		textArea = new JTextAreaWithHistory();
 		JScrollPane textScroller = new JScrollPane(textArea);
 
-		emailButton = new JButton(MainMessages.getString("StatsDialogHandler.email")); //$NON-NLS-1$
+		emailButton = new JButton(StringAccessor.getString("StatsDialogHandler.email")); //$NON-NLS-1$
 		emailButton.addActionListener(this);
 		
 		sundaySubmitter = new SundayContestDialog(this);
-		submitButton = new JButton(MainMessages.getString("StatsDialogHandler.sundaycontest")); //$NON-NLS-1$
+		submitButton = new JButton(StringAccessor.getString("StatsDialogHandler.sundaycontest")); //$NON-NLS-1$
 		submitButton.addActionListener(this);
 
-		saveButton = new JButton(MainMessages.getString("StatsDialogHandler.save")); //$NON-NLS-1$
+		saveButton = new JButton(StringAccessor.getString("StatsDialogHandler.save")); //$NON-NLS-1$
 		saveButton.addActionListener(this);
 
-		doneButton = new JButton(MainMessages.getString("StatsDialogHandler.done")); //$NON-NLS-1$
+		doneButton = new JButton(StringAccessor.getString("StatsDialogHandler.done")); //$NON-NLS-1$
 		doneButton.addActionListener(this);
 		
 		sizeSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1)) {
@@ -77,7 +78,7 @@ public class StatsDialogHandler extends JDialog implements ActionListener, Chang
 		bottomPanel.add(saveButton);
 		bottomPanel.add(doneButton);
 		bottomPanel.add(Box.createHorizontalGlue());
-		bottomPanel.add(new JLabel(MainMessages.getString("StatsDialogHandler.fontsize"))); //$NON-NLS-1$
+		bottomPanel.add(new JLabel(StringAccessor.getString("StatsDialogHandler.fontsize"))); //$NON-NLS-1$
 		bottomPanel.add(sizeSpinner);
 
 		getContentPane().add(textScroller, BorderLayout.CENTER);
@@ -96,7 +97,7 @@ public class StatsDialogHandler extends JDialog implements ActionListener, Chang
 
 	public void syncWithStats(StatisticsTableModel statsModel, AverageType type, int avgNum) {
 		sundaySubmitter.syncWithStats(statsModel.getCurrentStatistics(), type, avgNum);
-		setTitle(MainMessages.getString("StatsDialogHandler.detailedstats") + " " + type.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+		setTitle(StringAccessor.getString("StatsDialogHandler.detailedstats") + " " + type.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 		switch(type) {
 		case CURRENT:
 			textArea.setText(new DynamicString(Configuration.getString(VariableKey.CURRENT_AVERAGE_STATISTICS, false), statsModel, null).toString(avgNum));
@@ -129,18 +130,18 @@ public class StatsDialogHandler extends JDialog implements ActionListener, Chang
 
 	public void promptToSaveStats() {
 		JFileChooser fc = new JFileChooser("."); //$NON-NLS-1$
-		int choice = fc.showDialog(this, MainMessages.getString("StatsDialogHandler.savestats")); //$NON-NLS-1$
+		int choice = fc.showDialog(this, StringAccessor.getString("StatsDialogHandler.savestats")); //$NON-NLS-1$
 		File outputFile = null;
 		if (choice == JFileChooser.APPROVE_OPTION) {
 			outputFile = fc.getSelectedFile();
 			boolean append = false;
 			if(outputFile.exists()) {
-				Object[] options = {MainMessages.getString("StatsDialogHandler.overwrite"), //$NON-NLS-1$
-						MainMessages.getString("StatsDialogHandler.append"), //$NON-NLS-1$
-						MainMessages.getString("StatsDialogHandler.cancel")}; //$NON-NLS-1$
+				Object[] options = {StringAccessor.getString("StatsDialogHandler.overwrite"), //$NON-NLS-1$
+						StringAccessor.getString("StatsDialogHandler.append"), //$NON-NLS-1$
+						StringAccessor.getString("StatsDialogHandler.cancel")}; //$NON-NLS-1$
 				int choiceOverwrite = JOptionPane.showOptionDialog(fc,
-						MainMessages.getString("StatsDialogHandler.fileexists") + " " + outputFile.getName(), //$NON-NLS-1$ //$NON-NLS-2$
-						MainMessages.getString("StatsDialogHandler.fileexists"), //$NON-NLS-1$
+						StringAccessor.getString("StatsDialogHandler.fileexists") + " " + outputFile.getName(), //$NON-NLS-1$ //$NON-NLS-2$
+						StringAccessor.getString("StatsDialogHandler.fileexists"), //$NON-NLS-1$
 						JOptionPane.YES_NO_CANCEL_OPTION,
 						JOptionPane.QUESTION_MESSAGE,
 						null,
@@ -160,14 +161,14 @@ public class StatsDialogHandler extends JDialog implements ActionListener, Chang
 				}
 				out.print(textArea.getText().replaceAll("\n", System.getProperty("line.separator"))); //$NON-NLS-1$ //$NON-NLS-2$
 				JOptionPane.showMessageDialog(this,
-						MainMessages.getString("StatsDialogHandler.successmessage") + //$NON-NLS-1$
+						StringAccessor.getString("StatsDialogHandler.successmessage") + //$NON-NLS-1$
 						outputFile.getAbsolutePath(),
-						MainMessages.getString("StatsDialogHandler.success"), //$NON-NLS-1$
+						StringAccessor.getString("StatsDialogHandler.success"), //$NON-NLS-1$
 						JOptionPane.WARNING_MESSAGE);
 			} catch(Exception e) {
 				JOptionPane.showMessageDialog(this,
-						MainMessages.getString("StatsDialogHandler.error") + e.getMessage(), //$NON-NLS-1$
-						MainMessages.getString("StatsDialogHandler.hmmm"), //$NON-NLS-1$
+						StringAccessor.getString("StatsDialogHandler.error") + e.getMessage(), //$NON-NLS-1$
+						StringAccessor.getString("StatsDialogHandler.hmmm"), //$NON-NLS-1$
 						JOptionPane.WARNING_MESSAGE);
 			} finally {
 				out.close();

@@ -166,11 +166,16 @@ changes:
 +add option to control the font size of the statsdialog
 +sqr-1 scramble size grows as cct starts and closes, fixed by saving each variation's unit size to configuration, rather than the popup's dimension
 
++fixed bug with addtime, the replaceAll() was turning all characters into "."
++fixed bug where stackmat left hand and right hand buttons were stuck on
+
 TODO:
 
 for release:
+-reset persistent component's attributes before parsing gui
 -worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
 -internationalization (xmlgui, source code, scramble plugins, font dialog, browse dialog, color chooser, documentation, about?)
+	https://native2ascii.dev.java.net/
 	http://www.famfamfam.com/lab/icons/flags/
 	http://beradrian.wordpress.com/tag/i18n/
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html

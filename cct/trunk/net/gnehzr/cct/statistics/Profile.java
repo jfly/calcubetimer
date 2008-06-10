@@ -21,6 +21,7 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.main.CALCubeTimer;
 
 import org.xml.sax.Attributes;
@@ -161,7 +162,7 @@ public class Profile {
 	}
 	//this is the only indication to the user of whether we successfully loaded the database file
 	public String toString() {
-		return (newName != null ? newName : name) + (dbFile == null && this == Configuration.getSelectedProfile() ? StatisticsMessages.getString("Profile.loggingdisabled") : ""); //$NON-NLS-1$ //$NON-NLS-2$
+		return (newName != null ? newName : name) + (dbFile == null && this == Configuration.getSelectedProfile() ? StringAccessor.getString("Profile.loggingdisabled") : ""); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	private class DatabaseLoader extends DefaultHandler {

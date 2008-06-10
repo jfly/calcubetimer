@@ -1,7 +1,9 @@
 package net.gnehzr.cct.statistics;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
 
@@ -71,7 +73,7 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	public void setTime(String time) throws Exception {
 		time = time.trim();
 		if(time.isEmpty())
-			throw new Exception(StatisticsMessages.getString("SolveTime.noemptytimes")); //$NON-NLS-1$
+			throw new Exception(StringAccessor.getString("SolveTime.noemptytimes")); //$NON-NLS-1$
 		String[] typeAndTime = time.split(" +"); //$NON-NLS-1$
 		switch(typeAndTime.length) {
 		case 1:
@@ -81,38 +83,39 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 			break;
 		case 2:
 			if(!determineSolveType(typeAndTime[0])) //we have to get a valid SolveType here
-				throw new Exception(typeAndTime[0] + StatisticsMessages.getString("SolveTime.invalid")); //$NON-NLS-1$
+				throw new Exception(typeAndTime[0] + StringAccessor.getString("SolveTime.invalid")); //$NON-NLS-1$
 			time = typeAndTime[1]; //now parse second part for the raw time
 			break;
 		default:
-			throw new Exception(StatisticsMessages.getString("SolveTime.spaces")); //$NON-NLS-1$
+			throw new Exception(StringAccessor.getString("SolveTime.spaces")); //$NON-NLS-1$
 		}
 		//parse time to determine raw seconds
 		if(time.endsWith("+")) { //$NON-NLS-1$
 			type = SolveType.PLUS_TWO;
 			time = time.substring(0, time.length() - 1);
 		}
+		time = time.replaceAll(Pattern.quote(Utils.getDecimalSeparator()), "."); //$NON-NLS-1$
 		String[] temp = time.split(":"); //$NON-NLS-1$
-		if(temp.length > 3 || time.lastIndexOf(":") == time.length() - 1) throw new Exception(StatisticsMessages.getString("SolveTime.invalidcolons")); //$NON-NLS-1$ //$NON-NLS-2$
-		else if(time.indexOf(".") != time.lastIndexOf(".")) throw new Exception(StatisticsMessages.getString("SolveTime.toomanydecimals")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		else if(time.indexOf(".") >= 0 && time.indexOf(":") >= 0 && time.indexOf(".") < time.lastIndexOf(":")) throw new Exception(StatisticsMessages.getString("SolveTime.invaliddecimal")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-		else if(time.indexOf("-") >= 0) throw new Exception(StatisticsMessages.getString("SolveTime.nonpositive")); //$NON-NLS-1$ //$NON-NLS-2$
+		if(temp.length > 3 || time.lastIndexOf(":") == time.length() - 1) throw new Exception(StringAccessor.getString("SolveTime.invalidcolons")); //$NON-NLS-1$ //$NON-NLS-2$
+		else if(time.indexOf(".") != time.lastIndexOf(".")) throw new Exception(StringAccessor.getString("SolveTime.toomanydecimals")); //$NON-NLS-1$
+		else if(time.indexOf(".") >= 0 && time.indexOf(":") >= 0 && time.indexOf(".") < time.lastIndexOf(":")) throw new Exception(StringAccessor.getString("SolveTime.invaliddecimal")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		else if(time.indexOf("-") >= 0) throw new Exception(StringAccessor.getString("SolveTime.nonpositive")); //$NON-NLS-1$ //$NON-NLS-2$
 
 		double seconds = 0;
 		for(int i = 0; i < temp.length; i++) {
 			seconds *= 60;
 			double d = 0;
 			try {
-				d = Double.parseDouble(temp[i]);
+				d = Double.parseDouble(temp[i]); //we want this to handle only "." as a decimal separator
 			} catch(NumberFormatException e) {
-				throw new Exception(StatisticsMessages.getString("SolveTime.invalidnumerals")); //$NON-NLS-1$
+				throw new Exception(StringAccessor.getString("SolveTime.invalidnumerals")); //$NON-NLS-1$
 			}
-			if(i != 0 && d >= 60) throw new Exception(StatisticsMessages.getString("SolveTime.toolarge")); //$NON-NLS-1$
+			if(i != 0 && d >= 60) throw new Exception(StringAccessor.getString("SolveTime.toolarge")); //$NON-NLS-1$
 			seconds += d;
 		}
 		seconds -= (type == SolveType.PLUS_TWO ? 2 : 0);
-		if(seconds < 0) throw new Exception(StatisticsMessages.getString("SolveTime.nonpositive")); //$NON-NLS-1$
-		else if(seconds > 21000000) throw new Exception(StatisticsMessages.getString("SolveTime.toolarge")); //$NON-NLS-1$
+		if(seconds < 0) throw new Exception(StringAccessor.getString("SolveTime.nonpositive")); //$NON-NLS-1$
+		else if(seconds > 21000000) throw new Exception(StringAccessor.getString("SolveTime.toolarge")); //$NON-NLS-1$
 		this.hundredths = (int)(100 * seconds + .5);
 	}
 	

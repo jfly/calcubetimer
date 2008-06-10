@@ -51,6 +51,8 @@ public class VariableKey<H> {
 		return new VariableKey<Integer[]>("GUI_xmlLayout_" + componentID + "_columns"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
+	public static final VariableKey<String> LANGUAGE = new VariableKey<String>("GUI_I18N_language"); //$NON-NLS-1$
+	public static final VariableKey<String> REGION = new VariableKey<String>("GUI_I18N_region"); //$NON-NLS-1$
 	public static final VariableKey<String> VOICE = new VariableKey<String>("Misc_Voices_person"); //$NON-NLS-1$
 	public static final VariableKey<String> DATE_FORMAT = new VariableKey<String>("Misc_dateFormat"); //$NON-NLS-1$
 	public static final VariableKey<String> SUNDAY_SUBMIT_URL = new VariableKey<String>("Sunday_submitURL"); //$NON-NLS-1$
@@ -119,8 +121,6 @@ public class VariableKey<H> {
 	public static final VariableKey<Boolean> LESS_ANNOYING_DISPLAY = new VariableKey<Boolean>("GUI_Timer_isLessAnnoyingDisplay"); //$NON-NLS-1$
 	public static final VariableKey<Boolean> FULLSCREEN_TIMING = new VariableKey<Boolean>("GUI_Timer_isFullScreenWhileTiming"); //$NON-NLS-1$
 	public static final VariableKey<Boolean> METRONOME_ENABLED = new VariableKey<Boolean>("Misc_Metronome_isEnabled"); //$NON-NLS-1$
-	public static final VariableKey<Boolean> SHOW_RA0 = new VariableKey<Boolean>("Statistics_showRA0"); //$NON-NLS-1$
-	public static final VariableKey<Boolean> SHOW_RA1 = new VariableKey<Boolean>("Statistics_showRA1"); //$NON-NLS-1$
 	public static final VariableKey<Boolean> COLUMN_VISIBLE(JTable src, int index) {
 		return new VariableKey<Boolean>("GUI_xmlLayout_" + src.getName() + index); //$NON-NLS-1$
 	}

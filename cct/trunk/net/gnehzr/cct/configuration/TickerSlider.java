@@ -23,6 +23,8 @@ import javax.swing.JSpinner.NumberEditor;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import net.gnehzr.cct.i18n.StringAccessor;
+
 @SuppressWarnings("serial") //$NON-NLS-1$
 public class TickerSlider extends JPanel implements ChangeListener {
 	private final Timer tickTock;
@@ -55,7 +57,7 @@ public class TickerSlider extends JPanel implements ChangeListener {
 
 		slider = new JSlider(JSlider.HORIZONTAL);
 		spinner = new JSpinner();
-		spinner.setToolTipText(ConfigurationMessages.getString("TickerSlider.Delaymillis")); //$NON-NLS-1$
+		spinner.setToolTipText(StringAccessor.getString("TickerSlider.Delaymillis")); //$NON-NLS-1$
 		add(slider);
 		add(spinner);
 		slider.addMouseListener(new MouseListener() {

@@ -33,6 +33,7 @@ import javax.swing.table.TableModel;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.i18n.StringAccessor;
 
 @SuppressWarnings("serial") //$NON-NLS-1$
 public class DraggableJTable extends JTable implements MouseListener, MouseMotionListener, KeyListener, ActionListener {
@@ -40,8 +41,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 
 	//You must set any editors or renderers before setting this table's model
 	//because the preferred size is computed inside setModel()
-	public DraggableJTable(String addText, boolean draggable, boolean columnChooser) {
-		this.addText = addText;
+	public DraggableJTable(boolean draggable, boolean columnChooser) {
 		this.addMouseListener(this);
 		if(draggable) {
 			setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -58,8 +58,14 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			//won't catch that stuff
 			setColumnModel(new DefaultTableColumnModel() {
 				public void moveColumn(int fromIndex, int toIndex) {
-					int from = getHideableTableColumn(getColumnModel().getColumn(fromIndex)).viewIndex;
-					int to = getHideableTableColumn(getColumnModel().getColumn(toIndex)).viewIndex;
+					HideableTableColumn col = getHideableTableColumn(getColumnModel().getColumn(fromIndex));
+					if(col == null)
+						return;
+					int from = col.viewIndex;
+					col = getHideableTableColumn(getColumnModel().getColumn(toIndex));
+					if(col == null)
+						return;
+					int to = col.viewIndex;
 					moveHideableColumn(from, to);
 					super.moveColumn(fromIndex, toIndex);
 				}
@@ -67,6 +73,10 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		}
 	}
 
+	public void setAddText(String addText) {
+		this.addText = addText;
+	}
+	
 	private JTableHeader headers;
 	public void setHeadersVisible(boolean visible) {
 		if(!visible) {
@@ -255,7 +265,11 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 	public boolean isColumnVisible(int column) {
 		return cols.get(column).isVisible;
 	}
-	
+	public void refreshColumnNames() {
+		for(int c = 0; c < model.getColumnCount(); c++) {
+			cols.get(c).col.setHeaderValue(model.getColumnName(c));
+		}
+	}
 	private void moveHideableColumn(int from, int to) {
 		if(from == to || ignoreMoving)
 			return;
@@ -473,7 +487,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 				}
 			} else if(e.getSource() == headers) {
 				JPopupMenu j = new JPopupMenu();
-				JMenuItem t = new JMenuItem(CustomJTableMessages.getString("DraggableJTable.choosecolumns")); //$NON-NLS-1$
+				JMenuItem t = new JMenuItem(StringAccessor.getString("DraggableJTable.choosecolumns")); //$NON-NLS-1$
 				t.setEnabled(false);
 				j.add(t);
 				j.addSeparator();
@@ -515,7 +529,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		int choice = JOptionPane.YES_OPTION;
 		if(prompt)
 			choice = JOptionPane.showConfirmDialog(getParent(),
-				CustomJTableMessages.getString("DraggableJTable.confirmdeletion") + "\n" + temp, CustomJTableMessages.getString("DraggableJTable.confirm"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					StringAccessor.getString("DraggableJTable.confirmdeletion") + "\n" + temp, StringAccessor.getString("DraggableJTable.confirm"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				JOptionPane.YES_NO_OPTION);
 		if(choice == JOptionPane.YES_OPTION) {
 			model.deleteRows(selectedRows);

@@ -31,6 +31,7 @@ import javax.swing.border.Border;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.main.ScrambleArea;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
@@ -40,7 +41,7 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 	private KeyboardHandler keyHandler;
 	private ScrambleArea scrambleArea;
 	public TimerLabel(ScrambleArea scrambleArea) {
-		super(TimerState.ZERO_STATE.toString(), JLabel.CENTER);
+		super("", JLabel.CENTER); //$NON-NLS-1$
 		this.scrambleArea = scrambleArea;
 		addComponentListener(this);
 		setFocusable(true);
@@ -63,6 +64,8 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 	private boolean on;
 	public void setStackmatOn(boolean on) {
 		this.on = on;
+		if(!on)
+			leftHand = rightHand = greenLight = on = false;
 		refreshTimer();
 	}
 	private boolean greenLight;
@@ -75,7 +78,15 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 		refreshTimer();
 	}
 
+	private TimerState time;
+	public void setTime(TimerState time) {
+		this.time = time;
+		super.setText(time.toString());
+		componentResized(null);
+	}
+	
 	public void setText(String arg0) {
+		time = null;
 		super.setText(arg0);
 		componentResized(null);
 	}
@@ -143,7 +154,9 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 		refreshTimer();
 	}
 
-	private void refreshTimer() {
+	public void refreshTimer() {
+		if(time != null) //this will deal with any internationalization issues, if appropriate
+			setTime(time);
 		boolean inspectionEnabled = Configuration.getBoolean(VariableKey.COMPETITION_INSPECTION, false);
 		Border b = BorderFactory.createRaisedBevelBorder();
 		String title;
@@ -159,19 +172,19 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 					setBackground(Color.RED);
 				}
 				if(keyHandler.isRunning())
-					title = KeyboardTimingMessages.getString("TimerLabel.stoptimer"); //$NON-NLS-1$
+					title = StringAccessor.getString("TimerLabel.stoptimer"); //$NON-NLS-1$
 				else if(keyHandler.isInspecting() || !inspectionEnabled)
-					title = KeyboardTimingMessages.getString("TimerLabel.starttimer"); //$NON-NLS-1$
+					title = StringAccessor.getString("TimerLabel.starttimer"); //$NON-NLS-1$
 				else
-					title = KeyboardTimingMessages.getString("TimerLabel.startinspection"); //$NON-NLS-1$
+					title = StringAccessor.getString("TimerLabel.startinspection"); //$NON-NLS-1$
 			} else {
 				curr = red;
-				title = KeyboardTimingMessages.getString("TimerLabel.clickme"); //$NON-NLS-1$
+				title = StringAccessor.getString("TimerLabel.clickme"); //$NON-NLS-1$
 				setBackground(Color.GRAY);
 				keyDown.clear();
 			}
 		} else {
-			title = KeyboardTimingMessages.getString("TimerLabel.keyboardoff"); //$NON-NLS-1$
+			title = StringAccessor.getString("TimerLabel.keyboardoff"); //$NON-NLS-1$
 			if(on) {
 				curr = green;
 				if(greenLight) {
