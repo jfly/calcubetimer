@@ -93,11 +93,13 @@ public class SquareOneScramble extends Scramble {
 				} else {
 					move=random(23)-11;
 				}
-				if(i == length - 1) //Added to ensure that the move count is always correct, since we end on a slash turn -Jeremy
-					move = 0;
+//				if(i == length - 1) //Added to ensure that the move count is always correct, since we end on a slash turn -Jeremy
+//					move = 0;
+				// Because of the odd bottom layer restriction, there is no easy way to ensure that the move count is correct without 
+				// possbily looping indefinitely. Until this is sorted out by the WCA, we're just going to live with generating improper move
+				// counts for now.
 				// if past second twist, restrict bottom layer
-				// can't have a slash right before the end slash -Jeremy
-			} while( (twistCount>1 && move>=-6 && move<0) || (i == length-2 && move == 0) || (i == length - 3 && move < 0) || domove(i, move));
+			} while( (twistCount>1 && move>=-6 && move<0) /*|| (i == length-2 && move == 0) || (i == length - 3 && move < 0)*/ || domove(i, move));
 			if(move>0) ls=1;
 			else if(move<0) ls=2;
 			else { ls=0; }
@@ -110,9 +112,9 @@ public class SquareOneScramble extends Scramble {
 		for(int i=0; i < turns.length; i++) {
 			int k=turns[i];
 			if(k==0) {
-				if(l==-1) scramble += "(0,0)  ";
-				if(l==1) scramble += "0)  ";
-				if(l==2) scramble += ")  ";
+				if(l==-1) scramble += "(0,0) ";
+				if(l==1) scramble += "0) ";
+				if(l==2) scramble += ") ";
 				l=0;
 			}else if(k>0) {
 				scramble += "(" + (k > 6 ? k-12 : k)+",";
