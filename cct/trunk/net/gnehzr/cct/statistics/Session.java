@@ -3,6 +3,7 @@ package net.gnehzr.cct.statistics;
 import java.util.Date;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 
@@ -42,7 +43,8 @@ public class Session extends Commentable implements Comparable<Session> {
 			puzzStats.removeSession(this);
 			puzzStats = puzzStats.getPuzzleDatabase().getPuzzleStatistics(customization);
 			puzzStats.addSession(this);
-			s.notifyListeners(false);
+//			s.notifyListeners(false); //If we're changing an unselected session to the current sessions customization, we won't see the global stats updates if we just do this
+			CALCubeTimer.statsModel.fireStringUpdates();
 		}
 	}
 	public void delete() {

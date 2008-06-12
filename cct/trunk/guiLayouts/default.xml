@@ -53,11 +53,13 @@
 								<panel><label alignmentX=".5">$$globalSolveCount$$/$$globalAttemptCount$$ %%globalaverage%% $$globalAverage$$</label></panel>
 							</panel>
 						</panel>
+						<!-- The tables themselves were given this functionality
 						<panel layout="border" preferredsize="100x25">
 							<scrollpane verticalpolicy="asneeded" horizontalpolicy="asneeded">
 								<component type="commentarea"/>
 							</scrollpane>
 						</panel>
+						-->
 					</panel>
 				</south>
 			</panel>

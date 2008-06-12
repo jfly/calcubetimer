@@ -24,7 +24,7 @@ public class XMLGuiMessages implements MessageAccessor {
 			RESOURCE_BUNDLE = ResourceBundle.getBundle(bundleFileName);
 		} catch(MissingResourceException e) {
 			RESOURCE_BUNDLE = null;
-			e.printStackTrace();
+//			e.printStackTrace(); //No need to warn the user here, they'll see it in the gui
 		}
 	}
 

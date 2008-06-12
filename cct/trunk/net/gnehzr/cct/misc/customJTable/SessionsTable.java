@@ -13,7 +13,6 @@ import net.gnehzr.cct.misc.customJTable.DraggableJTable.SelectionListener;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.statistics.ProfileDatabase;
 import net.gnehzr.cct.statistics.Session;
-import net.gnehzr.cct.statistics.SolveTime;
 import net.gnehzr.cct.statistics.StatisticsTableModel;
 
 @SuppressWarnings("serial") //$NON-NLS-1$
@@ -26,8 +25,9 @@ public class SessionsTable extends DraggableJTable implements SelectionListener 
 		//for some reason, the default preferred size is huge
 		this.setPreferredScrollableViewportSize(new Dimension(0, 0));
 		this.setAutoCreateRowSorter(true);
-		this.setDefaultRenderer(Session.class, new SessionRenderer(statsModel));
-		this.setDefaultRenderer(SolveTime.class, new SolveTimeRenderer(statsModel));
+		SessionRenderer r = new SessionRenderer();
+		this.setDefaultRenderer(Object.class, r);
+		this.setDefaultRenderer(Integer.class, r); //for some reason, Object.class is not capturing the Solve count row
 		
 		this.setDefaultEditor(ScrambleCustomization.class, new DefaultCellEditor(new ScrambleChooserComboBox(false, true)));
 		this.setDefaultRenderer(ScrambleCustomization.class, new ScrambleChooserComboBox(false, true));
@@ -41,17 +41,22 @@ public class SessionsTable extends DraggableJTable implements SelectionListener 
 		super.sortByColumn(-1); //this will sort column 0 in descending order
 		refreshModel();
 	}
-	public void itemSelected(Object val) {
-		if(statsModel.getCurrentSession() != (Session) val) //we don't want to reload the current session
-			fireSessionSelected((Session) val);
+	private int currSessionRow;
+	public int getCurrentSessionRow() {
+		return currSessionRow;
+	}
+	public void rowSelected(int row) {
+		currSessionRow = row;
+		Session selected = (Session) getValueAt(row, convertColumnIndexToView(0));
+		if(statsModel.getCurrentSession() != selected) //we don't want to reload the current session
+			fireSessionSelected(selected);
 	}
 	
+	private ProfileDatabase pd;
 	public void refreshModel() {
-		if(getModel() instanceof ProfileDatabase) {
-			ProfileDatabase pd = (ProfileDatabase) getModel();
+		if(pd != null)
 			pd.setSessionListener(null);
-		}
-		ProfileDatabase pd = Configuration.getSelectedProfile().getPuzzleDatabase();
+		pd = Configuration.getSelectedProfile().getPuzzleDatabase();
 		pd.setSessionListener(l);
 		super.setModel(pd);
 	}
@@ -60,7 +65,6 @@ public class SessionsTable extends DraggableJTable implements SelectionListener 
 		int modelRow = e.getFirstRow();
 		boolean oneRowSelected = (modelRow == e.getLastRow());
 		if(modelRow != -1 && e.getType() == TableModelEvent.UPDATE && oneRowSelected) {
-			ProfileDatabase pd = Configuration.getSelectedProfile().getPuzzleDatabase();
 			Session s = pd.getNthSession(modelRow);
 			if(s != null && s == statsModel.getCurrentSession()) {
 				//this indicates that the ScrambleCustomization of the currently selected profile has been changed
@@ -69,6 +73,11 @@ public class SessionsTable extends DraggableJTable implements SelectionListener 
 			}
 		}
 		super.tableChanged(e);
+		if(pd != null && (currSessionRow = pd.indexOf(statsModel.getCurrentSession())) != -1) {
+			try {
+				currSessionRow = convertRowIndexToView(currSessionRow); //ProfileDatabase gives us the model index
+			} catch(Exception ee) {	} //when loading from the xml gui, we get this exception, it works to just ignore it, however
+		}
 	}
 	
 	private SessionListener l;

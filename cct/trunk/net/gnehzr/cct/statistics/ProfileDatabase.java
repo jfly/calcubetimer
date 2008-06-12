@@ -159,10 +159,11 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 				rowIndex = indexOf(s); //changing the customization will change the index in the model
 				fireTableRowsUpdated(rowIndex, rowIndex);
 			}
-		}
+		} else if(columnIndex == 8 && value instanceof String)
+			getNthSession(rowIndex).setComment((String) value);
 	}
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == 1; //allow modification of the session customization
+		return columnIndex == 1 || columnIndex == 8; //allow modification of the session customization or comment
 	}
 	public void insertValueAt(Object value, int rowIndex) {
 		//this only gets called if dragging is enabled

@@ -26,7 +26,7 @@ public abstract class Scramble {
 		return length;
 	}
 
-	private static Random r = new Random();
+	private static final Random r = new Random();
 	protected static int random(int choices) {
 		return r.nextInt(choices);
 	}

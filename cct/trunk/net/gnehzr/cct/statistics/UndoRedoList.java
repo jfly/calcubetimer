@@ -61,7 +61,7 @@ public class UndoRedoList<E> {
 	private UndoRedoListener l;
 	public void setUndoRedoListener(UndoRedoListener url) {
 		l = url;
-		notifyListener();
+//		notifyListener();
 	}
 	public void notifyListener() {
 		if(l != null)

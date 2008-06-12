@@ -292,18 +292,13 @@ public class Profile {
 	private RandomAccessFile dbFile = null;
 	//this can only be called once, until after saveDatabase() is called
 	public boolean loadDatabase() {
-		System.out.println("Entering loadDatabase()");
 		if(this == Configuration.guestProfile) { //disable logging for guest
 			if(puzzleDB.getRowCount() > 0)
 				CALCubeTimer.statsModel.setSession(guestSession);
-			System.out.println("Exiting loadDatabase() = false");
 			return false;
 		}
 		FileLock fl = null;
 		try {
-			//TODO - I'm almost positive that there is some bug here that is causing
-			//cct to hang indefinitely. I *hope* that it's not the call to tryLock(),
-			//as we can't do anything about it.
 			RandomAccessFile t = new RandomAccessFile(statistics, "rw"); //$NON-NLS-1$
 			fl = t.getChannel().tryLock();
 			if(fl != null) {
@@ -312,16 +307,10 @@ public class Profile {
 					DefaultHandler handler = new DatabaseLoader();
 					SAXParserFactory factory = SAXParserFactory.newInstance();
 					SAXParser saxParser = factory.newSAXParser();
-//					String dir = System.getProperty("user.dir");
-//					need this to hack the base-uri together for resolving the dtd file
-					//NOTE: this doesn't work with command line profiles!
-//					System.setProperty("user.dir", statistics.getParent());
 					saxParser.parse(new RandomInputStream(t), handler);
-//					System.setProperty("user.dir", dir);
 				}
 				dbFile = t;
 
-				System.out.println("Exiting loadDatabase() = true");
 				return true;
 			}
 		} catch (FileNotFoundException e) {
@@ -344,7 +333,6 @@ public class Profile {
 			pce.printStackTrace();
 		}
 
-		System.out.println("Exiting loadDatabase() = false");
 		if(fl != null)
 			try {
 				fl.release();

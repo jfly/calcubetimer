@@ -51,12 +51,15 @@ public class ScramblePlugin {
 					return false;
 				}
 			})) {
-				Class<?> cls = null;
 				try {
-					cls = cl.loadClass(SCRAMBLE_PLUGIN_PACKAGE + child.substring(0, child.indexOf("."))); //$NON-NLS-1$
+					final Class<?> cls = cl.loadClass(SCRAMBLE_PLUGIN_PACKAGE + child.substring(0, child.indexOf("."))); //$NON-NLS-1$
 					if(cls.getSuperclass().equals(Scramble.class)) {
 						try {
-							scramblePlugins.add(new ScramblePlugin((Class<? extends Scramble>) cls));
+							scramblePlugins.add(new TimeoutJob<ScramblePlugin>() {
+								public ScramblePlugin call() throws Exception {
+									return new ScramblePlugin((Class<? extends Scramble>) cls);
+								}
+							}.doWork());
 						} catch(Exception ee) {
 							ee.printStackTrace();
 						}
@@ -121,6 +124,7 @@ public class ScramblePlugin {
 		return null;
 	}
 
+	//TODO - the defaults argument isn't even being used here! consider revising, :-)
 	public static ArrayList<ScrambleCustomization> getScrambleCustomizations(boolean defaults) {
 		ArrayList<ScrambleCustomization> scrambleCustomizations = new ArrayList<ScrambleCustomization>();
 		for(ScrambleVariation t : getScrambleVariations()) {
@@ -158,14 +162,19 @@ public class ScramblePlugin {
 			if(scramCustomization != null) {
 				sc = new ScrambleCustomization(scramCustomization.getScrambleVariation(), customizationName);
 			}
-			else {
-				if(!variationName.equals(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation().toString())) {
-					if(customizationName == null)
-						customizationName = variationName;
-					else
-						customizationName = variationName + ":" + customizationName; //$NON-NLS-1$
-				}
+//			else {
+//				if(!variationName.equals(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation().toString())) {
+//					if(customizationName == null)
+//						customizationName = variationName;
+//					else
+//						customizationName = variationName + ":" + customizationName; //$NON-NLS-1$
+//				}
+//				sc = new ScrambleCustomization(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation(), customizationName);
+//			}
+			else if(variationName.equals(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation().toString())) {
 				sc = new ScrambleCustomization(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation(), customizationName);
+			} else {
+				sc = new ScrambleCustomization(new ScrambleVariation(new ScramblePlugin(variationName), variationName), customizationName);
 			}
 			if(!variationName.isEmpty()) {
 				if(scrambleCustomizations.contains(sc))
@@ -193,10 +202,10 @@ public class ScramblePlugin {
 		this.attributes = attributes;
 	}
 
-	private Class<? extends Scramble> pluginClass;
+	private String pluginClassName;
 	
-	private Constructor<? extends Scramble> newScrambleConstructor;
-	private Constructor<? extends Scramble> importScrambleConstructor;
+	private Constructor<? extends Scramble> newScrambleConstructor = null;
+	private Constructor<? extends Scramble> importScrambleConstructor = null;
 
 	protected String PUZZLE_NAME;
 	protected String[] FACE_NAMES;
@@ -205,11 +214,21 @@ public class ScramblePlugin {
 	protected String[] ATTRIBUTES;
 	protected String[] DEFAULT_ATTRIBUTES;
 
-	private Method getDefaultScrambleLength;
-	private Method getDefaultFaceColor;
+	private Method getDefaultScrambleLength = null;
+	private Method getDefaultFaceColor = null;
+	
+	public ScramblePlugin(String name) {
+		PUZZLE_NAME = name;
+		pluginClassName = name;
+		FACE_NAMES = new String[0];
+		DEFAULT_UNIT_SIZE = 0;
+		VARIATIONS = new String[0];
+		ATTRIBUTES = new String[0];
+		DEFAULT_ATTRIBUTES = new String[0];
+	}
 
 	protected ScramblePlugin(Class<? extends Scramble> pluginClass) throws SecurityException, NoSuchMethodException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-		this.pluginClass = pluginClass;
+		pluginClassName = pluginClass.getSimpleName();
 		newScrambleConstructor = pluginClass.getConstructor(String.class, int.class, String[].class);
 		importScrambleConstructor = pluginClass.getConstructor(String.class, String.class, String[].class);
 
@@ -240,23 +259,25 @@ public class ScramblePlugin {
 			throw new ClassCastException();
 	}
 	
-	public Class<? extends Scramble> getPluginClass() {
-		return pluginClass;
+	public String getPluginClassName() {
+		return pluginClassName;
 	}
 
 	public Scramble newScramble(String variation, int length, String[] attributes) {
-		try {
-			return newScrambleConstructor.newInstance(variation, length, attributes);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
+		if(newScrambleConstructor != null) {
+			try {
+				return newScrambleConstructor.newInstance(variation, length, attributes);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
@@ -265,34 +286,38 @@ public class ScramblePlugin {
 		if(variation == null) {
 			return new NullScramble(null, scramble);
 		}
-		try {
-			return importScrambleConstructor.newInstance(variation, scramble, attributes);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			Throwable cause = e.getCause();
-			if(cause instanceof InvalidScrambleException) {
-				InvalidScrambleException invalid = (InvalidScrambleException) cause;
-				throw invalid;
+		if(importScrambleConstructor != null) {
+			try {
+				return importScrambleConstructor.newInstance(variation, scramble, attributes);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				Throwable cause = e.getCause();
+				if(cause instanceof InvalidScrambleException) {
+					InvalidScrambleException invalid = (InvalidScrambleException) cause;
+					throw invalid;
+				}
+				cause.printStackTrace();
 			}
-			cause.printStackTrace();
 		}
 		return null;
 	}
 
 	public int getDefaultScrambleLength(ScrambleVariation var) {
-		try {
-			return (Integer) getDefaultScrambleLength.invoke(null, var.getVariation());
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+		if(getDefaultScrambleLength != null) {
+			try {
+				return (Integer) getDefaultScrambleLength.invoke(null, var.getVariation());
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
 		}
 		return 0;
 	}
@@ -314,7 +339,7 @@ public class ScramblePlugin {
 				col = Configuration.getString(VariableKey.PUZZLE_COLOR(this, face), defaults);
 			} catch(Exception e) {}
 			//Config.getString() will return null if the key was undefined
-			if(col == null) {
+			if(col == null && getDefaultFaceColor != null) {
 				try {
 					col = (String) getDefaultFaceColor.invoke(null, face);
 				} catch (IllegalArgumentException e) {

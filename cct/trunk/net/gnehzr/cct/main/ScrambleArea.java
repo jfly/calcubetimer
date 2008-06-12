@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
+import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.BadLocationException;
@@ -39,7 +40,9 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		this.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 		scramblePane = new JEditorPane("text/html", null) {
 			public void updateUI() {
+				Border t = getBorder();
 				super.updateUI();
+				setBorder(t);
 			}
 		}; //$NON-NLS-1$
 		scramblePane.setEditable(false);
@@ -56,7 +59,9 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 	}
 	
 	public void updateUI() {
+		Border t = getBorder();
 		super.updateUI();
+		setBorder(t);
 	}
 	public void resetPreferredSize() {
 		setPreferredSize(new Dimension(0, 100));
@@ -124,6 +129,8 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 				Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, scramblePopup.isVisible());
 			}
 			String[] moveAndScramble = scramble.split(" ", 2); //$NON-NLS-1$
+			if(moveAndScramble.length != 2) //this happens if we have an empty null scramble
+				return;
 			int moveNum = Integer.parseInt(moveAndScramble[0]);
 			scramblePane.setDocument(new HTMLDocument());
 			scramblePane.setText(part1 + moveNum + part2);

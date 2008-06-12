@@ -699,10 +699,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		return pane;
 	}
 	public void hyperlinkUpdate(HyperlinkEvent e) {
-		if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-			System.out.println("\t" + ((JComponent)e.getSource()).getFont());
+		if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
 			showDynamicStrings();
-		}
 	}
 
 	private void showDynamicStrings() {

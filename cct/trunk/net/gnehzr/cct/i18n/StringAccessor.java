@@ -1,33 +1,32 @@
 package net.gnehzr.cct.i18n;
 
-import java.util.HashMap;
+import java.util.Enumeration;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import net.gnehzr.cct.main.CALCubeTimer;
-
 public class StringAccessor {
-	private static final String LANGUAGES_FOLDER = "languages/";
-	private static HashMap<String, ResourceBundle> resources = new HashMap<String, ResourceBundle>();
+	private static final String CCT_STRINGS = "languages/cctStrings";
+	private static final ResourceBundle EMPTY_BUNDLE = new ResourceBundle() {
+		public Enumeration<String> getKeys() {
+			return null;
+		}
+		protected Object handleGetObject(String key) {
+			return "Couldn't find " + CCT_STRINGS + ".properties!";
+		}
+	};
+	private static ResourceBundle cctStrings;
 	public static String getString(String key) {
-		//2 is the magic number to get our caller's caller
-		Class<?> caller = CALCubeTimer.securityManager.getClassesInStack()[2];
-		String pack = LANGUAGES_FOLDER + caller.getPackage().getName().replaceAll("\\.", "_");
-		
-		ResourceBundle bundle = resources.get(pack);
-		if(bundle == null) {
+		if(cctStrings == null) {
 			try {
-				bundle = ResourceBundle.getBundle(pack);
-				resources.put(pack, bundle);
+				cctStrings = ResourceBundle.getBundle(CCT_STRINGS);
 			} catch(MissingResourceException e) {
+				cctStrings = EMPTY_BUNDLE;
 				e.printStackTrace();
 			}
 		}
-		if(bundle != null)
-			return bundle.getString(key);
-		return "";
+		return cctStrings.getString(key);
 	}
 	public static void clearResources() {
-		resources.clear();
+		cctStrings = null;
 	}
 }

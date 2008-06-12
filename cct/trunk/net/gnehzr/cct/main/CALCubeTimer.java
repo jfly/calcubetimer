@@ -71,6 +71,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
@@ -157,19 +158,25 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private JScrollPane timesScroller = null;
 	private SessionsTable sessionsTable = null;
 	private JScrollPane sessionsScroller = null;
-	private JPanel fullscreenPanel = null;
-	private TimerLabel bigTimersDisplay = null;
 	private ScrambleArea scramblePanel = null;
-	private ScrambleFrame scramblePopup = null;
 	private ScrambleChooserComboBox scrambleChooser = null;
 	private JPanel scrambleAttributes = null;
 	private JSpinner scrambleNumber, scrambleLength = null;
 	private DateTimeLabel currentTimeLabel = null;
-	private ScrambleList scramblesList = new ScrambleList();
 	private JComboBox profiles = null;
 	private JComboBox languages = null;
 	private JTextArea commentArea = null;
 	private TimerLabel timeLabel = null;
+	//all of the above components belong in this ArrayList, so we can reset their
+	//attributes before parsing the xml gui
+	private ArrayList<JComponent> persistentComponents;
+	//this keeps track of the original borders of every persisten component
+	private ArrayList<Border> persistentComponentBorders;
+	
+	private TimerLabel bigTimersDisplay = null;
+	private JPanel fullscreenPanel = null;
+	private ScrambleFrame scramblePopup = null;
+	private ScrambleList scramblesList = new ScrambleList();
 	private StackmatInterpreter stackmatTimer = null;
 	private CCTClient client;
 	private ConfigurationDialog configurationDialog;
@@ -410,18 +417,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scrambleChooser = new ScrambleChooserComboBox(true, true);
 		scrambleChooser.addItemListener(this);
 
-		scrambleNumber = new JSpinner(new SpinnerNumberModel(1,
-				1,
-				1,
-				1));
+		scrambleNumber = new JSpinner(new SpinnerNumberModel(1,	1, 1, 1));
 		scrambleNumber.setToolTipText(StringAccessor.getString("CALCubeTimer.scramblenumber")); //$NON-NLS-1$
 		((JSpinner.DefaultEditor) scrambleNumber.getEditor()).getTextField().setColumns(3);
 		scrambleNumber.addChangeListener(this);
 
-		scrambleLength = new JSpinner(new SpinnerNumberModel(1,
-				1,
-				null,
-				1));
+		scrambleLength = new JSpinner(new SpinnerNumberModel(1, 1, null, 1));
 		scrambleLength.setToolTipText(StringAccessor.getString("CALCubeTimer.scramblelength")); //$NON-NLS-1$
 		((JSpinner.DefaultEditor) scrambleLength.getEditor()).getTextField().setColumns(3);
 		scrambleLength.addChangeListener(this);
@@ -468,17 +469,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		stackmatTimer = new StackmatInterpreter();
 		new StackmatHandler(this, stackmatTimer);
 		timeLabel = new TimerLabel(scramblePanel);
-		timeLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
-		timeLabel.setMinimumSize(new Dimension(0, 150));
-		timeLabel.setPreferredSize(new Dimension(0, 150));
-		timeLabel.setAlignmentX(.5f);
 		KeyboardHandler keyHandler = new KeyboardHandler(this);
 		timeLabel.setKeyboardHandler(keyHandler);
 
 		fullscreenPanel = new JPanel(new BorderLayout());
 		bigTimersDisplay = new TimerLabel(scramblePanel);
 		bigTimersDisplay.setKeyboardHandler(keyHandler);
-//		bigTimersDisplay.setBackground(Color.WHITE);
 
 		fullscreenPanel.add(bigTimersDisplay, BorderLayout.CENTER);
 		JButton fullScreenButton = new JButton(flipFullScreenAction);
@@ -488,12 +484,32 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		profiles = new LoudComboBox();
 		profiles.addItemListener(this);
-//		profiles.setMaximumSize(new Dimension(1000, 100));
 		
 		languages = new LoudComboBox();
 		languages.setModel(new DefaultComboBoxModel(Configuration.getAvailableLocales().toArray()));
 		languages.addItemListener(this);
 		languages.setRenderer(new LocaleRenderer());
+		
+		persistentComponents = new ArrayList<JComponent>();
+		persistentComponents.add(onLabel);
+		persistentComponents.add(timesTable);
+		persistentComponents.add(timesScroller);
+		persistentComponents.add(sessionsTable);
+		persistentComponents.add(sessionsScroller);
+		persistentComponents.add(scramblePanel);
+		persistentComponents.add(scrambleChooser);
+		persistentComponents.add(scrambleAttributes);
+		persistentComponents.add(scrambleNumber);
+		persistentComponents.add(scrambleLength);
+		persistentComponents.add(currentTimeLabel);
+		persistentComponents.add(profiles);
+		persistentComponents.add(languages);
+		persistentComponents.add(commentArea);
+		persistentComponents.add(timeLabel);
+
+		persistentComponentBorders = new ArrayList<Border>(persistentComponents.size());
+		for(JComponent c : persistentComponents)
+			persistentComponentBorders.add(c.getBorder());
 	}
 	
 	private void refreshCustomGUIMenu() {
@@ -538,9 +554,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scrambleChooser.setSelectedItem(s.getCustomization());
 		scramblesList.clear();
 		Statistics stats = s.getStatistics();
-		for(int ch = 0; ch < stats.getAttemptCount(); ch++) {
+		for(int ch = 0; ch < stats.getAttemptCount(); ch++)
 			scramblesList.addScramble(stats.get(ch).getScramble());
-		}
 		scramblesList.setScrambleNumber(scramblesList.size() + 1);
 		updateScramble();
 	}
@@ -581,7 +596,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					err.printStackTrace();
 				}
 				sessionSelected(getNextSession()); //we want to load this profile's startup session
-
 				statsModel.addTableModelListener(this); //we don't want to know about the loading of the most recent session, or we could possibly hear it all spoken
 				repaintTimes(); //this needs to be here in the event that we loaded times from database
 			}
@@ -639,7 +653,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		createScrambleAttributes();
 		configurationDialog = null; //this will force the config dialog to reload when necessary
 		
-//		SwingUtilities.updateComponentTreeUI(this);
+		SwingUtilities.updateComponentTreeUI(this);
 		SwingUtilities.updateComponentTreeUI(scramblePopup);
 	}
 
@@ -657,10 +671,31 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private void parseXML_GUI(File xmlGUIfile) {
 		//this is needed to compute the size of the gui correctly
 		//before reloading the gui, we must discard any old state these components may have had
-		//TODO - this is clearly incomplete,
-		//maybe all pervasive gui components should be added to a list?
+
+		//TODO - what to do with component names?
+		//TODO reset times scroller scrolling policy
+		for(int ch = 0; ch < persistentComponents.size(); ch++) {
+			JComponent c = persistentComponents.get(ch);
+			c.setBorder(persistentComponentBorders.get(ch));
+			c.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+			c.setAlignmentY(JComponent.CENTER_ALIGNMENT);
+			c.setMinimumSize(null);
+			c.setPreferredSize(null);
+			c.setOpaque(false);
+			c.setBackground(null);
+			c.setForeground(null);
+			c.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, false);
+//			c.setName(); //???
+		}
+		timesScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		timesScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scramblePanel.resetPreferredSize();
-		scramblePanel.setBorder(null);
+		timeLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+		timeLabel.setMinimumSize(new Dimension(0, 150));
+		timeLabel.setPreferredSize(new Dimension(0, 150));
+		timeLabel.setAlignmentX(.5f);
+		timeLabel.refreshTimer();
+		
 		XMLGuiMessages.reloadResources();
 
 		DefaultHandler handler = new GUIParser(this);
@@ -709,7 +744,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if(sc == null)	return;
 		String[] attrs = sc.getScramblePlugin().getAvailablePuzzleAttributes();
 		attributes = new DynamicCheckBox[attrs.length];
-		ScramblePluginMessages.loadResources(sc.getScramblePlugin().getPluginClass().getSimpleName());
+		ScramblePluginMessages.loadResources(sc.getScramblePlugin().getPluginClassName());
 		for(int ch = 0; ch < attrs.length; ch++) { //create checkbox for each possible attribute
 			boolean selected = false;
 			for(String attr : sc.getScramblePlugin().getEnabledPuzzleAttributes()) { //see if attribute is selected
@@ -907,6 +942,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					{
 						setBorder(null);
 					}
+					public void updateUI() {
+						Border t = getBorder();
+						super.updateUI();
+						setBorder(t);
+					}
 					public Dimension getPreferredSize() {
 						Insets i = this.getInsets();
 						Dimension d = getViewport().getView().getPreferredSize();
@@ -963,7 +1003,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					if((temp = attrs.getValue("alignmentY")) != null) //$NON-NLS-1$
 						com.setAlignmentY(Float.parseFloat(temp));
 					if((temp = attrs.getValue("border")) != null) //$NON-NLS-1$
-						new DynamicBorderSetter(com, temp, statsModel);
+						com.setBorder(DynamicBorderSetter.getBorder(temp));
 					if((temp = attrs.getValue("minimumsize")) != null) { //$NON-NLS-1$
 						String[] dims = temp.split("x"); //$NON-NLS-1$
 						com.setMinimumSize(new Dimension(Integer.parseInt(dims[0]), Integer.parseInt(dims[1])));
@@ -1132,7 +1172,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		sessionAverageAction.setEnabled(stats.isValid(AverageType.SESSION, 0));
 	}
 	
-	public static final CCTSecurityManager securityManager = new CCTSecurityManager();
+//	public static final CCTSecurityManager securityManager = new CCTSecurityManager();
 	public static void main(String[] args) {
 		//The error messages are not internationalized because I want people to
 		//be able to google the following messages
@@ -1150,7 +1190,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 		}
 		Policy.setPolicy(new CCTSecurityPolicy());
-		System.setSecurityManager(securityManager);
+		System.setSecurityManager(new SecurityManager());
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -1226,6 +1266,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		((SpinnerNumberModel) scrambleNumber.getModel()).setMaximum(max);
 		scrambleNumber.addChangeListener(this);
 	}
+	//TODO - this method apparently doesn't always return...
 	private void updateScramble() {
 		Scramble current = scramblesList.getCurrent();
 		if(current != null) {

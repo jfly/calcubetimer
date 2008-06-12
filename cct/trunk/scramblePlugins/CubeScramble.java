@@ -21,7 +21,7 @@ public class CubeScramble extends Scramble {
 	public static final int DEFAULT_UNIT_SIZE = 11;
 	private static final Pattern TOKEN_REGEX = Pattern.compile("^([LDBRUFldbruf](?:\\(\\d+\\))?w?[2']?)(.*)$");
 	private static final boolean wideNotation = true;
-
+	
 	public static int getDefaultScrambleLength(String variation) {
 		int end = variation.indexOf("x");
 		if(end < 0)

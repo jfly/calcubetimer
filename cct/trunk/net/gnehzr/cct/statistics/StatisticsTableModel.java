@@ -94,7 +94,7 @@ public class StatisticsTableModel extends DraggableJTableModel {
 		}
 	}
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == 0;
+		return columnIndex == 0 || columnIndex == 3;
 	}
 	public boolean isRowDeletable(int rowIndex) {
 		return true;
@@ -104,7 +104,10 @@ public class StatisticsTableModel extends DraggableJTableModel {
 		fireTableRowsInserted(rowIndex, rowIndex);
 	}
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
-		stats.set(rowIndex, (SolveTime) value);
+		if(columnIndex == 0 && value instanceof SolveTime)
+			stats.set(rowIndex, (SolveTime) value);
+		else if(columnIndex == 3 && value instanceof String)
+			stats.get(rowIndex).setComment((String) value);
 	}
 	public void deleteRows(int[] indices) {
 		stats.remove(indices);

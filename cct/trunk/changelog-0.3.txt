@@ -173,13 +173,16 @@ changes:
 	http://beradrian.wordpress.com/tag/i18n/
 	http://java.sun.com/docs/books/tutorial/i18n/intro/index.html
 	http://www.eclipse.org/articles/Article-Internationalization/how2I18n.html
++make comment column editable for timestable & sessionstable
++fix session highlighting in table (now covers entire row)
++reset persistent component's attributes before parsing gui
 
 TODO:
 
 for release:
--reset persistent component's attributes before parsing gui
--clean up cct start as best as possible!
 -save gui state before changing language
+-improve gui behavior when scramble plugin cannot be found
+-clean up cct startup as best as possible!
 -worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
 -decide upon default startup layout (should we remove the progress time stuff from the default layout?)
 -open source sourceforge!
