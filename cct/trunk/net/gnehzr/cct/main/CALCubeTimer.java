@@ -1301,9 +1301,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	private JFrame fullscreenFrame;
 	private boolean isFullscreen = false;
-	public void setFullScreen(boolean b) {
+	private void setFullScreen(boolean b) {
+		if(b == isFullscreen)
+			return;
 		isFullscreen = b;
 		if(isFullscreen) {
+			if(fullscreenFrame != null)
+				fullscreenFrame.dispose();
 			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			GraphicsDevice[] gs = ge.getScreenDevices();
 			GraphicsDevice gd = gs[Configuration.getInt(VariableKey.FULLSCREEN_DESKTOP, false)];

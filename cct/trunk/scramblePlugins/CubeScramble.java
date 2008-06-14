@@ -25,7 +25,7 @@ public class CubeScramble extends Scramble {
 	private static final boolean wideNotation = true;
 	private int size;
 	private int[][][] image;
-	
+
 	private static int getSizeFromVariation(String variation) {
 		return variation.isEmpty() ? 3 : Integer.parseInt(variation.split("x")[0]);
 	}

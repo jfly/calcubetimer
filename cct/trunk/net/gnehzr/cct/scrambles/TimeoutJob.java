@@ -1,5 +1,8 @@
 package net.gnehzr.cct.scrambles;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
@@ -67,6 +70,19 @@ public final class TimeoutJob {
 			e.printStackTrace();
 		}
 		
+		final PrintStream ps = System.out;
+		System.setOut(new PrintStream(new OutputStream() {
+			boolean stamp = true;
+			public void write(int b) throws IOException {
+				if(stamp) {
+					ps.print(Thread.currentThread().getName() + "\t");
+				}
+				ps.write(b);
+				stamp = (b == '\n');
+			}
+		}));
+		System.out.println("awesome");
+		System.out.println("Wowiiee!");
 		try { //correct
 			System.out.println(TimeoutJob.doWork(new Callable<String>() {
 				public String call() throws Exception {
