@@ -158,7 +158,7 @@ changes:
 +formatTime() in Utils.java modified to round to 2 decimal places before formatting, fixes this: (26.05, 31.25, 24.38, 36.68, 23.88, 29.31, 27.80, 33.61, 32.19, 53.61, 27.75, 29.13)
 +change big cube scrambles to use new wca notation (Rw instead of r)
 +merge session stats dialog and average stats dialog w/ dynamic string
-+scrambleplugins are now secured! No policy file for plugins. Should there be an option to allow them to run unrestricted?
++scrambleplugins are now secured! No policy file for plugins. there are configuration options to allow them to run unrestricted/untimed
 	+test out security! how to deal with infinite loops, or sucking up of system resources? (timeout after 1000 milliseconds)
 +fix stackmat inspection when the stackmat gets turned off (inspection now has its own rendering timer)
 +clean up all critical TODOs scattered throughout the code

@@ -15,6 +15,7 @@ import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 public class VariableKey<H> {
+	public static final VariableKey<Integer> SCRAMBLE_PLUGIN_TIMEOUT = new VariableKey<Integer>("Scramble_Plugins_timeout"); //$NON-NLS-1$
 	public static final VariableKey<Integer> STATS_DIALOG_FONT_SIZE = new VariableKey<Integer>("GUI_StatsDialog_fontSize"); //$NON-NLS-1$
 	public static final VariableKey<Integer> DELAY_UNTIL_INSPECTION = new VariableKey<Integer>("GUI_Timer_delayUntilInspection"); //$NON-NLS-1$
 	public static final VariableKey<Integer> DELAY_BETWEEN_SOLVES = new VariableKey<Integer>("GUI_Timer_delayBetweenSolves"); //$NON-NLS-1$
@@ -98,6 +99,7 @@ public class VariableKey<H> {
 	public static final VariableKey<Font> TIMER_FONT = new VariableKey<Font>("Timer_font"); //$NON-NLS-1$
 	public static final VariableKey<Font> SCRAMBLE_FONT = new VariableKey<Font>("Scramble_font"); //$NON-NLS-1$
 
+	public static final VariableKey<Boolean> SCRAMBLE_PLUGINS_SECURE = new VariableKey<Boolean>("Scramble_Plugins_secure"); //$NON-NLS-1$
 	public static final VariableKey<Boolean> SPEAK_INSPECTION = new VariableKey<Boolean>("Misc_Voices_readInspection"); //$NON-NLS-1$
 	public static final VariableKey<Boolean> SPEAK_TIMES = new VariableKey<Boolean>("Misc_Voices_readTimes"); //$NON-NLS-1$
 	public static final VariableKey<Boolean> COMPETITION_INSPECTION = new VariableKey<Boolean>("GUI_Timer_competitionInspection"); //$NON-NLS-1$

@@ -3,11 +3,13 @@ package net.gnehzr.cct.scrambles;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
+import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
+
 public final class TimeoutJob {
 	private TimeoutJob() {}
 	
 	public static final ScramblePluginClassLoader PLUGIN_LOADER = new ScramblePluginClassLoader();
-	private static long timeout = 1000; //milliseconds
 	private static class ThreadJob<T> extends Thread {
 		private T result;
 		private Throwable error;
@@ -29,13 +31,12 @@ public final class TimeoutJob {
 		ThreadJob<T> t = new ThreadJob<T>(callMe);
 		t.setContextClassLoader(PLUGIN_LOADER);
 		t.start();
-		long end = System.currentTimeMillis() + timeout;
-		while(System.currentTimeMillis() < end && t.isAlive()) {
-			try {
-//				t.join(end - System.currentTimeMillis());
-				t.join(0, 100); //apparently we get better performance if we're more aggressive
-			} catch(InterruptedException e) {}
-		}
+		Integer timeout = Configuration.getInt(VariableKey.SCRAMBLE_PLUGIN_TIMEOUT, false);
+		if(timeout == null)
+			timeout = 1000;
+		try {
+			t.join(timeout);
+		} catch(InterruptedException e) {}
 		if(t.isAlive()) {
 			t.stop();
 			throw new TimeoutException("Job timed out after " + timeout + " milliseconds.");
