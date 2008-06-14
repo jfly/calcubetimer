@@ -1,3 +1,5 @@
+package scramblePlugins;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -7,59 +9,25 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
 import java.util.regex.Pattern;
 
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 
 public class MegaminxScramble extends Scramble {
-	public static final String[] FACE_NAMES = {"A", "B", "C", "D", "E", "F", "a", "b", 
-		"f", "e", "d", "c"};
+	public static final String[][] FACE_NAMES_COLORS = 
+	{ { "A", 	 "B",	   "C",		 "D",	   "E",		 "F",	   "a",		 "b",	   "f",		 "e",	   "d",		 "c" },
+	  { "ffffff", "336633", "66ffff", "996633", "3333ff", "993366", "ffff00", "66ff66", "ff9933", "ff0000", "000099", "ff66ff" } };
 	public static final String PUZZLE_NAME = "Megaminx";
-	public static final String[] VARIATIONS = {"Megaminx", "Pochmann Megaminx"};
-	private int[][] image;
+	public static final String[] VARIATIONS = { "Megaminx", "Pochmann Megaminx" };
+	public static final int[] DEFAULT_LENGTHS = { 70,		60 };
 	public static final int DEFAULT_UNIT_SIZE = 30;
-	public static final double UNFOLDHEIGHT = 2 + 3 * Math.sin(.3 * Math.PI) + Math.sin(.1 * Math.PI);
-	public static final double UNFOLDWIDTH = 4 * Math.cos(.1 * Math.PI) + 2 * Math.cos(.3 * Math.PI);
+	public static final Pattern TOKEN_REGEX = Pattern.compile("^([A-Fa-fRYU](?:\\+\\+|--|'|[234]?))(.*)$");
+	
+	private static final double UNFOLDHEIGHT = 2 + 3 * Math.sin(.3 * Math.PI) + Math.sin(.1 * Math.PI);
+	private static final double UNFOLDWIDTH = 4 * Math.cos(.1 * Math.PI) + 2 * Math.cos(.3 * Math.PI);
 	private boolean pochmann = false;
-	private static final Pattern TOKEN_REGEX = Pattern.compile("^([A-Fa-fRYU](?:\\+\\+|--|'|[234]?))(.*)$");
-
-	public static int getDefaultScrambleLength(String variation) {
-		if(variation.equals(VARIATIONS[1]))
-			return 70;
-		return 60;
-	}
-	public static String getDefaultFaceColor(String face) {
-		switch(face.charAt(0)) {
-			case 'A':
-				return "ffffff";
-			case 'B':
-				return "336633";
-			case 'C':
-				return "66ffff";
-			case 'D':
-				return "996633";
-			case 'E':
-				return "3333ff";
-			case 'F':
-				return "993366";
-			case 'a':
-				return "ffff00";
-			case 'b':
-				return "66ff66";
-			case 'c':
-				return "ff66ff";
-			case 'd':
-				return "000099";
-			case 'e':
-				return "ff0000";
-			case 'f':
-				return "ff9933";
-			default:
-				return null;
-		}
-	}
+	private int[][] image;
 
 	public MegaminxScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
 		super(s);
@@ -92,13 +60,6 @@ public class MegaminxScramble extends Scramble {
 		}
 	}
 
-	public int[][] getImage() {
-		return image;
-	}
-	public boolean revalidateScramble() {
-		initializeImage();
-		return validateScramble();
-	}
 	private static String regexp = "^[A-Fa-f][234]?$";
 	private static String regexp1 = "^(?:[RDY]([+-])\\1|U'?)$";
 	private boolean validateScramble() {
@@ -145,8 +106,8 @@ public class MegaminxScramble extends Scramble {
 				}
 				else{
 					int face = -1;
-					for(int ch = 0; ch < FACE_NAMES.length; ch++) {
-						if(FACE_NAMES[ch].equals(""+cstrs[i].charAt(0))) {
+					for(int ch = 0; ch < FACE_NAMES_COLORS[0].length; ch++) {
+						if(FACE_NAMES_COLORS[0][ch].equals(""+cstrs[i].charAt(0))) {
 							face = ch;
 							break;
 						}
@@ -188,7 +149,7 @@ public class MegaminxScramble extends Scramble {
 				} while(last >= 0 && comm[side][last] != 0);
 				last = side;
 				int dir = random(4) + 1;
-				scramble = scramble + FACE_NAMES[side] + (dir != 1 ? dir : "") + " ";
+				scramble = scramble + FACE_NAMES_COLORS[0][side] + (dir != 1 ? dir : "") + " ";
 
 				turn(side, dir);
 			}
@@ -313,18 +274,17 @@ public class MegaminxScramble extends Scramble {
 		swapCenters(f1, f2, f3, f4, f5);
 	}
 
-	public BufferedImage getScrambleImage(int gap, int minxRad, HashMap<String, Color> colorScheme) {
-		int width = Math.max(getMegaminxViewWidth(gap, minxRad), getMegaminxViewWidth(gap, DEFAULT_UNIT_SIZE));
-		int height = Math.max(getMegaminxViewHeight(gap, minxRad), getMegaminxViewHeight(gap, DEFAULT_UNIT_SIZE));
-		BufferedImage buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		drawMinx(buffer.createGraphics(), gap, getNewUnitSize(width, height, gap), colorScheme);
+	public BufferedImage getScrambleImage(int gap, int minxRad, Color[] colorScheme) {
+		Dimension dim = getImageSize(gap, minxRad, null);
+		BufferedImage buffer = new BufferedImage(dim.width, dim.height, BufferedImage.TYPE_INT_ARGB);
+		drawMinx(buffer.createGraphics(), gap, minxRad, colorScheme);
 		return buffer;
 	}
-	public Dimension getMinimumSize(int gap, int defaultMinxRad) {
-		return new Dimension(getMegaminxViewWidth(gap, defaultMinxRad), getMegaminxViewHeight(gap, defaultMinxRad));
+	public static Dimension getImageSize(int gap, int minxRad, String variation) {
+		return new Dimension(getMegaminxViewWidth(gap, minxRad), getMegaminxViewHeight(gap, minxRad));
 	}
 
-	private void drawMinx(Graphics2D g, int gap, int minxRad, HashMap<String, Color> colorScheme){
+	private void drawMinx(Graphics2D g, int gap, int minxRad, Color[] colorScheme){
 		double x = minxRad*Math.sqrt(2*(1-Math.cos(.6*Math.PI)));
 		double a = minxRad*Math.cos(.1*Math.PI);
 		double b = x*Math.cos(.1*Math.PI);
@@ -348,7 +308,7 @@ public class MegaminxScramble extends Scramble {
 		drawPentagon(g, shift+gap+a, gap+x-d+minxRad, true, image[11], minxRad, colorScheme);
 	}
 
-	private void drawPentagon(Graphics2D g, double x, double y, boolean up, int[] state, int minxRad, HashMap<String, Color> colorScheme){
+	private void drawPentagon(Graphics2D g, double x, double y, boolean up, int[] state, int minxRad, Color[] colorScheme){
 		GeneralPath p = pentagon(up, minxRad);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		p.transform(AffineTransform.getTranslateInstance(x, y));
@@ -404,7 +364,7 @@ public class MegaminxScramble extends Scramble {
 		}
 
 		for(int i = 0; i < ps.length; i++){
-			g.setColor(colorScheme.get(FACE_NAMES[state[i]]));
+			g.setColor(colorScheme[state[i]]);
 			g.fill(ps[i]);
 			g.setColor(Color.BLACK);
 			g.draw(ps[i]);
@@ -444,18 +404,18 @@ public class MegaminxScramble extends Scramble {
 		return a * d - b * c;
 	}
 
-	private int getMegaminxViewWidth(int gap, int minxRad) {
+	private static int getMegaminxViewWidth(int gap, int minxRad) {
 		return (int)(UNFOLDWIDTH * 2 * minxRad + 3 * gap);
 	}
-	private int getMegaminxViewHeight(int gap, int minxRad) {
+	private static int getMegaminxViewHeight(int gap, int minxRad) {
 		return (int)(UNFOLDHEIGHT * minxRad + 2 * gap);
 	}
-	public int getNewUnitSize(int width, int height, int gap) {
+	public static int getNewUnitSize(int width, int height, int gap, String variation) {
 		return (int) Math.round(Math.min((width - 3*gap) / (UNFOLDWIDTH * 2),
 				(height - 2*gap) / UNFOLDHEIGHT));
 	}
 
-	public String getFaceClicked(int x, int y, int gap, int minxRad) {
+	public int getFaceClicked(int x, int y, int gap, int minxRad) {
 		double xx = minxRad*Math.sqrt(2*(1-Math.cos(.6*Math.PI)));
 		double a = minxRad*Math.cos(.1*Math.PI);
 		double b = xx*Math.cos(.1*Math.PI);
@@ -465,39 +425,35 @@ public class MegaminxScramble extends Scramble {
 		double shift = gap+2*a+2*b;
 
 		if(isInPentagon(gap+a+b, gap+xx+minxRad, minxRad, x, y, false))
-			return FACE_NAMES[0];
+			return 0;
 		else if(isInPentagon(gap+a+b, gap+minxRad, minxRad, x, y, true))
-			return FACE_NAMES[1];
+			return 1;
 		else if(isInPentagon(gap+a+2*b, gap+xx-d+minxRad, minxRad, x, y, true))
-			return FACE_NAMES[2];
+			return 2;
 		else if(isInPentagon(gap+a+b+c, gap+xx+ee+minxRad, minxRad, x, y, true))
-			return FACE_NAMES[3];
+			return 3;
 		else if(isInPentagon(gap+a+b-c, gap+xx+ee+minxRad, minxRad, x, y, true))
-			return FACE_NAMES[4];
+			return 4;
 		else if(isInPentagon(gap+a, gap+xx-d+minxRad, minxRad, x, y, true))
-			return FACE_NAMES[5];
+			return 5;
 		else if(isInPentagon(shift+gap+a+b, gap+xx+minxRad, minxRad, x, y, false))
-			return FACE_NAMES[6];
+			return 6;
 		else if(isInPentagon(shift+gap+a+b, gap+minxRad, minxRad, x, y, true))
-			return FACE_NAMES[7];
+			return 7;
 		else if(isInPentagon(shift+gap+a+2*b, gap+xx-d+minxRad, minxRad, x, y, true))
-			return FACE_NAMES[8];
+			return 8;
 		else if(isInPentagon(shift+gap+a+b+c, gap+xx+ee+minxRad, minxRad, x, y, true))
-			return FACE_NAMES[9];
+			return 9;
 		else if(isInPentagon(shift+gap+a+b-c, gap+xx+ee+minxRad, minxRad, x, y, true))
-			return FACE_NAMES[10];
+			return 10;
 		else if(isInPentagon(shift+gap+a, gap+xx-d+minxRad, minxRad, x, y, true))
-			return FACE_NAMES[11];
+			return 11;
 		else
-			return null;
+			return -1;
 	}
 	private boolean isInPentagon(double x, double y, int minxRad, double mousex, double mousey, boolean up) {
 		GeneralPath p = pentagon(up, minxRad);
 		p.transform(AffineTransform.getTranslateInstance(x, y));
 		return p.contains(mousex, mousey);
-	}
-
-	public Pattern getTokenRegex(){
-		return TOKEN_REGEX;
 	}
 }

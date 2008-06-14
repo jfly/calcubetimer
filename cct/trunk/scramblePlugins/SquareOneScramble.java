@@ -1,3 +1,5 @@
+package scramblePlugins;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -8,7 +10,6 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,35 +17,16 @@ import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 
 public class SquareOneScramble extends Scramble {
-	public static final String[] FACE_NAMES = { "L", "B", "R", "F",	"U", "D" };
+	public static final String[][] FACE_NAMES_COLORS =
+	{ { "L",	  "B", 		"R", 	  "F",		"U",	  "D" },
+	  { "ffff00", "ff0000", "0000ff", "ffc800", "ffffff", "00ff00" } };
 	public static final String PUZZLE_NAME = "Square-1";
-	private int[] state, turns;
-	private int twistCount = 0; //this will tell us the state of the middle pieces
+	public static final int[] DEFAULT_LENGTHS = { 40 };
 	public static final int DEFAULT_UNIT_SIZE = 32;
-	private static final Pattern TOKEN_REGEX = Pattern.compile("^(\\(-?[0-6] *, *-?[0-6] *\\))(.*)$");
-
-	public static int getDefaultScrambleLength(String variation) {
-		return 40;
-	}
-
-	public static String getDefaultFaceColor(String face) {
-		switch (face.charAt(0)) {
-		case 'L':
-			return "ffff00";
-		case 'R':
-			return "0000ff";
-		case 'D':
-			return "00ff00";
-		case 'B':
-			return "ff0000";
-		case 'F':
-			return "ffc800";
-		case 'U':
-			return "ffffff";
-		default:
-			return null;
-		}
-	}
+	public static final Pattern TOKEN_REGEX = Pattern.compile("^(\\(-?[0-6] *, *-?[0-6] *\\))(.*)$");
+	
+	private int twistCount = 0; //this will tell us the state of the middle pieces
+	private int[] state, turns;
 
 	public SquareOneScramble(String variation, int length, String... attrs) {
 		this(length, attrs);
@@ -171,7 +153,7 @@ public class SquareOneScramble extends Scramble {
 	}
 	//**********END JAAP's CODE***************
 
-	private final Pattern regexp = Pattern.compile("^ *(-?[0-6]) *, *(-?[0-6]) *$");
+	private static final Pattern regexp = Pattern.compile("^ *(-?[0-6]) *, *(-?[0-6]) *$");
 	private boolean validateScramble() {
 		length = 0;
 		String[] trns = scramble.split("(\\(|\\)|\\( *\\))", -1);
@@ -198,13 +180,11 @@ public class SquareOneScramble extends Scramble {
 		return true;
 	}
 
-	public BufferedImage getScrambleImage(int gap,
-			int radius, HashMap<String, Color> colorScheme) {
-		int width = Math.max(getWidth(gap, radius), getWidth(gap, DEFAULT_UNIT_SIZE));
-		int height = Math.max(getHeight(gap, radius), getHeight(gap, DEFAULT_UNIT_SIZE));
-		BufferedImage buffer = new BufferedImage(width, height,
-				BufferedImage.TYPE_INT_ARGB);
-		radius = getNewUnitSize(width, height, gap);
+	public BufferedImage getScrambleImage(int gap, int radius, Color[] colorScheme) {
+		Dimension dim = getImageSize(gap, radius, null);
+		int width = dim.width;
+		int height = dim.height;
+		BufferedImage buffer = new BufferedImage(width, height,	BufferedImage.TYPE_INT_ARGB);
 
 		Graphics2D g = buffer.createGraphics();
 		double half_square_width = (radius * RADIUS_MULTIPLIER * multiplier) / Math.sqrt(2);
@@ -214,13 +194,13 @@ public class SquareOneScramble extends Scramble {
 		Rectangle2D.Double right_mid;
 		if(twistCount % 2 == 0) {
 			right_mid = new Rectangle2D.Double(width / 2 - half_square_width, height / 2 - radius * (multiplier - 1) / 2, 2*corner_width + edge_width, radius * (multiplier - 1));
-			g.setColor(colorScheme.get(FACE_NAMES[3])); //front
+			g.setColor(colorScheme[3]); //front
 		} else {
 			right_mid = new Rectangle2D.Double(width / 2 - half_square_width, height / 2 - radius * (multiplier - 1) / 2, corner_width + edge_width, radius * (multiplier - 1));
-			g.setColor(colorScheme.get(FACE_NAMES[1])); //back
+			g.setColor(colorScheme[1]); //back
 		}
 		g.fill(right_mid);
-		g.setColor(colorScheme.get(FACE_NAMES[3])); //front
+		g.setColor(colorScheme[3]); //front
 		g.fill(left_mid); //this will clobber part of the other guy
 		g.setColor(Color.BLACK);
 		g.draw(right_mid);
@@ -229,21 +209,18 @@ public class SquareOneScramble extends Scramble {
 		double x = width / 2.0;
 		double y = height / 4.0;
 		g.rotate(Math.toRadians(90 + 15), x, y);
-		drawFace(g, state, x, y, gap,
-				radius, colorScheme);
+		drawFace(g, state, x, y, gap, radius, colorScheme);
 		g.dispose();
 
 		y *= 3.0;
 		g = buffer.createGraphics();
 		g.rotate(Math.toRadians(-90 - 15), x, y);
-		drawFace(g, Arrays.copyOfRange(state, 12, state.length), x, y,
-				gap, radius, colorScheme);
+		drawFace(g, Arrays.copyOfRange(state, 12, state.length), x, y, gap, radius, colorScheme);
 		g.dispose();
 		return buffer;
 	}
 
-	private void drawFace(Graphics2D g, int[] face, double x, double y, int gap,
-			int radius, HashMap<String, Color> colorScheme) {
+	private void drawFace(Graphics2D g, int[] face, double x, double y, int gap, int radius, Color[] colorScheme) {
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND));
 		for(int ch = 0; ch < 12; ch++) {
@@ -254,8 +231,7 @@ public class SquareOneScramble extends Scramble {
 		g.dispose();
 	}
 
-	private int drawPiece(Graphics2D g, int piece, double x, double y, int gap,
-			int radius, HashMap<String, Color> colorScheme) {
+	private int drawPiece(Graphics2D g, int piece, double x, double y, int gap,	int radius, Color[] colorScheme) {
 		boolean corner = isCornerPiece(piece);
 		int degree = 30 * (corner ? 2 : 1);
 		GeneralPath[] p = corner ? getCornerPoly(x, y, radius) : getWedgePoly(x, y, radius);
@@ -275,14 +251,14 @@ public class SquareOneScramble extends Scramble {
 		return ((piece + (piece <= 7 ? 0 : 1)) % 2) == 0;
 	}
 
-	private Color[] getPieceColors(int piece, HashMap<String, Color> colorScheme) {
+	private Color[] getPieceColors(int piece, Color[] colorScheme) {
 		boolean up = piece <= 7;
-		Color top = up ? colorScheme.get(FACE_NAMES[4]) : colorScheme.get(FACE_NAMES[5]);
+		Color top = up ? colorScheme[4] : colorScheme[5];
 		if(isCornerPiece(piece)) { //corner piece
 			if(!up)
 				piece = 15 - piece;
-			Color a = colorScheme.get(FACE_NAMES[(piece/2+3) % 4]);
-			Color b = colorScheme.get(FACE_NAMES[piece/2]);
+			Color a = colorScheme[(piece/2+3) % 4];
+			Color b = colorScheme[piece/2];
 			if(!up) { //mirror for bottom
 				Color t = a;
 				a = b;
@@ -292,11 +268,11 @@ public class SquareOneScramble extends Scramble {
 		} else { //wedge piece
 			if(!up)
 				piece = 14 - piece;
-			return new Color[] { top, colorScheme.get(FACE_NAMES[piece/2]) };
+			return new Color[] { top, colorScheme[piece/2] };
 		}
 	}
 
-	private double multiplier = 1.4;
+	private static final double multiplier = 1.4;
 	private GeneralPath[] getWedgePoly(double x, double y, int radius) {
 		AffineTransform trans = AffineTransform.getTranslateInstance(x, y);
 		GeneralPath p = new GeneralPath();
@@ -349,38 +325,38 @@ public class SquareOneScramble extends Scramble {
 		return new GeneralPath[]{ p, side1, side2 };
 	}
 
-	public Dimension getMinimumSize(int gap, int radius) {
+	public static Dimension getImageSize(int gap, int radius, String variation) {
 		return new Dimension(getWidth(gap, radius), getHeight(gap, radius));
 	}
-	private final double RADIUS_MULTIPLIER = Math.sqrt(2) * Math.cos(Math.toRadians(15));
-	private int getWidth(int gap, int radius) {
-		return (int) (2 * RADIUS_MULTIPLIER * this.multiplier * radius);
+	private static final double RADIUS_MULTIPLIER = Math.sqrt(2) * Math.cos(Math.toRadians(15));
+	private static int getWidth(int gap, int radius) {
+		return (int) (2 * RADIUS_MULTIPLIER * multiplier * radius);
 	}
-	private int getHeight(int gap, int radius) {
-		return (int) (4 * RADIUS_MULTIPLIER * this.multiplier * radius);
+	private static int getHeight(int gap, int radius) {
+		return (int) (4 * RADIUS_MULTIPLIER * multiplier * radius);
 	}
-	public int getNewUnitSize(int width, int height, int gap) {
-		return (int) Math.round(Math.min(width / (2 * RADIUS_MULTIPLIER * this.multiplier), height / (4 * RADIUS_MULTIPLIER * this.multiplier)));
+	public static int getNewUnitSize(int width, int height, int gap, String variation) {
+		return (int) Math.round(Math.min(width / (2 * RADIUS_MULTIPLIER * multiplier), height / (4 * RADIUS_MULTIPLIER * multiplier)));
 	}
 
 	//***NOTE*** this works only for the simple case where the cube is a square
-	public String getFaceClicked(int x, int y, int gap, int radius) {
+	public int getFaceClicked(int x, int y, int gap, int radius) {
 		int width = getWidth(gap, radius);
 		int height = getHeight(gap, radius);
 		double half_width = (radius * RADIUS_MULTIPLIER) / Math.sqrt(2);
 		if(isInSquare(width / 2.0, height / 4.0, half_width, x, y))
-			return FACE_NAMES[4]; //up
+			return 4; //up
 		if(isInSquare(width / 2.0, 3 * height / 4.0, half_width, x, y))
-			return FACE_NAMES[5]; //down
+			return 5; //down
 		if(new Rectangle2D.Double(width / 2 - half_width * multiplier, height / 2 - radius * (multiplier - 1) / 2, 2 * half_width * multiplier, radius * (multiplier - 1)).contains(x, y))
-			return FACE_NAMES[3]; //front
+			return 3; //front
 		for(int ch = 0; ch < 4; ch++) {
 			if(isInTri(width / 2.0, height / 4.0, 2 * half_width * multiplier, (5-ch) % 4, x, y) ||
 					isInTri(width / 2.0, 3 * height / 4.0, 2 * half_width * multiplier, (ch+1) % 4, x, y)) {
-				return FACE_NAMES[ch];
+				return ch;
 			}
 		}
-		return null;
+		return -1;
 	}
 	//diag is the distance from the center to a corner
 	private boolean isInSquare(double x, double y, double half_width, int px, int py) {
@@ -397,9 +373,5 @@ public class SquareOneScramble extends Scramble {
 		tri.closePath();
 		tri.transform(AffineTransform.getTranslateInstance(x - width / 2.0, y - width / 2.0));
 		return tri.contains(px, py);
-	}
-
-	public Pattern getTokenRegex(){
-		return TOKEN_REGEX;
 	}
 }

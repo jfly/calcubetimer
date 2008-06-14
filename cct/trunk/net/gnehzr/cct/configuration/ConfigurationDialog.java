@@ -30,7 +30,6 @@ import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -74,8 +73,8 @@ import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.ProfileEditor;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
+import net.gnehzr.cct.scrambles.ScrambleVariation;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
-import net.gnehzr.cct.scrambles.ScrambleViewComponent.ColorListener;
 import net.gnehzr.cct.speaking.NumberSpeaker;
 import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
 import net.gnehzr.cct.statistics.Profile;
@@ -85,7 +84,7 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 import say.swing.JFontChooser;
 
 @SuppressWarnings("serial") //$NON-NLS-1$
-public class ConfigurationDialog extends JDialog implements KeyListener, MouseListener, ActionListener, ColorListener, ItemListener, HyperlinkListener {
+public class ConfigurationDialog extends JDialog implements KeyListener, MouseListener, ActionListener, ItemListener, HyperlinkListener {
 	private final static float DISPLAY_FONT_SIZE = 20;
 	private final static String[] FONT_SIZES = { "8", "9", "10", "11", "12", "14", "16", "18", "20", "22", "24", "26", "28", "36" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$
 
@@ -757,12 +756,13 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Dimension preferred = new Dimension(0, 0);
 		for(int ch = 0; ch < scramblePlugins.size(); ch++) {
 			ScramblePlugin plugin = scramblePlugins.get(ch);
-			solvedPuzzles[ch] = new ScrambleViewComponent();
-			solvedPuzzles[ch].setScramble(plugin.newScramble("", 0, new String[0]), plugin); //$NON-NLS-1$
+			solvedPuzzles[ch] = new ScrambleViewComponent(true);
+			ScrambleVariation sv = new ScrambleVariation(plugin, "");
+			sv.setLength(0); //this will not change the length of the real ScrambleVariation instances
+			solvedPuzzles[ch].setScramble(sv.generateScramble(), sv); //$NON-NLS-1$
 			Dimension newDim = solvedPuzzles[ch].getPreferredSize();
 			if(newDim.height > preferred.height)
 				preferred = newDim;
-			solvedPuzzles[ch].setColorListener(this);
 			solvedPuzzles[ch].setAlignmentY(Component.CENTER_ALIGNMENT);
 			options.add(solvedPuzzles[ch]);
 		}
@@ -1103,16 +1103,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			}
 		}
 	}
-
 	public void keyReleased(KeyEvent e) {}
-
 	public void keyTyped(KeyEvent e) {}
-
-	public void colorClicked(ScrambleViewComponent source, String face, HashMap<String, Color> colorScheme) {
-		Color selected = JColorChooser.showDialog(this, StringAccessor.getString("ConfigurationDialog.choosecolor") + ": " + face, colorScheme.get(face)); //$NON-NLS-1$ //$NON-NLS-2$
-		if(selected != null) {
-			colorScheme.put(face, selected);
-			source.redo();
-		}
-	}
 }

@@ -1,16 +1,11 @@
 package net.gnehzr.cct.misc.dynamicGUI;
 
 import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.border.Border;
 
-import net.gnehzr.cct.configuration.Configuration;
-import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.i18n.XMLGuiMessages;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.misc.Utils;
-import net.gnehzr.cct.statistics.StatisticsTableModel;
-import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
 public class DynamicBorderSetter { //implements ConfigurationChangeListener, StatisticsUpdateListener {
 //	private JComponent com;

@@ -1,71 +1,42 @@
 package net.gnehzr.cct.scrambles;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.Callable;
+import java.util.regex.Pattern;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.misc.Utils;
 
 public class ScramblePlugin {
-	private static final String SCRAMBLE_PLUGIN_PACKAGE = ""; //$NON-NLS-1$
-	public static final ScrambleCustomization NULL_SCRAMBLE_CUSTOMIZATION = getNullScramble();
-	private static ScrambleCustomization getNullScramble() {
-		try {
-			return new ScrambleCustomization(new ScrambleVariation(new ScramblePlugin(NullScramble.class), ""), null); //$NON-NLS-1$
-		} catch(Exception e){}
-		return null;
-	}
-
+	public static final ScrambleCustomization NULL_SCRAMBLE_CUSTOMIZATION = new ScrambleCustomization(new ScrambleVariation(new ScramblePlugin("X"), ""), null);
+	public static final String SCRAMBLE_PLUGIN_PACKAGE = "scramblePlugins."; //$NON-NLS-1$
+	private static final String PLUGIN_EXTENSION = ".class"; //$NON-NLS-1$
+	
 	private static ArrayList<ScramblePlugin> scramblePlugins;
 	public static ArrayList<ScramblePlugin> getScramblePlugins() {
 		File pluginFolder = Configuration.scramblePluginsFolder;
 		if(scramblePlugins == null && pluginFolder.isDirectory()) {
 			scramblePlugins = new ArrayList<ScramblePlugin>();
-			URL url;
-			try {
-				url = Configuration.scramblePluginsFolder.toURI().toURL();
-			} catch (MalformedURLException e1) {
-				e1.printStackTrace();
-				return null;
-			}
-			URL[] urls = new URL[]{url};
-			ClassLoader cl = new URLClassLoader(urls);
-
-			for(String child : pluginFolder.list(new FilenameFilter() {
-				public boolean accept(File dir, String name) {
-					if(new File(dir, name).isFile()) {
-						return name.endsWith(".class"); //$NON-NLS-1$
-					}
-					return false;
-				}
-			})) {
+			for(File plugin : pluginFolder.listFiles()) {
+				if(!plugin.getName().endsWith(".class") || plugin.getName().indexOf('$') != -1) //$NON-NLS-1$
+					continue;
 				try {
-					final Class<?> cls = cl.loadClass(SCRAMBLE_PLUGIN_PACKAGE + child.substring(0, child.indexOf("."))); //$NON-NLS-1$
-					if(cls.getSuperclass().equals(Scramble.class)) {
-						try {
-							scramblePlugins.add(new TimeoutJob<ScramblePlugin>() {
-								public ScramblePlugin call() throws Exception {
-									return new ScramblePlugin((Class<? extends Scramble>) cls);
-								}
-							}.doWork());
-						} catch(Exception ee) {
-							ee.printStackTrace();
-						}
-					}
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
+					scramblePlugins.add(new ScramblePlugin(plugin));
+				} catch(Exception ee) {
+					System.err.println("Failed to load: " + plugin);
+					ee.printStackTrace();
 				}
 			}
 		}
@@ -127,9 +98,8 @@ public class ScramblePlugin {
 	//TODO - the defaults argument isn't even being used here! consider revising, :-)
 	public static ArrayList<ScrambleCustomization> getScrambleCustomizations(boolean defaults) {
 		ArrayList<ScrambleCustomization> scrambleCustomizations = new ArrayList<ScrambleCustomization>();
-		for(ScrambleVariation t : getScrambleVariations()) {
+		for(ScrambleVariation t : getScrambleVariations())
 			scrambleCustomizations.add(new ScrambleCustomization(t, null));
-		}
 
 		String[] customNames = Configuration.getStringArray(VariableKey.SCRAMBLE_CUSTOMIZATIONS, false);
 		Iterator<String> databaseCustoms = Configuration.getSelectedProfile().getPuzzleDatabase().getCustomizations().iterator();
@@ -159,23 +129,12 @@ public class ScramblePlugin {
 				}
 			}
 			ScrambleCustomization sc;
-			if(scramCustomization != null) {
+			if(scramCustomization != null)
 				sc = new ScrambleCustomization(scramCustomization.getScrambleVariation(), customizationName);
-			}
-//			else {
-//				if(!variationName.equals(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation().toString())) {
-//					if(customizationName == null)
-//						customizationName = variationName;
-//					else
-//						customizationName = variationName + ":" + customizationName; //$NON-NLS-1$
-//				}
-//				sc = new ScrambleCustomization(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation(), customizationName);
-//			}
-			else if(variationName.equals(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation().toString())) {
+			else if(variationName.equals(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation().toString()))
 				sc = new ScrambleCustomization(NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation(), customizationName);
-			} else {
+			else
 				sc = new ScrambleCustomization(new ScrambleVariation(new ScramblePlugin(variationName), variationName), customizationName);
-			}
 			if(!variationName.isEmpty()) {
 				if(scrambleCustomizations.contains(sc))
 					scrambleCustomizations.remove(sc);
@@ -204,155 +163,257 @@ public class ScramblePlugin {
 
 	private String pluginClassName;
 	
+	private Class<? extends Scramble> pluginClass = null;
+	
 	private Constructor<? extends Scramble> newScrambleConstructor = null;
 	private Constructor<? extends Scramble> importScrambleConstructor = null;
+	
+	private Method getNewUnitSize, getImageSize, getScrambleImage;
 
 	protected String PUZZLE_NAME;
-	protected String[] FACE_NAMES;
+	protected String[][] FACE_NAMES_COLORS;
 	protected int DEFAULT_UNIT_SIZE;
+	protected int[] DEFAULT_LENGTHS;
 	protected String[] VARIATIONS;
 	protected String[] ATTRIBUTES;
 	protected String[] DEFAULT_ATTRIBUTES;
+	protected Pattern TOKEN_REGEX;
 
-	private Method getDefaultScrambleLength = null;
-	private Method getDefaultFaceColor = null;
-	
-	public ScramblePlugin(String name) {
-		PUZZLE_NAME = name;
-		pluginClassName = name;
-		FACE_NAMES = new String[0];
+	public ScramblePlugin(String variationName) {
+		PUZZLE_NAME = variationName;
+		pluginClassName = variationName;
+		FACE_NAMES_COLORS = null;
 		DEFAULT_UNIT_SIZE = 0;
 		VARIATIONS = new String[0];
 		ATTRIBUTES = new String[0];
 		DEFAULT_ATTRIBUTES = new String[0];
 	}
 
-	protected ScramblePlugin(Class<? extends Scramble> pluginClass) throws SecurityException, NoSuchMethodException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-		pluginClassName = pluginClass.getSimpleName();
-		newScrambleConstructor = pluginClass.getConstructor(String.class, int.class, String[].class);
-		importScrambleConstructor = pluginClass.getConstructor(String.class, String.class, String[].class);
+	protected ScramblePlugin(final File plugin) throws SecurityException, NoSuchMethodException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException, ClassNotFoundException, NoClassDefFoundError {
+		pluginClassName = plugin.getName();
+		if(!pluginClassName.endsWith(PLUGIN_EXTENSION))
+			throw new ClassNotFoundException("Filename (" + plugin.getAbsolutePath() + ") must end in " + PLUGIN_EXTENSION);
+		pluginClassName = pluginClassName.substring(0, pluginClassName.length() - PLUGIN_EXTENSION.length());
+		
+		Class<?> cls = null;
+		try {
+			//this will initialize the class, we protect from a malicious plugin
+			//whose static{} initialization block never returns
+			cls = TimeoutJob.doWork(new Callable<Class<?>>() {
+				public Class<?> call() throws Exception {
+					for(String className : plugin.getParentFile().list(new FilenameFilter() {
+						public boolean accept(File dir, String name) {
+							return new File(dir, name).isFile() && name.startsWith(pluginClassName + "$");
+						}
+					}))
+						Class.forName(SCRAMBLE_PLUGIN_PACKAGE + className.substring(0, className.length() - PLUGIN_EXTENSION.length()), true, TimeoutJob.PLUGIN_LOADER);
+					return Class.forName(SCRAMBLE_PLUGIN_PACKAGE + pluginClassName, true, TimeoutJob.PLUGIN_LOADER);
+				}
+			});
+		} catch (Throwable e) {
+			if(e.getCause() != null)
+				e.getCause().printStackTrace();
+			throw new ClassNotFoundException("Failure loading class " + SCRAMBLE_PLUGIN_PACKAGE + pluginClassName + ".", e);
+		}
+		if(!Scramble.class.equals(cls.getSuperclass()))
+			throw new ClassCastException("Superclass of " + cls + " is " + cls.getSuperclass() + ", it should be " + Scramble.class);
+		
+		pluginClass = cls.asSubclass(Scramble.class);
 
-		Field f = pluginClass.getField("PUZZLE_NAME"); //$NON-NLS-1$
-		PUZZLE_NAME = (String) f.get(null);
-
-		f = pluginClass.getField("FACE_NAMES"); //$NON-NLS-1$
-		FACE_NAMES = (String[]) f.get(null);
-
-		f = pluginClass.getField("DEFAULT_UNIT_SIZE"); //$NON-NLS-1$
-		DEFAULT_UNIT_SIZE = f.getInt(null);
-
-		f = pluginClass.getField("VARIATIONS"); //$NON-NLS-1$
-		VARIATIONS = (String[]) f.get(null);
-
-		f = pluginClass.getField("ATTRIBUTES"); //$NON-NLS-1$
-		ATTRIBUTES = (String[]) f.get(null);
-
-		f = pluginClass.getField("DEFAULT_ATTRIBUTES"); //$NON-NLS-1$
-		DEFAULT_ATTRIBUTES = (String[]) f.get(null);
-
-		getDefaultScrambleLength = pluginClass.getMethod("getDefaultScrambleLength", String.class); //$NON-NLS-1$
-		if(!getDefaultScrambleLength.getReturnType().equals(int.class))
-			throw new ClassCastException();
-
-		getDefaultFaceColor = pluginClass.getMethod("getDefaultFaceColor", String.class); //$NON-NLS-1$
-		if(!getDefaultFaceColor.getReturnType().equals(String.class))
-			throw new ClassCastException();
+		try {
+			//validating methods/constructors
+			newScrambleConstructor = pluginClass.getConstructor(String.class, int.class, String[].class);
+			importScrambleConstructor = pluginClass.getConstructor(String.class, String.class, String[].class);
+			
+			try {
+				getScrambleImage = pluginClass.getMethod("getScrambleImage", int.class, int.class, Color[].class);
+				if(!getScrambleImage.getReturnType().equals(BufferedImage.class))
+					throw new ClassCastException("getScrambleImage() return type should be BufferedImage, not " + getScrambleImage.getReturnType());
+			} catch(NoSuchMethodException e) {} //this is fine, we'll just return null for the scramble image
+			assertPublicNotAbstract(getScrambleImage, false);
+			
+			getNewUnitSize = pluginClass.getMethod("getNewUnitSize", int.class, int.class, int.class, String.class);
+			if(!getNewUnitSize.getReturnType().equals(int.class))
+				throw new ClassCastException("getNewUnitSize() return type should be int, not " + getNewUnitSize.getReturnType());
+			assertPublicNotAbstract(getNewUnitSize, true);
+			
+			getImageSize = pluginClass.getMethod("getImageSize", int.class, int.class, String.class);
+			if(!getImageSize.getReturnType().equals(Dimension.class))
+				throw new ClassCastException("getImageSize() return type should be Dimension, not " + getImageSize.getReturnType());
+			assertPublicNotAbstract(getImageSize, true);
+			
+			//validating fields
+			Field f = pluginClass.getField("PUZZLE_NAME"); //$NON-NLS-1$
+			PUZZLE_NAME = (String) f.get(null);
+	
+			f = pluginClass.getField("FACE_NAMES_COLORS"); //$NON-NLS-1$
+			FACE_NAMES_COLORS = (String[][]) f.get(null);
+			if(FACE_NAMES_COLORS.length != 2)
+				throw new ArrayIndexOutOfBoundsException("FACE_NAMES_COLORS.length (" + FACE_NAMES_COLORS.length + ") does not equal 2!"); //$NON-NLS-1$ //$NON-NLS-2$
+			if(FACE_NAMES_COLORS[0].length != FACE_NAMES_COLORS[1].length)
+				throw new ArrayIndexOutOfBoundsException("FACE_NAMES_COLORS[0].length (" + FACE_NAMES_COLORS[0].length + ") != FACE_NAMES_COLORS[1].length (" + FACE_NAMES_COLORS[1].length + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	
+			f = pluginClass.getField("DEFAULT_UNIT_SIZE"); //$NON-NLS-1$
+			DEFAULT_UNIT_SIZE = f.getInt(null);
+			
+			f = pluginClass.getField("DEFAULT_LENGTHS");
+			DEFAULT_LENGTHS = (int[]) f.get(null);
+			
+			f = pluginClass.getField("VARIATIONS"); //$NON-NLS-1$
+			VARIATIONS = (String[]) f.get(null);
+			if(VARIATIONS.length != DEFAULT_LENGTHS.length)
+				throw new ArrayIndexOutOfBoundsException("VARIATIONS.length (" + VARIATIONS.length + ") != DEFAULT_LENGTHS.length (" + DEFAULT_LENGTHS.length + ")");
+			
+			f = pluginClass.getField("ATTRIBUTES"); //$NON-NLS-1$
+			ATTRIBUTES = (String[]) f.get(null);
+	
+			f = pluginClass.getField("DEFAULT_ATTRIBUTES"); //$NON-NLS-1$
+			DEFAULT_ATTRIBUTES = (String[]) f.get(null);
+			
+			f = pluginClass.getField("TOKEN_REGEX"); //$NON-NLS-1$
+			TOKEN_REGEX = (Pattern) f.get(null);
+		} catch(NoClassDefFoundError e) {
+			if(e.getCause() != null)
+				e.getCause().printStackTrace();
+			throw new ClassNotFoundException("", e);
+		}
+	}
+	
+	private static void assertPublicNotAbstract(Method m, boolean isStatic) throws NoSuchMethodException {
+		if(m == null)	return;
+		if(!Modifier.isPublic(m.getModifiers()) || (isStatic ^ Modifier.isStatic(m.getModifiers())) || Modifier.isAbstract(m.getModifiers())) {
+			throw new NoSuchMethodException(m.toGenericString() + " must be public, not abstract, and " + (isStatic ? "" : "not ") + "static!");
+		}
+	}
+	
+	public Class<? extends Scramble> getPluginClass() {
+		return pluginClass;
 	}
 	
 	public String getPluginClassName() {
 		return pluginClassName;
 	}
 
-	public Scramble newScramble(String variation, int length, String[] attributes) {
+	public Scramble newScramble(final String variation, final int length, final String[] attributes) {
 		if(newScrambleConstructor != null) {
 			try {
-				return newScrambleConstructor.newInstance(variation, length, attributes);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+				return TimeoutJob.doWork(new Callable<Scramble>() {
+					public Scramble call() throws Exception {
+						return newScrambleConstructor.newInstance(variation, length, attributes);
+					}
+				});
 			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
+				e.getCause().printStackTrace();
+			} catch (Throwable e) {
+				if(e.getCause() != null)
+					e.getCause().printStackTrace();
 				e.printStackTrace();
 			}
 		}
-		return null;
+		return new Scramble(""); //$NON-NLS-1$
 	}
 	
 	public Scramble importScramble(final String variation, final String scramble, final String[] attributes) throws InvalidScrambleException {
-		if(variation == null) {
-			return new NullScramble(null, scramble);
-		}
 		if(importScrambleConstructor != null) {
 			try {
-				return importScrambleConstructor.newInstance(variation, scramble, attributes);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+				return TimeoutJob.doWork(new Callable<Scramble>() {
+					public Scramble call() throws Exception {
+						return importScrambleConstructor.newInstance(variation, scramble, attributes);
+					}
+				});
 			} catch (InvocationTargetException e) {
-				Throwable cause = e.getCause();
-				if(cause instanceof InvalidScrambleException) {
-					InvalidScrambleException invalid = (InvalidScrambleException) cause;
-					throw invalid;
-				}
-				cause.printStackTrace();
+				if(e.getCause() instanceof InvalidScrambleException)
+					throw (InvalidScrambleException) e.getCause();
+				e.getCause().printStackTrace();
+			} catch (Throwable e) {
+				e.printStackTrace();
+				Thread.dumpStack();
+			}
+		}
+		return new Scramble(scramble);
+	}
+	
+	public BufferedImage safeGetImage(final Scramble instance, final int gap, final int unitSize, final Color[] colorScheme) {
+		if(getScrambleImage != null && pluginClass.equals(instance.getClass())) {
+			try {
+				return TimeoutJob.doWork(new Callable<BufferedImage>() {
+					public BufferedImage call() throws Exception {
+						return (BufferedImage) getScrambleImage.invoke(instance, gap, Math.max(unitSize, DEFAULT_UNIT_SIZE), colorScheme);
+					}
+				});
+			} catch (InvocationTargetException e) {
+				e.getCause().printStackTrace();
+			} catch (Throwable e) {
+				e.printStackTrace();
 			}
 		}
 		return null;
 	}
 
 	public int getDefaultScrambleLength(ScrambleVariation var) {
-		if(getDefaultScrambleLength != null) {
-			try {
-				return (Integer) getDefaultScrambleLength.invoke(null, var.getVariation());
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			}
-		}
-		return 0;
+		int c;
+		for(c = 0; c < VARIATIONS.length; c++)
+			if(VARIATIONS[c].equals(var.getVariation()))
+				break;
+		
+		if(c == VARIATIONS.length)
+			return 0;
+		return DEFAULT_LENGTHS[c];
 	}
 
-	public String[] getFaceNames() {
-		return FACE_NAMES;
+	public String[][] getFaceNames() {
+		return FACE_NAMES_COLORS;
 	}
 	public String getPuzzleName() {
 		return PUZZLE_NAME;
 	}
-
-	//begin configuration stuff
-	public HashMap<String, Color> getColorScheme(boolean defaults) {
-		HashMap<String, Color> scheme = null;
-		scheme = new HashMap<String, Color>(FACE_NAMES.length);
-		for(String face : FACE_NAMES) {
-			String col = null;
+	public Pattern getTokenRegex() {
+		return TOKEN_REGEX;
+	}
+	
+	public int getNewUnitSize(final int width, final int height, final int gap, final String variation) {
+		if(getNewUnitSize != null) {
 			try {
-				col = Configuration.getString(VariableKey.PUZZLE_COLOR(this, face), defaults);
-			} catch(Exception e) {}
-			//Config.getString() will return null if the key was undefined
-			if(col == null && getDefaultFaceColor != null) {
-				try {
-					col = (String) getDefaultFaceColor.invoke(null, face);
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				} catch (SecurityException e) {
-					e.printStackTrace();
-				}
+				return TimeoutJob.doWork(new Callable<Integer>() {
+					public Integer call() throws Exception {
+						return (Integer) getNewUnitSize.invoke(null, width, height, gap, variation);
+					}
+				});
+			} catch (InvocationTargetException e) {
+				e.getCause().printStackTrace();
+			} catch (Throwable e) {
+				e.printStackTrace();
 			}
-			scheme.put(face, Utils.stringToColor(col));
+		}
+		return -1;
+	}
+	
+	public Dimension getImageSize(final int gap, final int unitSize, final String variation) {
+		if(getImageSize != null) {
+			try {
+				return TimeoutJob.doWork(new Callable<Dimension>() {
+					public Dimension call() throws Exception {
+						return (Dimension) getImageSize.invoke(null, gap, unitSize, variation);
+					}
+				});
+			} catch (InvocationTargetException e) {
+				e.getCause().printStackTrace();
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	public Color[] getColorScheme(boolean defaults) {
+		if(FACE_NAMES_COLORS == null) //this is for null scrambles
+			return null;
+		Color[] scheme = new Color[FACE_NAMES_COLORS[0].length];
+		for(int face = 0; face < scheme.length; face++) {
+			String c = Configuration.getString(VariableKey.PUZZLE_COLOR(this, FACE_NAMES_COLORS[0][face]), defaults);
+			if(c == null)
+				c = FACE_NAMES_COLORS[1][face];
+			scheme[face] = Utils.stringToColor(c);
 		}
 		return scheme;
 	}

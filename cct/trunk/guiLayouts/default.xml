@@ -88,6 +88,7 @@
 			<menuitem action="undo"/>
 			<menuitem action="redo"/>
 			<separator/>
+			<checkboxmenuitem action="toggleScramblePopup">%%togglescramblepopup%%</checkboxmenuitem>
 			<menu mnemonic="k">%%keyboardtimer%%
 				<checkboxmenuitem action="toggleLessAnnoyingDisplay">%%lessannoying%%</checkboxmenuitem>
 				<checkboxmenuitem action="toggleHideScrambles">%%hidescrambles%%</checkboxmenuitem>

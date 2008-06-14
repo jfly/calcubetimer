@@ -28,6 +28,7 @@ public class LocaleAndIcon {
 				flag = new ImageIcon(new File(Configuration.flagsFolder, l.getCountry() + ".png").toURI().toURL()); //$NON-NLS-1$
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
+				flag = new ImageIcon();
 			}
 		}
 		return flag;

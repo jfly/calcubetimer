@@ -18,14 +18,17 @@ public class ScrambleVariation {
 		this.scramblePlugin = plugin;
 		this.variation = variation;
 		length = getScrambleLength(false);
-		try {
-			image = new ImageIcon(new File(Configuration.scramblePluginsFolder, variation + ".png").toURI().toURL()); //$NON-NLS-1$
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	public Icon getImage() {
+		if(image == null) {
+			try {
+				image = new ImageIcon(new File(Configuration.scramblePluginsFolder, variation + ".png").toURI().toURL()); //$NON-NLS-1$
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+				image = new ImageIcon();
+			}
+		}
 		return image;
 	}
 	
@@ -64,7 +67,8 @@ public class ScrambleVariation {
 		return scramblePlugin.DEFAULT_UNIT_SIZE;
 	}
 	public void setPuzzleUnitSize(int size) {
-		Configuration.setInt(VariableKey.UNIT_SIZE(this), size);
+		if(this != ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation())
+			Configuration.setInt(VariableKey.UNIT_SIZE(this), size);
 	}
 	
 	public int hashCode() {

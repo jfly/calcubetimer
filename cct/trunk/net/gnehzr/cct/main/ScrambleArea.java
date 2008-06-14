@@ -22,7 +22,6 @@ import javax.swing.text.html.HTMLDocument;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
-import net.gnehzr.cct.scrambles.NullScramble;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
@@ -69,9 +68,8 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 	private Scramble currentScramble;
 	private ScrambleCustomization currentCustomization;
 	private String part1, part2;
+	private static final Pattern NULL_SCRAMBLE_REGEX = Pattern.compile("^(.+)()$");
 	public void setScramble(Scramble newScramble, ScrambleCustomization sc) {
-		if(!(currentScramble instanceof NullScramble))
-			Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, scramblePopup.isVisible());
 		currentScramble = newScramble;
 		currentCustomization = sc;
 
@@ -96,7 +94,10 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		String plainScramble = ""; //$NON-NLS-1$
 		Matcher m;
 		int num = 0;
-		Pattern regex = newScramble.getTokenRegex();
+		Pattern regex = currentCustomization.getScramblePlugin().getTokenRegex();
+		if(regex == null || !currentScramble.getClass().equals(currentCustomization.getScramblePlugin().getPluginClass()))
+			regex = NULL_SCRAMBLE_REGEX;
+
 		String description = ""; //$NON-NLS-1$
 		while((m = regex.matcher(s)).matches()){
 			String str = m.group(1).trim();
@@ -119,31 +120,26 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 			String scramble = e.getDescription();
 			ScrambleVariation sv = currentCustomization.getScrambleVariation();
-			int caretPos = scramblePane.getCaretPosition();
-			//this is here to prevent calls to setVisible(true) when the popup is already visbile
-			//if we were to allow these, then the main gui could pop up on top of our fullscreen panel
-			if(currentScramble instanceof NullScramble) {
-				scramblePopup.setVisible(false);
-			} else if(!scramblePopup.isVisible()) {
-				scramblePopup.setVisible(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false));
-				Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, scramblePopup.isVisible());
-			}
-			String[] moveAndScramble = scramble.split(" ", 2); //$NON-NLS-1$
-			if(moveAndScramble.length != 2) //this happens if we have an empty null scramble
-				return;
-			int moveNum = Integer.parseInt(moveAndScramble[0]);
-			scramblePane.setDocument(new HTMLDocument());
-			scramblePane.setText(part1 + moveNum + part2);
-			scramblePane.setCaretPosition(caretPos);
 			Scramble s = null;
-			try {
-				s = sv.generateScramble(moveAndScramble[1]);
-			} catch(InvalidScrambleException e0) { //this could happen if a null scramble is imported
-				sv = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation();
+			String[] moveAndScramble = scramble.split(" ", 2); //$NON-NLS-1$
+			if(moveAndScramble.length != 2) { //this happens if we have an empty null scramble
+				s = currentScramble;
+				scramblePane.setText(""); //$NON-NLS-1$
+			} else {
+				int moveNum = Integer.parseInt(moveAndScramble[0]);
+				int caretPos = scramblePane.getCaretPosition();
+				scramblePane.setDocument(new HTMLDocument());
+				scramblePane.setText(part1 + moveNum + part2);
+				scramblePane.setCaretPosition(caretPos);
 				try {
-					s = sv.generateScramble(scramble);
-				} catch (InvalidScrambleException e1) {
-					e1.printStackTrace();
+					s = sv.generateScramble(moveAndScramble[1]);
+				} catch(InvalidScrambleException e0) { //this could happen if a null scramble is imported
+					sv = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation();
+					try {
+						s = sv.generateScramble(scramble);
+					} catch (InvalidScrambleException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 			scramblePopup.setScramble(s, sv);

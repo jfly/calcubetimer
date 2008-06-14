@@ -1,38 +1,63 @@
 package net.gnehzr.cct.main;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.Point;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
+import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.ConfigurationChangeListener;
+import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 
 @SuppressWarnings("serial") //$NON-NLS-1$
-public class ScrambleFrame extends JDialog {
+public class ScrambleFrame extends JDialog implements ConfigurationChangeListener {
 	private ScrambleViewComponent scrambleView;
-	public ScrambleFrame(JFrame parent, String title) {
+	private AbstractAction visibilityAction;
+	public ScrambleFrame(JFrame parent, String title, AbstractAction scrambleVisibility) {
 		super(parent, title);
-		scrambleView = new ScrambleViewComponent();
+		visibilityAction = scrambleVisibility;
+		scrambleView = new ScrambleViewComponent(false);
 		this.getContentPane().add(scrambleView, BorderLayout.CENTER);
+		Configuration.addConfigurationChangeListener(this);
+	}
+	
+	public void refreshPopup() {
+		pack();
+		setVisible(scrambleView.scrambleHasImage() && Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false));
+	}
+	public void setVisible(boolean c) {
+		//this is here to prevent calls to setVisible(true) when the popup is already visible
+		//if we were to allow these, then the main gui could pop up on top of our fullscreen panel
+		if(isVisible() == c)
+			return;
+		if(scrambleView.scrambleHasImage()) {
+			Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, c);
+			visibilityAction.putValue(Action.SELECTED_KEY, c);
+		}
+		super.setVisible(c);
 	}
 
-	public void setSize(Dimension arg0) {
-		super.setSize(arg0);
-		scrambleView.setSize(arg0);
-		scrambleView.componentResized(null);
-	}
+//	public void setSize(Dimension arg0) {
+//		super.setSize(arg0);
+//		scrambleView.setSize(arg0);
+//		scrambleView.componentResized(null);
+//	}
 
-	public void syncColorScheme() {
+	public void configurationChanged() {
 		scrambleView.syncColorScheme(false);
-	}
-	public ScrambleViewComponent getScrambleView() {
-		return scrambleView;
+		refreshPopup();
+		Point location = Configuration.getPoint(VariableKey.SCRAMBLE_VIEW_LOCATION, false);
+		if(location != null)
+			setLocation(location);
 	}
 	public void setScramble(Scramble newScramble, ScrambleVariation newVariation) {
 		scrambleView.setScramble(newScramble, newVariation);
-		pack();
+		refreshPopup();
 	}
 }

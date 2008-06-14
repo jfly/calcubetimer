@@ -1,8 +1,0 @@
-//cctRoot refers to the directory containing CALCubeTimer.jar
-//cctScramblePlugins refers to the directory containing the scramble plugins
-//This allows the securityManager to be effective regardless of the working
-//directory when cct is started
-grant codeBase "file:cctRoot" {
-	permission java.security.AllPermission;
-};
-grant codeBase "file:cctScramblePlugins" {};

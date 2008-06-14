@@ -3,9 +3,9 @@ package net.gnehzr.cct.i18n;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-public class ScramblePluginMessages implements MessageAccessor {
-	private static final String BUNDLE_NAME = "scramblePlugins/"; //$NON-NLS-1$
+import net.gnehzr.cct.scrambles.ScramblePlugin;
 
+public class ScramblePluginMessages implements MessageAccessor {
 	private static ResourceBundle RESOURCE_BUNDLE = null;
 
 	public static final MessageAccessor SCRAMBLE_ACCESSOR = new ScramblePluginMessages();
@@ -13,7 +13,7 @@ public class ScramblePluginMessages implements MessageAccessor {
 	
 	private static String bundleFileName;
 	public static void loadResources(String pluginName) {
-		bundleFileName = BUNDLE_NAME + pluginName;
+		bundleFileName = ScramblePlugin.SCRAMBLE_PLUGIN_PACKAGE + pluginName;
 		try {
 			RESOURCE_BUNDLE = ResourceBundle.getBundle(bundleFileName);
 		} catch(MissingResourceException e) {

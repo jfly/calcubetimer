@@ -135,7 +135,7 @@ public class Statistics implements ConfigurationChangeListener {
 	}
 	public Statistics(Date d) {
 		dateStarted = d;
-		Configuration.addConfigurationChangeListener(this); //TODO - this makes me worry about garbage collection
+		Configuration.addConfigurationChangeListener(this); //TODO - this makes me worry about garbage collection (sap memory analyzer)
 
 		curRASize = new int[RA_SIZES_COUNT];
 		curRASize[0] = Configuration.getInt(VariableKey.RA_SIZE0, false);
