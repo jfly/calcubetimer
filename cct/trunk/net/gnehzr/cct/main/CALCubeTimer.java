@@ -325,6 +325,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		statsModel.setUndoRedoListener(new UndoRedoListener() {
 			private int undoable, redoable;
 			public void undoRedoChange(int undoable, int redoable) {
+				this.undoable = undoable;
+				this.redoable = redoable;
 				undo.setEnabled(undoable != 0);
 				redo.setEnabled(redoable != 0);
 				refresh();
