@@ -2,6 +2,7 @@ package net.gnehzr.cct.scrambles;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Shape;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -168,7 +169,7 @@ public class ScramblePlugin {
 	private Constructor<? extends Scramble> newScrambleConstructor = null;
 	private Constructor<? extends Scramble> importScrambleConstructor = null;
 	
-	private Method getNewUnitSize, getImageSize, getScrambleImage;
+	private Method getNewUnitSize, getImageSize, getScrambleImage, getFaces;
 
 	protected String PUZZLE_NAME;
 	protected String[][] FACE_NAMES_COLORS;
@@ -241,6 +242,11 @@ public class ScramblePlugin {
 			if(!getImageSize.getReturnType().equals(Dimension.class))
 				throw new ClassCastException("getImageSize() return type should be Dimension, not " + getImageSize.getReturnType());
 			assertPublicNotAbstract(getImageSize, true);
+			
+			getFaces = pluginClass.getMethod("getFaces", int.class, int.class, String.class);
+			if(!getFaces.getReturnType().equals(Shape[].class))
+				throw new ClassCastException("getFaces() return type should be Shape[], not " + getFaces.getReturnType());
+			assertPublicNotAbstract(getFaces, true);
 			
 			//validating fields
 			Field f = pluginClass.getField("PUZZLE_NAME"); //$NON-NLS-1$
@@ -394,6 +400,23 @@ public class ScramblePlugin {
 				return TimeoutJob.doWork(new Callable<Dimension>() {
 					public Dimension call() throws Exception {
 						return (Dimension) getImageSize.invoke(null, gap, unitSize, variation);
+					}
+				});
+			} catch (InvocationTargetException e) {
+				e.getCause().printStackTrace();
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
+	public Shape[] getFaces(final int gap, final int unitSize, final String variation) {
+		if(getFaces != null) {
+			try {
+				return TimeoutJob.doWork(new Callable<Shape[]>() {
+					public Shape[] call() throws Exception {
+						return (Shape[]) getFaces.invoke(null, gap, unitSize, variation);
 					}
 				});
 			} catch (InvocationTargetException e) {

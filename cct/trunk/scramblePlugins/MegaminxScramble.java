@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
@@ -371,7 +372,7 @@ public class MegaminxScramble extends Scramble {
 		}
 	}
 
-	private GeneralPath pentagon(boolean pointup, int minxRad){
+	private static GeneralPath pentagon(boolean pointup, int minxRad){
 		double[] angs = { 1.3, 1.7, .1, .5, .9 };
 		if(pointup) for(int i = 0; i < angs.length; i++) angs[i] -= .2;
 		for(int i = 0; i < angs.length; i++) angs[i] *= Math.PI;
@@ -415,7 +416,7 @@ public class MegaminxScramble extends Scramble {
 				(height - 2*gap) / UNFOLDHEIGHT));
 	}
 
-	public int getFaceClicked(int x, int y, int gap, int minxRad) {
+	public static Shape[] getFaces(int gap, int minxRad, String variation) {
 		double xx = minxRad*Math.sqrt(2*(1-Math.cos(.6*Math.PI)));
 		double a = minxRad*Math.cos(.1*Math.PI);
 		double b = xx*Math.cos(.1*Math.PI);
@@ -424,36 +425,24 @@ public class MegaminxScramble extends Scramble {
 		double ee = xx*Math.sin(.3*Math.PI);
 		double shift = gap+2*a+2*b;
 
-		if(isInPentagon(gap+a+b, gap+xx+minxRad, minxRad, x, y, false))
-			return 0;
-		else if(isInPentagon(gap+a+b, gap+minxRad, minxRad, x, y, true))
-			return 1;
-		else if(isInPentagon(gap+a+2*b, gap+xx-d+minxRad, minxRad, x, y, true))
-			return 2;
-		else if(isInPentagon(gap+a+b+c, gap+xx+ee+minxRad, minxRad, x, y, true))
-			return 3;
-		else if(isInPentagon(gap+a+b-c, gap+xx+ee+minxRad, minxRad, x, y, true))
-			return 4;
-		else if(isInPentagon(gap+a, gap+xx-d+minxRad, minxRad, x, y, true))
-			return 5;
-		else if(isInPentagon(shift+gap+a+b, gap+xx+minxRad, minxRad, x, y, false))
-			return 6;
-		else if(isInPentagon(shift+gap+a+b, gap+minxRad, minxRad, x, y, true))
-			return 7;
-		else if(isInPentagon(shift+gap+a+2*b, gap+xx-d+minxRad, minxRad, x, y, true))
-			return 8;
-		else if(isInPentagon(shift+gap+a+b+c, gap+xx+ee+minxRad, minxRad, x, y, true))
-			return 9;
-		else if(isInPentagon(shift+gap+a+b-c, gap+xx+ee+minxRad, minxRad, x, y, true))
-			return 10;
-		else if(isInPentagon(shift+gap+a, gap+xx-d+minxRad, minxRad, x, y, true))
-			return 11;
-		else
-			return -1;
+		return new Shape[] {
+				getPentagon(gap+a+b, gap+xx+minxRad, minxRad, false),
+				getPentagon(gap+a+b, gap+minxRad, minxRad, true),
+				getPentagon(gap+a+2*b, gap+xx-d+minxRad, minxRad, true),
+				getPentagon(gap+a+b+c, gap+xx+ee+minxRad, minxRad, true),
+				getPentagon(gap+a+b-c, gap+xx+ee+minxRad, minxRad, true),
+				getPentagon(gap+a, gap+xx-d+minxRad, minxRad, true),
+				getPentagon(shift+gap+a+b, gap+xx+minxRad, minxRad, false),
+				getPentagon(shift+gap+a+b, gap+minxRad, minxRad, true),
+				getPentagon(shift+gap+a+2*b, gap+xx-d+minxRad, minxRad, true),
+				getPentagon(shift+gap+a+b+c, gap+xx+ee+minxRad, minxRad, true),
+				getPentagon(shift+gap+a+b-c, gap+xx+ee+minxRad, minxRad, true),
+				getPentagon(shift+gap+a, gap+xx-d+minxRad, minxRad, true)
+		};
 	}
-	private boolean isInPentagon(double x, double y, int minxRad, double mousex, double mousey, boolean up) {
+	private static Shape getPentagon(double x, double y, int minxRad, boolean up) {
 		GeneralPath p = pentagon(up, minxRad);
 		p.transform(AffineTransform.getTranslateInstance(x, y));
-		return p.contains(mousex, mousey);
+		return p;
 	}
 }

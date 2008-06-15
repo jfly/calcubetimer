@@ -180,18 +180,19 @@ changes:
 +moved a bunch of code into ScrambleFrame to handle its visibility
 +scramble class is now instantiable/deleted nullscramble class
 +BUG (fixed): fullscreen while timing w/ stackmat is producing a ton of windows
++Scrambles: clicking on a color is very pretty 
 
 TODO:
 
 for release:
--Scrambles: clicking on a color is not done yet, setAttributes() never times out 
+-Scrambles: setAttributes() never times out
 -the tooltips & scramble popup title (possibly more) aren't being updated
 	-translate ALL swing properties
 -improve gui behavior when scramble plugin cannot be found (specifically: behavior of customization list in config. dialog)
 -clean up cct startup as best as possible!
 	-save gui state before changing language
+	-decide upon default startup layout (should we remove the progress time stuff from the default layout?)
 -worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
--decide upon default startup layout (should we remove the progress time stuff from the default layout?)
 -open source sourceforge!
 -create license, give credit where credit is due
 -update defaults.properties file, about.html (translate), FAQ (translate)
@@ -206,7 +207,6 @@ misc:
 
 cleanup:
 -add a ton more reset buttons to config. dialog.
-	-make the color scheme chooser beautiful!
 -generalize XML syntax (get rid of Dynamic... classes) UPDATE: no idea how to do this...???
 
 Server stuff:

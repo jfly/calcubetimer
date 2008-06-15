@@ -756,7 +756,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Dimension preferred = new Dimension(0, 0);
 		for(int ch = 0; ch < scramblePlugins.size(); ch++) {
 			ScramblePlugin plugin = scramblePlugins.get(ch);
-			solvedPuzzles[ch] = new ScrambleViewComponent(true);
+			solvedPuzzles[ch] = new ScrambleViewComponent(true, true);
 			ScrambleVariation sv = new ScrambleVariation(plugin, "");
 			sv.setLength(0); //this will not change the length of the real ScrambleVariation instances
 			solvedPuzzles[ch].setScramble(sv.generateScramble(), sv); //$NON-NLS-1$

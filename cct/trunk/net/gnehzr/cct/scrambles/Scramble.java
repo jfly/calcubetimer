@@ -63,11 +63,11 @@ public class Scramble {
 	public static final Pattern TOKEN_REGEX = null; //OPTIONAL, provides support for incremental scrambles
 	//OPTIONAL - This method returns a BufferedImage with an image of the puzzles state
 	//public BufferedImage getScrambleImage(int gap, int unitSize, Color[] colorScheme);
-	//TODO - how about just providing an array of polygons? That way, we can make the color selector pretty, and we avoid the method call
-	public static int getFaceClicked(int x, int y, int gap, int unitSize, String variation) {
-		return -1;
-	}
-	
+	//OPTIONAL - This method returns an array of shapes, indexed as in the FACE_NAMES_COLORS array, it is used for clicking on a
+	//to customize a color scheme. If you define the above method (getScrambleImage()), it is highly recommended that you also
+	//define this method, otherwise users will be unable to configuration the puzzle's color scheme
+	//public static Shape[] getFaces(int gap, int unitSize, String variation);
+
 	//this method should parse the attributes, and then generate a scramble (if scramble == null)
 	//or validate the current one (if scramble != null)
 	//returns false if the scramble could not be validated

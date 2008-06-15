@@ -5,7 +5,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -339,39 +341,41 @@ public class SquareOneScramble extends Scramble {
 		return (int) Math.round(Math.min(width / (2 * RADIUS_MULTIPLIER * multiplier), height / (4 * RADIUS_MULTIPLIER * multiplier)));
 	}
 
-	//***NOTE*** this works only for the simple case where the cube is a square
-	public int getFaceClicked(int x, int y, int gap, int radius) {
+	//***NOTE*** this works only for the simple case where the puzzle is a cube
+	public static Shape[] getFaces(int gap, int radius, String variation) {
 		int width = getWidth(gap, radius);
 		int height = getHeight(gap, radius);
 		double half_width = (radius * RADIUS_MULTIPLIER) / Math.sqrt(2);
-		if(isInSquare(width / 2.0, height / 4.0, half_width, x, y))
-			return 4; //up
-		if(isInSquare(width / 2.0, 3 * height / 4.0, half_width, x, y))
-			return 5; //down
-		if(new Rectangle2D.Double(width / 2 - half_width * multiplier, height / 2 - radius * (multiplier - 1) / 2, 2 * half_width * multiplier, radius * (multiplier - 1)).contains(x, y))
-			return 3; //front
+		
+		Area up = getSquare(width / 2.0, height / 4.0, half_width);
+		Area down = getSquare(width / 2.0, 3 * height / 4.0, half_width);
+		Area front = new Area(new Rectangle2D.Double(width / 2 - half_width * multiplier, height / 2 - radius * (multiplier - 1) / 2, 2 * half_width * multiplier, radius * (multiplier - 1)));
+		
+		Area[] faces = new Area[6];
 		for(int ch = 0; ch < 4; ch++) {
-			if(isInTri(width / 2.0, height / 4.0, 2 * half_width * multiplier, (5-ch) % 4, x, y) ||
-					isInTri(width / 2.0, 3 * height / 4.0, 2 * half_width * multiplier, (ch+1) % 4, x, y)) {
-				return ch;
-			}
+			faces[ch] = new Area();
+			faces[ch].add(getTri(width / 2.0, height / 4.0, 2 * half_width * multiplier, (5-ch) % 4));
+			faces[ch].add(getTri(width / 2.0, 3 * height / 4.0, 2 * half_width * multiplier, (ch+1) % 4));
+			faces[ch].subtract(up);
+			faces[ch].subtract(down);
 		}
-		return -1;
+		faces[3].add(front);
+		faces[4] = up;
+		faces[5] = down;
+		return faces;
 	}
-	//diag is the distance from the center to a corner
-	private boolean isInSquare(double x, double y, double half_width, int px, int py) {
-		if(px <= x + half_width && px >= x - half_width && py <= y + half_width && py >= y - half_width)
-			return true;
-		return false;
+	//x, y are the coordinates of the center of the square
+	private static Area getSquare(double x, double y, double half_width) {
+		return new Area(new Rectangle2D.Double(x - half_width, y - half_width, 2 * half_width, 2 * half_width));
 	}
 	//type is the orientation of the triangle, in multiples of 90 degrees ccw
-	private boolean isInTri(double x, double y, double width, int type, int px, int py) {
+	private static Area getTri(double x, double y, double width, int type) {
 		GeneralPath tri = new GeneralPath();
 		tri.moveTo(width / 2.0, width / 2.0);
 		tri.lineTo((type == 3) ? width : 0, (type < 2) ? 0 : width);
 		tri.lineTo((type == 1) ? 0 : width, (type % 3 == 0) ? 0 : width);
 		tri.closePath();
 		tri.transform(AffineTransform.getTranslateInstance(x - width / 2.0, y - width / 2.0));
-		return tri.contains(px, py);
+		return new Area(tri);
 	}
 }

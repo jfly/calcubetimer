@@ -415,7 +415,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		scrambleAttributes = new JPanel();
 
-		scramblePopup = new ScrambleFrame(this, StringAccessor.getString("CALCubeTimer.scrambleview"), toggleScrambleView); //$NON-NLS-1$
+		scramblePopup = new ScrambleFrame(this, StringAccessor.getString("CALCubeTimer.scrambleview"), toggleScrambleView, false); //$NON-NLS-1$
 		scramblePopup.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		scramblePopup.setIconImage(cubeIcon.getImage());
 		scramblePopup.setFocusableWindowState(false);

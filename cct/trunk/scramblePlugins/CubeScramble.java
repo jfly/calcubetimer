@@ -3,6 +3,8 @@ package scramblePlugins;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.image.BufferedImage;
 import java.util.regex.Pattern;
 
@@ -316,23 +318,18 @@ public class CubeScramble extends Scramble {
 		return (size*cubie + gap)*3 + gap;
 	}
 
-	public int getFaceClicked(int x, int y, int gap, int cubieSize) {
-		if(isInFace(gap, 2*gap+size*cubieSize, x, y, size, cubieSize))
-			return 0;
-		else if(isInFace(2*gap+size*cubieSize, 3*gap+2*size*cubieSize, x, y, size, cubieSize))
-			return 1;
-		else if(isInFace(4*gap+3*size*cubieSize, 2*gap+size*cubieSize, x, y, size, cubieSize))
-			return 2;
-		else if(isInFace(3*gap+2*size*cubieSize, 2*gap+size*cubieSize, x, y, size, cubieSize))
-			return 3;
-		else if(isInFace(2*gap+size*cubieSize, gap, x, y, size, cubieSize))
-			return 4;
-		else if(isInFace(2*gap+size*cubieSize, 2*gap+size*cubieSize, x, y, size, cubieSize))
-			return 5;
-		else
-			return -1;
+	public static Shape[] getFaces(int gap, int cubieSize, String variation) {
+		int size = getSizeFromVariation(variation);
+		return new Shape[] {
+				getFace(gap, 2*gap+size*cubieSize, size, cubieSize),
+				getFace(2*gap+size*cubieSize, 3*gap+2*size*cubieSize, size, cubieSize),
+				getFace(4*gap+3*size*cubieSize, 2*gap+size*cubieSize, size, cubieSize),
+				getFace(3*gap+2*size*cubieSize, 2*gap+size*cubieSize, size, cubieSize),
+				getFace(2*gap+size*cubieSize, gap, size, cubieSize),
+				getFace(2*gap+size*cubieSize, 2*gap+size*cubieSize, size, cubieSize)
+		};
 	}
-	private boolean isInFace(int leftBound, int topBound, int x, int y, int size, int cubieSize) {
-		return x >= leftBound && x <= leftBound + size*cubieSize && y >= topBound && y <= topBound + size*cubieSize;
+	private static Shape getFace(int leftBound, int topBound, int size, int cubieSize) {
+		return new Rectangle(leftBound, topBound, size * cubieSize, size * cubieSize);
 	}
 }

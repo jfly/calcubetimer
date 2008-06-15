@@ -1,30 +1,37 @@
 package net.gnehzr.cct.scrambles;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.Utils;
 
 @SuppressWarnings("serial") //$NON-NLS-1$
-public class ScrambleViewComponent extends JComponent implements ComponentListener, MouseListener {
-	private static int GAP = -1;
+public class ScrambleViewComponent extends JComponent implements ComponentListener, MouseListener, MouseMotionListener {
+	private static final int DEFAULT_GAP = 5;
+	private static int GAP = DEFAULT_GAP;
 	static {
 		Configuration.addConfigurationChangeListener(new ConfigurationChangeListener() {
 			public void configurationChanged() {
 				Integer t = Configuration.getInt(VariableKey.POPUP_GAP, false);
 				if(t == null)
-					GAP = 5;
+					GAP = DEFAULT_GAP;
 				else
 					GAP = t;
 			}
@@ -32,12 +39,14 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	}
 
 	private boolean fixedSize;
-	public ScrambleViewComponent(boolean fixedSize) {
+	public ScrambleViewComponent(boolean fixedSize, boolean detectColorClicks) {
 		this.fixedSize = fixedSize;
-		if(!fixedSize) //if fixedSize, then it's in the configdialog, and we don't care about resizing or config changes
+		if(!fixedSize)
 			addComponentListener(this);
-		else //we do care about detecting clicking on face, however
+		if(detectColorClicks) {
 			addMouseListener(this);
+			addMouseMotionListener(this);
+		}
 	}
 
 	public void syncColorScheme(boolean defaults) {
@@ -55,6 +64,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	private ScramblePlugin currentPlugin = null;
 	private ScrambleVariation currentVariation = null;
 	private Color[] colorScheme = null;
+	private Shape[] faces = null;
 	public void setScramble(Scramble scramble, ScrambleVariation variation) {
 		currentScram = scramble;
 		currentVariation = variation;
@@ -62,6 +72,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 			currentPlugin = currentVariation.getScramblePlugin();
 			colorScheme = currentPlugin.getColorScheme(false);
 		}
+		faces = currentPlugin.getFaces(GAP, getUnitSize(false), currentVariation.getVariation());
 		buffer = currentPlugin.safeGetImage(currentScram, GAP, getUnitSize(false), colorScheme);
 		repaint();	//this will cause the scramble to be drawn
 		invalidate(); //this forces the component to fit itself to its layout properly
@@ -95,8 +106,21 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 			g.setColor(getBackground());
 			g.fillRect(0, 0, width, height);
 		}
-		if(buffer != null)
+		if(buffer != null) {
+			if(focusedFace != -1) {
+				AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
+				((Graphics2D)g).setComposite(ac);
+				//first, draw the whole scramble opaque
+				g.drawImage(buffer, 0, 0, null);
+				
+				//now prepare the surface for drawing the selected face in solid
+				g.setClip(faces[focusedFace]);
+				ac = ac.derive(1.0f);
+				((Graphics2D)g).setComposite(ac);
+			}
+			//if no face is selected, we draw the whole thing solid, otherwise, just the seclected face
 			g.drawImage(buffer, 0, 0, null);
+		}
 
 		g.dispose();
 	}
@@ -112,21 +136,33 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	}
 
 	public void mouseClicked(MouseEvent e) {
-//		int faceClicked = currentScram.getFaceClicked(e.getX(), e.getY(), GAP, getUnitSize(false));
-//		if(faceClicked != -1) {
-//			Color c = JColorChooser.showDialog(this,
-//					StringAccessor.getString("ScrambleViewComponent.choosecolor") + ": " + currentPlugin.FACE_NAMES_COLORS[0][faceClicked], //$NON-NLS-1$ //$NON-NLS-2$
-//					colorScheme[faceClicked]);
-//			if(c != null) {
-//				colorScheme[faceClicked] = c;
-//				redo();
-//			}
-//		}
+		if(focusedFace != -1) {
+			Color c = JColorChooser.showDialog(this,
+					StringAccessor.getString("ScrambleViewComponent.choosecolor") + ": " + currentPlugin.FACE_NAMES_COLORS[0][focusedFace], //$NON-NLS-1$ //$NON-NLS-2$
+					colorScheme[focusedFace]);
+			if(c != null) {
+				colorScheme[focusedFace] = c;
+				redo();
+			}
+		}
 	}
 	public void mouseEntered(MouseEvent e) {}
 	public void mouseExited(MouseEvent e) {}
 	public void mousePressed(MouseEvent e) {}
 	public void mouseReleased(MouseEvent e) {}
+
+	public void mouseDragged(MouseEvent e) {}
+	private int focusedFace = -1;
+	public void mouseMoved(MouseEvent e) {
+		focusedFace = -1;
+		for(int c = 0; faces != null && c < faces.length; c++) {
+			if(faces[c] != null && faces[c].contains(e.getPoint())) {
+				focusedFace = c;
+				break;
+			}
+		}
+		repaint();
+	}
 
 	public void commitColorSchemeToConfiguration() {
 		for(int face = 0; face < colorScheme.length; face++) {
