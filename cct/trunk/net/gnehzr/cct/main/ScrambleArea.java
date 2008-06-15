@@ -65,13 +65,19 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 	public void resetPreferredSize() {
 		setPreferredSize(new Dimension(0, 100));
 	}
-	private Scramble currentScramble;
+	private String currentScramble;
 	private ScrambleCustomization currentCustomization;
 	private String part1, part2;
 	private static final Pattern NULL_SCRAMBLE_REGEX = Pattern.compile("^(.+)()$");
-	public void setScramble(Scramble newScramble, ScrambleCustomization sc) {
-		currentScramble = newScramble;
+	public void setScramble(String newScramble, ScrambleCustomization sc) {
 		currentCustomization = sc;
+		Scramble scram = null;
+		try {
+			scram = currentCustomization.getScrambleVariation().generateScramble(newScramble);
+			currentScramble = scram.toString();
+		} catch(Exception e) { //if we can't parse this scramble, we'll just treat it as a null scramble
+			currentScramble = newScramble.trim();
+		}
 
 		Font font = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
 		String fontStyle = ""; //$NON-NLS-1$
@@ -90,20 +96,20 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 			"span { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "; " + fontStyle + "; }" + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			"sub { font-size: " + (font.getSize() / 2 + 1) + "; }" + //$NON-NLS-1$ //$NON-NLS-2$
 			"</style></head><body>"; //$NON-NLS-1$
-		String s = newScramble.toString().trim();
+		String s = currentScramble;
 		String plainScramble = ""; //$NON-NLS-1$
 		Matcher m;
 		int num = 0;
 		Pattern regex = currentCustomization.getScramblePlugin().getTokenRegex();
-		if(regex == null || !currentScramble.getClass().equals(currentCustomization.getScramblePlugin().getPluginClass()))
+		if(regex == null || scram == null)
 			regex = NULL_SCRAMBLE_REGEX;
-
+		
 		String description = ""; //$NON-NLS-1$
 		while((m = regex.matcher(s)).matches()){
 			String str = m.group(1).trim();
 			plainScramble += " " + str; //$NON-NLS-1$
 			description = num + " " + plainScramble; //$NON-NLS-1$
-			part2 += "<a id='" + num + "' href=\"" + description + "\">" + newScramble.htmlIfy(" " + str) + "</a>"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+			part2 += "<a id='" + num + "' href=\"" + description + "\"><span>" + currentCustomization.getScramblePlugin().htmlify(" " + str) + "</span></a>"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 			s = m.group(2).trim();
 			num++;
 		}
@@ -120,26 +126,27 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 			String scramble = e.getDescription();
 			ScrambleVariation sv = currentCustomization.getScrambleVariation();
-			Scramble s = null;
 			String[] moveAndScramble = scramble.split(" ", 2); //$NON-NLS-1$
 			if(moveAndScramble.length != 2) { //this happens if we have an empty null scramble
-				s = currentScramble;
-				scramblePane.setText(""); //$NON-NLS-1$
+				scramble = "";
+				scramblePane.setText(scramble); //$NON-NLS-1$
 			} else {
 				int moveNum = Integer.parseInt(moveAndScramble[0]);
 				int caretPos = scramblePane.getCaretPosition();
 				scramblePane.setDocument(new HTMLDocument());
 				scramblePane.setText(part1 + moveNum + part2);
 				scramblePane.setCaretPosition(caretPos);
+				scramble = moveAndScramble[1];
+			}
+			Scramble s = null;
+			try {
+				s = sv.generateScramble(scramble);
+			} catch(InvalidScrambleException e0) { //this could happen if a null scramble is imported
+				sv = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation();
 				try {
-					s = sv.generateScramble(moveAndScramble[1]);
-				} catch(InvalidScrambleException e0) { //this could happen if a null scramble is imported
-					sv = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation();
-					try {
-						s = sv.generateScramble(scramble);
-					} catch (InvalidScrambleException e1) {
-						e1.printStackTrace();
-					}
+					s = sv.generateScramble(scramble);
+				} catch (InvalidScrambleException e1) {
+					e1.printStackTrace();
 				}
 			}
 			scramblePopup.setScramble(s, sv);

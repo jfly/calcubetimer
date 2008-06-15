@@ -23,7 +23,7 @@ public class CCTSecurityManager extends SecurityManager implements Configuration
 		if(enabled)
 			for(Class<?> c : getClassContext())
 				if(pluginLoader.equals(c.getClassLoader()))
-					throw new SecurityException();
+					throw new SecurityException(perm.toString());
 //		super.checkPermission(perm);
 	}
 }

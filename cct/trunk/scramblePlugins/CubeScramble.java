@@ -50,7 +50,7 @@ public class CubeScramble extends Scramble {
 	}
 
 	private boolean multislice;
-	public boolean setAttributes(String... attributes) {
+	private boolean setAttributes(String... attributes) {
 		multislice = false;
 		for(String attr : attributes) {
 			if(attr.equals(ATTRIBUTES[0]))
@@ -118,8 +118,9 @@ public class CubeScramble extends Scramble {
 			lastAxis = axis;
 		}
 	}
-	public String htmlIfy(String formatMe) {
-		return super.htmlIfy(formatMe.replaceAll("\\((\\d+)\\)", "<sub>$1</sub>"));
+	
+	public static String htmlify(String formatMe) {
+		return formatMe.replaceAll("\\((\\d+)\\)", "<sub>$1</sub>");
 	}
 
 	private String moveString(int n) {

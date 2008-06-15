@@ -42,7 +42,7 @@ public class MegaminxScramble extends Scramble {
 		setAttributes(attrs);
 	}
 
-	public boolean setAttributes(String... attributes){
+	private boolean setAttributes(String... attributes){
 		initializeImage();
 		if(scramble != null) {
 			return validateScramble();

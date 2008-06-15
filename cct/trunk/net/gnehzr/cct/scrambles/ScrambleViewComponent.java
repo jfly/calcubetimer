@@ -73,7 +73,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 			colorScheme = currentPlugin.getColorScheme(false);
 		}
 		faces = currentPlugin.getFaces(GAP, getUnitSize(false), currentVariation.getVariation());
-		buffer = currentPlugin.safeGetImage(currentScram, GAP, getUnitSize(false), colorScheme);
+		buffer = currentPlugin.getScrambleImage(currentScram, GAP, getUnitSize(false), colorScheme);
 		repaint();	//this will cause the scramble to be drawn
 		invalidate(); //this forces the component to fit itself to its layout properly
 	}
@@ -92,7 +92,10 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	public Dimension getMinimumSize() {
 		if(buffer == null)
 			return PREFERRED_SIZE;
-		return currentPlugin.getImageSize(GAP, getUnitSize(true), currentVariation.getVariation());
+		Dimension d = currentPlugin.getImageSize(GAP, getUnitSize(true), currentVariation.getVariation());
+		if(d != null)
+			return d;
+		return PREFERRED_SIZE;
 	}
 
 	public Dimension getMaximumSize() {

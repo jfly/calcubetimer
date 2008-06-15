@@ -43,12 +43,6 @@ public class ScrambleFrame extends JDialog implements ConfigurationChangeListene
 		super.setVisible(c);
 	}
 
-//	public void setSize(Dimension arg0) {
-//		super.setSize(arg0);
-//		scrambleView.setSize(arg0);
-//		scrambleView.componentResized(null);
-//	}
-
 	public void configurationChanged() {
 		scrambleView.syncColorScheme(false);
 		refreshPopup();

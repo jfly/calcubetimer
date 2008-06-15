@@ -109,11 +109,11 @@ import net.gnehzr.cct.misc.dynamicGUI.DynamicSelectableLabel;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicString;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicStringSettable;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicTabbedPane;
-import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleList;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.TimeoutJob;
+import net.gnehzr.cct.scrambles.ScrambleList.ScrambleString;
 import net.gnehzr.cct.speaking.NumberSpeaker;
 import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
 import net.gnehzr.cct.stackmatInterpreter.StackmatState;
@@ -381,7 +381,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					attrs.add(attr.getDynamicString().getRawText());
 			String[] attributes = attrs.toArray(new String[attrs.size()]);
 			scramblesList.getScrambleCustomization().getScramblePlugin().setEnabledPuzzleAttributes(attributes);
-			scramblesList.getCurrent().setAttributes(attributes);
+//			scramblesList.getCurrent().setAttributes(attributes);
 			updateScramble();
 		} else if(e.getActionCommand().equals(GUI_LAYOUT_CHANGED)) {
 			saveToConfiguration();
@@ -1237,7 +1237,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scrambleNumber.addChangeListener(this);
 	}
 	private void updateScramble() {
-		Scramble current = scramblesList.getCurrent();
+		ScrambleString current = scramblesList.getCurrent();
 		if(current != null) {
 			//set the length of the current scramble
 			safeSetValue(scrambleLength, current.getLength());
@@ -1245,7 +1245,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			safeSetScrambleNumberMax(scramblesList.size());
 			//update new scramble number
 			safeSetValue(scrambleNumber, scramblesList.getScrambleNumber());
-			scramblePanel.setScramble(current, scramblesList.getScrambleCustomization()); //this will update scramblePopup
+			scramblePanel.setScramble(current.getScramble(), scramblesList.getScrambleCustomization()); //this will update scramblePopup
 			
 			boolean canChangeStuff = scramblesList.size() == scramblesList.getScrambleNumber();
 			scrambleChooser.setEnabled(canChangeStuff);
@@ -1335,20 +1335,17 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if(latestTime != null)
 			sendTime(latestTime);
 		if(e != null && e.getType() == TableModelEvent.INSERT) {
-			Scramble curr = scramblesList.getCurrent();
-			if(curr != null) {
-				latestTime.setScramble(curr.toString());
-				boolean outOfScrambles = curr.isImported(); //This is tricky, think before you change it
-				outOfScrambles = !scramblesList.getNext().isImported() && outOfScrambles;
-				if(outOfScrambles) {
-					JOptionPane.showMessageDialog(this,
-							StringAccessor.getString("CALCubeTimer.outofimported") + //$NON-NLS-1$
-							StringAccessor.getString("CALCubeTimer.generatedscrambles"), //$NON-NLS-1$
-							StringAccessor.getString("CALCubeTimer.outofscrambles"), //$NON-NLS-1$
-							JOptionPane.INFORMATION_MESSAGE);
-				}
-				updateScramble();
-			}
+			ScrambleString curr = scramblesList.getCurrent();
+			latestTime.setScramble(curr.getScramble());
+			boolean outOfScrambles = curr.isImported(); //This is tricky, think before you change it
+			outOfScrambles = !scramblesList.getNext().isImported() && outOfScrambles;
+			if(outOfScrambles)
+				JOptionPane.showMessageDialog(this,
+						StringAccessor.getString("CALCubeTimer.outofimported") + //$NON-NLS-1$
+						StringAccessor.getString("CALCubeTimer.generatedscrambles"), //$NON-NLS-1$
+						StringAccessor.getString("CALCubeTimer.outofscrambles"), //$NON-NLS-1$
+						JOptionPane.INFORMATION_MESSAGE);
+			updateScramble();
 			int rows = statsModel.getRowCount();
 			if(rows > 0)
 				timesTable.setRowSelectionInterval(rows - 1, rows - 1);

@@ -169,7 +169,7 @@ public class ScramblePlugin {
 	private Constructor<? extends Scramble> newScrambleConstructor = null;
 	private Constructor<? extends Scramble> importScrambleConstructor = null;
 	
-	private Method getNewUnitSize, getImageSize, getScrambleImage, getFaces;
+	private Method getNewUnitSize, getImageSize, getScrambleImage, getFaces, htmlify;
 
 	protected String PUZZLE_NAME;
 	protected String[][] FACE_NAMES_COLORS;
@@ -230,54 +230,124 @@ public class ScramblePlugin {
 				getScrambleImage = pluginClass.getMethod("getScrambleImage", int.class, int.class, Color[].class);
 				if(!getScrambleImage.getReturnType().equals(BufferedImage.class))
 					throw new ClassCastException("getScrambleImage() return type should be BufferedImage, not " + getScrambleImage.getReturnType());
+				assertPublicNotAbstract(getScrambleImage, false);
 			} catch(NoSuchMethodException e) {} //this is fine, we'll just return null for the scramble image
-			assertPublicNotAbstract(getScrambleImage, false);
 			
-			getNewUnitSize = pluginClass.getMethod("getNewUnitSize", int.class, int.class, int.class, String.class);
-			if(!getNewUnitSize.getReturnType().equals(int.class))
-				throw new ClassCastException("getNewUnitSize() return type should be int, not " + getNewUnitSize.getReturnType());
-			assertPublicNotAbstract(getNewUnitSize, true);
+			try {
+				getNewUnitSize = pluginClass.getMethod("getNewUnitSize", int.class, int.class, int.class, String.class);
+				if(!getNewUnitSize.getReturnType().equals(int.class))
+					throw new ClassCastException("getNewUnitSize() return type should be int, not " + getNewUnitSize.getReturnType());
+				assertPublicNotAbstract(getNewUnitSize, true);
+			} catch(NoSuchMethodException e) {}
 			
-			getImageSize = pluginClass.getMethod("getImageSize", int.class, int.class, String.class);
-			if(!getImageSize.getReturnType().equals(Dimension.class))
-				throw new ClassCastException("getImageSize() return type should be Dimension, not " + getImageSize.getReturnType());
-			assertPublicNotAbstract(getImageSize, true);
+			try {
+				getImageSize = pluginClass.getMethod("getImageSize", int.class, int.class, String.class);
+				if(!getImageSize.getReturnType().equals(Dimension.class))
+					throw new ClassCastException("getImageSize() return type should be Dimension, not " + getImageSize.getReturnType());
+				assertPublicNotAbstract(getImageSize, true);
+			} catch(NoSuchMethodException e) {}
 			
-			getFaces = pluginClass.getMethod("getFaces", int.class, int.class, String.class);
-			if(!getFaces.getReturnType().equals(Shape[].class))
-				throw new ClassCastException("getFaces() return type should be Shape[], not " + getFaces.getReturnType());
-			assertPublicNotAbstract(getFaces, true);
+			try {
+				getFaces = pluginClass.getMethod("getFaces", int.class, int.class, String.class);
+				if(!getFaces.getReturnType().equals(Shape[].class))
+					throw new ClassCastException("getFaces() return type should be Shape[], not " + getFaces.getReturnType());
+				assertPublicNotAbstract(getFaces, true);
+			} catch(NoSuchMethodException e) {}
+			
+			try {
+				htmlify = pluginClass.getMethod("htmlify", String.class);
+				if(!htmlify.getReturnType().equals(String.class))
+					throw new ClassCastException("htmlify() return type should be String, not " + htmlify.getReturnType());
+				assertPublicNotAbstract(htmlify, true);
+			} catch(NoSuchMethodException e) {}
 			
 			//validating fields
 			Field f = pluginClass.getField("PUZZLE_NAME"); //$NON-NLS-1$
 			PUZZLE_NAME = (String) f.get(null);
+			if(PUZZLE_NAME == null)
+				throw new NullPointerException("PUZZLE_NAME may not be null!");
+			if(PUZZLE_NAME.indexOf(':') != -1)
+				throw new IllegalArgumentException("PUZZLE_NAME (" + PUZZLE_NAME + ") may not contain ':'!");
 	
 			f = pluginClass.getField("FACE_NAMES_COLORS"); //$NON-NLS-1$
 			FACE_NAMES_COLORS = (String[][]) f.get(null);
-			if(FACE_NAMES_COLORS.length != 2)
-				throw new ArrayIndexOutOfBoundsException("FACE_NAMES_COLORS.length (" + FACE_NAMES_COLORS.length + ") does not equal 2!"); //$NON-NLS-1$ //$NON-NLS-2$
-			if(FACE_NAMES_COLORS[0].length != FACE_NAMES_COLORS[1].length)
-				throw new ArrayIndexOutOfBoundsException("FACE_NAMES_COLORS[0].length (" + FACE_NAMES_COLORS[0].length + ") != FACE_NAMES_COLORS[1].length (" + FACE_NAMES_COLORS[1].length + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			if(FACE_NAMES_COLORS != null) {
+				if(FACE_NAMES_COLORS.length != 2)
+					throw new ArrayIndexOutOfBoundsException("FACE_NAMES_COLORS.length (" + FACE_NAMES_COLORS.length + ") does not equal 2!"); //$NON-NLS-1$ //$NON-NLS-2$
+				if(FACE_NAMES_COLORS[0].length != FACE_NAMES_COLORS[1].length)
+					throw new ArrayIndexOutOfBoundsException("FACE_NAMES_COLORS[0].length (" + FACE_NAMES_COLORS[0].length + ") != FACE_NAMES_COLORS[1].length (" + FACE_NAMES_COLORS[1].length + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			}
 	
-			f = pluginClass.getField("DEFAULT_UNIT_SIZE"); //$NON-NLS-1$
-			DEFAULT_UNIT_SIZE = f.getInt(null);
+			try {
+				f = pluginClass.getField("DEFAULT_UNIT_SIZE"); //$NON-NLS-1$
+				DEFAULT_UNIT_SIZE = f.getInt(null);
+			} catch(NoSuchFieldException e) {}
 			
-			f = pluginClass.getField("DEFAULT_LENGTHS");
-			DEFAULT_LENGTHS = (int[]) f.get(null);
+			try {
+				f = pluginClass.getField("VARIATIONS"); //$NON-NLS-1$
+				VARIATIONS = (String[]) f.get(null);
+				if(VARIATIONS == null)
+					throw new NullPointerException("VARIATIONS may not be null!");
+				for(String var : VARIATIONS) {
+					if(var == null || var.isEmpty())
+						throw new NullPointerException("Scramble variations may not be null or the empty string!");
+					if(var.indexOf(':') != -1)
+						throw new IllegalArgumentException("Scramble variation (" + var + ") may not contain ':'!");
+				}
+			} catch(NoSuchFieldException e) {
+				VARIATIONS = new String[] { "" };
+			}
 			
-			f = pluginClass.getField("VARIATIONS"); //$NON-NLS-1$
-			VARIATIONS = (String[]) f.get(null);
+			try {
+				f = pluginClass.getField("DEFAULT_LENGTHS");
+				DEFAULT_LENGTHS = (int[]) f.get(null);
+				if(DEFAULT_LENGTHS == null)
+					throw new NullPointerException("DEFAULT_LENGTHS may not be null!");
+				//TODO - check for negative lengths???
+			} catch(NoSuchFieldException e) {
+				DEFAULT_LENGTHS = new int[] { 0 };
+			}
+
 			if(VARIATIONS.length != DEFAULT_LENGTHS.length)
 				throw new ArrayIndexOutOfBoundsException("VARIATIONS.length (" + VARIATIONS.length + ") != DEFAULT_LENGTHS.length (" + DEFAULT_LENGTHS.length + ")");
 			
-			f = pluginClass.getField("ATTRIBUTES"); //$NON-NLS-1$
-			ATTRIBUTES = (String[]) f.get(null);
-	
-			f = pluginClass.getField("DEFAULT_ATTRIBUTES"); //$NON-NLS-1$
-			DEFAULT_ATTRIBUTES = (String[]) f.get(null);
+			try {
+				f = pluginClass.getField("ATTRIBUTES"); //$NON-NLS-1$
+				ATTRIBUTES = (String[]) f.get(null);
+				if(ATTRIBUTES == null)
+					throw new NullPointerException("ATTRIBUTES may not be null!");
+				for(String c : ATTRIBUTES)
+					if(c == null || c.isEmpty())
+						throw new IllegalArgumentException("Attributes may not be null or empty!");
+			} catch(NoSuchFieldException e) {
+				ATTRIBUTES = new String[0];
+			}
+
+			try {
+				f = pluginClass.getField("DEFAULT_ATTRIBUTES"); //$NON-NLS-1$
+				DEFAULT_ATTRIBUTES = (String[]) f.get(null);
+				if(DEFAULT_ATTRIBUTES == null)
+					throw new NullPointerException("DEFAULT_ATTRIBUTES may not be null!");
+				for(String c : DEFAULT_ATTRIBUTES) {
+					if(c == null || c.isEmpty())
+						throw new IllegalArgumentException("Default attributes may not be null or empty!");
+					int ch;
+					for(ch = 0; ch < ATTRIBUTES.length; ch++)
+						if(c.equals(ATTRIBUTES[ch]))
+							break;
+					if(ch == ATTRIBUTES.length) //indicates that this default attribute wasn't found in ATTRIBUTES
+						throw new IllegalArgumentException("Default attribute (" + c + ") not found in ATTRIBUTES!");
+				}
+			} catch(NoSuchFieldException e) {
+				DEFAULT_ATTRIBUTES = new String[0];
+			}
 			
-			f = pluginClass.getField("TOKEN_REGEX"); //$NON-NLS-1$
-			TOKEN_REGEX = (Pattern) f.get(null);
+			try {
+				f = pluginClass.getField("TOKEN_REGEX"); //$NON-NLS-1$
+				TOKEN_REGEX = (Pattern) f.get(null);
+			} catch(NoSuchFieldException e) {
+				
+			}
 		} catch(NoClassDefFoundError e) {
 			if(e.getCause() != null)
 				e.getCause().printStackTrace();
@@ -286,10 +356,8 @@ public class ScramblePlugin {
 	}
 	
 	private static void assertPublicNotAbstract(Method m, boolean isStatic) throws NoSuchMethodException {
-		if(m == null)	return;
-		if(!Modifier.isPublic(m.getModifiers()) || (isStatic ^ Modifier.isStatic(m.getModifiers())) || Modifier.isAbstract(m.getModifiers())) {
+		if(!Modifier.isPublic(m.getModifiers()) || (isStatic ^ Modifier.isStatic(m.getModifiers())) || Modifier.isAbstract(m.getModifiers()))
 			throw new NoSuchMethodException(m.toGenericString() + " must be public, not abstract, and " + (isStatic ? "" : "not ") + "static!");
-		}
 	}
 	
 	public Class<? extends Scramble> getPluginClass() {
@@ -339,7 +407,7 @@ public class ScramblePlugin {
 		return new Scramble(scramble);
 	}
 	
-	public BufferedImage safeGetImage(final Scramble instance, final int gap, final int unitSize, final Color[] colorScheme) {
+	public BufferedImage getScrambleImage(final Scramble instance, final int gap, final int unitSize, final Color[] colorScheme) {
 		if(getScrambleImage != null && pluginClass.equals(instance.getClass())) {
 			try {
 				return TimeoutJob.doWork(new Callable<BufferedImage>() {
@@ -426,6 +494,23 @@ public class ScramblePlugin {
 			}
 		}
 		return null;
+	}
+	
+	public String htmlify(final String scramble) {
+		if(htmlify != null) {
+			try {
+				return TimeoutJob.doWork(new Callable<String>() {
+					public String call() throws Exception {
+						return (String) htmlify.invoke(null, scramble);
+					}
+				});
+			} catch (InvocationTargetException e) {
+				e.getCause().printStackTrace();
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
+		}
+		return scramble;
 	}
 
 	public Color[] getColorScheme(boolean defaults) {

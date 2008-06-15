@@ -25,10 +25,13 @@ public class SquareOneScramble extends Scramble {
 	public static final String PUZZLE_NAME = "Square-1";
 	public static final int[] DEFAULT_LENGTHS = { 40 };
 	public static final int DEFAULT_UNIT_SIZE = 32;
-	public static final Pattern TOKEN_REGEX = Pattern.compile("^(\\(-?[0-6] *, *-?[0-6] *\\))(.*)$");
+	public static final Pattern TOKEN_REGEX = Pattern.compile("^(\\( *-?\\d+ *, *-?\\d+ *\\)|/)(.*)$");
+	
+	public static final String[] ATTRIBUTES = new String[] { "Slashes" };
 	
 	private int twistCount = 0; //this will tell us the state of the middle pieces
 	private int[] state, turns;
+	private boolean slashes;
 
 	public SquareOneScramble(String variation, int length, String... attrs) {
 		this(length, attrs);
@@ -45,7 +48,11 @@ public class SquareOneScramble extends Scramble {
 			throw new InvalidScrambleException(s);
 	}
 
-	public boolean setAttributes(String... attributes) {
+	private boolean setAttributes(String... attributes) {
+		slashes = false;
+		for(String attr : attributes)
+			if(attr.equals(ATTRIBUTES[0]))
+				slashes = true;
 		initializeImage();
 		if(scramble != null) {
 			return validateScramble();
@@ -99,6 +106,8 @@ public class SquareOneScramble extends Scramble {
 				if(l==-1) scramble += "(0,0) ";
 				if(l==1) scramble += "0) ";
 				if(l==2) scramble += ") ";
+				if(l != 0 && slashes)
+					scramble += "/ ";
 				l=0;
 			}else if(k>0) {
 				scramble += "(" + (k > 6 ? k-12 : k)+",";
@@ -157,6 +166,13 @@ public class SquareOneScramble extends Scramble {
 
 	private static final Pattern regexp = Pattern.compile("^ *(-?[0-6]) *, *(-?[0-6]) *$");
 	private boolean validateScramble() {
+		//if there is no slash in the scramble, we assume that we're using implicit slashes
+		boolean implicitSlashes = scramble.indexOf('/') == -1;
+		//however, to get correct incremental scramble behavior, we will use the set attribute if
+		//there is only one set of parens
+		if(scramble.indexOf('(') == scramble.lastIndexOf('('))
+			implicitSlashes = !slashes;
+		
 		length = 0;
 		String[] trns = scramble.split("(\\(|\\)|\\( *\\))", -1);
 		scramble = "";
@@ -165,6 +181,8 @@ public class SquareOneScramble extends Scramble {
 			Matcher match;
 			if(trns[ch].matches(" *")) {
 
+			} else if(trns[ch].matches(" */ *")) {
+				domove(length++, 0);
 			} else if((match = regexp.matcher(trns[ch])).matches()) {
 				int top = Integer.parseInt(match.group(1));
 				int bot = Integer.parseInt(match.group(2));
@@ -174,7 +192,8 @@ public class SquareOneScramble extends Scramble {
 					return false;
 				if(bot != 0 && domove(length++, bot-12))
 					return false;
-				domove(length++, 0);
+				if(implicitSlashes)
+					domove(length++, 0);
 			} else
 				return false;
 		}
