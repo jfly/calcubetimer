@@ -21,8 +21,7 @@ import org.jvnet.lafwidget.LafWidget;
 public class AboutScrollFrame extends JFrame implements ActionListener, WindowListener {
 	private JScrollPane editorScrollPane;
 	private Timer autoscroll;
-	public AboutScrollFrame(String title, URL helpURL, Image icon) throws Exception {
-		super(title);
+	public AboutScrollFrame(URL helpURL, Image icon) throws Exception {
 		this.setIconImage(icon);
 		this.setAlwaysOnTop(true);
 		JTextPane pane = new JTextPane();

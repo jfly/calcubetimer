@@ -361,13 +361,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		aboutAction = new AboutAction();
 		actionMap.put("showabout", aboutAction); //$NON-NLS-1$
-		try {
-			aboutAction.setAboutFrame(new AboutScrollFrame(StringAccessor.getString("CALCubeTimer.about") + CCT_VERSION, //$NON-NLS-1$
-					CALCubeTimer.class.getResource("about.html"),
-					cubeIcon.getImage()));
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		}
 
 		requestScrambleAction = new RequestScrambleAction(this);
 		requestScrambleAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
@@ -1848,18 +1841,20 @@ class ExitAction extends AbstractAction{
 	}
 }
 @SuppressWarnings("serial") //$NON-NLS-1$
-class AboutAction extends AbstractAction{
-	public AboutAction(){
-		setEnabled(false);
-	}
-	
-	private JFrame makeMeVisible;
-	public void setAboutFrame(JFrame makeMeVisible) {
-		this.makeMeVisible = makeMeVisible;
-		setEnabled(true);
+class AboutAction extends AbstractAction {
+	private AboutScrollFrame makeMeVisible;
+	public AboutAction() {
+		try {
+			makeMeVisible = new AboutScrollFrame(CALCubeTimer.class.getResource("about.html"), CALCubeTimer.cubeIcon.getImage());
+			setEnabled(true);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			setEnabled(false);
+		}
 	}
 
 	public void actionPerformed(ActionEvent e){
+		makeMeVisible.setTitle(StringAccessor.getString("CALCubeTimer.about") + CALCubeTimer.CCT_VERSION);
 		makeMeVisible.setVisible(true);
 	}
 }
