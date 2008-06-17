@@ -246,7 +246,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		flipFullScreenAction = new FlipFullScreenAction(this);
 		flipFullScreenAction.putValue(Action.NAME, "+"); //$NON-NLS-1$
-		flipFullScreenAction.putValue(Action.SHORT_DESCRIPTION, StringAccessor.getString("CALCubeTimer.togglefullscreen")); //$NON-NLS-1$
 		actionMap.put("togglefullscreen", flipFullScreenAction); //$NON-NLS-1$
 
 		importScramblesAction = new ImportScramblesAction(this);
@@ -450,14 +449,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		stackmatTimer = new StackmatInterpreter();
 		new StackmatHandler(this, stackmatTimer);
+		
 		timeLabel = new TimerLabel(scramblePanel);
+		bigTimersDisplay = new TimerLabel(scramblePanel);
+		
 		KeyboardHandler keyHandler = new KeyboardHandler(this);
 		timeLabel.setKeyboardHandler(keyHandler);
-
-		fullscreenPanel = new JPanel(new BorderLayout());
-		bigTimersDisplay = new TimerLabel(scramblePanel);
 		bigTimersDisplay.setKeyboardHandler(keyHandler);
 
+		fullscreenPanel = new JPanel(new BorderLayout());
 		fullscreenPanel.add(bigTimersDisplay, BorderLayout.CENTER);
 		JButton fullScreenButton = new JButton(flipFullScreenAction);
 		fullscreenPanel.add(fullScreenButton, BorderLayout.PAGE_END);
@@ -615,7 +615,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		statsModel.fireStringUpdates(); //this is necessary to update the undo-redo actions
 		timeLabel.refreshTimer();
 		commenter.updateText();
-		
+
+		flipFullScreenAction.putValue(Action.SHORT_DESCRIPTION, StringAccessor.getString("CALCubeTimer.togglefullscreen")); //$NON-NLS-1$
 		customGUIMenu.setText(StringAccessor.getString("CALCubeTimer.loadcustomgui")); //$NON-NLS-1$
 		timesTable.setAddText(StringAccessor.getString("CALCubeTimer.addtime")); //$NON-NLS-1$
 		scramblePopup.setTitle(StringAccessor.getString("CALCubeTimer.scrambleview"));
@@ -1298,30 +1299,20 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private JFrame fullscreenFrame;
 	private boolean isFullscreen = false;
 	private void setFullScreen(boolean b) {
+		isFullscreen = fullscreenFrame.isVisible();
 		if(b == isFullscreen)
 			return;
 		isFullscreen = b;
 		if(isFullscreen) {
-			if(fullscreenFrame != null)
-				fullscreenFrame.dispose();
+
 			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			GraphicsDevice[] gs = ge.getScreenDevices();
 			GraphicsDevice gd = gs[Configuration.getInt(VariableKey.FULLSCREEN_DESKTOP, false)];
-			fullscreenFrame = new JFrame(gd.getDefaultConfiguration());
-			fullscreenFrame.setUndecorated(true);
-			fullscreenFrame.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
-
 			DisplayMode screenSize = gd.getDisplayMode();
-			fullscreenFrame.setResizable(false);
 			fullscreenFrame.setSize(screenSize.getWidth(), screenSize.getHeight());
-			fullscreenFrame.setUndecorated(true);
-			fullscreenFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-			fullscreenFrame.setContentPane(fullscreenPanel);
-
-			bigTimersDisplay.setText(timeLabel.getText());
-			bigTimersDisplay.requestFocusInWindow();
-
+			
 			fullscreenFrame.validate();
+			bigTimersDisplay.requestFocusInWindow();
 		}
 		fullscreenFrame.setVisible(isFullscreen);
 	}
@@ -1441,6 +1432,22 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				else
 					scramblePanel.requestFocusInWindow();
 				timeLabel.componentResized(null);
+				
+				//dispose the old fullscreen frame, and create a new one
+				if(fullscreenFrame != null)
+					fullscreenFrame.dispose();
+				GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+				GraphicsDevice[] gs = ge.getScreenDevices();
+				GraphicsDevice gd = gs[Configuration.getInt(VariableKey.FULLSCREEN_DESKTOP, false)];
+				fullscreenFrame = new JFrame(gd.getDefaultConfiguration());
+				fullscreenFrame.setUndecorated(true);
+				fullscreenFrame.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+				
+				fullscreenFrame.setResizable(false);
+				fullscreenFrame.setUndecorated(true);
+				fullscreenFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+				fullscreenFrame.setContentPane(fullscreenPanel);
+				setFullScreen(isFullscreen);
 			}
 		});
 	}
@@ -1714,10 +1721,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 //			String time = newTime.toString();
 			timeLabel.setForeground(fore);
 			timeLabel.setTime(newTime);
-			if(isFullscreen) {
-				bigTimersDisplay.setForeground(fore);
-				bigTimersDisplay.setTime(newTime);
-			}
+			bigTimersDisplay.setForeground(fore);
+			bigTimersDisplay.setTime(newTime);
 //			boolean reset = false;
 //			if(!reset) //TODO - test out on server!
 			sendCurrentTime(newTime.toString());

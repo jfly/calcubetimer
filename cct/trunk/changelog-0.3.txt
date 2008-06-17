@@ -186,11 +186,11 @@ changes:
 +htmlify secured by turning it into a public static final method and removing it from Scramble.java
 +the tooltips & scramble popup title (possibly more) are now being updated
 	+translated ALL swing properties (still cannot figure out the close, maximize, and iconify tooltips)
++don't recreate fullscreen frame unecessarily
 
 TODO:
 
 for release:
--don't recreate fullscreen frame unecessarily
 -SECURITY concern: scramble plugins modifying other scramble plugin's final arrays?
 -keyboard timer doesn't work immediately after disabling stackmat (figure out a better status display)
 -improve gui behavior when scramble plugin cannot be found (specifically: behavior of customization list in config. dialog)
