@@ -18,16 +18,16 @@ import java.util.regex.Pattern;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 
+@SuppressWarnings("unused")
 public class SquareOneScramble extends Scramble {
-	public static final String[][] FACE_NAMES_COLORS =
+	private static final String[][] FACE_NAMES_COLORS =
 	{ { "L",	  "B", 		"R", 	  "F",		"U",	  "D" },
 	  { "ffff00", "ff0000", "0000ff", "ffc800", "ffffff", "00ff00" } };
-	public static final String PUZZLE_NAME = "Square-1";
-	public static final int[] DEFAULT_LENGTHS = { 40 };
-	public static final int DEFAULT_UNIT_SIZE = 32;
-	public static final Pattern TOKEN_REGEX = Pattern.compile("^(\\( *-?\\d+ *, *-?\\d+ *\\)|/)(.*)$");
-	
-	public static final String[] ATTRIBUTES = new String[] { "Slashes" };
+	private static final String PUZZLE_NAME = "Square-1";
+	private static final int[] DEFAULT_LENGTHS = { 40 };
+	private static final int DEFAULT_UNIT_SIZE = 32;
+	private static final Pattern TOKEN_REGEX = Pattern.compile("^(\\( *-?\\d+ *, *-?\\d+ *\\)|/)(.*)$");
+	private static final String[] ATTRIBUTES = new String[] { "Slashes" };
 	
 	private int twistCount = 0; //this will tell us the state of the middle pieces
 	private int[] state, turns;

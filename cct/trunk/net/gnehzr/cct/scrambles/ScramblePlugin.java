@@ -262,14 +262,14 @@ public class ScramblePlugin {
 			} catch(NoSuchMethodException e) {}
 			
 			//validating fields
-			Field f = pluginClass.getField("PUZZLE_NAME"); //$NON-NLS-1$
+			Field f = getPrivateStaticField(pluginClass, "PUZZLE_NAME"); //$NON-NLS-1$
 			PUZZLE_NAME = (String) f.get(null);
 			if(PUZZLE_NAME == null)
 				throw new NullPointerException("PUZZLE_NAME may not be null!");
 			if(PUZZLE_NAME.indexOf(':') != -1)
 				throw new IllegalArgumentException("PUZZLE_NAME (" + PUZZLE_NAME + ") may not contain ':'!");
 	
-			f = pluginClass.getField("FACE_NAMES_COLORS"); //$NON-NLS-1$
+			f = getPrivateStaticField(pluginClass, "FACE_NAMES_COLORS"); //$NON-NLS-1$
 			FACE_NAMES_COLORS = (String[][]) f.get(null);
 			if(FACE_NAMES_COLORS != null) {
 				if(FACE_NAMES_COLORS.length != 2)
@@ -279,12 +279,12 @@ public class ScramblePlugin {
 			}
 	
 			try {
-				f = pluginClass.getField("DEFAULT_UNIT_SIZE"); //$NON-NLS-1$
+				f = getPrivateStaticField(pluginClass, "DEFAULT_UNIT_SIZE"); //$NON-NLS-1$
 				DEFAULT_UNIT_SIZE = f.getInt(null);
 			} catch(NoSuchFieldException e) {}
 			
 			try {
-				f = pluginClass.getField("VARIATIONS"); //$NON-NLS-1$
+				f = getPrivateStaticField(pluginClass, "VARIATIONS"); //$NON-NLS-1$
 				VARIATIONS = (String[]) f.get(null);
 				if(VARIATIONS == null)
 					throw new NullPointerException("VARIATIONS may not be null!");
@@ -299,11 +299,11 @@ public class ScramblePlugin {
 			}
 			
 			try {
-				f = pluginClass.getField("DEFAULT_LENGTHS");
+				f = getPrivateStaticField(pluginClass, "DEFAULT_LENGTHS"); //$NON-NLS-1$
 				DEFAULT_LENGTHS = (int[]) f.get(null);
 				if(DEFAULT_LENGTHS == null)
 					throw new NullPointerException("DEFAULT_LENGTHS may not be null!");
-				//TODO - check for negative lengths???
+				//there's no need to deal w/ negative lengths here, we'll deal with it later
 			} catch(NoSuchFieldException e) {
 				DEFAULT_LENGTHS = new int[] { 0 };
 			}
@@ -312,7 +312,7 @@ public class ScramblePlugin {
 				throw new ArrayIndexOutOfBoundsException("VARIATIONS.length (" + VARIATIONS.length + ") != DEFAULT_LENGTHS.length (" + DEFAULT_LENGTHS.length + ")");
 			
 			try {
-				f = pluginClass.getField("ATTRIBUTES"); //$NON-NLS-1$
+				f = getPrivateStaticField(pluginClass, "ATTRIBUTES"); //$NON-NLS-1$
 				ATTRIBUTES = (String[]) f.get(null);
 				if(ATTRIBUTES == null)
 					throw new NullPointerException("ATTRIBUTES may not be null!");
@@ -324,7 +324,7 @@ public class ScramblePlugin {
 			}
 
 			try {
-				f = pluginClass.getField("DEFAULT_ATTRIBUTES"); //$NON-NLS-1$
+				f = getPrivateStaticField(pluginClass, "DEFAULT_ATTRIBUTES"); //$NON-NLS-1$
 				DEFAULT_ATTRIBUTES = (String[]) f.get(null);
 				if(DEFAULT_ATTRIBUTES == null)
 					throw new NullPointerException("DEFAULT_ATTRIBUTES may not be null!");
@@ -343,7 +343,7 @@ public class ScramblePlugin {
 			}
 			
 			try {
-				f = pluginClass.getField("TOKEN_REGEX"); //$NON-NLS-1$
+				f = getPrivateStaticField(pluginClass, "TOKEN_REGEX"); //$NON-NLS-1$
 				TOKEN_REGEX = (Pattern) f.get(null);
 			} catch(NoSuchFieldException e) {
 				
@@ -353,6 +353,21 @@ public class ScramblePlugin {
 				e.getCause().printStackTrace();
 			throw new ClassNotFoundException("", e);
 		}
+	}
+	
+	public static Field getPrivateStaticField(Class<?> c, String name) throws NoSuchFieldException {
+		Field field = null;
+		for(Field f : c.getDeclaredFields())
+			if(f.getName().equals(name)) {
+				field = f;
+				break;
+			}
+		if(field == null)
+			throw new NoSuchFieldException("Could not find field: " + name + "!");
+		if(Modifier.isAbstract(field.getModifiers()) || !Modifier.isStatic(field.getModifiers()) || !Modifier.isPrivate(field.getModifiers()))
+			throw new NullPointerException(name + " must be private, static, and not abstract!"); //we can't use NoSuchFieldException, because we don't want this to be caught
+		field.setAccessible(true);
+		return field;
 	}
 	
 	private static void assertPublicNotAbstract(Method m, boolean isStatic) throws NoSuchMethodException {

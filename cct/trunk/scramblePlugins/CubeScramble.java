@@ -11,17 +11,21 @@ import java.util.regex.Pattern;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 
+//The public arrays are going to be accessed via reflection from the ScramblePlugin class
+//This way, other scramble plugins will not be able to modify the static arrays of other
+//scramble plugins.
+@SuppressWarnings("unused") 
 public class CubeScramble extends Scramble {
-	public static final String[][] FACE_NAMES_COLORS = 
+	private static final String[][] FACE_NAMES_COLORS = 
 	{ { "L",	  "D",		"B", 	  "R", 		"U", 	  "F" },
 	  { "ffc800", "ffff00", "0000ff", "ff0000", "ffffff", "00ff00" } };
-	public static final String PUZZLE_NAME = "Cube";
-	public static final String[] VARIATIONS = { "2x2x2", "3x3x3", "4x4x4", "5x5x5", "6x6x6", "7x7x7", "8x8x8", "9x9x9", "10x10x10", "11x11x11" };
-	public static final int[] DEFAULT_LENGTHS = { 25,	 25,		40,		60,		80,			100,	120,	140,	160,		180 };
-	public static final String[] ATTRIBUTES = {"%%multislice%%"};
-	public static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
-	public static final int DEFAULT_UNIT_SIZE = 11;
-	public static final Pattern TOKEN_REGEX = Pattern.compile("^([LDBRUFldbruf](?:\\(\\d+\\))?w?[2']?)(.*)$");
+	private static final String PUZZLE_NAME = "Cube";
+	private static final String[] VARIATIONS = { "2x2x2", "3x3x3", "4x4x4", "5x5x5", "6x6x6", "7x7x7", "8x8x8", "9x9x9", "10x10x10", "11x11x11" };
+	private static final int[] DEFAULT_LENGTHS = { 25,	 25,		40,		60,		80,			100,	120,	140,	160,		180 };
+	private static final String[] ATTRIBUTES = {"%%multislice%%"};
+	private static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
+	private static final int DEFAULT_UNIT_SIZE = 11;
+	private static final Pattern TOKEN_REGEX = Pattern.compile("^([LDBRUFldbruf](?:\\(\\d+\\))?w?[2']?)(.*)$");
 	
 	private static final String FACES = "LDBRUFldbruf";
 	private static final boolean wideNotation = true;

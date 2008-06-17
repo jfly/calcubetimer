@@ -182,7 +182,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		JPanel lengthPanel = new JPanel();
 		lengthPanel.setLayout(new BoxLayout(lengthPanel, BoxLayout.LINE_AXIS));
 		customization = custom;
-		scramLength = new JSpinner(new SpinnerNumberModel(custom.getScrambleVariation().getLength(), 0, null, 1));
+		scramLength = new JSpinner(new SpinnerNumberModel(Math.max(custom.getScrambleVariation().getLength(), 0), 0, null, 1));
 		scramLength.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.specifylength")); //$NON-NLS-1$
 		((JSpinner.DefaultEditor) scramLength.getEditor()).getTextField().setColumns(3);
 		lengthPanel.add(scramLength);

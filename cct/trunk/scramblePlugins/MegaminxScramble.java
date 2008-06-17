@@ -15,15 +15,16 @@ import java.util.regex.Pattern;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 
+@SuppressWarnings("unused")
 public class MegaminxScramble extends Scramble {
-	public static final String[][] FACE_NAMES_COLORS = 
+	private static final String[][] FACE_NAMES_COLORS = 
 	{ { "A", 	 "B",	   "C",		 "D",	   "E",		 "F",	   "a",		 "b",	   "f",		 "e",	   "d",		 "c" },
 	  { "ffffff", "336633", "66ffff", "996633", "3333ff", "993366", "ffff00", "66ff66", "ff9933", "ff0000", "000099", "ff66ff" } };
-	public static final String PUZZLE_NAME = "Megaminx";
-	public static final String[] VARIATIONS = { "Megaminx", "Pochmann Megaminx" };
-	public static final int[] DEFAULT_LENGTHS = { 70,		60 };
-	public static final int DEFAULT_UNIT_SIZE = 30;
-	public static final Pattern TOKEN_REGEX = Pattern.compile("^([A-Fa-fRYU](?:\\+\\+|--|'|[234]?))(.*)$");
+	private static final String PUZZLE_NAME = "Megaminx";
+	private static final String[] VARIATIONS = { "Megaminx", "Pochmann Megaminx" };
+	private static final int[] DEFAULT_LENGTHS = { 70,		60 };
+	private static final int DEFAULT_UNIT_SIZE = 30;
+	private static final Pattern TOKEN_REGEX = Pattern.compile("^([A-Fa-fRYU](?:\\+\\+|--|'|[234]?))(.*)$");
 	
 	private static final double UNFOLDHEIGHT = 2 + 3 * Math.sin(.3 * Math.PI) + Math.sin(.1 * Math.PI);
 	private static final double UNFOLDWIDTH = 4 * Math.cos(.1 * Math.PI) + 2 * Math.cos(.3 * Math.PI);
