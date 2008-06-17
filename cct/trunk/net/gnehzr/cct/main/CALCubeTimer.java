@@ -327,11 +327,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			public void undoRedoChange(int undoable, int redoable) {
 				this.undoable = undoable;
 				this.redoable = redoable;
-				undo.setEnabled(undoable != 0);
-				redo.setEnabled(redoable != 0);
 				refresh();
 			}
 			public void refresh() {
+				undo.setEnabled(undoable != 0);
+				redo.setEnabled(redoable != 0);
 				undo.putValue(Action.NAME, StringAccessor.getString("CALCubeTimer.undo") + undoable); //$NON-NLS-1$
 				redo.putValue(Action.NAME, StringAccessor.getString("CALCubeTimer.redo") + redoable); //$NON-NLS-1$
 			}
@@ -398,6 +398,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Changed"; //$NON-NLS-1$
 	private JMenu customGUIMenu;
 	private void initializeGUIComponents() {
+		//NOTE: all internationalizable text must go in the loadStringsFromDefaultLocale() method
 		tickTock = new Timer(0, null);
 
 		currentTimeLabel = new DateTimeLabel();
@@ -406,31 +407,31 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scrambleChooser.addItemListener(this);
 
 		scrambleNumber = new JSpinner(new SpinnerNumberModel(1,	1, 1, 1));
-		scrambleNumber.setToolTipText(StringAccessor.getString("CALCubeTimer.scramblenumber")); //$NON-NLS-1$
 		((JSpinner.DefaultEditor) scrambleNumber.getEditor()).getTextField().setColumns(3);
 		scrambleNumber.addChangeListener(this);
 
 		scrambleLength = new JSpinner(new SpinnerNumberModel(1, 1, null, 1));
-		scrambleLength.setToolTipText(StringAccessor.getString("CALCubeTimer.scramblelength")); //$NON-NLS-1$
 		((JSpinner.DefaultEditor) scrambleLength.getEditor()).getTextField().setColumns(3);
 		scrambleLength.addChangeListener(this);
 
 		scrambleAttributes = new JPanel();
 
-		scramblePopup = new ScrambleFrame(this, StringAccessor.getString("CALCubeTimer.scrambleview"), toggleScrambleView, false); //$NON-NLS-1$
+		scramblePopup = new ScrambleFrame(this, toggleScrambleView, false); //$NON-NLS-1$
 		scramblePopup.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		scramblePopup.setIconImage(cubeIcon.getImage());
 		scramblePopup.setFocusableWindowState(false);
 
 		onLabel = new JLabel() {
-			public void setFont(Font font) { //this will double the size of the font whenever updateUI() is called
-				super.setFont(font.deriveFont(font.getSize2D() * 2));
+			public void updateUI() {
+				Font f = UIManager.getFont("Label.font"); //$NON-NLS-1$
+				setFont(f.deriveFont(f.getSize2D() * 2));
+				super.updateUI();
 			}
 		};
 
 		timesTable = new DraggableJTable(false, true); //$NON-NLS-1$
 		timesTable.setName("timesTable"); //$NON-NLS-1$
-		timesTable.setDefaultEditor(SolveTime.class, new SolveTimeEditor(StringAccessor.getString("CALCubeTimer.typenewtime"))); //$NON-NLS-1$
+		timesTable.setDefaultEditor(SolveTime.class, new SolveTimeEditor()); //$NON-NLS-1$
 		timesTable.setDefaultRenderer(SolveTime.class, new SolveTimeRenderer(statsModel));
 		timesTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		timesTable.setModel(statsModel);
@@ -610,24 +611,24 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		AppContext.getAppContext().put("JComponent.defaultLocale", Locale.getDefault());
 		try {
 			ResourceBundle messages = ResourceBundle.getBundle("languages/javax_swing");
-			for(String key : messages.keySet()) {
-				String s = messages.getString(key);
-				if(s.isEmpty()) { //I know this looks silly, but it needs to be done (see javax_swing.properties for more of an explanation)
-					UIManager.getDefaults().remove(key);
-					UIManager.put(key, UIManager.getString(key, Locale.getDefault()));
-				} else
-					UIManager.put(key, s);
-			}
+			for(String key : messages.keySet())
+				UIManager.put(key, messages.getString(key));
 		} catch(MissingResourceException e) {
 			e.printStackTrace();
 		}
+		
 		StringAccessor.clearResources();
 		XMLGuiMessages.reloadResources();
 		statsModel.fireStringUpdates(); //this is necessary to update the undo-redo actions
 		timeLabel.refreshTimer();
 		commenter.updateText();
+		
 		customGUIMenu.setText(StringAccessor.getString("CALCubeTimer.loadcustomgui")); //$NON-NLS-1$
 		timesTable.setAddText(StringAccessor.getString("CALCubeTimer.addtime")); //$NON-NLS-1$
+		scramblePopup.setTitle(StringAccessor.getString("CALCubeTimer.scrambleview"));
+		scrambleNumber.setToolTipText(StringAccessor.getString("CALCubeTimer.scramblenumber")); //$NON-NLS-1$
+		scrambleLength.setToolTipText(StringAccessor.getString("CALCubeTimer.scramblelength")); //$NON-NLS-1$
+
 		stackmatOn(false);
 		timesTable.refreshColumnNames();
 		sessionsTable.refreshColumnNames();

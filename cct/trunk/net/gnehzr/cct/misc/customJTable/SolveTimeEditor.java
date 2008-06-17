@@ -11,17 +11,16 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.statistics.SolveTime;
 
 @SuppressWarnings("serial") //$NON-NLS-1$
 public class SolveTimeEditor extends DefaultCellEditor {
 	private SolveTime value;
-	private String editText;
-	public SolveTimeEditor(String editText) {
+	public SolveTimeEditor() {
 		super(new JTextField());
-		this.editText = editText;
 	}
-
+	
 	//TODO - http://www.pushing-pixels.org/?p=69 ?
 	public boolean stopCellEditing() {
 		String s = (String) super.getCellEditorValue();
@@ -29,7 +28,7 @@ public class SolveTimeEditor extends DefaultCellEditor {
 			value = new SolveTime(s, null);
 		} catch (Exception e) {
 			JComponent component = (JComponent) getComponent();
-			component.setBorder(new LineBorder(Color.red));
+			component.setBorder(new LineBorder(Color.RED));
 			component.setToolTipText(e.getMessage());
 			Action toolTipAction = component.getActionMap().get("postTip"); //$NON-NLS-1$
 			if (toolTipAction != null) {
@@ -45,8 +44,8 @@ public class SolveTimeEditor extends DefaultCellEditor {
 	public Component getTableCellEditorComponent(JTable table, Object value,
 			boolean isSelected, int row, int column) {
 		this.value = null;
-		((JComponent) getComponent()).setBorder(new LineBorder(Color.black));
-		((JComponent) getComponent()).setToolTipText(editText);
+		((JComponent) getComponent()).setBorder(new LineBorder(Color.BLACK));
+		((JComponent) getComponent()).setToolTipText(StringAccessor.getString("CALCubeTimer.typenewtime"));
 		return super.getTableCellEditorComponent(table, value, isSelected, row,
 				column);
 	}

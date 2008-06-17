@@ -34,7 +34,8 @@ public class ScrambleDebugger extends ScramblePlugin {
 		System.out.println("Scramble length: " + length);
 		Scramble s = super.newScramble("", length, super.DEFAULT_ATTRIBUTES);
 		AbstractAction aa = new AbstractAction() {public void actionPerformed(ActionEvent e) {}};
-		ScrambleFrame view = new ScrambleFrame(null, "ScrambleDebugger", aa, true);
+		ScrambleFrame view = new ScrambleFrame(null, aa, true);
+		view.setTitle("ScrambleDebugger");
 		view.setScramble(s, new ScrambleVariation(this, ""));
 		view.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		view.pack();

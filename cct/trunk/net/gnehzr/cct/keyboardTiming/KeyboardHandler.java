@@ -28,10 +28,9 @@ public class KeyboardHandler extends Timer {
 	private long start;
 	public void startTimer() {
 		boolean inspection = Configuration.getBoolean(VariableKey.COMPETITION_INSPECTION, false);
-		start = System.currentTimeMillis();
-		if(!inspecting && start - current < Configuration.getInt(VariableKey.DELAY_BETWEEN_SOLVES, false))
+		if(!inspecting && System.currentTimeMillis() - current < Configuration.getInt(VariableKey.DELAY_BETWEEN_SOLVES, false))
 			return;
-		current = start;
+		current = start = System.currentTimeMillis();;
 		if(!isRunning())
 			super.start();
 		if(!inspection || inspecting) {

@@ -19,8 +19,8 @@ import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 public class ScrambleFrame extends JDialog implements ConfigurationChangeListener {
 	private ScrambleViewComponent scrambleView;
 	private AbstractAction visibilityAction;
-	public ScrambleFrame(JFrame parent, String title, AbstractAction scrambleVisibility, boolean detectColorClicks) {
-		super(parent, title);
+	public ScrambleFrame(JFrame parent, AbstractAction scrambleVisibility, boolean detectColorClicks) {
+		super(parent);
 		visibilityAction = scrambleVisibility;
 		scrambleView = new ScrambleViewComponent(false, detectColorClicks);
 		this.getContentPane().add(scrambleView, BorderLayout.CENTER);
