@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Shape;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -147,24 +148,31 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 				colorScheme[focusedFace] = c;
 				redo();
 			}
+			findFocusedFace(getMousePosition());
 		}
 	}
 	public void mouseEntered(MouseEvent e) {}
-	public void mouseExited(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {
+		findFocusedFace(null);
+	}
 	public void mousePressed(MouseEvent e) {}
 	public void mouseReleased(MouseEvent e) {}
 
 	public void mouseDragged(MouseEvent e) {}
-	private int focusedFace = -1;
 	public void mouseMoved(MouseEvent e) {
+		findFocusedFace(e.getPoint());
+	}
+	private int focusedFace = -1;
+	private void findFocusedFace(Point p) {
 		focusedFace = -1;
-		for(int c = 0; faces != null && c < faces.length; c++) {
-			if(faces[c] != null && faces[c].contains(e.getPoint())) {
+		for(int c = 0; p != null && faces != null && c < faces.length; c++) {
+			if(faces[c] != null && faces[c].contains(p)) {
 				focusedFace = c;
 				break;
 			}
 		}
 		repaint();
+	
 	}
 
 	public void commitColorSchemeToConfiguration() {
