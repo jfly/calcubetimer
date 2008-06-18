@@ -24,16 +24,19 @@ public class KeyboardHandler extends Timer {
 		inspecting = false;
 		this.stop();
 	}
+	
+	public boolean canStartTimer() {
+		return System.currentTimeMillis() - current > Configuration.getInt(VariableKey.DELAY_BETWEEN_SOLVES, false);
+	}
 
 	private long start;
 	public void startTimer() {
-		boolean inspection = Configuration.getBoolean(VariableKey.COMPETITION_INSPECTION, false);
-		if(!inspecting && System.currentTimeMillis() - current < Configuration.getInt(VariableKey.DELAY_BETWEEN_SOLVES, false))
+		boolean inspectionEnabled = Configuration.getBoolean(VariableKey.COMPETITION_INSPECTION, false);
+		if(!canStartTimer())
 			return;
 		current = start = System.currentTimeMillis();;
-		if(!isRunning())
-			super.start();
-		if(!inspection || inspecting) {
+		if(!inspectionEnabled || inspecting) {
+			start();
 			inspecting = false;
 			reset = false;
 			tl.timerStarted();
@@ -80,5 +83,6 @@ public class KeyboardHandler extends Timer {
 	public void fireStop() {
 		tl.timerStopped(getTimerState());
 		reset = true;
+		current = System.currentTimeMillis();
 	}
 }

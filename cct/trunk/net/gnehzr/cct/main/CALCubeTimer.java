@@ -166,10 +166,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private JComboBox languages = null;
 	private JTextArea commentArea = null;
 	private TimerLabel timeLabel = null;
+	//TODO - change this to a hashmap
 	//all of the above components belong in this ArrayList, so we can reset their
 	//attributes before parsing the xml gui
 	private ArrayList<JComponent> persistentComponents;
-	//this keeps track of the original borders of every persisten component
+	//this keeps track of the original borders of every persistent component
 	private ArrayList<Border> persistentComponentBorders;
 	
 	private TimerLabel bigTimersDisplay = null;
@@ -613,7 +614,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		StringAccessor.clearResources();
 		XMLGuiMessages.reloadResources();
 		statsModel.fireStringUpdates(); //this is necessary to update the undo-redo actions
-		timeLabel.refreshTimer();
+//		timeLabel.refreshTimer(); //this is inside of parse_xml
 		commenter.updateText();
 
 		flipFullScreenAction.putValue(Action.SHORT_DESCRIPTION, StringAccessor.getString("CALCubeTimer.togglefullscreen")); //$NON-NLS-1$
@@ -655,7 +656,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		//before reloading the gui, we must discard any old state these components may have had
 
 		//TODO - what to do with component names?
-		//TODO reset times scroller scrolling policy
 		for(int ch = 0; ch < persistentComponents.size(); ch++) {
 			JComponent c = persistentComponents.get(ch);
 			c.setBorder(persistentComponentBorders.get(ch));
@@ -676,7 +676,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timeLabel.setMinimumSize(new Dimension(0, 150));
 		timeLabel.setPreferredSize(new Dimension(0, 150));
 		timeLabel.setAlignmentX(.5f);
-		timeLabel.refreshTimer();
+		timeLabel.configurationChanged();
 		
 		XMLGuiMessages.reloadResources();
 
@@ -1540,8 +1540,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	public void keyboardTimingAction() {
 		boolean selected = (Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY);
 		Configuration.setBoolean(VariableKey.STACKMAT_ENABLED, !selected);
-		timeLabel.setKeyboard(selected);
-		bigTimersDisplay.setKeyboard(selected);
+		timeLabel.configurationChanged();
+		bigTimersDisplay.configurationChanged();
 		stackmatTimer.enableStackmat(!selected);
 		stopInspection();
 		timeLabel.reset();

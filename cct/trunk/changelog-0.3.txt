@@ -188,15 +188,15 @@ changes:
 	+translated ALL swing properties (still cannot figure out the close, maximize, and iconify tooltips)
 +don't recreate fullscreen frame unecessarily
 +SECURITY concern: scramble plugins cannot modifying other scramble plugin's final arrays (because they are now private) we use reflection to access those fields
++keyboard timer display now more indicative of the current state of the timer
 
 TODO:
 
 for release:
--keyboard timer doesn't work immediately after disabling stackmat (figure out a better status display)
 -improve gui behavior when scramble plugin cannot be found (specifically: behavior of customization list in config. dialog)
 -clean up cct startup as best as possible!
-	-save gui state before changing language
 	-decide upon default startup layout (should we remove the progress time stuff from the default layout?)
+-save gui state before changing language
 -worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
 -open source sourceforge!
 -create license, give credit where credit is due
@@ -211,6 +211,7 @@ misc:
 -BUG: titled borders are not anti-aliased (substance bug!)
 
 cleanup:
+-move persistent gui components into a hashmap
 -add a ton more reset buttons to config. dialog.
 -generalize XML syntax (get rid of Dynamic... classes) UPDATE: no idea how to do this...???
 

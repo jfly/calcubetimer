@@ -49,18 +49,13 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 		addKeyListener(this);
 		addMouseListener(this);
 		setFocusTraversalKeysEnabled(false);
-		Configuration.addConfigurationChangeListener(this);
+//		Configuration.addConfigurationChangeListener(this); //CCT.java will notify us @ a better time than Configuration would
 	}
 	public void setKeyboardHandler(KeyboardHandler keyHandler) {
 		this.keyHandler = keyHandler;
 	}
 
 	private boolean keysDown;
-	private boolean keyboard;
-	public void setKeyboard(boolean keyboard) {
-		this.keyboard = keyboard;
-		refreshTimer();
-	}
 	private boolean on;
 	public void setStackmatOn(boolean on) {
 		this.on = on;
@@ -82,12 +77,14 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 	public void setTime(TimerState time) {
 		this.time = time;
 		super.setText(time.toString());
+//		refreshTimer();
 		componentResized(null);
 	}
 	
 	public void setText(String arg0) {
 		time = null;
 		super.setText(arg0);
+//		refreshTimer();
 		componentResized(null);
 	}
 	public void componentHidden(ComponentEvent arg0) {}
@@ -143,8 +140,10 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 	}
 
 	public void configurationChanged() {
-		setKeyboard(!Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false));
+//		setKeyboard(!Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false));
 		setFont(Configuration.getFont(VariableKey.TIMER_FONT, false));
+		if(time != null) //this will deal with any internationalization issues, if appropriate
+			setTime(time);
 		refreshTimer();
 	}
 	public void focusGained(FocusEvent e) {
@@ -153,24 +152,31 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 	public void focusLost(FocusEvent e) {
 		refreshTimer();
 	}
+	
+	private boolean canStartTimer() {
+		boolean stackmatEmulation = Configuration.getBoolean(VariableKey.STACKMAT_EMULATION, false);
+		boolean spacebarOnly = Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false);
+		return keyHandler.canStartTimer() && keyHandler.isReset() && //checking if we are in a position to start the timer
+			(stackmatEmulation && stackmatKeysDown() && atMostKeysDown(2) || //checking if the right keys are down for starting a "stackmat"
+					!stackmatEmulation && atMostKeysDown(1) && (spacebarOnly && isKeyDown(KeyEvent.VK_SPACE) || !spacebarOnly)); //checking if the right keys are down to start the timer
+	}
 
-	public void refreshTimer() {
-		if(time != null) //this will deal with any internationalization issues, if appropriate
-			setTime(time);
+	private void refreshTimer() {
 		boolean inspectionEnabled = Configuration.getBoolean(VariableKey.COMPETITION_INSPECTION, false);
 		Border b = BorderFactory.createRaisedBevelBorder();
 		String title;
+		boolean keyboard = !Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
 		if(keyboard) {
 			boolean focused = isFocusOwner();
 			scrambleArea.setTimerFocused(focused);
 			if(focused) {
 				curr = green;
-				if(keysDown) {
+				if(keysDown)
 					b = BorderFactory.createLoweredBevelBorder();
+				if(keysDown && canStartTimer())
 					setBackground(Color.GREEN);
-				} else {
+				else
 					setBackground(Color.RED);
-				}
 				if(keyHandler.isRunning())
 					title = StringAccessor.getString("TimerLabel.stoptimer"); //$NON-NLS-1$
 				else if(keyHandler.isInspecting() || !inspectionEnabled)
@@ -181,7 +187,7 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 				curr = red;
 				title = StringAccessor.getString("TimerLabel.clickme"); //$NON-NLS-1$
 				setBackground(Color.GRAY);
-				keyDown.clear();
+				releaseAllKeys();
 			}
 		} else {
 			title = StringAccessor.getString("TimerLabel.keyboardoff"); //$NON-NLS-1$
@@ -222,7 +228,7 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 		return (temp == null) ? false : temp;
 	}
 	public void keyReleased(final KeyEvent e) {
-		if(!keyboard) return;
+		if(Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false)) return;
 		int code = e.getKeyCode();
 		timeup.put(code, e.getWhen());
 		ActionListener checkForKeyPress = new ActionListener() {
@@ -244,7 +250,7 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 	}
 
 	public void keyPressed(final KeyEvent e) {
-		if(!keyboard) return;
+		if(Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false)) return;
 		int code = e.getKeyCode();
 		if (e.getWhen() - getTime(code) < 10) {
 			timeup.put(code, (long) 0);
@@ -252,6 +258,7 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 			keyDown.put(code, true);
 			keyReallyPressed(e);
 		}
+		refreshTimer();
 	}
 	public void keyTyped(KeyEvent e) {}
 
@@ -287,15 +294,18 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 				keyHandler.stop();
 				keysDown = true;
 			}
-		} else if(key == KeyEvent.VK_ESCAPE) { //this will release all keys that we think are down
-			for(int code : keyDown.keySet()) {
-				e.setKeyCode(code);
-				keyReleased(e);
-			}
+		} else if(key == KeyEvent.VK_ESCAPE) {
+			releaseAllKeys();
 		} else if(!stackmatEmulation && !ignoreKey(e, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false), stackmatEmulation, sekey1, sekey2) || stackmatEmulation && stackmatKeysDown()){
 			keysDown = true;
 		}
-		refreshTimer();
+	}
+	
+	//this will release all keys that we think are down
+	private void releaseAllKeys() {
+		keyDown.clear();
+		timeup.clear();
+		keysDown = false;
 	}
 
 	//called when a key is physically released
