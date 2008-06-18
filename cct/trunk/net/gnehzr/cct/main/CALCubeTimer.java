@@ -608,6 +608,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				if(!newLocale.equals(loadedLocale)) {
 					loadedLocale = newLocale;
 					Configuration.setDefaultLocale(newLocale);
+					languages.setFont(Configuration.getFontForLocale(newLocale)); //for some reason, this cannot be put in the invokeLater() below
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							loadStringsFromDefaultLocale();
