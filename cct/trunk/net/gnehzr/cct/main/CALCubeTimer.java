@@ -375,7 +375,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					attrs.add(attr.getDynamicString().getRawText());
 			String[] attributes = attrs.toArray(new String[attrs.size()]);
 			scramblesList.getScrambleCustomization().getScramblePlugin().setEnabledPuzzleAttributes(attributes);
-//			scramblesList.getCurrent().setAttributes(attributes);
 			updateScramble();
 		} else if(e.getActionCommand().equals(GUI_LAYOUT_CHANGED)) {
 			saveToConfiguration();

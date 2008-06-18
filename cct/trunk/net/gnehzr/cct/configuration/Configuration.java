@@ -54,7 +54,7 @@ public final class Configuration {
 		temp.createProfileDirectory();
 		return temp;
 	}
-	private static final String DEFAULT_XML_GUI = "default.xml"; //$NON-NLS-1$
+//	private static final String DEFAULT_XML_GUI = "default.xml"; //$NON-NLS-1$
 
 	private static File defaultsFile = new File(profilesFolder, "defaults.properties"); //$NON-NLS-1$
 
@@ -364,22 +364,17 @@ public final class Configuration {
 	}
 
 	//returns file stored in props file, if available
-	//otherwise, returns default.xml, if available
 	//otherwise, returns any available layout
 	//otherwise, returns null
 	public static File getXMLGUILayout() {
-		File defaultGUI = null;
 		for(File file : getXMLLayoutsAvailable()) {
 			if(file.getName().equalsIgnoreCase(getString(VariableKey.XML_LAYOUT, false)))
 				return file;
-			if(file.getName().equalsIgnoreCase(DEFAULT_XML_GUI))
-				defaultGUI = file;
 		}
 		if(getXMLLayoutsAvailable() == null)
 			return null;
-		else if(defaultGUI != null)
-			return defaultGUI;
-		else return getXMLLayoutsAvailable()[0];
+		else
+			return getXMLLayoutsAvailable()[0];
 	}
 	public static File getXMLFile(String xmlGUIName) {
 		for(File f : getXMLLayoutsAvailable()) {

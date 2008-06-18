@@ -2,7 +2,7 @@
 <!DOCTYPE gui SYSTEM "layout.dtd">
 <gui>
 	<panel layout="border">
-		<splitpane drawcontinuous="true" resizeweight="1" split="horizontal">
+		<splitpane drawcontinuous="true" resizeweight=".8" split="horizontal">
 			<panel layout="border">
 				<center>
 					<panel layout="box" orientation="page">
