@@ -190,6 +190,7 @@ changes:
 +SECURITY concern: scramble plugins cannot modifying other scramble plugin's final arrays (because they are now private) we use reflection to access those fields
 +keyboard timer display now more indicative of the current state of the timer
 +move persistent gui components into a hashmap
++added a bunch of reset buttons to config. dialog.
 
 TODO:
 
@@ -211,8 +212,11 @@ misc:
 -dynamic string multiple argument format
 -BUG: titled borders are not anti-aliased (substance bug!)
 
+ConfigDialog:
+-the mixer combobox has odd behavior, selecting certain mixers has no effect
+-turn stackmatsamplingrate into a jcombobox
+
 cleanup:
--add a ton more reset buttons to config. dialog.
 -generalize XML syntax (get rid of Dynamic... classes) UPDATE: no idea how to do this...???
 
 Server stuff:

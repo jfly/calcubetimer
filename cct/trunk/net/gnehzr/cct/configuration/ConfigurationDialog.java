@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -85,18 +84,21 @@ import say.swing.JFontChooser;
 
 @SuppressWarnings("serial") //$NON-NLS-1$
 public class ConfigurationDialog extends JDialog implements KeyListener, MouseListener, ActionListener, ItemListener, HyperlinkListener {
-	private final static float DISPLAY_FONT_SIZE = 20;
-	private final static String[] FONT_SIZES = { "8", "9", "10", "11", "12", "14", "16", "18", "20", "22", "24", "26", "28", "36" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$
+	private static final float DISPLAY_FONT_SIZE = 20;
+	private static final String[] FONT_SIZES = { "8", "9", "10", "11", "12", "14", "16", "18", "20", "22", "24", "26", "28", "36" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$
 
-	private final int MAX_FONT_SIZE() {
-		return Configuration.getInt(VariableKey.MAX_FONTSIZE, false);
+	private static abstract class SyncGUIListener implements ActionListener {
+		public final void actionPerformed(ActionEvent e) {
+			//this happens if the event was fired by a real button, which means we want to reset with the defaults
+			syncGUIWithConfig(true);
+		}
+		public abstract void syncGUIWithConfig(boolean defaults);
 	}
-
+	private ArrayList<SyncGUIListener> resetListeners = new ArrayList<SyncGUIListener>();
 	private ComboItem[] items;
 	private StackmatInterpreter stackmat;
 	private Timer tickTock;
 	private JTable timesTable;
-
 	public ConfigurationDialog(JFrame parent, boolean modal, StackmatInterpreter stackmat, Timer tickTock, JTable timesTable) {
 		super(parent, modal);
 		this.stackmat = stackmat;
@@ -105,12 +107,34 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		createGUI();
 		setLocationRelativeTo(parent);
 	}
+	
+	//this will return a jpanel with all the components laid out according to boxLayout
+	//if boxLayout == null, then the jpanel uses a flowlayout
+	private JPanel sideBySide(Integer boxLayout, Component... components) {
+		JPanel panel = new JPanel();
+		if(boxLayout != null)
+			panel.setLayout(new BoxLayout(panel, boxLayout));
+		for(Component c : components)
+			panel.add(c);
+		return panel;
+	}
+	private JButton getResetButton(boolean vertical) {
+		String text = StringAccessor.getString("ConfigurationDialog.reset");
+		if(vertical && !text.isEmpty()) {
+			String t = "";
+			for(int i = 0; i < text.length(); i++)
+				t += "<br>" + text.substring(i, i + 1); //this is written this way to deal with unicode characters that don't fit in java char values
+			text = "<html><center>" + t.substring(4) + "</center></html>";
+		}
+		JButton reset = new JButton(text);
+		reset.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, true);
+		return reset;
+	}
 
 	private JTabbedPane tabbedPane;
 	private JButton applyButton, saveButton = null;
 	private JButton cancelButton = null;
 	private JButton resetAllButton = null;
-
 	private void createGUI() {
 		JPanel pane = new JPanel(new BorderLayout());
 		setContentPane(pane);
@@ -164,17 +188,11 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		cancelButton.setMnemonic(KeyEvent.VK_C);
 		cancelButton.addActionListener(this);
 
-		resetAllButton = new JButton(StringAccessor.getString("ConfigurationDialog.reset")); //$NON-NLS-1$
+		resetAllButton = new JButton(StringAccessor.getString("ConfigurationDialog.resetall")); //$NON-NLS-1$
 		resetAllButton.setMnemonic(KeyEvent.VK_R);
 		resetAllButton.addActionListener(this);
 
-		JPanel sideBySide = new JPanel(new FlowLayout());
-		sideBySide.add(resetAllButton);
-		sideBySide.add(Box.createRigidArea(new Dimension(30, 0)));
-		sideBySide.add(applyButton);
-		sideBySide.add(saveButton);
-		sideBySide.add(cancelButton);
-		pane.add(sideBySide, BorderLayout.PAGE_END);
+		pane.add(sideBySide(BoxLayout.LINE_AXIS, Box.createHorizontalGlue(), resetAllButton, Box.createRigidArea(new Dimension(30, 0)), applyButton, saveButton, cancelButton, Box.createHorizontalGlue()), BorderLayout.PAGE_END);
 
 		setResizable(false);
 		pack();
@@ -219,7 +237,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private JPanel desktopPanel;
 	private JButton refreshDesktops;
 	private JComboBox voices;
-
 	private JPanel makeStandardOptionsPanel1() {
 		JPanel options = new JPanel();
 		JPanel colorPanel = new JPanel(new GridLayout(0, 1, 0, 5));
@@ -295,17 +312,39 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		currentAverage.addMouseListener(this);
 		colorPanel.add(currentAverage);
 
-		desktopPanel = new JPanel();
+		desktopPanel = new JPanel(); //this gets populated in refreshDesktops()
 		refreshDesktops = new JButton(StringAccessor.getString("ConfigurationDialog.refresh")); //$NON-NLS-1$
 		refreshDesktops.addActionListener(this);
 
-		JPanel test = new JPanel();
-		test.setLayout(new BoxLayout(test, BoxLayout.PAGE_AXIS));
-		test.add(Box.createVerticalGlue());
-		test.add(options);
-		test.add(desktopPanel);
-		test.add(Box.createVerticalGlue());
-		return test;
+		SyncGUIListener al = new SyncGUIListener() {
+			public void syncGUIWithConfig(boolean defaults) {
+				// makeStandardOptionsPanel1
+				clockFormat.setSelected(Configuration.getBoolean(VariableKey.CLOCK_FORMAT, defaults));
+				promptForNewTime.setSelected(Configuration.getBoolean(VariableKey.PROMPT_FOR_NEW_TIME, defaults));
+				scramblePopup.setSelected(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, defaults));
+				inspectionCountdown.setSelected(Configuration.getBoolean(VariableKey.COMPETITION_INSPECTION, defaults));
+				speakInspection.setSelected(Configuration.getBoolean(VariableKey.SPEAK_INSPECTION, defaults));
+				speakInspection.setEnabled(inspectionCountdown.isSelected());
+				bestRA.setBackground(Configuration.getColor(VariableKey.BEST_RA, defaults));
+				currentAndRA.setBackground(Configuration.getColor(VariableKey.BEST_AND_CURRENT, defaults));
+				bestTime.setBackground(Configuration.getColor(VariableKey.BEST_TIME, defaults));
+				worstTime.setBackground(Configuration.getColor(VariableKey.WORST_TIME, defaults));
+				currentAverage.setBackground(Configuration.getColor(VariableKey.CURRENT_AVERAGE, defaults));
+				RASize0.setValue(Configuration.getInt(VariableKey.RA_SIZE0, defaults));
+				RASize1.setValue(Configuration.getInt(VariableKey.RA_SIZE1, defaults));
+				showRA0.setSelected(Configuration.getBoolean(VariableKey.COLUMN_VISIBLE(timesTable, 1), defaults));
+				showRA1.setSelected(Configuration.getBoolean(VariableKey.COLUMN_VISIBLE(timesTable, 2), defaults));
+				speakTimes.setSelected(Configuration.getBoolean(VariableKey.SPEAK_TIMES, defaults));
+				voices.setSelectedItem(NumberSpeaker.getCurrentSpeaker());
+				
+				refreshDesktops();
+			}
+		};
+		JButton reset = getResetButton(false);
+		reset.addActionListener(al);
+		resetListeners.add(al);
+		
+		return sideBySide(BoxLayout.PAGE_AXIS, Box.createVerticalGlue(), options, sideBySide(BoxLayout.LINE_AXIS, desktopPanel, reset), Box.createVerticalGlue());
 	}
 
 	private JTextArea splitsKeySelector, stackmatKeySelector1, stackmatKeySelector2;
@@ -317,14 +356,11 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private JButton browse;
 	private JSlider opacity;
 	private JButton scrambleFontButton, timerFontButton;
-
 	private JPanel makeStandardOptionsPanel2() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		JPanel sideBySide = new JPanel();
 		SpinnerNumberModel model = new SpinnerNumberModel(0.0, 0.0, null, .01);
 		minSplitTime = new JSpinner(model);
-		//TODO - how to internationalize?
 		JSpinner.NumberEditor doubleModel = new JSpinner.NumberEditor(minSplitTime, "0.00");
 		minSplitTime.setEditor(doubleModel);
 		((JSpinner.DefaultEditor) minSplitTime.getEditor()).getTextField().setColumns(4);
@@ -338,23 +374,17 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		splitsKeySelector.setToolTipText(StringAccessor.getString("ConfigurationDialog.clickhere")); //$NON-NLS-1$
 		splitsKeySelector.addKeyListener(this);
 
-		sideBySide.add(splits);
-		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.minsplittime"))); //$NON-NLS-1$
-		sideBySide.add(minSplitTime);
-		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.splitkey"))); //$NON-NLS-1$
-		sideBySide.add(splitsKeySelector);
-		panel.add(sideBySide);
+		panel.add(sideBySide(null, splits,
+				new JLabel(StringAccessor.getString("ConfigurationDialog.minsplittime")),
+				minSplitTime,
+				new JLabel(StringAccessor.getString("ConfigurationDialog.splitkey")),
+				splitsKeySelector));
 
-		sideBySide = new JPanel();
 		metronome = new JCheckBox(StringAccessor.getString("ConfigurationDialog.metronome")); //$NON-NLS-1$
 		metronome.addActionListener(this);
 		metronomeDelay = new TickerSlider(tickTock);
-		sideBySide.add(metronome);
-		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.delay"))); //$NON-NLS-1$
-		sideBySide.add(metronomeDelay);
-		panel.add(sideBySide);
+		panel.add(sideBySide(null, metronome, new JLabel(StringAccessor.getString("ConfigurationDialog.delay")), metronomeDelay));
 		
-		sideBySide = new JPanel();
 		stackmatEmulation = new JCheckBox(StringAccessor.getString("ConfigurationDialog.emulatestackmat")); //$NON-NLS-1$
 		stackmatEmulation.addActionListener(this);
 
@@ -370,51 +400,74 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		stackmatKeySelector2.setToolTipText(StringAccessor.getString("ConfigurationDialog.clickhere")); //$NON-NLS-1$
 		stackmatKeySelector2.addKeyListener(this);
 
-		sideBySide.add(stackmatEmulation);
-		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.stackmatkeys"))); //$NON-NLS-1$
-		sideBySide.add(stackmatKeySelector1);
-		sideBySide.add(stackmatKeySelector2);
-		panel.add(sideBySide);
+		panel.add(sideBySide(null, stackmatEmulation,
+				new JLabel(StringAccessor.getString("ConfigurationDialog.stackmatkeys")),
+				stackmatKeySelector1, stackmatKeySelector2));
 
 		flashyWindow = new JCheckBox(StringAccessor.getString("ConfigurationDialog.flashchatwindow")); //$NON-NLS-1$
 		flashyWindow.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel.add(flashyWindow);
 
-		sideBySide = new JPanel();
 		isBackground = new JCheckBox(StringAccessor.getString("ConfigurationDialog.watermark")); //$NON-NLS-1$
 		isBackground.addActionListener(this);
 		backgroundFile = new JTextField(30);
 		backgroundFile.setToolTipText(StringAccessor.getString("ConfigurationDialog.clearfordefault")); //$NON-NLS-1$
 		browse = new JButton(StringAccessor.getString("ConfigurationDialog.browse")); //$NON-NLS-1$
 		browse.addActionListener(this);
-		sideBySide.add(isBackground);
-		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.file"))); //$NON-NLS-1$
-		sideBySide.add(backgroundFile);
-		sideBySide.add(browse);
-		panel.add(sideBySide);
+		panel.add(sideBySide(null, isBackground, new JLabel(StringAccessor.getString("ConfigurationDialog.file")), backgroundFile, browse));
 
-		sideBySide = new JPanel();
 		opacity = new JSlider(JSlider.HORIZONTAL, 0, 10, 0);
-		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.opacity"))); //$NON-NLS-1$
-		sideBySide.add(opacity);
-		panel.add(sideBySide);
+		panel.add(sideBySide(null, new JLabel(StringAccessor.getString("ConfigurationDialog.opacity")), opacity));
 
-		sideBySide = new JPanel();
 		scrambleFontButton = new JButton(StringAccessor.getString("ConfigurationDialog.scramblefont")); //$NON-NLS-1$
 		scrambleFontButton.addActionListener(this);
-		sideBySide.add(scrambleFontButton);
 
 		timerFontButton = new JButton(StringAccessor.getString("ConfigurationDialog.timerfont")); //$NON-NLS-1$
 		timerFontButton.addActionListener(this);
-		sideBySide.add(timerFontButton);
+		
+		SyncGUIListener al = new SyncGUIListener() {
+			public void syncGUIWithConfig(boolean defaults) {
+				// makeStandardOptionsPanel2
+				minSplitTime.setValue(Configuration.getDouble(VariableKey.MIN_SPLIT_DIFFERENCE, defaults));
+				splits.setSelected(Configuration.getBoolean(VariableKey.TIMING_SPLITS, defaults));
+				splitkey = Configuration.getInt(VariableKey.SPLIT_KEY, defaults);
+				splitsKeySelector.setText(KeyEvent.getKeyText(splitkey));
+				splitsKeySelector.setEnabled(splits.isSelected());
+				stackmatEmulation.setSelected(Configuration.getBoolean(VariableKey.STACKMAT_EMULATION, defaults));
+				sekey1 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY1, defaults);
+				sekey2 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY2, defaults);
+				stackmatKeySelector1.setText(KeyEvent.getKeyText(sekey1));
+				stackmatKeySelector2.setText(KeyEvent.getKeyText(sekey2));
+				stackmatKeySelector1.setEnabled(stackmatEmulation.isSelected());
+				stackmatKeySelector2.setEnabled(stackmatEmulation.isSelected());
+				flashyWindow.setSelected(Configuration.getBoolean(VariableKey.CHAT_WINDOW_FLASH, defaults));
+				isBackground.setSelected(Configuration.getBoolean(VariableKey.WATERMARK_ENABLED, defaults));
+				backgroundFile.setText(Configuration.getString(VariableKey.WATERMARK_FILE, defaults));
+				opacity.setValue((int) (10 * Configuration.getFloat(VariableKey.OPACITY, defaults)));
+				backgroundFile.setEnabled(isBackground.isSelected());
+				browse.setEnabled(isBackground.isSelected());
+				opacity.setEnabled(isBackground.isSelected());
+				scrambleFontButton.setFont(Configuration.getFont(VariableKey.SCRAMBLE_FONT, defaults));
+				timerFontButton.setFont(Configuration.getFont(VariableKey.TIMER_FONT, defaults).deriveFont(DISPLAY_FONT_SIZE));
+				minSplitTime.setEnabled(splits.isSelected());
+				metronome.setSelected(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, defaults));
+				metronomeDelay.setEnabled(metronome.isSelected());
+				metronomeDelay.setDelayBounds(Configuration.getInt(VariableKey.METRONOME_DELAY_MIN, defaults), Configuration.getInt(VariableKey.METRONOME_DELAY_MAX,
+						defaults), Configuration.getInt(VariableKey.METRONOME_DELAY, defaults));
+			}
+		};
+		resetListeners.add(al);
 
-		panel.add(sideBySide);
+		JButton reset = getResetButton(false);
+		reset.addActionListener(al);
+		panel.add(sideBySide(BoxLayout.LINE_AXIS, 
+				Box.createHorizontalGlue(),	scrambleFontButton, timerFontButton, Box.createHorizontalGlue(), reset));
+		
 		return panel;
 	}
 
 	private ScrambleCustomizationListModel puzzlesModel = new ScrambleCustomizationListModel();
 	private ProfileListModel profilesModel = new ProfileListModel();
-
 	private JPanel makeScrambleTypeOptionsPanel() {
 		JPanel panel = new JPanel(new BorderLayout(10, 10));
 
@@ -439,6 +492,20 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		jsp.setPreferredSize(new Dimension(150, 0));
 		panel.add(jsp, BorderLayout.LINE_START);
 		panel.add(new JScrollPane(scramTable), BorderLayout.CENTER);
+		
+		SyncGUIListener sl = new SyncGUIListener() {
+			public void syncGUIWithConfig(boolean defaults) {
+				// profile settings
+				ScramblePlugin.reloadLengthsFromConfiguration(defaults);
+				puzzlesModel.setContents(ScramblePlugin.getScrambleCustomizations(defaults));
+				profilesModel.setContents(Configuration.getProfiles());
+			}
+		};
+		resetListeners.add(sl);
+		JButton reset = getResetButton(true);
+		reset.addActionListener(sl);
+		panel.add(reset, BorderLayout.LINE_END);
+		
 		return panel;
 	}
 
@@ -450,33 +517,25 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private JPanel mixerPanel = null;
 	private JButton stackmatRefresh = null;
 	private JTextField stackmatSamplingRate = null;
-
 	private JPanel makeStackmatOptionsPanel() {
 		JPanel options = new JPanel(new GridLayout(0, 1));
-
-		JPanel sideBySide = new JPanel();
-		options.add(sideBySide);
-
-		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.stackmatvalue"))); //$NON-NLS-1$
 
 		SpinnerNumberModel integerModel = new SpinnerNumberModel(1, 1, 256, 1);
 		stackmatValue = new JSpinner(integerModel);
 		((JSpinner.DefaultEditor) stackmatValue.getEditor()).getTextField().setColumns(5);
-		sideBySide.add(stackmatValue);
+		
+		options.add(sideBySide(null, new JLabel(StringAccessor.getString("ConfigurationDialog.stackmatvalue")), stackmatValue));
 		options.add(new JLabel(StringAccessor.getString("ConfigurationDialog.stackmatvaluedescription"))); //$NON-NLS-1$
-
 		options.add(new JLabel(StringAccessor.getString("ConfigurationDialog.stackmatminsechund"))); //$NON-NLS-1$
-		sideBySide = new JPanel();
-		options.add(sideBySide);
+		
 		invertedMinutes = new JCheckBox(StringAccessor.getString("ConfigurationDialog.15minutes")); //$NON-NLS-1$
 		invertedMinutes.setMnemonic(KeyEvent.VK_I);
-		sideBySide.add(invertedMinutes);
 		invertedSeconds = new JCheckBox(StringAccessor.getString("ConfigurationDialog.165seconds")); //$NON-NLS-1$
 		invertedSeconds.setMnemonic(KeyEvent.VK_I);
-		sideBySide.add(invertedSeconds);
 		invertedHundredths = new JCheckBox(StringAccessor.getString("ConfigurationDialog.165hundredths")); //$NON-NLS-1$
 		invertedHundredths.setMnemonic(KeyEvent.VK_I);
-		sideBySide.add(invertedHundredths);
+		
+		options.add(sideBySide(null, invertedMinutes, invertedSeconds, invertedHundredths));
 
 		mixerPanel = new JPanel();
 
@@ -497,12 +556,24 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 		options.add(mixerPanel);
 
-		sideBySide = new JPanel();
-		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.samplingrate"))); //$NON-NLS-1$
-		stackmatSamplingRate = new JTextField(6); //TODO - is it possible to make this a dropdown box?
-		sideBySide.add(stackmatSamplingRate);
-		options.add(sideBySide);
+		stackmatSamplingRate = new JTextField(6);
+		JButton reset = getResetButton(false);
+		options.add(sideBySide(BoxLayout.LINE_AXIS,
+				sideBySide(null, new JLabel(StringAccessor.getString("ConfigurationDialog.samplingrate")), stackmatSamplingRate), reset));
 
+		SyncGUIListener sl = new SyncGUIListener() {
+			public void syncGUIWithConfig(boolean defaults) {
+				// makeStackmatOptionsPanel
+				stackmatValue.setValue(Configuration.getInt(VariableKey.SWITCH_THRESHOLD, defaults));
+				invertedMinutes.setSelected(Configuration.getBoolean(VariableKey.INVERTED_MINUTES, defaults));
+				invertedSeconds.setSelected(Configuration.getBoolean(VariableKey.INVERTED_SECONDS, defaults));
+				invertedHundredths.setSelected(Configuration.getBoolean(VariableKey.INVERTED_HUNDREDTHS, defaults));
+				stackmatSamplingRate.setText("" + Configuration.getInt(VariableKey.STACKMAT_SAMPLING_RATE, defaults)); //$NON-NLS-1$
+			}
+		};
+		resetListeners.add(sl);
+		reset.addActionListener(sl);
+		
 		return options;
 	}
 
@@ -516,7 +587,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private JPasswordField password = null;
 	private JCheckBox useSMTPServer, showEmail = null;
 	private JPanel emailOptions;
-
 	private JPanel makeSundaySetupPanel() {
 		JPanel sundayOptions = new JPanel(new GridBagLayout());
 		sundayOptions.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), StringAccessor.getString("ConfigurationDialog.sundaycontest"))); //$NON-NLS-1$
@@ -669,7 +739,34 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		JPanel sundayEmail = new JPanel(new GridLayout(0, 1));
 		sundayEmail.add(sundayOptions);
 		sundayEmail.add(emailOptions);
-		return sundayEmail;
+		
+		SyncGUIListener sl = new SyncGUIListener() {
+			public void syncGUIWithConfig(boolean defaults) {
+				// makeSundaySetupPanel
+				useSMTPServer.setSelected(Configuration.getBoolean(VariableKey.SMTP_ENABLED, defaults));
+				smtpEmailAddress.setText(Configuration.getString(VariableKey.SMTP_FROM_ADDRESS, defaults));
+				name.setText(Configuration.getString(VariableKey.SUNDAY_NAME, defaults));
+				country.setText(Configuration.getString(VariableKey.SUNDAY_COUNTRY, defaults));
+				sundayQuote.setText(Configuration.getString(VariableKey.SUNDAY_QUOTE, defaults));
+				sundayEmailAddress.setText(Configuration.getString(VariableKey.SUNDAY_EMAIL_ADDRESS, defaults));
+				host.setText(Configuration.getString(VariableKey.SMTP_HOST, defaults));
+				port.setText(Configuration.getString(VariableKey.SMTP_PORT, defaults));
+				username.setText(Configuration.getString(VariableKey.SMTP_USERNAME, defaults));
+				SMTPauth.setSelected(Configuration.getBoolean(VariableKey.SMTP_AUTHENTICATION, defaults));
+				password.setText(Configuration.getString(VariableKey.SMTP_PASSWORD, defaults));
+				password.setEnabled(SMTPauth.isSelected());
+				showEmail.setSelected(Configuration.getBoolean(VariableKey.SHOW_EMAIL, defaults));
+			}
+		};
+		resetListeners.add(sl);
+		JButton reset = getResetButton(false);
+		
+		reset.addActionListener(sl);
+		
+		sundayEmail.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		reset.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		
+		return sideBySide(BoxLayout.PAGE_AXIS, sundayEmail, reset);
 	}
 
 	public void itemStateChanged(ItemEvent e) {
@@ -720,7 +817,18 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		sessionStats = new JTextAreaWithHistory();
 		JScrollPane scroller = new JScrollPane(sessionStats);
 		options.add(scroller, BorderLayout.CENTER);
-		options.add(getStatsLegend(), BorderLayout.PAGE_END);
+
+		SyncGUIListener sl = new SyncGUIListener() {
+			public void syncGUIWithConfig(boolean defaults) {
+				// makeSessionSetupPanel
+				sessionStats.setText(Configuration.getString(VariableKey.SESSION_STATISTICS, defaults));
+			}
+		};
+		resetListeners.add(sl);
+		JButton reset = getResetButton(false);
+		reset.addActionListener(sl);
+
+		options.add(sideBySide(BoxLayout.LINE_AXIS, getStatsLegend(), Box.createHorizontalGlue(), reset), BorderLayout.PAGE_END);
 		return options;
 	}
 	private JTextAreaWithHistory currentAverageStats = null;
@@ -729,7 +837,18 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		currentAverageStats = new JTextAreaWithHistory();
 		JScrollPane scroller = new JScrollPane(currentAverageStats);
 		options.add(scroller, BorderLayout.CENTER);
-		options.add(getStatsLegend(), BorderLayout.PAGE_END);
+
+		SyncGUIListener sl = new SyncGUIListener() {
+			public void syncGUIWithConfig(boolean defaults) {
+				// makeCurrentAverageSetupPanel
+				currentAverageStats.setText(Configuration.getString(VariableKey.CURRENT_AVERAGE_STATISTICS, defaults));
+			}
+		};
+		resetListeners.add(sl);
+		JButton reset = getResetButton(false);
+		reset.addActionListener(sl);
+
+		options.add(sideBySide(BoxLayout.LINE_AXIS, getStatsLegend(), Box.createHorizontalGlue(), reset), BorderLayout.PAGE_END);
 		return options;
 	}
 	private JTextAreaWithHistory bestRAStats = null;
@@ -738,7 +857,18 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		bestRAStats = new JTextAreaWithHistory();
 		JScrollPane scroller = new JScrollPane(bestRAStats);
 		options.add(scroller, BorderLayout.CENTER);
-		options.add(getStatsLegend(), BorderLayout.PAGE_END);
+
+		SyncGUIListener sl = new SyncGUIListener() {
+			public void syncGUIWithConfig(boolean defaults) {
+				// makeBestRASetupPanel
+				bestRAStats.setText(Configuration.getString(VariableKey.BEST_RA_STATISTICS, defaults));
+			}
+		};
+		resetListeners.add(sl);
+		JButton reset = getResetButton(false);
+		reset.addActionListener(sl);
+
+		options.add(sideBySide(BoxLayout.LINE_AXIS, getStatsLegend(), Box.createHorizontalGlue(), reset), BorderLayout.PAGE_END);
 		return options;
 	}
 
@@ -753,21 +883,31 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		ArrayList<ScramblePlugin> scramblePlugins = ScramblePlugin.getScramblePlugins();
 		solvedPuzzles = new ScrambleViewComponent[scramblePlugins.size()];
 
-		Dimension preferred = new Dimension(0, 0);
 		for(int ch = 0; ch < scramblePlugins.size(); ch++) {
+			final ScrambleViewComponent puzzle = new ScrambleViewComponent(true, true);
+			solvedPuzzles[ch] = puzzle;
+			
 			ScramblePlugin plugin = scramblePlugins.get(ch);
-			solvedPuzzles[ch] = new ScrambleViewComponent(true, true);
 			ScrambleVariation sv = new ScrambleVariation(plugin, "");
 			sv.setLength(0); //this will not change the length of the real ScrambleVariation instances
-			solvedPuzzles[ch].setScramble(sv.generateScramble(), sv); //$NON-NLS-1$
-			Dimension newDim = solvedPuzzles[ch].getPreferredSize();
-			if(newDim.height > preferred.height)
-				preferred = newDim;
-			solvedPuzzles[ch].setAlignmentY(Component.CENTER_ALIGNMENT);
-			options.add(solvedPuzzles[ch]);
+			puzzle.setScramble(sv.generateScramble(), sv); //$NON-NLS-1$
+			puzzle.setAlignmentY(Component.CENTER_ALIGNMENT);
+			puzzle.setAlignmentX(Component.RIGHT_ALIGNMENT);
+			
+			SyncGUIListener sl = new SyncGUIListener() {
+				public void syncGUIWithConfig(boolean defaults) {
+					puzzle.syncColorScheme(defaults);
+				}
+			};
+			resetListeners.add(sl);
+			JButton resetColors = getResetButton(false);
+			resetColors.addActionListener(sl);
+			resetColors.setAlignmentX(Component.RIGHT_ALIGNMENT);
+
+			options.add(sideBySide(BoxLayout.PAGE_AXIS, puzzle, resetColors));
 		}
 		options.add(Box.createHorizontalGlue());
-		scroller.setPreferredSize(preferred);
+		scroller.setPreferredSize(new Dimension(0, options.getPreferredSize().height));
 		return scroller;
 	}
 
@@ -795,7 +935,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		} else if(source == cancelButton) {
 			setVisible(false);
 		} else if(source == resetAllButton) {
-			int choice = JOptionPane.showConfirmDialog(this, StringAccessor.getString("ConfigurationDialog.resetall"), StringAccessor.getString("ConfigurationDialog.warning"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$ //$NON-NLS-2$
+			//TODO - this needs to be internationalized, check for more stuff like this throughout cct
+			int choice = JOptionPane.showConfirmDialog(this, StringAccessor.getString("ConfigurationDialog.confirmreset"), StringAccessor.getString("ConfigurationDialog.warning"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$ //$NON-NLS-2$
 			if(choice == JOptionPane.YES_OPTION)
 				syncGUIwithConfig(true);
 		} else if(source == splits) {
@@ -825,12 +966,13 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 				f = Configuration.getFont(VariableKey.SCRAMBLE_FONT, true);
 			}
 
-			JFontChooser font = new JFontChooser(FONT_SIZES, f, source == scrambleFontButton, MAX_FONT_SIZE(), toDisplay);
+			int maxFontSize = Configuration.getInt(VariableKey.MAX_FONTSIZE, false);
+			JFontChooser font = new JFontChooser(FONT_SIZES, f, source == scrambleFontButton, maxFontSize, toDisplay);
 			font.setSelectedFont(((JButton) source).getFont());
 			if(font.showDialog(this) == JFontChooser.OK_OPTION) {
 				Font selected = font.getSelectedFont();
-				if(selected.getSize() > MAX_FONT_SIZE()) {
-					selected = selected.deriveFont((float) MAX_FONT_SIZE());
+				if(selected.getSize() > maxFontSize) {
+					selected = selected.deriveFont((float) maxFontSize);
 				}
 				((JButton) source).setFont(selected);
 				pack();
@@ -850,7 +992,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			metronomeDelay.setEnabled(metronome.isSelected());
 		} else if(source instanceof JRadioButton) {
 			JRadioButton jrb = (JRadioButton) source;
-			Configuration.setInt(VariableKey.FULLSCREEN_DESKTOP, Integer.parseInt(jrb.getText().split(" ")[1]) - 1); //$NON-NLS-1$
+			Configuration.setInt(VariableKey.FULLSCREEN_DESKTOP, Integer.parseInt(jrb.getActionCommand()));
 		} else if(source == refreshDesktops) {
 			refreshDesktops();
 		}
@@ -865,10 +1007,11 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		for(int ch = 0; ch < gs.length; ch++) {
 			GraphicsDevice gd = gs[ch];
 			DisplayMode screenSize = gd.getDisplayMode();
-			JRadioButton temp = new JRadioButton((ch + 1) + ":" + screenSize.getWidth() + "x" + screenSize.getHeight() + " (" + StringAccessor.getString("ConfigurationDialog.desktopresolution") + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+			JRadioButton temp = new JRadioButton((ch+1) + ":" + screenSize.getWidth() + "x" + screenSize.getHeight() + " (" + StringAccessor.getString("ConfigurationDialog.desktopresolution") + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 			if(ch == Configuration.getInt(VariableKey.FULLSCREEN_DESKTOP, false))
 				temp.setSelected(true);
 			g.add(temp);
+			temp.setActionCommand("" + ch);
 			temp.addActionListener(this);
 			desktopPanel.add(temp);
 		}
@@ -879,96 +1022,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	
 	public void syncGUIwithConfig(boolean defaults) {
 		setTitle(StringAccessor.getString("ConfigurationDialog.cctoptions") + " " + Configuration.getSelectedProfile().getName()); //$NON-NLS-1$ //$NON-NLS-2$
-
-		// makeStandardOptionsPanel1
-		clockFormat.setSelected(Configuration.getBoolean(VariableKey.CLOCK_FORMAT, defaults));
-		promptForNewTime.setSelected(Configuration.getBoolean(VariableKey.PROMPT_FOR_NEW_TIME, defaults));
-		scramblePopup.setSelected(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, defaults));
-		inspectionCountdown.setSelected(Configuration.getBoolean(VariableKey.COMPETITION_INSPECTION, defaults));
-		speakInspection.setSelected(Configuration.getBoolean(VariableKey.SPEAK_INSPECTION, defaults));
-		speakInspection.setEnabled(inspectionCountdown.isSelected());
-		bestRA.setBackground(Configuration.getColor(VariableKey.BEST_RA, defaults));
-		currentAndRA.setBackground(Configuration.getColor(VariableKey.BEST_AND_CURRENT, defaults));
-		bestTime.setBackground(Configuration.getColor(VariableKey.BEST_TIME, defaults));
-		worstTime.setBackground(Configuration.getColor(VariableKey.WORST_TIME, defaults));
-		currentAverage.setBackground(Configuration.getColor(VariableKey.CURRENT_AVERAGE, defaults));
-		RASize0.setValue(Configuration.getInt(VariableKey.RA_SIZE0, defaults));
-		RASize1.setValue(Configuration.getInt(VariableKey.RA_SIZE1, defaults));
-		showRA0.setSelected(Configuration.getBoolean(VariableKey.COLUMN_VISIBLE(timesTable, 1), defaults));
-		showRA1.setSelected(Configuration.getBoolean(VariableKey.COLUMN_VISIBLE(timesTable, 2), defaults));
-		metronome.setSelected(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, defaults));
-		metronomeDelay.setDelayBounds(Configuration.getInt(VariableKey.METRONOME_DELAY_MIN, defaults), Configuration.getInt(VariableKey.METRONOME_DELAY_MAX,
-				defaults), Configuration.getInt(VariableKey.METRONOME_DELAY, defaults));
-		metronomeDelay.setEnabled(metronome.isSelected());
-		speakTimes.setSelected(Configuration.getBoolean(VariableKey.SPEAK_TIMES, defaults));
-		voices.setSelectedItem(NumberSpeaker.getCurrentSpeaker());
-		
-		refreshDesktops();
-
-		// makeStandardOptionsPanel2
-		minSplitTime.setValue(Configuration.getDouble(VariableKey.MIN_SPLIT_DIFFERENCE, defaults));
-		splits.setSelected(Configuration.getBoolean(VariableKey.TIMING_SPLITS, defaults));
-		splitkey = Configuration.getInt(VariableKey.SPLIT_KEY, defaults);
-		splitsKeySelector.setText(KeyEvent.getKeyText(splitkey));
-		splitsKeySelector.setEnabled(splits.isSelected());
-		stackmatEmulation.setSelected(Configuration.getBoolean(VariableKey.STACKMAT_EMULATION, defaults));
-		sekey1 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY1, defaults);
-		sekey2 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY2, defaults);
-		stackmatKeySelector1.setText(KeyEvent.getKeyText(sekey1));
-		stackmatKeySelector2.setText(KeyEvent.getKeyText(sekey2));
-		stackmatKeySelector1.setEnabled(stackmatEmulation.isSelected());
-		stackmatKeySelector2.setEnabled(stackmatEmulation.isSelected());
-		flashyWindow.setSelected(Configuration.getBoolean(VariableKey.CHAT_WINDOW_FLASH, defaults));
-		isBackground.setSelected(Configuration.getBoolean(VariableKey.WATERMARK_ENABLED, defaults));
-		backgroundFile.setText(Configuration.getString(VariableKey.WATERMARK_FILE, defaults));
-		opacity.setValue((int) (10 * Configuration.getFloat(VariableKey.OPACITY, defaults)));
-		backgroundFile.setEnabled(isBackground.isSelected());
-		browse.setEnabled(isBackground.isSelected());
-		opacity.setEnabled(isBackground.isSelected());
-		scrambleFontButton.setFont(Configuration.getFont(VariableKey.SCRAMBLE_FONT, defaults));
-		timerFontButton.setFont(Configuration.getFont(VariableKey.TIMER_FONT, defaults).deriveFont(DISPLAY_FONT_SIZE));
-		minSplitTime.setEnabled(splits.isSelected());
-
-		// profile settings
-		ScramblePlugin.reloadLengthsFromConfiguration(defaults);
-		puzzlesModel.setContents(ScramblePlugin.getScrambleCustomizations(defaults));
-		profilesModel.setContents(Configuration.getProfiles());
-
-		// makeStackmatOptionsPanel
-		stackmatValue.setValue(Configuration.getInt(VariableKey.SWITCH_THRESHOLD, defaults));
-		invertedMinutes.setSelected(Configuration.getBoolean(VariableKey.INVERTED_MINUTES, defaults));
-		invertedSeconds.setSelected(Configuration.getBoolean(VariableKey.INVERTED_SECONDS, defaults));
-		invertedHundredths.setSelected(Configuration.getBoolean(VariableKey.INVERTED_HUNDREDTHS, defaults));
-		stackmatSamplingRate.setText("" + Configuration.getInt(VariableKey.STACKMAT_SAMPLING_RATE, defaults)); //$NON-NLS-1$
-
-		// makeSundaySetupPanel
-		useSMTPServer.setSelected(Configuration.getBoolean(VariableKey.SMTP_ENABLED, defaults));
-		smtpEmailAddress.setText(Configuration.getString(VariableKey.SMTP_FROM_ADDRESS, defaults));
-		name.setText(Configuration.getString(VariableKey.SUNDAY_NAME, defaults));
-		country.setText(Configuration.getString(VariableKey.SUNDAY_COUNTRY, defaults));
-		sundayQuote.setText(Configuration.getString(VariableKey.SUNDAY_QUOTE, defaults));
-		sundayEmailAddress.setText(Configuration.getString(VariableKey.SUNDAY_EMAIL_ADDRESS, defaults));
-		host.setText(Configuration.getString(VariableKey.SMTP_HOST, defaults));
-		port.setText(Configuration.getString(VariableKey.SMTP_PORT, defaults));
-		username.setText(Configuration.getString(VariableKey.SMTP_USERNAME, defaults));
-		SMTPauth.setSelected(Configuration.getBoolean(VariableKey.SMTP_AUTHENTICATION, defaults));
-		password.setText(Configuration.getString(VariableKey.SMTP_PASSWORD, defaults));
-		password.setEnabled(SMTPauth.isSelected());
-		showEmail.setSelected(Configuration.getBoolean(VariableKey.SHOW_EMAIL, defaults));
-
-		// makeSessionSetupPanel
-		sessionStats.setText(Configuration.getString(VariableKey.SESSION_STATISTICS, defaults));
-
-		// makeBestRASetupPanel
-		bestRAStats.setText(Configuration.getString(VariableKey.BEST_RA_STATISTICS, defaults));
-		
-		// makeCurrentAverageSetupPanel
-		currentAverageStats.setText(Configuration.getString(VariableKey.CURRENT_AVERAGE_STATISTICS, defaults));
-
-		// makePuzzleColorsPanel
-		for(ScrambleViewComponent puzzle : solvedPuzzles) {
-			puzzle.syncColorScheme(defaults);
-		}
+		for(ActionListener al : resetListeners)
+			al.actionPerformed(defaults ? new ActionEvent(this, 42, null) : null);
 	}
 
 	public void setVisible(boolean b) {
