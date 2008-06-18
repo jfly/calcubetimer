@@ -516,7 +516,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private JComboBox lines = null;
 	private JPanel mixerPanel = null;
 	private JButton stackmatRefresh = null;
-	private JTextField stackmatSamplingRate = null;
+	private JSpinner stackmatSamplingRate = null;
 	private JPanel makeStackmatOptionsPanel() {
 		JPanel options = new JPanel(new GridLayout(0, 1));
 
@@ -556,7 +556,9 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 		options.add(mixerPanel);
 
-		stackmatSamplingRate = new JTextField(6);
+		integerModel = new SpinnerNumberModel(1, 1, null, 1);
+		stackmatSamplingRate = new JSpinner(integerModel);
+		((JSpinner.DefaultEditor) stackmatSamplingRate.getEditor()).getTextField().setColumns(6);
 		JButton reset = getResetButton(false);
 		options.add(sideBySide(BoxLayout.LINE_AXIS,
 				sideBySide(null, new JLabel(StringAccessor.getString("ConfigurationDialog.samplingrate")), stackmatSamplingRate), reset));
@@ -568,7 +570,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 				invertedMinutes.setSelected(Configuration.getBoolean(VariableKey.INVERTED_MINUTES, defaults));
 				invertedSeconds.setSelected(Configuration.getBoolean(VariableKey.INVERTED_SECONDS, defaults));
 				invertedHundredths.setSelected(Configuration.getBoolean(VariableKey.INVERTED_HUNDREDTHS, defaults));
-				stackmatSamplingRate.setText("" + Configuration.getInt(VariableKey.STACKMAT_SAMPLING_RATE, defaults)); //$NON-NLS-1$
+				stackmatSamplingRate.setValue(Configuration.getInt(VariableKey.STACKMAT_SAMPLING_RATE, defaults)); //$NON-NLS-1$
 			}
 		};
 		resetListeners.add(sl);
@@ -1022,8 +1024,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	
 	public void syncGUIwithConfig(boolean defaults) {
 		setTitle(StringAccessor.getString("ConfigurationDialog.cctoptions") + " " + Configuration.getSelectedProfile().getName()); //$NON-NLS-1$ //$NON-NLS-2$
-		for(ActionListener al : resetListeners)
-			al.actionPerformed(defaults ? new ActionEvent(this, 42, null) : null);
+		for(SyncGUIListener sl : resetListeners)
+			sl.syncGUIWithConfig(defaults);
 	}
 
 	public void setVisible(boolean b) {
@@ -1065,13 +1067,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setBoolean(VariableKey.INVERTED_SECONDS, invertedSeconds.isSelected());
 		Configuration.setBoolean(VariableKey.INVERTED_HUNDREDTHS, invertedHundredths.isSelected());
 		Configuration.setInt(VariableKey.MIXER_NUMBER, lines.getSelectedIndex());
-		try{
-			int rate = Integer.parseInt(stackmatSamplingRate.getText());
-			Configuration.setInt(VariableKey.STACKMAT_SAMPLING_RATE, rate);
-			stackmat.initialize(rate);
-		} catch(NumberFormatException e){
-			e.printStackTrace();
-		}
+		Configuration.setInt(VariableKey.STACKMAT_SAMPLING_RATE, (Integer) stackmatSamplingRate.getValue());
 
 		Configuration.setBoolean(VariableKey.SHOW_EMAIL, showEmail.isSelected());
 		Configuration.setString(VariableKey.SUNDAY_NAME, name.getText());

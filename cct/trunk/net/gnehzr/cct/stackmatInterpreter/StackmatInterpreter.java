@@ -38,7 +38,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 		initialize(samplingRate);
 	}
 
-	public void initialize(int samplingRate){
+	private void initialize(int samplingRate){
 		if(this.samplingRate == samplingRate) return;
 		this.samplingRate = samplingRate;
 		noiseSpikeThreshold = samplingRate * 25 / 44100;
@@ -62,6 +62,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 					notify();
 				}
 			} catch(LineUnavailableException e){
+				e.printStackTrace();
 				cleanup();
 			} catch(IllegalArgumentException e) {
 				//This is thrown when there is no configuration file
@@ -129,11 +130,9 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 
 	public ComboItem[] getMixerChoices(){
 		ComboItem[] items = new ComboItem[aInfos.length+1];
-		for(int i = 0; i < aInfos.length; i++){
+		for(int i = 0; i < aInfos.length; i++)
 			items[i] = new ComboItem(StringAccessor.getString("StackmatInterpreter.mixer") + i + ": " + aInfos[i].getName() + StringAccessor.getString("StackmatInterpreter.description") + aInfos[i].getDescription(), AudioSystem.getMixer(aInfos[i]).isLineSupported(info)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		}
 		items[items.length-1] = new ComboItem(StringAccessor.getString("StackmatInterpreter.nomixer"), true); //$NON-NLS-1$
-
 		int current = getSelectedMixerIndex();
 		items[current].setEnabled(true);
 		items[current].setInUse(true);

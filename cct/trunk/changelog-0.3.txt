@@ -192,6 +192,7 @@ changes:
 +move persistent gui components into a hashmap
 +added a bunch of reset buttons to config. dialog.
 +cct saves gui state before changing language
++turn stackmatsamplingrate into a jspinner
 
 TODO:
 
@@ -201,7 +202,7 @@ for release:
 -worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
 -open source sourceforge!
 -create license, give credit where credit is due
--update defaults.properties file, about.html (translate), FAQ (translate)
+-update defaults.properties file, about.html (translate), FAQ (esp: new stackmat options, translate)
 	-include documentation of the DynamicStrings & update link from showDynamicStrings() in ConfigDialog.java
 -create small diagnostic problem that will dump relevant info to a file (java version, os, etc.)
 -write scramble plugin tutorial
@@ -213,7 +214,6 @@ misc:
 
 ConfigDialog:
 -improve gui behavior when scramble plugin cannot be found (specifically: behavior of customization list in config. dialog)
--turn stackmatsamplingrate into a jcombobox
 
 cleanup:
 -generalize XML syntax (get rid of Dynamic... classes) UPDATE: no idea how to do this...???
