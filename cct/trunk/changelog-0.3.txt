@@ -199,6 +199,7 @@ TODO:
 for release:
 -clean up cct startup as best as possible!
 	-decide upon default startup layout
+-get pack()-ing to work (each xml layout should look good/decent, without hints from configuration)
 -worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
 -open source sourceforge!
 -create license, give credit where credit is due

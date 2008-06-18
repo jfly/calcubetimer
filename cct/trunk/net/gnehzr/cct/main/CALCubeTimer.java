@@ -180,7 +180,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private StackmatInterpreter stackmatTimer = null;
 	private CCTClient client;
 	private ConfigurationDialog configurationDialog;
-	private CommentHandler commenter;
 
 	public CALCubeTimer() {
 		this.setUndecorated(true);
@@ -469,8 +468,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		commentArea.setEnabled(false);
 		commentArea.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 		
-		commenter = new CommentHandler(commentArea, timesTable, sessionsTable);
-
 		scramblePanel = new ScrambleArea(scramblePopup);
 		scramblePanel.setAlignmentX(.5f);
 
@@ -643,7 +640,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		XMLGuiMessages.reloadResources();
 		statsModel.fireStringUpdates(); //this is necessary to update the undo-redo actions
 //		timeLabel.refreshTimer(); //this is inside of parse_xml
-		commenter.updateText();
 
 		flipFullScreenAction.putValue(Action.SHORT_DESCRIPTION, StringAccessor.getString("CALCubeTimer.togglefullscreen")); //$NON-NLS-1$
 		customGUIMenu.setText(StringAccessor.getString("CALCubeTimer.loadcustomgui")); //$NON-NLS-1$
@@ -1359,12 +1355,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 						StringAccessor.getString("CALCubeTimer.outofscrambles"), //$NON-NLS-1$
 						JOptionPane.INFORMATION_MESSAGE);
 			updateScramble();
-			int rows = statsModel.getRowCount();
-			if(rows > 0)
-				timesTable.setRowSelectionInterval(rows - 1, rows - 1);
 			//make the new time visible
-			Rectangle newTimeRect = timesTable.getCellRect(rows, 0, true);
 			timesTable.invalidate(); //the table needs to be invalidated to force the new time to "show up"!!!
+			Rectangle newTimeRect = timesTable.getCellRect(statsModel.getRowCount(), 0, true);
 			timesTable.scrollRectToVisible(newTimeRect);
 			
 			if(Configuration.getBoolean(VariableKey.SPEAK_TIMES, false)) {
@@ -1550,8 +1543,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		saveToConfiguration();
 		if(configurationDialog == null)
 			configurationDialog = new ConfigurationDialog(this, true, stackmatTimer, tickTock, timesTable);
-		configurationDialog.syncGUIwithConfig(false);
-		configurationDialog.setVisible(true);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				configurationDialog.syncGUIwithConfig(false);
+				configurationDialog.setVisible(true);
+			}
+		});
 	}
 
 	public void connectToServer(){
