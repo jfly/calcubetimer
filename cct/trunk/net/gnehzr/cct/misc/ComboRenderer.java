@@ -1,10 +1,10 @@
 package net.gnehzr.cct.misc;
-import java.awt.Component;
 import java.awt.Color;
+import java.awt.Component;
+
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 @SuppressWarnings("serial") //$NON-NLS-1$
@@ -26,12 +26,12 @@ public class ComboRenderer extends JLabel implements ListCellRenderer {
 
 		if(!((ComboItem)value).isEnabled()) {
 			setBackground(list.getBackground());
-			setForeground(UIManager.getColor("Label.disabledForeground")); //$NON-NLS-1$
+//			setForeground(UIManager.getColor("Label.disabledForeground")); //$NON-NLS-1$
+			setForeground(Color.GRAY); //the above isn't having any noticeable effect on the foreground
 		}
 
-		if(((ComboItem)value).isInUse()){
+		if(((ComboItem)value).isInUse())
 			setForeground(Color.RED);
-		}
 		setFont(list.getFont());
 		setText((value == null) ? "" : value.toString()); //$NON-NLS-1$
 		return this;

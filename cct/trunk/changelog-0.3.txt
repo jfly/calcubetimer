@@ -196,7 +196,6 @@ changes:
 TODO:
 
 for release:
--improve gui behavior when scramble plugin cannot be found (specifically: behavior of customization list in config. dialog)
 -clean up cct startup as best as possible!
 	-decide upon default startup layout
 -worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
@@ -213,7 +212,7 @@ misc:
 -BUG: titled borders are not anti-aliased (substance bug!)
 
 ConfigDialog:
--the mixer combobox has odd behavior, selecting certain mixers has no effect
+-improve gui behavior when scramble plugin cannot be found (specifically: behavior of customization list in config. dialog)
 -turn stackmatsamplingrate into a jcombobox
 
 cleanup:

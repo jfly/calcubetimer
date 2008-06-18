@@ -15,11 +15,9 @@ public class ComboListener implements ActionListener{
 
 	public void actionPerformed(ActionEvent e){
 		ComboItem tempItem = (ComboItem)combo.getSelectedItem();
-		if (tempItem.isEnabled()){
+		if (tempItem.isEnabled())
 			currentItem = tempItem;
-		}
-		else{
+		else
 			combo.setSelectedItem(currentItem);
-		}
 	}
 }
