@@ -1289,19 +1289,16 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private void saveToConfiguration() {
 		Configuration.setString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, scramblesList.getScrambleCustomization().toString());
 		ScramblePlugin.saveLengthsToConfiguration();
-		for(ScramblePlugin plugin : ScramblePlugin.getScramblePlugins()) {
+		for(ScramblePlugin plugin : ScramblePlugin.getScramblePlugins())
 			Configuration.setStringArray(VariableKey.PUZZLE_ATTRIBUTES(plugin), plugin.getEnabledPuzzleAttributes());
-		}
 		Configuration.setPoint(VariableKey.SCRAMBLE_VIEW_LOCATION, scramblePopup.getLocation());
 		Configuration.setDimension(VariableKey.MAIN_FRAME_DIMENSION, this.getSize());
 		Configuration.setPoint(VariableKey.MAIN_FRAME_LOCATION, this.getLocation());
 		
-		for(JSplitPane jsp : splitPanes) {
+		for(JSplitPane jsp : splitPanes)
 			Configuration.setInt(VariableKey.JCOMPONENT_VALUE(jsp.getName(), true), jsp.getDividerLocation());
-		}
-		for(JTabbedPane jtp : tabbedPanes) {
+		for(JTabbedPane jtp : tabbedPanes)
 			Configuration.setInt(VariableKey.JCOMPONENT_VALUE(jtp.getName(), true), jtp.getSelectedIndex());
-		}
 		timesTable.saveToConfiguration();
 		sessionsTable.saveToConfiguration();
 	}
@@ -1532,10 +1529,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	public void showConfigurationDialog() {
 		saveToConfiguration();
-		if(configurationDialog == null){
+		if(configurationDialog == null)
 			configurationDialog = new ConfigurationDialog(this, true, stackmatTimer, tickTock, timesTable);
-		}
-		configurationDialog.setVisible(true, Configuration.getSelectedProfile());
+		configurationDialog.syncGUIwithConfig(false);
+		configurationDialog.setVisible(true);
 	}
 
 	public void connectToServer(){

@@ -45,14 +45,12 @@ public class ScramblePlugin {
 	}
 
 	public static void saveLengthsToConfiguration() {
-		for(ScrambleVariation variation : getScrambleVariations()) {
+		for(ScrambleVariation variation : getScrambleVariations())
 			Configuration.setInt(VariableKey.SCRAMBLE_LENGTH(variation), variation.getLength());
-		}
 	}
 	public static void reloadLengthsFromConfiguration(boolean defaults) {
-		for(ScrambleVariation v : getScrambleVariations()) {
+		for(ScrambleVariation v : getScrambleVariations())
 			v.setLength(v.getScrambleLength(defaults));
-		}
 	}
 	private static ScrambleVariation[] scrambleVariations;
 	public static ScrambleVariation[] getScrambleVariations() {

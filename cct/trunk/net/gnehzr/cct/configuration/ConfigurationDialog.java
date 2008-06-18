@@ -109,7 +109,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private JTabbedPane tabbedPane;
 	private JButton applyButton, saveButton = null;
 	private JButton cancelButton = null;
-	private JButton resetButton = null;
+	private JButton resetAllButton = null;
 
 	private void createGUI() {
 		JPanel pane = new JPanel(new BorderLayout());
@@ -164,12 +164,12 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		cancelButton.setMnemonic(KeyEvent.VK_C);
 		cancelButton.addActionListener(this);
 
-		resetButton = new JButton(StringAccessor.getString("ConfigurationDialog.reset")); //$NON-NLS-1$
-		resetButton.setMnemonic(KeyEvent.VK_R);
-		resetButton.addActionListener(this);
+		resetAllButton = new JButton(StringAccessor.getString("ConfigurationDialog.reset")); //$NON-NLS-1$
+		resetAllButton.setMnemonic(KeyEvent.VK_R);
+		resetAllButton.addActionListener(this);
 
 		JPanel sideBySide = new JPanel(new FlowLayout());
-		sideBySide.add(resetButton);
+		sideBySide.add(resetAllButton);
 		sideBySide.add(Box.createRigidArea(new Dimension(30, 0)));
 		sideBySide.add(applyButton);
 		sideBySide.add(saveButton);
@@ -780,35 +780,21 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 				label.setBackground(selected);
 		}
 	}
-
 	public void mouseEntered(MouseEvent e) {}
-
 	public void mouseExited(MouseEvent e) {}
-
 	public void mousePressed(MouseEvent e) {}
-
 	public void mouseReleased(MouseEvent e) {}
-
-	private void applyAndSave() {
-		applyConfiguration();
-		try {
-			Configuration.saveConfigurationToFile(currProfile.getConfigurationFile());
-		} catch(IOException e) {
-			//this could happen when the current profile was deleted
-		}
-	}
 
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if(source == applyButton) {
 			applyAndSave();
 		} else if(source == saveButton) {
-			setVisible(false); //this needs to be before the call to apply()
 			applyAndSave();
+			setVisible(false);
 		} else if(source == cancelButton) {
 			setVisible(false);
-			cancel();
-		} else if(source == resetButton) {
+		} else if(source == resetAllButton) {
 			int choice = JOptionPane.showConfirmDialog(this, StringAccessor.getString("ConfigurationDialog.resetall"), StringAccessor.getString("ConfigurationDialog.warning"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$ //$NON-NLS-2$
 			if(choice == JOptionPane.YES_OPTION)
 				syncGUIwithConfig(true);
@@ -891,7 +877,9 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			focused.requestFocusInWindow();
 	}
 	
-	private void syncGUIwithConfig(boolean defaults) {
+	public void syncGUIwithConfig(boolean defaults) {
+		setTitle(StringAccessor.getString("ConfigurationDialog.cctoptions") + " " + Configuration.getSelectedProfile().getName()); //$NON-NLS-1$ //$NON-NLS-2$
+
 		// makeStandardOptionsPanel1
 		clockFormat.setSelected(Configuration.getBoolean(VariableKey.CLOCK_FORMAT, defaults));
 		promptForNewTime.setSelected(Configuration.getBoolean(VariableKey.PROMPT_FOR_NEW_TIME, defaults));
@@ -983,27 +971,19 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		}
 	}
 
-	private Profile currProfile;
-
-	public void setVisible(boolean visible, Profile currProfile) {
-		setTitle(StringAccessor.getString("ConfigurationDialog.cctoptions") + " " + currProfile.getName()); //$NON-NLS-1$ //$NON-NLS-2$
-		this.currProfile = currProfile;
-		/*
-		 * if (visible && tabbedPane == null) createGUI(); else
-		 */
-		if(visible) {// TODO - why won't this update before showing the gui?
-			syncGUIwithConfig(false);
-		}
-		this.setVisible(visible);
+	public void setVisible(boolean b) {
+		if(!b)
+			cancel();
+		super.setVisible(b);
 	}
-
+	
 	// this probably won't get used as much as apply, but it's here if you need it
-	public void cancel() {
+	private void cancel() {
 		ScramblePlugin.reloadLengthsFromConfiguration(false);
 		profilesModel.discardChanges();
 	}
 
-	private void applyConfiguration() {
+	private void applyAndSave() {
 		Configuration.setColor(VariableKey.BEST_AND_CURRENT, currentAndRA.getBackground());
 		Configuration.setColor(VariableKey.CURRENT_AVERAGE, currentAverage.getBackground());
 		Configuration.setColor(VariableKey.BEST_RA, bestRA.getBackground());
@@ -1087,6 +1067,12 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			items[i].setInUse(false);
 		}
 		items[Configuration.getInt(VariableKey.MIXER_NUMBER, false)].setInUse(true);
+
+		try {
+			Configuration.saveConfigurationToFile(Configuration.getSelectedProfile().getConfigurationFile());
+		} catch(IOException e) {
+			//this could happen when the current profile was deleted
+		}
 	}
 
 	public void keyPressed(KeyEvent e) {
