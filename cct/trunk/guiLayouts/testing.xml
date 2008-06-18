@@ -19,7 +19,6 @@
 							<component type="scrambleNumber"/>
 							<component type="scrambleAttributes"/>
 						</panel>
-						<component alignmentX=".5" type="startStopPanel"/>
 						<panel layout="flow" hgap="5" vgap="5">
 							<panel layout="grid" cols="3">
 								<button action="addTime">Add Time</button>
