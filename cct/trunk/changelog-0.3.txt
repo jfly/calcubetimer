@@ -189,6 +189,7 @@ changes:
 +don't recreate fullscreen frame unecessarily
 +SECURITY concern: scramble plugins cannot modifying other scramble plugin's final arrays (because they are now private) we use reflection to access those fields
 +keyboard timer display now more indicative of the current state of the timer
++move persistent gui components into a hashmap
 
 TODO:
 
@@ -211,7 +212,6 @@ misc:
 -BUG: titled borders are not anti-aliased (substance bug!)
 
 cleanup:
--move persistent gui components into a hashmap
 -add a ton more reset buttons to config. dialog.
 -generalize XML syntax (get rid of Dynamic... classes) UPDATE: no idea how to do this...???
 

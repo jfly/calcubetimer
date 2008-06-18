@@ -27,7 +27,6 @@
 				</center>
 				<south>
 					<panel layout="box" orientation="page">
-						<component alignmentX=".5" type="startStopPanel"/>
 						<panel layout="flow" hgap="5" vgap="5">
 							<panel layout="grid" cols="3">
 								<button action="addTime">Add Time</button>

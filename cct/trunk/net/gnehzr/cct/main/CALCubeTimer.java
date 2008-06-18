@@ -31,6 +31,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -166,12 +167,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private JComboBox languages = null;
 	private JTextArea commentArea = null;
 	private TimerLabel timeLabel = null;
-	//TODO - change this to a hashmap
-	//all of the above components belong in this ArrayList, so we can reset their
-	//attributes before parsing the xml gui
-	private ArrayList<JComponent> persistentComponents;
-	//this keeps track of the original borders of every persistent component
-	private ArrayList<Border> persistentComponentBorders;
+	//all of the above components belong in this HashMap, so we can find them
+	//when they are referenced in the xml gui (type="blah...blah")
+	//we also reset their attributes before parsing the xml gui
+	private ComponentsMap persistentComponents;
 	
 	private TimerLabel bigTimersDisplay = null;
 	private JPanel fullscreenPanel = null;
@@ -387,6 +386,32 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 	}
 
+	private static class JComponentAndBorder {
+		JComponent c;
+		Border b;
+		public JComponentAndBorder(JComponent c) {
+			this.c = c;
+			this.b = c.getBorder();
+		}
+	}
+	private static class ComponentsMap implements Iterable<JComponentAndBorder> {
+		private HashMap<String, JComponentAndBorder> componentMap = new HashMap<String, JComponentAndBorder>();
+		public JComponentAndBorder getComponentAndBorder(String name) {
+			return componentMap.get(name.toLowerCase());
+		}
+		public JComponent getComponent(String name) {
+			if(!componentMap.containsKey(name.toLowerCase()))
+				return null;
+			return componentMap.get(name.toLowerCase()).c;
+		}
+		public void put(String name, JComponent c) {
+			componentMap.put(name.toLowerCase(), new JComponentAndBorder(c));
+		}
+		public Iterator<JComponentAndBorder> iterator() {
+			return new ArrayList<JComponentAndBorder>(componentMap.values()).iterator();
+		}
+	}
+
 	private Timer tickTock;
 	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Changed"; //$NON-NLS-1$
 	private JMenu customGUIMenu;
@@ -473,26 +498,21 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		languages.addItemListener(this);
 		languages.setRenderer(new LocaleRenderer());
 		
-		persistentComponents = new ArrayList<JComponent>();
-		persistentComponents.add(onLabel);
-		persistentComponents.add(timesTable);
-		persistentComponents.add(timesScroller);
-		persistentComponents.add(sessionsTable);
-		persistentComponents.add(sessionsScroller);
-		persistentComponents.add(scramblePanel);
-		persistentComponents.add(scrambleChooser);
-		persistentComponents.add(scrambleAttributes);
-		persistentComponents.add(scrambleNumber);
-		persistentComponents.add(scrambleLength);
-		persistentComponents.add(currentTimeLabel);
-		persistentComponents.add(profiles);
-		persistentComponents.add(languages);
-		persistentComponents.add(commentArea);
-		persistentComponents.add(timeLabel);
-
-		persistentComponentBorders = new ArrayList<Border>(persistentComponents.size());
-		for(JComponent c : persistentComponents)
-			persistentComponentBorders.add(c.getBorder());
+		persistentComponents = new ComponentsMap();
+		persistentComponents.put("scramblechooser", scrambleChooser);
+		persistentComponents.put("scramblenumber", scrambleNumber);
+		persistentComponents.put("scramblelength", scrambleLength);
+		persistentComponents.put("scrambleattributes", scrambleAttributes);
+		persistentComponents.put("stackmatstatuslabel", onLabel);
+		persistentComponents.put("scrambletext", scramblePanel);
+		persistentComponents.put("timerdisplay", timeLabel);
+		persistentComponents.put("timeslist", timesScroller);
+		persistentComponents.put("customguimenu", customGUIMenu);
+		persistentComponents.put("languagecombobox", languages);
+		persistentComponents.put("profilecombobox", profiles);
+		persistentComponents.put("commentarea", commentArea);
+		persistentComponents.put("sessionslist", sessionsScroller);
+		persistentComponents.put("clock", currentTimeLabel);
 	}
 	
 	private void refreshCustomGUIMenu() {
@@ -655,19 +675,20 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		//this is needed to compute the size of the gui correctly
 		//before reloading the gui, we must discard any old state these components may have had
 
-		//TODO - what to do with component names?
-		for(int ch = 0; ch < persistentComponents.size(); ch++) {
-			JComponent c = persistentComponents.get(ch);
-			c.setBorder(persistentComponentBorders.get(ch));
-			c.setAlignmentX(JComponent.LEFT_ALIGNMENT);
+		//we don't do anything with component names because
+		//the only ones that matter are the 2 tables, and they're protected
+		//by JScrollPanes from having their names changed.
+		for(JComponentAndBorder cb : persistentComponents) {
+			JComponent c = cb.c;
+			c.setBorder(cb.b);
+			c.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 			c.setAlignmentY(JComponent.CENTER_ALIGNMENT);
 			c.setMinimumSize(null);
 			c.setPreferredSize(null);
-			c.setOpaque(false);
+			c.setOpaque(c instanceof JMenu); //need this instanceof operator for the customguimenu
 			c.setBackground(null);
 			c.setForeground(null);
 			c.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, false);
-//			c.setName(); //???
 		}
 		timesScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		timesScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -882,20 +903,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			else if(elementName.equals("component")){ //$NON-NLS-1$
 				if(attrs == null || (temp = attrs.getValue("type")) == null) //$NON-NLS-1$
 					throw new SAXException("parse error in component"); //$NON-NLS-1$
-				else if(temp.equalsIgnoreCase("scramblechooser")) com = scrambleChooser; //$NON-NLS-1$
-				else if(temp.equalsIgnoreCase("scramblenumber")) com = scrambleNumber; //$NON-NLS-1$
-				else if(temp.equalsIgnoreCase("scramblelength")) com = scrambleLength; //$NON-NLS-1$
-				else if(temp.equalsIgnoreCase("scrambleattributes")) com = scrambleAttributes; //$NON-NLS-1$
-				else if(temp.equalsIgnoreCase("stackmatstatuslabel")) com = onLabel; //$NON-NLS-1$
-				else if(temp.equalsIgnoreCase("scrambletext")) com = scramblePanel; //$NON-NLS-1$
-				else if(temp.equalsIgnoreCase("timerdisplay")) com = timeLabel; //$NON-NLS-1$
-				else if(temp.equalsIgnoreCase("timeslist")) com = timesScroller; //$NON-NLS-1$
-				else if(temp.equalsIgnoreCase("customguimenu")) com = customGUIMenu; //$NON-NLS-1$
-				else if(temp.equalsIgnoreCase("languagecombobox")) com = languages; //$NON-NLS-1$
-				else if(temp.equalsIgnoreCase("profilecombobox")) com = profiles; //$NON-NLS-1$
-				else if(temp.equalsIgnoreCase("commentarea")) com = commentArea; //$NON-NLS-1$
-				else if(temp.equalsIgnoreCase("sessionslist")) com = sessionsScroller; //$NON-NLS-1$
-				else if(temp.equalsIgnoreCase("clock")) com = currentTimeLabel; //$NON-NLS-1$
+				com = persistentComponents.getComponent(temp);
+				if(com == null)
+					throw new SAXException("could not find component: " + temp.toLowerCase());
 			}
 			else if(elementName.equals("center") || elementName.equals("east") || elementName.equals("west") || elementName.equals("south") || elementName.equals("north") || elementName.equals("page_start") || elementName.equals("page_end") || elementName.equals("line_start") || elementName.equals("line_end")){ //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$
 				com = null;
