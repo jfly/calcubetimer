@@ -607,6 +607,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			if(e.getStateChange() == ItemEvent.SELECTED) {
 				loadXMLGUI(); //this needs to be here so we reload the gui when configuration is changed
 				if(!newLocale.equals(loadedLocale)) {
+					if(loadedLocale != null) //we don't want to save the gui state if cct is starting up 
+						saveToConfiguration();
 					loadedLocale = newLocale;
 					Configuration.setDefaultLocale(newLocale);
 					languages.setFont(Configuration.getFontForLocale(newLocale)); //for some reason, this cannot be put in the invokeLater() below
