@@ -197,7 +197,7 @@ TODO:
 for release:
 -improve gui behavior when scramble plugin cannot be found (specifically: behavior of customization list in config. dialog)
 -clean up cct startup as best as possible!
-	-decide upon default startup layout (should we remove the progress time stuff from the default layout?)
+	-decide upon default startup layout
 -save gui state before changing language
 -worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
 -open source sourceforge!

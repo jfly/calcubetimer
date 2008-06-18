@@ -33,17 +33,17 @@
 							<panel border="%%seshstats%%" layout="box" orientation="page">
 								<panel layout="box" orientation="line">
 									<label>%%raof%% $$configuration_Statistics_raSize0$$</label>
-									<button action="currentAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$currentAverage0$$ ($$progressAverage0$$)</font></html>]]></button>
+									<button action="currentAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$currentAverage0$$ $$progressAverageParens0$$</font></html>]]></button>
 									<button action="bestAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">%%bestra%% $$bestRA0$$</font></html>]]></button>
 								</panel>
 								<panel layout="box" orientation="line">
 									<label>%%raof%% $$configuration_Statistics_raSize1$$</label>
-									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$currentAverage1$$ ($$progressAverage1$$)</font></font></html>]]></button>
+									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$currentAverage1$$ $$progressAverageParens1$$</font></font></html>]]></button>
 									<button action="bestAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">%%bestra%% $$bestRA1$$</font></html>]]></button>
 								</panel>
 								<panel layout="box" orientation="line">
 									<label>$$solves$$/$$attempts$$ (%%solves%%/%%attempts%%)</label>
-									<button action="sessionAverage"><![CDATA[<html>%%seshave%% $$sessionAverage$$ ($$progressSessionAverage$$)</html>]]></button>
+									<button action="sessionAverage"><![CDATA[<html>%%seshave%% $$sessionAverage$$ $$progressSessionAverageParens$$</html>]]></button>
 								</panel>
 								<panel></panel> <!-- I have no idea why this needs to be here, weird behavior without it -->
 							</panel>

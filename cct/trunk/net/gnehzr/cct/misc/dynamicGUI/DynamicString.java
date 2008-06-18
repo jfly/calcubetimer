@@ -88,13 +88,18 @@ public class DynamicString{
 		return rawString;
 	}
 	
-	private String formatProgressTime(double progress) {
+	private String formatProgressTime(double progress, boolean parens) {
 		String r = ""; //$NON-NLS-1$
-		if(Double.isInfinite(progress))
+		if(Double.isInfinite(progress)) {
+			if(parens)
+				return r;
 			r = "\u221E"; //unicode for infinity //$NON-NLS-1$
-		else
+		} else
 			r = Utils.formatTime(Math.abs(progress));
-		return (progress >= 0 ? "+" : "-") + r; //$NON-NLS-1$ //$NON-NLS-2$
+		r = (progress >= 0 ? "+" : "-") + r;
+		if(parens)
+			r = "(" + r + ")";
+		return r; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	private String getReplacement(String s, int num){
@@ -132,8 +137,10 @@ public class DynamicString{
 		else if(s.equalsIgnoreCase("dnfs")) r = "" + stats.getDNFCount(); //$NON-NLS-1$ //$NON-NLS-2$
 		else if(s.equalsIgnoreCase("solves")) r = "" + stats.getSolveCount(); //$NON-NLS-1$ //$NON-NLS-2$
 		else if(s.equalsIgnoreCase("attempts")) r = "" + stats.getAttemptCount(); //$NON-NLS-1$ //$NON-NLS-2$
-		else if(s.equalsIgnoreCase("progressTime")) r = formatProgressTime(stats.getProgressTime()); //$NON-NLS-1$
-		else if(s.equalsIgnoreCase("progressAverage")) r = formatProgressTime(stats.getProgressAverage(num)); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("progressTime")) r = formatProgressTime(stats.getProgressTime(), false); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("progressAverage")) r = formatProgressTime(stats.getProgressAverage(num), false); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("progressTimeParens")) r = formatProgressTime(stats.getProgressTime(), true); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("progressAverageParens")) r = formatProgressTime(stats.getProgressAverage(num), true); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("bestTime")) r = Utils.formatTime(stats.getBestTime()); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("bestRA")) r = Utils.formatTime(stats.getBestAverage(num)); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("bestSD")) r = Utils.formatTime(stats.getBestSD(num)); //$NON-NLS-1$
@@ -154,8 +161,10 @@ public class DynamicString{
 		else if(s.equalsIgnoreCase("worstTimeOfBestAverage")) r = Utils.formatTime(stats.getWorstTimeOfBestAverage(num)); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("bestTimeOfWorstAverage")) r = Utils.formatTime(stats.getBestTimeOfWorstAverage(num)); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("worstTimeOfWorstAverage")) r = Utils.formatTime(stats.getWorstTimeOfWorstAverage(num)); //$NON-NLS-1$
-		else if(s.equalsIgnoreCase("progressSessionAverage")) r = formatProgressTime(stats.getProgressSessionAverage()); //$NON-NLS-1$
-		else if(s.equalsIgnoreCase("progressSessionSD")) r = formatProgressTime(stats.getProgressSessionSD()); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("progressSessionAverage")) r = formatProgressTime(stats.getProgressSessionAverage(), false); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("progressSessionSD")) r = formatProgressTime(stats.getProgressSessionSD(), false); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("progressSessionAverageParens")) r = formatProgressTime(stats.getProgressSessionAverage(), true); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("progressSessionSDParens")) r = formatProgressTime(stats.getProgressSessionSD(), true); //$NON-NLS-1$
 
 		else if(s.equalsIgnoreCase("bestAverageList")) r = stats.getBestAverageList(num); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("currentAverageList")) r = stats.getCurrentAverageList(num); //$NON-NLS-1$
