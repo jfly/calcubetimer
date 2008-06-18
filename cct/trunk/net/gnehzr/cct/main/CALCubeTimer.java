@@ -3,6 +3,7 @@ package net.gnehzr.cct.main;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
@@ -619,8 +620,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 	}
 	
+	private boolean loadingStrings;
 	private LocaleAndIcon loadedLocale;
 	private void loadStringsFromDefaultLocale() {
+		loadingStrings = true;
+		setCursor(null);
+		
 		//this loads the strings for the swing components we use (JColorChooser and JFileChooser)
 		UIManager.getDefaults().setDefaultLocale(Locale.getDefault());
 		AppContext.getAppContext().put("JComponent.defaultLocale", Locale.getDefault());
@@ -659,7 +664,18 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		
 		SwingUtilities.updateComponentTreeUI(this);
 		SwingUtilities.updateComponentTreeUI(scramblePopup);
+		
+		loadingStrings = false;
+		setCursor(null);
 	}
+    public void setCursor(Cursor cursor) {
+    	if(loadingStrings)
+    		super.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    	else if(cursor == null)
+    		super.setCursor(Cursor.getDefaultCursor());
+    	else
+    		super.setCursor(cursor);
+    }
 
 	public void stateChanged(ChangeEvent e) {
 		Object source = e.getSource();
