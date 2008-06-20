@@ -658,11 +658,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timesTable.refreshColumnNames();
 		sessionsTable.refreshColumnNames();
 		
-		try {
-			UIManager.setLookAndFeel(new SubstanceLookAndFeel());
-		} catch (UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		}
+		setLookAndFeel();
 		createScrambleAttributes();
 		configurationDialog = null; //this will force the config dialog to reload when necessary
 		
@@ -757,9 +753,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	//This is a more appropriate way of doing gui's, to prevent weird resizing issues
-	public Dimension getMinimumSize() {
-		return new Dimension(235, 30);
-	}
+//	public Dimension getMinimumSize() {
+//		return new Dimension(235, 30);
+//	}
 
 	private DynamicCheckBox[] attributes;
 	private static final String SCRAMBLE_ATTRIBUTE_CHANGED = "Scramble Attribute Changed"; //$NON-NLS-1$
@@ -1226,13 +1222,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		        
 				JDialog.setDefaultLookAndFeelDecorated(true);
 				JFrame.setDefaultLookAndFeelDecorated(true);
-				try {
-					UIManager.setLookAndFeel(new SubstanceLookAndFeel());
-//					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//					UIManager.setLookAndFeel(new org.jvnet.substance.skin.SubstanceModerateLookAndFeel());
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
+				setLookAndFeel();
 
 				UIManager.put(LafWidget.TEXT_EDIT_CONTEXT_MENU, Boolean.TRUE);
 				UIManager.put(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.TRUE);
@@ -1248,6 +1238,16 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				main.setVisible(true);
 			}
 		});
+	}
+
+	private static void setLookAndFeel() {
+		try {
+			UIManager.setLookAndFeel(new SubstanceLookAndFeel());
+//			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//			UIManager.setLookAndFeel(new org.jvnet.substance.skin.SubstanceModerateLookAndFeel());
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 	}
 
 	private void safeSetValue(JSpinner test, Object val) {
