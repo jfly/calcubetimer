@@ -30,7 +30,7 @@
 							</panel></line_end>
 						</panel>
 						<panel layout="box" orientation="line">
-							<panel border="%%seshstats%%" layout="box" orientation="page">
+							<panel border="%%seshstats%%" layout="grid" cols="1">
 								<panel layout="box" orientation="line">
 									<label>%%raof%% $$configuration_Statistics_raSize0$$</label>
 									<button action="currentAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$currentAverage0$$ $$progressAverageParens0$$</font></html>]]></button>
@@ -45,7 +45,6 @@
 									<label>$$solves$$/$$attempts$$ (%%solves%%/%%attempts%%)</label>
 									<button action="sessionAverage"><![CDATA[<html>%%seshave%% $$sessionAverage$$ $$progressSessionAverageParens$$</html>]]></button>
 								</panel>
-								<panel></panel> <!-- I have no idea why this needs to be here, weird behavior without it -->
 							</panel>
 							<panel border="%%history%%" layout="box" orientation="page">
 								<panel><label alignmentX=".5">%%bestever%% $$veryBestTime$$</label></panel>
@@ -53,13 +52,6 @@
 								<panel><label alignmentX=".5">$$globalSolveCount$$/$$globalAttemptCount$$ %%globalaverage%% $$globalAverage$$</label></panel>
 							</panel>
 						</panel>
-						<!-- The tables themselves were given this functionality
-						<panel layout="border" preferredsize="100x25">
-							<scrollpane verticalpolicy="asneeded" horizontalpolicy="asneeded">
-								<component type="commentarea"/>
-							</scrollpane>
-						</panel>
-						-->
 					</panel>
 				</south>
 			</panel>
@@ -97,12 +89,13 @@
 			</menu>
 			<component type="customGUIMenu"/>
 		</menu>
+		<glue orientation="horizontal"/>
 		<button nominsize="true" action="undo"/>
 		<button nominsize="true" action="redo"/>
-		<glue orientation="horizontal"/>
 		<component type="languagecombobox"/>
 		<component type="profilecombobox"/>
-		<component type="clock"/> <!-- Probably want to add a gui option for empty borders, to create blank space -->
+		<glue orientation="horizontal"/>
+		<component type="clock"/>
 		<menu mnemonic="h">%%help%%
 			<menuitem action="showDocumentation">%%documentation%%</menuitem>
 			<menuitem action="showAbout">%%about%%</menuitem>

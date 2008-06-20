@@ -10,11 +10,13 @@
 							<panel layout="box" orientation="page">
 								<component type="scrambleChooser"/>
 								<component alignmentX=".5" type="stackmatStatusLabel"/>
-								<panel layout="grid" cols="2">
-									<label>Scramble length: </label>
-									<component type="scrambleLength"/>
-									<label>Scramble number: </label>
-									<component type="scrambleNumber"/>
+								<panel> <!-- This is to prevent the grid layout from getting squished -->
+									<panel layout="grid" cols="2">
+										<label>Scramble length:</label>
+										<component type="scrambleLength" />
+										<label>Scramble number: </label>
+										<component type="scrambleNumber"/>
+									</panel>
 								</panel>
 								<component type="scrambleAttributes"/>
 							</panel>
@@ -30,7 +32,7 @@
 						<panel layout="flow" hgap="5" vgap="5">
 							<panel layout="grid" cols="3">
 								<button action="addTime">Add Time</button>
-								<checkbox action="keyboardTiming"/>
+								<checkbox action="keyboardTiming">Use keyboard timer</checkbox>
 								<button action="reset">Reset</button>
 								<button action="currentAverage0"><![CDATA[<html><font color="$$color_currentAverage$$">Current Average: $$currentAverage0$$</font></html>]]></button>
 								<button action="bestAverage0"><![CDATA[<html><font color="$$color_bestAverage$$">Best Rolling Average: $$bestAverage0$$</font></html>]]></button>

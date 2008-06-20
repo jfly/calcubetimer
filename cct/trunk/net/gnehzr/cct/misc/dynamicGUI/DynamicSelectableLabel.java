@@ -1,6 +1,7 @@
 package net.gnehzr.cct.misc.dynamicGUI;
 
 import javax.swing.JEditorPane;
+import javax.swing.border.Border;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
@@ -19,6 +20,12 @@ public class DynamicSelectableLabel extends JEditorPane implements StatisticsUpd
 		setBorder(null);
 		setOpaque(false);
 		Configuration.addConfigurationChangeListener(this);
+	}
+
+	public void updateUI() {
+		Border b = getBorder();
+		super.updateUI();
+		setBorder(b);
 	}
 
 	public DynamicSelectableLabel(DynamicString s){

@@ -22,7 +22,7 @@
 						<panel layout="flow" hgap="5" vgap="5">
 							<panel layout="grid" cols="3">
 								<button action="addTime">Add Time</button>
-								<checkbox action="keyboardTiming"/>
+								<checkbox action="keyboardTiming">Use keyboard for timing</checkbox>
 								<button action="reset">Reset</button>
 								<button action="currentAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average of $$configuration_Statistics_raSize0$$: $$currentAverage0$$</font></html>]]></button>
 								<button action="bestAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">Best Rolling Average: $$bestAverage0$$</font></html>]]></button>
@@ -95,7 +95,7 @@
 							<south>
 								<panel layout="border">
 									<line_start>
-										<checkbox alignmentX=".5" action="togglescramblepopup"/>
+										<checkbox alignmentX=".5" action="togglescramblepopup">Show scramble?</checkbox>
 									</line_start>
 									<center>
 										<panel layout="border" preferredsize="100x100">
@@ -141,6 +141,6 @@
 			<menuitem action="showDocumentation">View Documentation</menuitem>
 			<menuitem action="showAbout">About</menuitem>
 		</menu>
-		<component type="maximizeButton"/>
+		<button nominsize="true" action="togglefullscreen"/>
 	</menubar>
 </gui>

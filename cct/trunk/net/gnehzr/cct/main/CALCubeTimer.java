@@ -382,6 +382,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			Configuration.setString(VariableKey.XML_LAYOUT, layout);
 			parseXML_GUI(Configuration.getXMLFile(layout));
 			this.pack();
+			this.setLocationRelativeTo(null);
+			for(JSplitPane pane : splitPanes) { //the call to pack() is messing up the jsplitpanes
+				pane.setDividerLocation(pane.getResizeWeight());
+				Integer divide = Configuration.getInt(VariableKey.JCOMPONENT_VALUE(pane.getName(), true), false);
+				if(divide != null)
+					pane.setDividerLocation(divide);
+			}
 		}
 	}
 
@@ -712,6 +719,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timeLabel.setPreferredSize(new Dimension(0, 150));
 		timeLabel.setAlignmentX(.5f);
 		timeLabel.configurationChanged();
+		bigTimersDisplay.configurationChanged();
 		
 		XMLGuiMessages.reloadResources();
 
