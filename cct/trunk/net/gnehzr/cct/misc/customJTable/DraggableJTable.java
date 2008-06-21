@@ -157,6 +157,8 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			wrapped.insertValueAt(value, rowIndex);
 		}
 		public String getToolTip(int rowIndex) {
+			if(rowIndex == wrapped.getRowCount())
+				return null;
 			return wrapped.getToolTip(rowIndex);
 		}
 	}
