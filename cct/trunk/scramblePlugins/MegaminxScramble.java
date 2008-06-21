@@ -22,7 +22,7 @@ public class MegaminxScramble extends Scramble {
 	  { "ffffff", "336633", "66ffff", "996633", "3333ff", "993366", "ffff00", "66ff66", "ff9933", "ff0000", "000099", "ff66ff" } };
 	private static final String PUZZLE_NAME = "Megaminx";
 	private static final String[] VARIATIONS = { "Megaminx", "Pochmann Megaminx" };
-	private static final int[] DEFAULT_LENGTHS = { 70,		60 };
+	private static final int[] DEFAULT_LENGTHS = { 60,		70 };
 	private static final int DEFAULT_UNIT_SIZE = 30;
 	private static final Pattern TOKEN_REGEX = Pattern.compile("^([A-Fa-fRYU](?:\\+\\+|--|'|[234]?))(.*)$");
 	
