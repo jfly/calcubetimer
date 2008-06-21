@@ -200,6 +200,7 @@ changes:
 +gui minimum size is being enlarged by the menu
 +added tooltips to the timestable and sessionstable, currently shows the solve/session comment
 +importing scrambles is fixed
++fixed bug with the ordering/saving of scramble customizations
 
 TODO:
 
@@ -216,9 +217,6 @@ misc:
 -java webstart? applet?
 -dynamic string multiple argument format
 -BUG: titled borders are not anti-aliased (substance bug!)
-
-ConfigDialog:
--improve gui behavior when scramble plugin cannot be found (specifically: behavior of customization list in config. dialog)
 
 cleanup:
 -"Options" menu is getting cut to "Op" when the gui is made small

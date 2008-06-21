@@ -9,21 +9,16 @@ import javax.swing.table.TableCellRenderer;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
-import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 
 @SuppressWarnings("serial") //$NON-NLS-1$
 public class ScrambleChooserComboBox extends LoudComboBox implements TableCellRenderer, ConfigurationChangeListener {
+	private boolean customizations;
 	public ScrambleChooserComboBox(boolean icons, boolean customizations) {
+		this.customizations = customizations;
 		this.setRenderer(new PuzzleCustomizationCellRenderer(icons));
-		DefaultComboBoxModel model;
-		if(customizations)
-			model = new DefaultComboBoxModel(ScramblePlugin.getScrambleCustomizations(false).toArray(new ScrambleCustomization[0]));
-		else
-			model = new DefaultComboBoxModel(ScramblePlugin.getScrambleVariations());
-		this.setModel(model);
-		this.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
 		Configuration.addConfigurationChangeListener(this);
+		configurationChanged();
 	}
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -41,7 +36,12 @@ public class ScrambleChooserComboBox extends LoudComboBox implements TableCellRe
 	}
 	
 	public void configurationChanged() {
-		this.setModel(new DefaultComboBoxModel(ScramblePlugin.getScrambleCustomizations(false).toArray(new ScrambleCustomization[0])));
+		Object[] model;
+		if(customizations)
+			model = ScramblePlugin.getScrambleCustomizations(false).toArray();
+		else
+			model = ScramblePlugin.getScrambleVariations();
+		this.setModel(new DefaultComboBoxModel(model));
 		this.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
 	}
 }

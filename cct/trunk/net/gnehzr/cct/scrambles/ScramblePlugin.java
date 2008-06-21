@@ -94,13 +94,11 @@ public class ScramblePlugin {
 		return null;
 	}
 
-	//TODO - the defaults argument isn't even being used here! consider revising, :-)
 	public static ArrayList<ScrambleCustomization> getScrambleCustomizations(boolean defaults) {
 		ArrayList<ScrambleCustomization> scrambleCustomizations = new ArrayList<ScrambleCustomization>();
 		for(ScrambleVariation t : getScrambleVariations())
 			scrambleCustomizations.add(new ScrambleCustomization(t, null));
-
-		String[] customNames = Configuration.getStringArray(VariableKey.SCRAMBLE_CUSTOMIZATIONS, false);
+		String[] customNames = Configuration.getStringArray(VariableKey.SCRAMBLE_CUSTOMIZATIONS, defaults);
 		Iterator<String> databaseCustoms = Configuration.getSelectedProfile().getPuzzleDatabase().getCustomizations().iterator();
 		int ch = customNames.length - 1;
 		while(true) {
@@ -135,12 +133,14 @@ public class ScramblePlugin {
 			else
 				sc = new ScrambleCustomization(new ScrambleVariation(new ScramblePlugin(variationName), variationName), customizationName);
 			if(!variationName.isEmpty()) {
-				if(scrambleCustomizations.contains(sc))
+				if(scrambleCustomizations.contains(sc)) {
+					if(ch == customNames.length - 1) //we don't want to move this customization to the front of the list if it's from the database
+						continue;
 					scrambleCustomizations.remove(sc);
+				}
 				scrambleCustomizations.add(0, sc);
 			}
 		}
-		Configuration.setStringArray(VariableKey.SCRAMBLE_CUSTOMIZATIONS, scrambleCustomizations.toArray());
 		return scrambleCustomizations;
 	}
 
