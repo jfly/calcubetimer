@@ -27,7 +27,7 @@ public class SquareOneScramble extends Scramble {
 	private static final int[] DEFAULT_LENGTHS = { 40 };
 	private static final int DEFAULT_UNIT_SIZE = 32;
 	private static final Pattern TOKEN_REGEX = Pattern.compile("^(\\( *-?\\d+ *, *-?\\d+ *\\)|/)(.*)$");
-	private static final String[] ATTRIBUTES = new String[] { "Slashes" };
+	private static final String[] ATTRIBUTES = new String[] { "%%slashes%%" };
 	
 	private int twistCount = 0; //this will tell us the state of the middle pieces
 	private int[] state, turns;
