@@ -41,12 +41,7 @@ public class SessionsTable extends DraggableJTable implements SelectionListener 
 		super.sortByColumn(-1); //this will sort column 0 in descending order
 		refreshModel();
 	}
-	private int currSessionRow;
-	public int getCurrentSessionRow() {
-		return currSessionRow;
-	}
 	public void rowSelected(int row) {
-		currSessionRow = row;
 		Session selected = (Session) getValueAt(row, convertColumnIndexToView(0));
 		if(statsModel.getCurrentSession() != selected) //we don't want to reload the current session
 			fireSessionSelected(selected);
@@ -73,11 +68,6 @@ public class SessionsTable extends DraggableJTable implements SelectionListener 
 			}
 		}
 		super.tableChanged(e);
-		if(pd != null && (currSessionRow = pd.indexOf(statsModel.getCurrentSession())) != -1) {
-			try {
-				currSessionRow = convertRowIndexToView(currSessionRow); //ProfileDatabase gives us the model index
-			} catch(Exception ee) {	} //when loading from the xml gui, we get this exception, it works to just ignore it, however
-		}
 	}
 	
 	private SessionListener l;

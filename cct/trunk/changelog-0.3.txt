@@ -202,13 +202,11 @@ changes:
 +importing scrambles is fixed
 +fixed bug with the ordering/saving of scramble customizations
 +worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
++fixed bug with highlighting the current session's row
 
 TODO:
 
 for release:
--sendTo has a bug when switching to that profile
--profile bug (change to invalid name, then change to valid name)
--X scramble is showing up unexpectedly
 -open source sourceforge!
 -create license, give credit where credit is due
 -update defaults.properties file, about.html (translate), FAQ (esp: new stackmat options, translate)

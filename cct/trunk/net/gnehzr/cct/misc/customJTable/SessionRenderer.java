@@ -10,6 +10,7 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.TableCellRenderer;
 
+import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.statistics.Session;
 
 @SuppressWarnings("serial") //$NON-NLS-1$
@@ -26,7 +27,7 @@ public class SessionRenderer extends JLabel implements TableCellRenderer {
 			setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
 		}
 		setBackground(Color.WHITE);
-		if(row == ((SessionsTable) table).getCurrentSessionRow()) //emphasize the current session
+		if(row < table.getRowCount() && CALCubeTimer.statsModel.getCurrentSession() == ((SessionsTable) table).getValueAt(row, table.convertColumnIndexToView(0))) //emphasize the current session
 			setBackground(Color.GREEN);
 		return this;
 	}

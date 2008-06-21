@@ -532,7 +532,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	//if we deleted the current session, should we create a new one, or load the "nearest" session?
-	public Session getNextSession() {
+	private Session getNextSession() {
 		Session nextSesh = statsModel.getCurrentSession();
 		Profile p = Configuration.getSelectedProfile();
 		String customization = scramblesList.getScrambleCustomization().toString();
