@@ -80,8 +80,13 @@ public class ScrambleList {
 	
 	public void importScrambles(ArrayList<Scramble> scrams) {
 		removeLatestAndFutureScrambles();
-		for(Scramble s : scrams)
-			scrambles.add(new ScrambleString(s.toString(), true, s.getLength()));
+		for(int c = 0; c < scrams.size(); c++) {
+			ScrambleString s = new ScrambleString(scrams.get(c).toString(), true, scrams.get(c).getLength());
+			if(scrambleNumber + c < scrambles.size())
+				scrambles.set(scrambleNumber + c, s);
+			else
+				scrambles.add(s);
+		}
 	}
 
 	public ScrambleString getNext() {

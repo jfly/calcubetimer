@@ -34,6 +34,7 @@ import javax.swing.table.TableModel;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.i18n.StringAccessor;
+import net.gnehzr.cct.misc.Utils;
 
 @SuppressWarnings("serial") //$NON-NLS-1$
 public class DraggableJTable extends JTable implements MouseListener, MouseMotionListener, KeyListener, ActionListener {
@@ -71,6 +72,10 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 				}
 			});
 		}
+	}
+	
+	public String getToolTipText(MouseEvent event) {
+		return model.getToolTip(convertRowIndexToModel(rowAtPoint(event.getPoint())));
 	}
 
 	public void setAddText(String addText) {
@@ -150,6 +155,9 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		}
 		public void insertValueAt(Object value, int rowIndex) {
 			wrapped.insertValueAt(value, rowIndex);
+		}
+		public String getToolTip(int rowIndex) {
+			return wrapped.getToolTip(rowIndex);
 		}
 	}
 
@@ -528,9 +536,8 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		Arrays.sort(selectedRows);
 		int choice = JOptionPane.YES_OPTION;
 		if(prompt)
-			choice = JOptionPane.showConfirmDialog(getParent(),
-					StringAccessor.getString("DraggableJTable.confirmdeletion") + "\n" + temp, StringAccessor.getString("DraggableJTable.confirm"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				JOptionPane.YES_NO_OPTION);
+			choice = Utils.showYesNoDialog(getParent(),
+					StringAccessor.getString("DraggableJTable.confirmdeletion") + "\n" + temp); //$NON-NLS-1$
 		if(choice == JOptionPane.YES_OPTION) {
 			model.deleteRows(selectedRows);
 			if(selectedRows.length > 1) {

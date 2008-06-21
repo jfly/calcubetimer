@@ -197,11 +197,13 @@ changes:
 	+jnetcube.xml looks diff when loaded 1st vs switch to (& jspinner's are squished when using stackmat)
 +clean up cct startup as best as possible!
 	+decide upon default startup layout
-	
++gui minimum size is being enlarged by the menu
++added tooltips to the timestable and sessionstable, currently shows the solve/session comment
++importing scrambles is fixed
+
 TODO:
 
 for release:
--"Options" menu is getting cut to "Op", gui minimum size is being enlarged by the menu
 -worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
 -open source sourceforge!
 -create license, give credit where credit is due
@@ -219,6 +221,7 @@ ConfigDialog:
 -improve gui behavior when scramble plugin cannot be found (specifically: behavior of customization list in config. dialog)
 
 cleanup:
+-"Options" menu is getting cut to "Op" when the gui is made small
 -generalize XML syntax (get rid of Dynamic... classes) UPDATE: no idea how to do this...???
 
 Server stuff:

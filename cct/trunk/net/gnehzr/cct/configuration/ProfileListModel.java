@@ -99,8 +99,9 @@ public class ProfileListModel extends DraggableJTableModel {
 		}
 		fireTableRowsDeleted(indices[0], indices[indices.length - 1]);
 	}
-
-	@Override
+	public String getToolTip(int rowIndex) {
+		return null;
+	}
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
 		if(value == null) //null if the name was equal to the addText
 			return;

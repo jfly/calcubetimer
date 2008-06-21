@@ -69,7 +69,6 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 		}
 		return false;
 	}
-	//TODO - Does this need to be internationalized? Does everyone use decimal points?
 	public void setTime(String time) throws Exception {
 		time = time.trim();
 		if(time.isEmpty())

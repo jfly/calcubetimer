@@ -35,7 +35,6 @@ import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.statistics.Profile;
 
 public final class Configuration {
-	//TODO - how to get the right file to open up, if it does exist?
 	public static final File documentationFile = new File(getRootDirectory(), "documentation/readme.html");
 	public static final File profilesFolder = new File(getRootDirectory(), "profiles/"); //$NON-NLS-1$
 	public static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/"); //$NON-NLS-1$

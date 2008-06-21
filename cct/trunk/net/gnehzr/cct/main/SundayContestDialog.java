@@ -22,7 +22,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -34,6 +33,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.JTextAreaWithHistory;
+import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
 
@@ -260,12 +260,10 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 						timesField.getText(),
 						quoteArea.getText(),
 						showEmailBox.isSelected());
-				JOptionPane.showMessageDialog(this,
-						StringAccessor.getString("SundayContestDialog.serverresponse") + "\n" + result, //$NON-NLS-1$ //$NON-NLS-2$
-						StringAccessor.getString("SundayContestDialog.submissionresults"), //$NON-NLS-1$
-						JOptionPane.INFORMATION_MESSAGE);
+				Utils.showConfirmDialog(this, 
+						StringAccessor.getString("SundayContestDialog.serverresponse") + "\n" + result);
 			} catch (IOException e1) {
-				JOptionPane.showMessageDialog(this, e1.getLocalizedMessage(), StringAccessor.getString("SundayContestDialog.submissionfailure"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+				Utils.showErrorDialog(this, e1.getLocalizedMessage());
 				e1.printStackTrace();
 			}
 		} else if(source == doneButton) {

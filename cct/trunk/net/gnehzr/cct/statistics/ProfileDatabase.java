@@ -181,6 +181,10 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 	public void removeRows(int[] indices) {
 		deleteRows(indices);
 	}
+	public String getToolTip(int rowIndex) {
+		String t = getNthSession(rowIndex).getComment();
+		return t.isEmpty() ? null : t;
+	}
 	private static final String SEND_TO_PROFILE = "sendToProfile"; //$NON-NLS-1$
 	public void showPopup(MouseEvent e, final DraggableJTable source) {
 		JPopupMenu jpopup = new JPopupMenu();

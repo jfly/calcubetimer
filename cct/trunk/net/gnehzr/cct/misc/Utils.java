@@ -1,12 +1,16 @@
 package net.gnehzr.cct.misc;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
+import javax.swing.JOptionPane;
+
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.i18n.StringAccessor;
 
 public class Utils {
 	public static DecimalFormat getDecimalFormat() {
@@ -82,5 +86,22 @@ public class Utils {
 				style += "italic"; //$NON-NLS-1$
 		}
 		return f.getFontName() + "-" + style + "-" + f.getSize(); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+	
+	public static int showWarningDialog(Component c, String message) {
+		String[] ok = new String[] { StringAccessor.getString("Utils.ok") };
+		return JOptionPane.showOptionDialog(c, message, StringAccessor.getString("Utils.warning"), JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE, null, ok, ok[0]);
+	}
+	public static int showErrorDialog(Component c, String message) {
+		String[] ok = new String[] { StringAccessor.getString("Utils.ok") };
+		return JOptionPane.showOptionDialog(c, message, StringAccessor.getString("Utils.error"), JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE, null, ok, ok[0]);
+	}
+	public static int showYesNoDialog(Component c, String message) {
+		String[] yesNo = new String[] { StringAccessor.getString("Utils.yes"), StringAccessor.getString("Utils.no") };
+		return JOptionPane.showOptionDialog(c, message, StringAccessor.getString("Utils.confirm"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, yesNo, yesNo[0]);
+	}
+	public static int showConfirmDialog(Component c, String message) {
+		String[] yesNo = new String[] { StringAccessor.getString("Utils.ok") };
+		return JOptionPane.showOptionDialog(c, message, StringAccessor.getString("Utils.confirm"), JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, yesNo, yesNo[0]);
 	}
 }

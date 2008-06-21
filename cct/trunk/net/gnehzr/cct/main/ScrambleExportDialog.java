@@ -13,7 +13,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -21,6 +20,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.JSpinnerWithText;
+import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleList;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
@@ -91,10 +91,7 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 			try {
 				file = new URI(urlField.getText()).toURL();
 			} catch (Exception e1) {
-				JOptionPane.showMessageDialog(this,
-						e1.getMessage() + "\n" + StringAccessor.getString("ScrambleExportDialog.badfilename"), //$NON-NLS-1$ //$NON-NLS-2$
-						StringAccessor.getString("ScrambleExportDialog.error"), //$NON-NLS-1$
-						JOptionPane.ERROR_MESSAGE);
+				Utils.showErrorDialog(this, e1.getMessage() + "\n" + StringAccessor.getString("ScrambleExportDialog.badfilename"));
 			}
 			if(file != null)
 				exportScrambles(file, getNumberOfScrambles(), getVariation());
@@ -104,10 +101,6 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 		}
 	}
 	
-	private void showErrorMessage(String errorMessage, String title){
-		JOptionPane.showMessageDialog(this, errorMessage, title, JOptionPane.ERROR_MESSAGE);
-	}
-
 	private int getNumberOfScrambles() {
 		return numberOfScrambles.getSpinnerValue();
 	}
@@ -128,12 +121,9 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 				out.println(generatedScrambles.getCurrent().toString());
 			}
 			out.close();
-			JOptionPane.showMessageDialog(this,
-					StringAccessor.getString("ScrambleExportDialog.successmessage"), //$NON-NLS-1$
-					outputFile.getPath(),
-					JOptionPane.INFORMATION_MESSAGE);
+			Utils.showConfirmDialog(this, StringAccessor.getString("ScrambleExportDialog.successmessage") + "\n" + outputFile.getPath());
 		} catch(Exception e) {
-			showErrorMessage(StringAccessor.getString("ScrambleExportDialog.error") + "\n" + e.toString(), StringAccessor.getString("ScrambleExportDialog.hmmm"));  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$
+			Utils.showErrorDialog(this, e.toString());
 		}
 	}
 }

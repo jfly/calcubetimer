@@ -71,7 +71,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -753,9 +752,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	//This is a more appropriate way of doing gui's, to prevent weird resizing issues
-//	public Dimension getMinimumSize() {
-//		return new Dimension(235, 30);
-//	}
+	public Dimension getMinimumSize() {
+		return new Dimension(235, 30);
+	}
 
 	private DynamicCheckBox[] attributes;
 	private static final String SCRAMBLE_ATTRIBUTE_CHANGED = "Scramble Attribute Changed"; //$NON-NLS-1$
@@ -929,7 +928,16 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				com = null;
 			}
 			else if(elementName.equals("menubar")){ //$NON-NLS-1$
-				com = new JMenuBar();
+				com = new JMenuBar() {
+					public Component add(Component comp) {
+						//if components in the menubar resist resizing,
+						//it prevents the whole gui from resizing
+						//the minimum height is 10 because buttons were
+						//acting weird if it was smaller
+						comp.setMinimumSize(new Dimension(1, 10));
+						return super.add(comp);
+					}
+				};
 			}
 			else if(elementName.equals("menu")){ //$NON-NLS-1$
 				JMenu menu = new DynamicMenu();
@@ -1356,11 +1364,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			boolean outOfScrambles = curr.isImported(); //This is tricky, think before you change it
 			outOfScrambles = !scramblesList.getNext().isImported() && outOfScrambles;
 			if(outOfScrambles)
-				JOptionPane.showMessageDialog(this,
+				Utils.showWarningDialog(this,
 						StringAccessor.getString("CALCubeTimer.outofimported") + //$NON-NLS-1$
-						StringAccessor.getString("CALCubeTimer.generatedscrambles"), //$NON-NLS-1$
-						StringAccessor.getString("CALCubeTimer.outofscrambles"), //$NON-NLS-1$
-						JOptionPane.INFORMATION_MESSAGE);
+						StringAccessor.getString("CALCubeTimer.generatedscrambles"));
 			updateScramble();
 			//make the new time visible
 			timesTable.invalidate(); //the table needs to be invalidated to force the new time to "show up"!!!
@@ -1509,12 +1515,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	public void resetAction() {
-		int choice = JOptionPane.showConfirmDialog(
-				this,
-				StringAccessor.getString("CALCubeTimer.confirmreset"), //$NON-NLS-1$
-				StringAccessor.getString("CALCubeTimer.warning"), //$NON-NLS-1$
-				JOptionPane.YES_NO_OPTION,
-				JOptionPane.WARNING_MESSAGE);
+		int choice = Utils.showYesNoDialog(this, StringAccessor.getString("CALCubeTimer.confirmreset"));
 		if(choice == JOptionPane.YES_OPTION) {
 			timeLabel.reset();
 			bigTimersDisplay.reset();
@@ -1537,12 +1538,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	public void showDocumentation() {
 		try {
 			URI uri = Configuration.documentationFile.toURI();
+			uri = null;
 			Desktop.getDesktop().browse(uri);
 		} catch(Exception error) {
-			JOptionPane.showMessageDialog(this,
-					error.getMessage(),
-					StringAccessor.getString("CALCubeTimer.error"), //$NON-NLS-1$
-					JOptionPane.WARNING_MESSAGE);
+			Utils.showErrorDialog(this, error.toString());
 		}
 	}
 
@@ -1634,11 +1633,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		splits = new ArrayList<SolveTime>();
 		boolean sameAsLast = addMe.compareTo(lastAccepted) == 0;
 		if(sameAsLast) {
-			int choice = JOptionPane.showConfirmDialog(null,
-					StringAccessor.getString("CALCubeTimer.confirmduplicate"), //$NON-NLS-1$
-					StringAccessor.getString("CALCubeTimer.confirmtime") + addMe.toString(), //$NON-NLS-1$
-					JOptionPane.YES_NO_OPTION,
-					JOptionPane.QUESTION_MESSAGE);
+			int choice = Utils.showYesNoDialog(this, addMe.toString() + "\n" + StringAccessor.getString("CALCubeTimer.confirmduplicate"));
 			if(choice != JOptionPane.YES_OPTION)
 				return false;
 		}

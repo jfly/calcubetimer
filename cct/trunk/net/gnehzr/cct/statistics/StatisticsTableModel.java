@@ -115,6 +115,10 @@ public class StatisticsTableModel extends DraggableJTableModel {
 	public void removeRows(int[] indices) {
 		deleteRows(indices);
 	}
+	public String getToolTip(int rowIndex) {
+		String t = stats.get(rowIndex).getComment();
+		return t.isEmpty() ? null : t;
+	}
 
 	private JRadioButtonMenuItem none, plusTwo, pop, dnf;
 	public void showPopup(MouseEvent e, final DraggableJTable timesTable) {

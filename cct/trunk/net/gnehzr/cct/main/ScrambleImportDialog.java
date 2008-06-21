@@ -23,7 +23,6 @@ import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.DocumentEvent;
@@ -33,6 +32,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.JTextAreaWithHistory;
+import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
@@ -122,10 +122,7 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 				File selectedFile = fc.getSelectedFile();
 				urlField.setSelectedItem(selectedFile.toURI().toString());
 				if(!selectedFile.exists()) {
-					JOptionPane.showMessageDialog(this,
-							StringAccessor.getString("ScrambleImportDialog.filenotfound") + " " + selectedFile.getName(), //$NON-NLS-1$ //$NON-NLS-2$
-							StringAccessor.getString("ScrambleImportDialog.filenotfound"), //$NON-NLS-1$
-							JOptionPane.ERROR_MESSAGE);
+					Utils.showErrorDialog(this, StringAccessor.getString("ScrambleImportDialog.filenotfound") + " " + selectedFile.getName());
 					urlField.setSelectedItem(""); //$NON-NLS-1$
 				}
 			}
@@ -142,13 +139,13 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 				in.close();
 				urlField.commitCurrentItem();
 			} catch(MalformedURLException ee) {
-				showErrorMessage(ee.getMessage() + "\n" + StringAccessor.getString("ScrambleImportDialog.badname"), StringAccessor.getString("ScrambleImportDialog.error")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				Utils.showErrorDialog(this, ee.getMessage() + "\n" + StringAccessor.getString("ScrambleImportDialog.badname")); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch(ConnectException ee) {
-				showErrorMessage(StringAccessor.getString("ScrambleImportDialog.connectionrefused"), StringAccessor.getString("ScrambleImportDialog.error")); //$NON-NLS-1$ //$NON-NLS-2$
+				Utils.showErrorDialog(this, StringAccessor.getString("ScrambleImportDialog.connectionrefused"));
 			} catch(FileNotFoundException ee) {
-				showErrorMessage(url + "\n" + StringAccessor.getString("ScrambleImportDialog.notfound"), StringAccessor.getString("ScrambleImportDialog.four-oh-foured")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				Utils.showErrorDialog(this, url + "\n" + StringAccessor.getString("ScrambleImportDialog.notfound"));
 			} catch(Exception ee) {
-				showErrorMessage(StringAccessor.getString("ScrambleImportDialog.error") + "\n" + e.toString(), StringAccessor.getString("ScrambleImportDialog.hmmm")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				Utils.showErrorDialog(this, e.toString());
 			}
 		} else if(source == importButton) {
 			ScrambleCustomization sc = getScrambleCustomization();
@@ -165,10 +162,6 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 	
 	public ScrambleCustomization getScrambleCustomization() {
 		return (ScrambleCustomization) scrambleChooser.getSelectedItem();
-	}
-	
-	private void showErrorMessage(String errorMessage, String title){
-		JOptionPane.showMessageDialog(this, errorMessage, title, JOptionPane.ERROR_MESSAGE);
 	}
 
 	public ScrambleCustomization getSelectedCustomization() {

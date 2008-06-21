@@ -68,6 +68,7 @@ import net.gnehzr.cct.misc.ComboRenderer;
 import net.gnehzr.cct.misc.ImageFilter;
 import net.gnehzr.cct.misc.ImagePreview;
 import net.gnehzr.cct.misc.JTextAreaWithHistory;
+import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.ProfileEditor;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
@@ -806,10 +807,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			URI uri = Configuration.documentationFile.toURI();
 			Desktop.getDesktop().browse(uri);
 		} catch(Exception error) {
-			JOptionPane.showMessageDialog(this,
-					error.getMessage(),
-					StringAccessor.getString("ConfigurationDialog.error"), //$NON-NLS-1$
-					JOptionPane.WARNING_MESSAGE);
+			Utils.showErrorDialog(this, error.toString());
 		}
 	}
 	
@@ -937,8 +935,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		} else if(source == cancelButton) {
 			setVisible(false);
 		} else if(source == resetAllButton) {
-			//TODO - this needs to be internationalized, check for more stuff like this throughout cct
-			int choice = JOptionPane.showConfirmDialog(this, StringAccessor.getString("ConfigurationDialog.confirmreset"), StringAccessor.getString("ConfigurationDialog.warning"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$ //$NON-NLS-2$
+			int choice = Utils.showYesNoDialog(this, StringAccessor.getString("ConfigurationDialog.confirmreset"));
 			if(choice == JOptionPane.YES_OPTION)
 				syncGUIwithConfig(true);
 		} else if(source == splits) {

@@ -26,6 +26,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.JTextAreaWithHistory;
+import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicString;
 import net.gnehzr.cct.statistics.StatisticsTableModel;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
@@ -160,16 +161,11 @@ public class StatsDialogHandler extends JDialog implements ActionListener, Chang
 					out.println();
 				}
 				out.print(textArea.getText().replaceAll("\n", System.getProperty("line.separator"))); //$NON-NLS-1$ //$NON-NLS-2$
-				JOptionPane.showMessageDialog(this,
+				Utils.showConfirmDialog(this, 
 						StringAccessor.getString("StatsDialogHandler.successmessage") + //$NON-NLS-1$
-						outputFile.getAbsolutePath(),
-						StringAccessor.getString("StatsDialogHandler.success"), //$NON-NLS-1$
-						JOptionPane.WARNING_MESSAGE);
+						outputFile.getAbsolutePath());
 			} catch(Exception e) {
-				JOptionPane.showMessageDialog(this,
-						StringAccessor.getString("StatsDialogHandler.error") + e.getMessage(), //$NON-NLS-1$
-						StringAccessor.getString("StatsDialogHandler.hmmm"), //$NON-NLS-1$
-						JOptionPane.WARNING_MESSAGE);
+				Utils.showErrorDialog(this, e.getMessage());
 			} finally {
 				out.close();
 			}
