@@ -60,7 +60,7 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 	public void setStackmatOn(boolean on) {
 		this.on = on;
 		if(!on)
-			leftHand = rightHand = greenLight = on = false;
+			leftHand = rightHand = greenLight = false;
 		refreshTimer();
 	}
 	private boolean greenLight;

@@ -1054,10 +1054,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 							jsp.setContinuousLayout(Boolean.parseBoolean(temp));
 						}
 						if((temp = attrs.getValue("resizeweight")) != null) { //$NON-NLS-1$
-							double resizeWeight = .5;
+							double resizeWeight;
 							try { 
 								resizeWeight = Double.parseDouble(temp);
-							} catch(Exception e) {}
+							} catch(Exception e) {
+								resizeWeight = .5;
+							}
 							jsp.setResizeWeight(resizeWeight);
 						}
 					}
@@ -1425,10 +1427,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if(Configuration.getBoolean(VariableKey.WATERMARK_ENABLED, false)) {
 			SubstanceLookAndFeel.setImageWatermarkKind(SubstanceConstants.ImageWatermarkKind.APP_CENTER);
 			SubstanceLookAndFeel.setImageWatermarkOpacity(Configuration.getFloat(VariableKey.OPACITY, false));
-			InputStream in = CALCubeTimer.class.getResourceAsStream(Configuration.getString(VariableKey.WATERMARK_FILE, true));
+			InputStream in;
 			try {
 				in = new FileInputStream(Configuration.getString(VariableKey.WATERMARK_FILE, false));
-			} catch (FileNotFoundException e) {}
+			} catch (FileNotFoundException e) {
+				in = CALCubeTimer.class.getResourceAsStream(Configuration.getString(VariableKey.WATERMARK_FILE, true));
+			}
 			SubstanceLookAndFeel.setCurrentWatermark(new SubstanceImageWatermark(in));
 		} else
 			SubstanceLookAndFeel.setCurrentWatermark(new SubstanceNoneWatermark());

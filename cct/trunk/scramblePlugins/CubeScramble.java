@@ -71,7 +71,7 @@ public class CubeScramble extends Scramble {
 		scramble = "";
 		int lastAxis = -1;
 		int axis = 0;
-		int slices = size - ((multislice || size % 2 == 1) ? 1 : 0);
+		int slices = size - ((multislice || size % 2 != 0) ? 1 : 0);
 		int[] slicesMoved = new int[slices];
 		int[] directionsMoved = new int[3];
 		int moved = 0;

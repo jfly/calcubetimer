@@ -28,7 +28,7 @@ public class PuzzleCustomizationCellRenderer extends SubstanceDefaultListCellRen
 			} else if(value instanceof ScrambleVariation) {
 				sv = (ScrambleVariation) value;
 			} else {
-				//AHHHH
+				throw new NullPointerException("Value must be an instance of ScrambleCustomization or ScrambleVariation!"); //$NON-NLS-1$
 			}
 			if(icons)
 				i = sv.getImage();

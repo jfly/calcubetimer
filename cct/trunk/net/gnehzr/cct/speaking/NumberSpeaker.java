@@ -17,10 +17,10 @@ import net.gnehzr.cct.statistics.SolveTime;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
 public class NumberSpeaker implements Comparable<NumberSpeaker> {
-	public static enum talkerType {
+	public static enum TalkerType {
 		TIMER_OFF("timer_off"), TIMER_RUNNING("timer_running"), TIMER_RESET("timer_reset"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		private String desc;
-		private talkerType(String desc) {
+		private TalkerType(String desc) {
 			this.desc = desc;
 		}
 		public String toString() {
@@ -55,7 +55,7 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
 			alphabetized = new ArrayList<NumberSpeaker>(getNumberSpeakers().values()).toArray(new NumberSpeaker[0]);
 			Arrays.sort(alphabetized);
 		}
-		return alphabetized;
+		return alphabetized.clone();
 	}
 	//returns null if the specified voice was not found
 	private static NumberSpeaker getSpeaker(String name) {
@@ -85,9 +85,6 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
 	public String toString() {
 		return name;
 	}
-	public int compareTo(NumberSpeaker o) {
-		return this.name.compareTo(o.name);
-	}
 	
     //appends .mp3 to name
     private MP3 getMP3FromName(String name) throws Exception {
@@ -98,7 +95,7 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
     	}
     }
     
-    public void speak(talkerType type) {
+    public void speak(TalkerType type) {
     	if(clips == null) return;
 		try {
 			MP3 temp = getMP3FromName(type.toString());
@@ -187,5 +184,18 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
 			}
 		}
     }
+    public int hashCode() {
+    	return this.name.hashCode();
+    }
+    public boolean equals(Object obj) {
+    	if (obj instanceof NumberSpeaker) {
+			NumberSpeaker o = (NumberSpeaker) obj;
+			return this.name.equals(o.name);
+		}
+    	return false;
+    }
+	public int compareTo(NumberSpeaker o) { //this is needed for sorting
+		return name.compareTo(o.name);
+	}
 }
 

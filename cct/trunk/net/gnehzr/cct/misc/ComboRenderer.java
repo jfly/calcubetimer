@@ -33,7 +33,7 @@ public class ComboRenderer extends JLabel implements ListCellRenderer {
 		if(((ComboItem)value).isInUse())
 			setForeground(Color.RED);
 		setFont(list.getFont());
-		setText((value == null) ? "" : value.toString()); //$NON-NLS-1$
+		setText(value.toString());
 		return this;
 	}
 }

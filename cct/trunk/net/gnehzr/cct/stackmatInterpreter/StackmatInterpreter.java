@@ -214,7 +214,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 							currentPeriod = new ArrayList<Integer>(100);
 						}
 						else {
-							for(int i = 0; i < Math.round(timeSinceLastFlip / signalLengthPerBit); i++) currentPeriod.add(new Integer(lastBit));
+							for(int i = 0; i < Math.round(timeSinceLastFlip / signalLengthPerBit); i++) currentPeriod.add(Integer.valueOf(lastBit));
 						}
 						lastBit = bitValue(currentSample - lastSample);
 						timeSinceLastFlip = 0;

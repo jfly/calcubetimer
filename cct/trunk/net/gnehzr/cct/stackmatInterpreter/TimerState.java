@@ -22,6 +22,16 @@ public class TimerState implements Comparable<TimerState> {
 	public int value() {
 		return hundredthsValue;
 	}
+	public int hashCode() {
+		return this.value();
+	}
+	public boolean equals(Object obj) {
+		if(obj instanceof TimerState) {
+			TimerState o = (TimerState) obj;
+			return this.value() == o.value();
+		}
+		return false;
+	}
 	public int compareTo(TimerState o) {
 		if(o == null)
 			return this.value();

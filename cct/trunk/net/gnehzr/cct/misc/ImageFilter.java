@@ -7,7 +7,7 @@ import net.gnehzr.cct.i18n.StringAccessor;
 
 /* ImageFilter.java is a 1.4 example used by FileChooserDemo2.java. */
 public class ImageFilter extends FileFilter {
-	public static final String[] IMG_EXTS = { "png", "jpg", "gif", "tif", "tiff" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+	private static final String[] IMG_EXTS = { "png", "jpg", "gif", "tif", "tiff" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 
 	/* Accept all directories and all gif, jpg, tiff, or png files. */
 	public boolean accept(File f) {

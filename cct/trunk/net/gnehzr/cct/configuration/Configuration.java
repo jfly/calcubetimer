@@ -344,12 +344,22 @@ public final class Configuration {
 	//this should always be up to date with the gui
 	public static Profile getSelectedProfile() {
 		if(profileCache == null) {
-			String profileName = ""; //$NON-NLS-1$
+			String profileName;
+			BufferedReader in = null;
 			try {
-				BufferedReader in = new BufferedReader(new FileReader(startupProfileFile));
+				in = new BufferedReader(new FileReader(startupProfileFile));
 				profileName = in.readLine();
 				profileOrdering = in.readLine();
-			} catch (IOException e) {}
+			} catch (IOException e) {
+				profileName = ""; //$NON-NLS-1$
+			} finally {
+				if(in != null)
+					try {
+						in.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+			}
 			profileCache = getProfile(profileName);
 		}
 		return profileCache;

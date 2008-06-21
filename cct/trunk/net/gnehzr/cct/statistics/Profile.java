@@ -269,7 +269,7 @@ public class Profile {
 	}
 	
 	//I can't believe I had to create these two silly little classses
-	private class RandomInputStream extends InputStream {
+	private static class RandomInputStream extends InputStream {
 		private RandomAccessFile raf;
 		public RandomInputStream(RandomAccessFile raf) {
 			this.raf = raf;
@@ -279,7 +279,7 @@ public class Profile {
 		}
 	}
 	//this is apparently breaking indenting
-	private class RandomOutputStream extends OutputStream {
+	private static class RandomOutputStream extends OutputStream {
 		private RandomAccessFile raf;
 		public RandomOutputStream(RandomAccessFile raf) {
 			this.raf = raf;
@@ -354,7 +354,7 @@ public class Profile {
 		dbFile.setLength(0);
 		StreamResult streamResult = new StreamResult(new RandomOutputStream(dbFile));
 		SAXTransformerFactory tf = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
-		tf.setAttribute("indent-number", new Integer(4)); //$NON-NLS-1$
+		tf.setAttribute("indent-number", Integer.valueOf(4)); //$NON-NLS-1$
 		// SAX2.0 ContentHandler.
 		TransformerHandler hd = tf.newTransformerHandler();
 		Transformer serializer = hd.getTransformer();

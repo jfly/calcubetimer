@@ -2,9 +2,9 @@ package net.gnehzr.cct.diagnostics;
 import javax.sound.sampled.*;
 
 public class RawAudio implements Runnable{
-	private final int samplingRate = 44100;
-	private final int bytesPerSample = 2;
-	private final int frames = 64;
+	private final static int samplingRate = 44100;
+	private final static int bytesPerSample = 2;
+	private final static int frames = 64;
 
 	private final AudioFormat format;
 	private final TargetDataLine line;

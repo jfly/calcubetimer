@@ -2,6 +2,8 @@ package net.gnehzr.cct.scrambles;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
@@ -31,14 +33,23 @@ public class ScramblePluginClassLoader extends ClassLoader {
 	private Class<?> getClassImplFromDataBase(String className) {
 		if(!className.startsWith(ScramblePlugin.SCRAMBLE_PLUGIN_PACKAGE))
 			return null;
-		File classFile = new File(Configuration.getRootDirectory(), className.replaceAll(Pattern.quote("."), "/") + ".class");
+		FileInputStream fi = null;
 		try {
-			FileInputStream fi = new FileInputStream(classFile);
+			fi = new FileInputStream(new File(Configuration.getRootDirectory(), className.replaceAll(Pattern.quote("."), "/") + ".class"));
 			byte[] result = new byte[fi.available()];
 			fi.read(result);
 			return defineClass(className, result, 0, result.length, null);
-		} catch (Exception e) {
+		} catch (FileNotFoundException e) {
 			return null;
+		} catch(IOException e) {
+			return null;
+		} finally {
+			if(fi != null)
+				try {
+					fi.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
 	}
 }

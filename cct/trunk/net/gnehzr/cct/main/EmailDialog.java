@@ -152,7 +152,7 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		}
 	}
 
-	private class WaitingDialog extends JDialog {
+	private static class WaitingDialog extends JDialog {
 		private JTextArea message;
 		private JButton button;
 		public WaitingDialog(JDialog owner, boolean modal, final SwingWorker<?, ?> worker) {
@@ -219,7 +219,7 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		}
 	}
 	@SuppressWarnings("serial") //$NON-NLS-1$
-	private class PasswordPrompt extends JDialog implements ActionListener {
+	private static class PasswordPrompt extends JDialog implements ActionListener {
 		private boolean canceled = true;
 		private JPasswordField pass = null;
 		private JButton ok, cancel = null;

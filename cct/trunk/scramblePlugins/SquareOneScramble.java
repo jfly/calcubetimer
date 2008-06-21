@@ -210,14 +210,14 @@ public class SquareOneScramble extends Scramble {
 		Graphics2D g = buffer.createGraphics();
 		double half_square_width = (radius * RADIUS_MULTIPLIER * multiplier) / Math.sqrt(2);
 		double edge_width = 2 * radius * multiplier * Math.sin(Math.toRadians(15));
-		double corner_width = half_square_width - edge_width / 2;
-		Rectangle2D.Double left_mid = new Rectangle2D.Double(width / 2 - half_square_width, height / 2 - radius * (multiplier - 1) / 2, corner_width, radius * (multiplier - 1));
+		double corner_width = half_square_width - edge_width / 2.;
+		Rectangle2D.Double left_mid = new Rectangle2D.Double(width / 2. - half_square_width, height / 2. - radius * (multiplier - 1) / 2., corner_width, radius * (multiplier - 1));
 		Rectangle2D.Double right_mid;
 		if(twistCount % 2 == 0) {
-			right_mid = new Rectangle2D.Double(width / 2 - half_square_width, height / 2 - radius * (multiplier - 1) / 2, 2*corner_width + edge_width, radius * (multiplier - 1));
+			right_mid = new Rectangle2D.Double(width / 2. - half_square_width, height / 2. - radius * (multiplier - 1) / 2., 2*corner_width + edge_width, radius * (multiplier - 1));
 			g.setColor(colorScheme[3]); //front
 		} else {
-			right_mid = new Rectangle2D.Double(width / 2 - half_square_width, height / 2 - radius * (multiplier - 1) / 2, corner_width + edge_width, radius * (multiplier - 1));
+			right_mid = new Rectangle2D.Double(width / 2. - half_square_width, height / 2. - radius * (multiplier - 1) / 2., corner_width + edge_width, radius * (multiplier - 1));
 			g.setColor(colorScheme[1]); //back
 		}
 		g.fill(right_mid);
@@ -368,7 +368,7 @@ public class SquareOneScramble extends Scramble {
 		
 		Area up = getSquare(width / 2.0, height / 4.0, half_width);
 		Area down = getSquare(width / 2.0, 3 * height / 4.0, half_width);
-		Area front = new Area(new Rectangle2D.Double(width / 2 - half_width * multiplier, height / 2 - radius * (multiplier - 1) / 2, 2 * half_width * multiplier, radius * (multiplier - 1)));
+		Area front = new Area(new Rectangle2D.Double(width / 2. - half_width * multiplier, height / 2. - radius * (multiplier - 1) / 2., 2 * half_width * multiplier, radius * (multiplier - 1)));
 		
 		Area[] faces = new Area[6];
 		for(int ch = 0; ch < 4; ch++) {

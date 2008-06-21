@@ -26,6 +26,16 @@ public class Session extends Commentable implements Comparable<Session> {
 	public PuzzleStatistics getPuzzleStatistics() {
 		return puzzStats;
 	}
+	public int hashCode() {
+		return s.getStartDate().hashCode();
+	}
+	public boolean equals(Object obj) {
+		if (obj instanceof Session) {
+			Session o = (Session) obj;
+			return o.s.getStartDate().equals(this.s.getStartDate());
+		}
+		return false;
+	}
 	public int compareTo(Session o) {
 		return this.s.getStartDate().compareTo(o.s.getStartDate());
 	}

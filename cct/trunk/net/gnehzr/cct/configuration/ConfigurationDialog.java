@@ -200,9 +200,9 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	}
 
 	@SuppressWarnings("serial") //$NON-NLS-1$
-	private class JColorComponent extends JComponent {
-		final int PAD_HEIGHT = 6;
-		final int PAD_WIDTH = 10;
+	private static class JColorComponent extends JComponent {
+		final static int PAD_HEIGHT = 6;
+		final static int PAD_WIDTH = 10;
 		private String text;
 
 		public JColorComponent(String text) {

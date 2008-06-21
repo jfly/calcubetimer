@@ -38,7 +38,7 @@ public class DynamicString{
 				String[] text = splitText[i].split("%%");
 				for(int ch = 0; ch < text.length; ch++) {
 					text[ch] = text[ch].replaceAll("\\\\%", "%");
-					if(ch % 2 == 1) {
+					if(ch % 2 != 0) {
 						text[ch] = text[ch].trim();
 						if(!text[ch].isEmpty())
 							splitUp.add(I18N_TEXT + text[ch]);

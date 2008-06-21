@@ -397,7 +397,7 @@ public class JFontChooser extends JComponent {
 		}
 	}
 
-	protected class ListSearchTextFieldDocumentHandler implements
+	protected static class ListSearchTextFieldDocumentHandler implements
 			DocumentListener {
 		JList targetList;
 

@@ -171,7 +171,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		return temp;
 	}
 	
-	public class HideableTableColumn {
+	public static class HideableTableColumn {
 		private TableColumn col;
 		private boolean isVisible;
 		private int viewIndex;
