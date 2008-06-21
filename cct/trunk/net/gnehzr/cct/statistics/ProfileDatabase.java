@@ -138,7 +138,7 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 		case 4: //best ra1
 			return new SolveTime(s.getStatistics().getBestAverage(1), null);
 		case 5: //best time
-			return new SolveTime(s.getStatistics().getBestTime(), null);
+			return s.getStatistics().getBestTime();
 		case 6: //stdev
 			return s.getStatistics().standardDeviation(AverageType.SESSION, 0);
 		case 7: //solve count

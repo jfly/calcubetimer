@@ -701,6 +701,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			c.setAlignmentY(JComponent.CENTER_ALIGNMENT);
 			c.setMinimumSize(null);
 			c.setPreferredSize(null);
+			c.setMaximumSize(null);
 			c.setOpaque(c instanceof JMenu); //need this instanceof operator for the customguimenu
 			c.setBackground(null);
 			c.setForeground(null);
@@ -1029,6 +1030,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					if((temp = attrs.getValue("preferredsize")) != null) { //$NON-NLS-1$
 						String[] dims = temp.split("x"); //$NON-NLS-1$
 						com.setPreferredSize(new Dimension(Integer.parseInt(dims[0]), Integer.parseInt(dims[1])));
+					}
+					if((temp = attrs.getValue("maximumsize")) != null) { //$NON-NLS-1$
+						String[] dims = temp.split("x"); //$NON-NLS-1$
+						com.setMaximumSize(new Dimension(Integer.parseInt(dims[0]), Integer.parseInt(dims[1])));
 					}
 					if(com instanceof JScrollPane) {
 						JScrollPane scroller = (JScrollPane) com;

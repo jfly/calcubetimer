@@ -95,7 +95,6 @@
 		<component type="languagecombobox"/>
 		<component type="profilecombobox"/>
 		<glue orientation="horizontal"/>
-		<component type="clock"/>
 		<menu mnemonic="h">%%help%%
 			<menuitem action="showDocumentation">%%documentation%%</menuitem>
 			<menuitem action="showAbout">%%about%%</menuitem>

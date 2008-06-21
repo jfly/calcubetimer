@@ -192,7 +192,7 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	public boolean equals(Object obj) {
 		if (obj instanceof SolveTime) {
 			SolveTime o = (SolveTime) obj;
-			return o.value() == this.value() && o.type == this.type;
+			return o.value() == this.value();
 		}
 		return false;
 	}
@@ -215,7 +215,7 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 		type = t;
 	}
 	public boolean isInfiniteTime() {
-		return type == SolveType.POP || type == SolveType.DNF;
+		return type == SolveType.POP || type == SolveType.DNF || hundredths == Integer.MAX_VALUE;
 	}
 	//"true" in the sense that it was manually entered as POP or DNF
 	public boolean isTrueWorstTime(){

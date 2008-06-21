@@ -24,9 +24,18 @@ public class Utils {
 
 	private Utils() {}
 	
+	public static boolean equalDouble(double a, double b) {
+		return round(a, 2) == round(b, 2);
+	}
+	
+	private static double round(double c, int decimalPlaces) {
+		int pow = (int) Math.pow(10, decimalPlaces);
+		return Math.round(c * pow) / (double) pow;
+	}
+	
 	public static String formatTime(double seconds) {
 		if(seconds == Double.POSITIVE_INFINITY) return "N/A"; //$NON-NLS-1$
-		seconds = Math.round(seconds * 100) / 100.; //rounds to 2 decimal places
+		seconds = round(seconds, 2);
 		if(Configuration.getBoolean(VariableKey.CLOCK_FORMAT, false))
 			return clockFormat(seconds);
 		else

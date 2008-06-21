@@ -141,11 +141,11 @@ public class DynamicString{
 		else if(s.equalsIgnoreCase("progressAverage")) r = formatProgressTime(stats.getProgressAverage(num), false); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("progressTimeParens")) r = formatProgressTime(stats.getProgressTime(), true); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("progressAverageParens")) r = formatProgressTime(stats.getProgressAverage(num), true); //$NON-NLS-1$
-		else if(s.equalsIgnoreCase("bestTime")) r = Utils.formatTime(stats.getBestTime()); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("bestTime")) r = stats.getBestTime().toString(); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("bestRA")) r = Utils.formatTime(stats.getBestAverage(num)); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("bestSD")) r = Utils.formatTime(stats.getBestSD(num)); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("bestAverageSD")) r = Utils.formatTime(stats.getBestAverageSD(num)); //$NON-NLS-1$
-		else if(s.equalsIgnoreCase("worstTime")) r = Utils.formatTime(stats.getWorstTime()); //TODO - this doesn't work when there is a POP or DNF //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("worstTime")) r = stats.getWorstTime().toString(); //TODO - this doesn't work when there is a POP or DNF //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("worstAverage")) r = Utils.formatTime(stats.getWorstAverage(num)); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("worstSD")) r = Utils.formatTime(stats.getWorstSD(num)); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("worstAverageSD")) r = Utils.formatTime(stats.getWorstAverageSD(num)); //$NON-NLS-1$
@@ -155,12 +155,12 @@ public class DynamicString{
 		else if(s.equalsIgnoreCase("lastTime")) r = Utils.formatTime(stats.getLastTime()); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("lastAverage")) r = Utils.formatTime(stats.getLastAverage(num)); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("lastSD")) r = Utils.formatTime(stats.getLastSD(num)); //$NON-NLS-1$
-		else if(s.equalsIgnoreCase("bestTimeOfCurrentAverage")) r = Utils.formatTime(stats.getBestTimeOfCurrentAverage(num)); //$NON-NLS-1$
-		else if(s.equalsIgnoreCase("worstTimeOfCurrentAverage")) r = Utils.formatTime(stats.getWorstTimeOfCurrentAverage(num)); //$NON-NLS-1$
-		else if(s.equalsIgnoreCase("bestTimeOfBestAverage")) r = Utils.formatTime(stats.getBestTimeOfBestAverage(num)); //$NON-NLS-1$
-		else if(s.equalsIgnoreCase("worstTimeOfBestAverage")) r = Utils.formatTime(stats.getWorstTimeOfBestAverage(num)); //$NON-NLS-1$
-		else if(s.equalsIgnoreCase("bestTimeOfWorstAverage")) r = Utils.formatTime(stats.getBestTimeOfWorstAverage(num)); //$NON-NLS-1$
-		else if(s.equalsIgnoreCase("worstTimeOfWorstAverage")) r = Utils.formatTime(stats.getWorstTimeOfWorstAverage(num)); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("bestTimeOfCurrentAverage")) r = stats.getBestTimeOfCurrentAverage(num).toString(); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("worstTimeOfCurrentAverage")) r = stats.getWorstTimeOfCurrentAverage(num).toString(); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("bestTimeOfBestAverage")) r = stats.getBestTimeOfBestAverage(num).toString(); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("worstTimeOfBestAverage")) r = stats.getWorstTimeOfBestAverage(num).toString(); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("bestTimeOfWorstAverage")) r = stats.getBestTimeOfWorstAverage(num).toString(); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("worstTimeOfWorstAverage")) r = stats.getWorstTimeOfWorstAverage(num).toString(); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("progressSessionAverage")) r = formatProgressTime(stats.getProgressSessionAverage(), false); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("progressSessionSD")) r = formatProgressTime(stats.getProgressSessionSD(), false); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("progressSessionAverageParens")) r = formatProgressTime(stats.getProgressSessionAverage(), true); //$NON-NLS-1$
@@ -179,7 +179,7 @@ public class DynamicString{
 		//Database queries for current scramble customization
 		else {
 			PuzzleStatistics ps = CALCubeTimer.statsModel.getCurrentSession().getPuzzleStatistics();
-			if(s.equalsIgnoreCase("veryBestTime")) r = Utils.formatTime(ps.getBestTime()); //$NON-NLS-1$
+			if(s.equalsIgnoreCase("veryBestTime")) r = ps.getBestTime().toString(); //$NON-NLS-1$
 			else if(s.equalsIgnoreCase("veryBestRA")) r = Utils.formatTime(ps.getBestRA(num)); //$NON-NLS-1$
 			else if(s.equalsIgnoreCase("globalAverage")) r = Utils.formatTime(ps.getGlobalAverage()); //$NON-NLS-1$
 			else if(s.equalsIgnoreCase("globalPops")) r = ""+ps.getPOPCount(); //$NON-NLS-1$ //$NON-NLS-2$

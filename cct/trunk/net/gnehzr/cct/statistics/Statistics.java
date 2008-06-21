@@ -9,6 +9,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.i18n.StringAccessor;
+import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
@@ -320,7 +321,7 @@ public class Statistics implements ConfigurationChangeListener {
 	}
 
 	private void calculateCurrentAverage(int k) {
-		double avg = calculateRA(times.size() - curRASize[k], times.size(), k);
+		double avg = calculateRA(times.size() - curRASize[k], times.size(), k, true);
 		if (avg > 0) {
 			Double s;
 			int i;
@@ -345,40 +346,53 @@ public class Statistics implements ConfigurationChangeListener {
 			sortaverages[k].add(i, av);
 			if (i == 0){
 				int newbest = averages[k].size() - 1;
-				if(indexOfBestRA[k] < 0 || averages[k].get(indexOfBestRA[k]) != averages[k].get(newbest)){
+				if(indexOfBestRA[k] < 0 || !Utils.equalDouble(averages[k].get(indexOfBestRA[k]), averages[k].get(newbest))){
 					indexOfBestRA[k] = newbest;
 				}
 				else{
-					if(sds[k].get(indexOfBestRA[k]) > sds[k].get(newbest)) indexOfBestRA[k] = newbest;
-					else if(sds[k].get(indexOfBestRA[k]) == sds[k].get(newbest)){
-						if(bestTimeOfAverage(indexOfBestRA[k], k) > bestTimeOfAverage(newbest, k))
+					//in the event of a tie, we compare the 2 untrimmed averages
+					double newave = calculateRA(times.size() - curRASize[k], times.size(), k, false);
+					double oldave = calculateRA(indexOfBestRA[k], indexOfBestRA[k] + curRASize[k], k, false);
+					if(Utils.equalDouble(newave, oldave)) {
+						if(bestTimeOfAverage(indexOfBestRA[k], k).compareTo(bestTimeOfAverage(newbest, k)) > 0)
 							indexOfBestRA[k] = newbest;
-						else if(bestTimeOfAverage(indexOfBestRA[k], k) == bestTimeOfAverage(newbest, k)){
-							if(worstTimeOfAverage(indexOfBestRA[k], k) > worstTimeOfAverage(newbest, k))
+						else if(bestTimeOfAverage(indexOfBestRA[k], k).equals(bestTimeOfAverage(newbest, k))){
+							if(worstTimeOfAverage(indexOfBestRA[k], k).compareTo(worstTimeOfAverage(newbest, k)) > 0)
 								indexOfBestRA[k] = newbest;
 						}
-					}
+					} else if(newave < oldave)
+						indexOfBestRA[k] = newbest;
 				}
 			}
 		}
 	}
 
-	private double calculateRA(int a, int b, int num) {
+	private double calculateRA(int a, int b, int num, boolean trimmed) {
 		if (a < 0)
 			return -1;
-		SolveTime[] bestWorst = getBestAndWorstTimes(a, b);
-		SolveTime best = bestWorst[0];
-		SolveTime worst = bestWorst[1];
+		SolveTime best = null, worst = null;
+		int ignoredSolves = 0;
+		if(trimmed) {
+			SolveTime[] bestWorst = getBestAndWorstTimes(a, b);
+			best = bestWorst[0];
+			worst = bestWorst[1];
+		}
 		double total = 0;
+		int multiplier = 1;
 		for(int i = a; i < b; i++) {
 			SolveTime time = times.get(i);
 			if(time != best && time != worst) {
-				if(time.isInfiniteTime())
-					return Double.POSITIVE_INFINITY;
-				total += time.secondsValue();
+				if(time.isInfiniteTime()) {
+					if(trimmed)
+						return Double.POSITIVE_INFINITY;
+					else
+						multiplier = -1;
+				} else
+					total += time.secondsValue();
 			}
 		}
-		return total / (curRASize[num] - 2);
+		//if we're calling this method with trimmed == false, we know the RA is valid, and we will return the negative of the true average if there was one infinite time
+		return multiplier * total / (curRASize[num] - ignoredSolves);
 	}
 
 	private double calculateRSD(int a, int b, int num) {
@@ -637,12 +651,12 @@ public class Statistics implements ConfigurationChangeListener {
 		return new SolveTime(sd, null);
 	}
 
-	private double bestTimeOfAverage(int n, int num) {
-		return getBestAndWorstTimes(n, n + curRASize[num])[0].secondsValue();
+	private SolveTime bestTimeOfAverage(int n, int num) {
+		return getBestAndWorstTimes(n, n + curRASize[num])[0];
 	}
 
-	private double worstTimeOfAverage(int n, int num) {
-		return getBestAndWorstTimes(n, n + curRASize[num])[1].secondsValue();
+	private SolveTime worstTimeOfAverage(int n, int num) {
+		return getBestAndWorstTimes(n, n + curRASize[num])[1];
 	}
 
 	public int getIndexOfBestRA(int num){
@@ -713,14 +727,15 @@ public class Statistics implements ConfigurationChangeListener {
 			return sds[num].get(n).doubleValue();
 	}
 
-	public double getSortTime(int n) {
+	//returns null if the index is out of bounds
+	private SolveTime getSortTime(int n) {
 		if (n < 0)
 			n = sorttimes.size() + n;
 
 		if (sorttimes.size() == 0 || n < 0 || n >= sorttimes.size())
-			return Double.POSITIVE_INFINITY;
+			return null;
 		else
-			return sorttimes.get(n).secondsValue();
+			return sorttimes.get(n);
 	}
 
 	public double getSortAverage(int n, int num) {
@@ -762,7 +777,7 @@ public class Statistics implements ConfigurationChangeListener {
 			return sds[num].get(averages[num].indexOf(sortaverages[num].get(n))).doubleValue();
 	}
 
-	public double getBestTimeOfAverage(int n, int num) {
+	public SolveTime getBestTimeOfAverage(int n, int num) {
 		if(num < 0) num = 0;
 		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
@@ -770,11 +785,11 @@ public class Statistics implements ConfigurationChangeListener {
 			n = averages[num].size() + n;
 
 		if (averages[num].size() == 0 || n < 0 || n >= averages[num].size())
-			return Double.POSITIVE_INFINITY;
+			return new SolveTime();
 		return bestTimeOfAverage(n, num);
 	}
 
-	public double getWorstTimeOfAverage(int n, int num) {
+	public SolveTime getWorstTimeOfAverage(int n, int num) {
 		if(num < 0) num = 0;
 		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
@@ -782,11 +797,11 @@ public class Statistics implements ConfigurationChangeListener {
 			n = averages[num].size() + n;
 
 		if (averages[num].size() == 0 || n < 0 || n >= averages[num].size())
-			return Double.POSITIVE_INFINITY;
+			return new SolveTime();
 		return worstTimeOfAverage(n, num);
 	}
 
-	public double getBestTimeOfSortAverage(int n, int num) {
+	public SolveTime getBestTimeOfSortAverage(int n, int num) {
 		if(num < 0) num = 0;
 		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
@@ -794,11 +809,11 @@ public class Statistics implements ConfigurationChangeListener {
 			n = sortaverages[num].size() + n;
 
 		if (sortaverages[num].size() == 0 || n < 0 || n >= sortaverages[num].size())
-			return Double.POSITIVE_INFINITY;
+			return new SolveTime();
 		return bestTimeOfAverage(averages[num].indexOf(sortaverages[num].get(n)), num);
 	}
 
-	public double getWorstTimeOfSortAverage(int n, int num) {
+	public SolveTime getWorstTimeOfSortAverage(int n, int num) {
 		if(num < 0) num = 0;
 		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
@@ -806,7 +821,7 @@ public class Statistics implements ConfigurationChangeListener {
 			n = sortaverages[num].size() + n;
 
 		if (sortaverages[num].size() == 0 || n < 0 || n >= sortaverages[num].size())
-			return Double.POSITIVE_INFINITY;
+			return new SolveTime();
 		return worstTimeOfAverage(averages[num].indexOf(sortaverages[num].get(n)), num);
 	}
 
@@ -891,8 +906,9 @@ public class Statistics implements ConfigurationChangeListener {
 		}
 	}
 
-	public double getBestTime() {
-		return getSortTime(0);
+	public SolveTime getBestTime() {
+		SolveTime t = getSortTime(0);
+		return t == null ? new SolveTime() : t;
 	}
 
 	public double getBestAverage(int num) {
@@ -907,8 +923,12 @@ public class Statistics implements ConfigurationChangeListener {
 		return getSortAverageSD(0, num);
 	}
 
-	public double getWorstTime() {
-		return getSortTime(-1);
+	public SolveTime getWorstTime() {
+		SolveTime t;
+		int c = -1;
+		//look for the worst, non infinite time
+		while((t = getSortTime(c--)) != null && t.isInfiniteTime()) ;
+		return t == null ? new SolveTime() : t;
 	}
 
 	public double getWorstAverage(int num) {
@@ -947,27 +967,27 @@ public class Statistics implements ConfigurationChangeListener {
 		return getSD(-2, num);
 	}
 
-	public double getBestTimeOfCurrentAverage(int num) {
+	public SolveTime getBestTimeOfCurrentAverage(int num) {
 		return getBestTimeOfAverage(-1, num);
 	}
 
-	public double getWorstTimeOfCurrentAverage(int num) {
+	public SolveTime getWorstTimeOfCurrentAverage(int num) {
 		return getWorstTimeOfAverage(-1, num);
 	}
 
-	public double getBestTimeOfBestAverage(int num) {
+	public SolveTime getBestTimeOfBestAverage(int num) {
 		return getBestTimeOfSortAverage(0, num);
 	}
 
-	public double getWorstTimeOfBestAverage(int num) {
+	public SolveTime getWorstTimeOfBestAverage(int num) {
 		return getWorstTimeOfSortAverage(0, num);
 	}
 
-	public double getBestTimeOfWorstAverage(int num) {
+	public SolveTime getBestTimeOfWorstAverage(int num) {
 		return getBestTimeOfSortAverage(-1, num);
 	}
 
-	public double getWorstTimeOfWorstAverage(int num) {
+	public SolveTime getWorstTimeOfWorstAverage(int num) {
 		return getWorstTimeOfSortAverage(-1, num);
 	}
 

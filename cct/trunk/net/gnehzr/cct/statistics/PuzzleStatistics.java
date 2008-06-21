@@ -51,14 +51,14 @@ public class PuzzleStatistics implements StatisticsUpdateListener {
 		pd.fireTableDataChanged();
 	}
 	
-	private double bestTime;
+	private SolveTime bestTime;
 	private double globalAverage;
 	private double[] bestRAs;
 	private int solveCount;
 	private int attemptCount;
 	private int dnfCount, popCount, plusTwoCount;
 	private void refreshStats() {
-		bestTime = Double.POSITIVE_INFINITY;
+		bestTime = SolveTime.WORST;
 		solveCount = 0;
 		attemptCount = 0;
 		dnfCount = 0;
@@ -69,8 +69,8 @@ public class PuzzleStatistics implements StatisticsUpdateListener {
 		Arrays.fill(bestRAs, Double.POSITIVE_INFINITY);
 		for(Session s : sessions) {
 			Statistics stats = s.getStatistics();
-			double t = stats.getBestTime();
-			if(t < bestTime)
+			SolveTime t = stats.getBestTime();
+			if(t.compareTo(bestTime) < 0)
 				bestTime = t;
 			for(int ra = 0; ra < bestRAs.length; ra++) {
 				double ave = stats.getBestAverage(ra);
@@ -93,7 +93,7 @@ public class PuzzleStatistics implements StatisticsUpdateListener {
 	}
 	
 	//Getters for DynamicString
-	public double getBestTime() {
+	public SolveTime getBestTime() {
 		return bestTime;
 	}
 	public double getBestRA(int num) {
