@@ -1462,8 +1462,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				Point location = Configuration.getPoint(VariableKey.MAIN_FRAME_LOCATION, false);
 				if(location == null)
 					CALCubeTimer.this.setLocationRelativeTo(null);
-				else
+				else {
+					if(location.y < 0) //on windows, it is really bad if we let the window appear above the screen
+						location.y = 0;
 					CALCubeTimer.this.setLocation(location);
+				}
 				CALCubeTimer.this.validate(); //this is needed to get the dividers to show up in the right place
 
 				if(!Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false)) //This is to ensure that the keyboard is focused

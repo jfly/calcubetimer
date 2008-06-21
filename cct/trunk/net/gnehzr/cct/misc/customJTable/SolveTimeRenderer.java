@@ -56,9 +56,8 @@ public class SolveTimeRenderer extends JLabel implements TableCellRenderer {
 				} else if(bestAndWorst[1] == value) {
 					foreground = Configuration.getColor(VariableKey.WORST_TIME, false);
 				}
-				
-				memberOfBestRA = times.containsTime(st,	AverageType.RA, 0);
-				memberOfCurrentAverage = times.containsTime(st, AverageType.CURRENT, 0);
+				memberOfBestRA = times.containsTime(row, AverageType.RA, 0);
+				memberOfCurrentAverage = times.containsTime(row, AverageType.CURRENT, 0);
 			}
 			
 			if(memberOfBestRA && memberOfCurrentAverage)

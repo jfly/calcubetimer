@@ -186,15 +186,14 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 		return hundredths + (type == SolveType.PLUS_TWO ? 200 : 0);
 	}
 
+	//the behavior of the following 3 methods is kinda contradictory,
+	//keep this in mind if you're ever going to use SolveTimes in complicated
+	//data structures that depend on these methods
 	public int hashCode() {
 		return this.value();
 	}
 	public boolean equals(Object obj) {
-		if (obj instanceof SolveTime) {
-			SolveTime o = (SolveTime) obj;
-			return o.value() == this.value();
-		}
-		return false;
+		return obj == this;
 	}
 	public int compareTo(SolveTime o) {
 		if(o == WORST)

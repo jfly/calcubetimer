@@ -541,8 +541,7 @@ public class Statistics implements ConfigurationChangeListener {
 		return new int[] { lower, upper };
 	}
 
-	public boolean containsTime(SolveTime solve, AverageType type, int num) {
-		int indexOfSolve = times.indexOf(solve);
+	public boolean containsTime(int indexOfSolve, AverageType type, int num) {
 		int bounds[] = getBounds(type, num);
 		return indexOfSolve >= bounds[0] && indexOfSolve < bounds[1];
 	}
