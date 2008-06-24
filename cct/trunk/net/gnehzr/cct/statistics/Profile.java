@@ -295,11 +295,12 @@ public class Profile {
 	public boolean loadDatabase() {
 		if(this == Configuration.guestProfile) { //disable logging for guest
 			if(puzzleDB.getRowCount() > 0)
-				CALCubeTimer.statsModel.setSession(guestSession);
+				CALCubeTimer.statsModel.setSession(guestSession); //TODO - does this reand to be here?
 			return false;
 		}
 		FileLock fl = null;
 		try {
+			CALCubeTimer.setWaiting(true);
 			RandomAccessFile t = new RandomAccessFile(statistics, "rw"); //$NON-NLS-1$
 			fl = t.getChannel().tryLock();
 			if(fl != null) {
@@ -332,6 +333,8 @@ public class Profile {
 			x.printStackTrace();
 		} catch(ParserConfigurationException pce) {
 			pce.printStackTrace();
+		} finally {
+			CALCubeTimer.setWaiting(false);
 		}
 
 		if(fl != null)
@@ -352,81 +355,86 @@ public class Profile {
 		}
 		if(dbFile == null)
 			return;
-		dbFile.setLength(0);
-		StreamResult streamResult = new StreamResult(new RandomOutputStream(dbFile));
-		SAXTransformerFactory tf = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
-		tf.setAttribute("indent-number", Integer.valueOf(4)); //$NON-NLS-1$
-		// SAX2.0 ContentHandler.
-		TransformerHandler hd = tf.newTransformerHandler();
-		Transformer serializer = hd.getTransformer();
-		serializer.setOutputProperty(OutputKeys.ENCODING, "utf-8"); //$NON-NLS-1$
-		serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "../database.dtd"); //$NON-NLS-1$
-		serializer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
-		hd.setResult(streamResult);
-		hd.startDocument();
-		AttributesImpl atts = new AttributesImpl();
-		hd.startElement("", "", "database", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		for(PuzzleStatistics ps : puzzleDB.getPuzzlesStatistics()) {
-			//TODO - check if there are 0 sessions here and continue? NOTE: this isn't good enough, as there could be a bunch of empty sessions
-			atts.clear();
-			atts.addAttribute("", "", "customization", "CDATA", ps.getCustomization()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			hd.startElement("", "", "puzzle", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			for(Session s : ps.toSessionIterable()) {
-				Statistics stats = s.getStatistics();
-				if(stats.getAttemptCount() == 0) //this indicates that the session wasn't started
-					continue;
+		try {
+			CALCubeTimer.setWaiting(true);
+			dbFile.setLength(0);
+			StreamResult streamResult = new StreamResult(new RandomOutputStream(dbFile));
+			SAXTransformerFactory tf = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
+			tf.setAttribute("indent-number", Integer.valueOf(4)); //$NON-NLS-1$
+			// SAX2.0 ContentHandler.
+			TransformerHandler hd = tf.newTransformerHandler();
+			Transformer serializer = hd.getTransformer();
+			serializer.setOutputProperty(OutputKeys.ENCODING, "utf-8"); //$NON-NLS-1$
+			serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "../database.dtd"); //$NON-NLS-1$
+			serializer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
+			hd.setResult(streamResult);
+			hd.startDocument();
+			AttributesImpl atts = new AttributesImpl();
+			hd.startElement("", "", "database", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			for(PuzzleStatistics ps : puzzleDB.getPuzzlesStatistics()) {
+				//TODO - check if there are 0 sessions here and continue? NOTE: this isn't good enough, as there could be a bunch of empty sessions
 				atts.clear();
-				atts.addAttribute("", "", "date", "CDATA", s.toDateString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				if(s == CALCubeTimer.statsModel.getCurrentSession())
-					atts.addAttribute("", "", "loadonstartup", "CDATA", "true"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-				hd.startElement("", "", "session", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				atts.clear();
-				String temp = s.getComment();
-				if(!temp.isEmpty()) {
-					hd.startElement("", "", "comment", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					char[] chs = temp.toCharArray();
-					hd.characters(chs, 0, chs.length);
-					hd.endElement("", "", "comment"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				}
-				for(int ch = 0; ch < stats.getAttemptCount(); ch++) {
-					SolveTime st = stats.get(ch);
+				atts.addAttribute("", "", "customization", "CDATA", ps.getCustomization()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				hd.startElement("", "", "puzzle", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				for(Session s : ps.toSessionIterable()) {
+					Statistics stats = s.getStatistics();
+					if(stats.getAttemptCount() == 0) //this indicates that the session wasn't started
+						continue;
 					atts.clear();
-					hd.startElement("", "", "solve", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					char[] chs = st.toExternalizableString().toCharArray();
-					hd.characters(chs, 0, chs.length);
-					temp = st.getComment();
+					atts.addAttribute("", "", "date", "CDATA", s.toDateString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+					if(s == CALCubeTimer.statsModel.getCurrentSession())
+						atts.addAttribute("", "", "loadonstartup", "CDATA", "true"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+					hd.startElement("", "", "session", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					atts.clear();
+					String temp = s.getComment();
 					if(!temp.isEmpty()) {
-						atts.clear();
 						hd.startElement("", "", "comment", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-						chs = temp.toCharArray();
+						char[] chs = temp.toCharArray();
 						hd.characters(chs, 0, chs.length);
 						hd.endElement("", "", "comment"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					}
-					temp = st.toSplitsString();
-					if(!temp.isEmpty()) {
+					for(int ch = 0; ch < stats.getAttemptCount(); ch++) {
+						SolveTime st = stats.get(ch);
 						atts.clear();
-						hd.startElement("", "", "splits", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-						chs = temp.toCharArray();
+						hd.startElement("", "", "solve", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						char[] chs = st.toExternalizableString().toCharArray();
 						hd.characters(chs, 0, chs.length);
-						hd.endElement("", "", "splits"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						temp = st.getComment();
+						if(!temp.isEmpty()) {
+							atts.clear();
+							hd.startElement("", "", "comment", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							chs = temp.toCharArray();
+							hd.characters(chs, 0, chs.length);
+							hd.endElement("", "", "comment"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						}
+						temp = st.toSplitsString();
+						if(!temp.isEmpty()) {
+							atts.clear();
+							hd.startElement("", "", "splits", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							chs = temp.toCharArray();
+							hd.characters(chs, 0, chs.length);
+							hd.endElement("", "", "splits"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						}
+						temp = st.getScramble();
+						if(!temp.isEmpty()) {
+							atts.clear();
+							hd.startElement("", "", "scramble", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							chs = temp.toCharArray();
+							hd.characters(chs, 0, chs.length);
+							hd.endElement("", "", "scramble"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						}
+						
+						hd.endElement("", "", "solve"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					}
-					temp = st.getScramble();
-					if(!temp.isEmpty()) {
-						atts.clear();
-						hd.startElement("", "", "scramble", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-						chs = temp.toCharArray();
-						hd.characters(chs, 0, chs.length);
-						hd.endElement("", "", "scramble"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					}
-					
-					hd.endElement("", "", "solve"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					hd.endElement("", "", "session"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
-				hd.endElement("", "", "session"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				hd.endElement("", "", "puzzle"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
-			hd.endElement("", "", "puzzle"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			hd.endElement("", "", "database"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			hd.endDocument();
+		} finally {
+			CALCubeTimer.setWaiting(false);
 		}
-		hd.endElement("", "", "database"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		hd.endDocument();
 		try {
 			dbFile.close();
 		} catch (IOException e) {

@@ -804,7 +804,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 	private void showDynamicStrings() {
 		try {
-			URI uri = Configuration.documentationFile.toURI();
+			URI uri = Configuration.dynamicStringsFile.toURI();
 			Desktop.getDesktop().browse(uri);
 		} catch(Exception error) {
 			Utils.showErrorDialog(this, error.toString());

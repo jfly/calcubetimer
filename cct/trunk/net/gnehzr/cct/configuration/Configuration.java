@@ -36,6 +36,7 @@ import net.gnehzr.cct.statistics.Profile;
 
 public final class Configuration {
 	public static final File documentationFile = new File(getRootDirectory(), "documentation/readme.html");
+	public static final File dynamicStringsFile = new File(getRootDirectory(), "documentation/dynamicstrings.html");
 	public static final File profilesFolder = new File(getRootDirectory(), "profiles/"); //$NON-NLS-1$
 	public static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/"); //$NON-NLS-1$
 	public static final File voicesFolder = new File(getRootDirectory(), "voices/"); //$NON-NLS-1$
@@ -53,7 +54,6 @@ public final class Configuration {
 		temp.createProfileDirectory();
 		return temp;
 	}
-//	private static final String DEFAULT_XML_GUI = "default.xml"; //$NON-NLS-1$
 
 	private static File defaultsFile = new File(profilesFolder, "defaults.properties"); //$NON-NLS-1$
 

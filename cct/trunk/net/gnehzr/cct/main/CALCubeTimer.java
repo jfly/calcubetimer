@@ -624,11 +624,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 	}
 	
-	private boolean loadingStrings;
+	private static boolean loading = false;
+	public static void setWaiting(boolean loading) {
+		CALCubeTimer.loading = loading;
+		cct.setCursor(null);
+	}
 	private LocaleAndIcon loadedLocale;
 	private void loadStringsFromDefaultLocale() {
-		loadingStrings = true;
-		setCursor(null);
+		setWaiting(true);
 		
 		//this loads the strings for the swing components we use (JColorChooser and JFileChooser)
 		UIManager.getDefaults().setDefaultLocale(Locale.getDefault());
@@ -664,16 +667,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		SwingUtilities.updateComponentTreeUI(this);
 		SwingUtilities.updateComponentTreeUI(scramblePopup);
 		
-		loadingStrings = false;
-		setCursor(null);
+		setWaiting(false);
 	}
     public void setCursor(Cursor cursor) {
-    	if(loadingStrings)
+    	if(loading)
     		super.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-    	else if(cursor == null)
-    		super.setCursor(Cursor.getDefaultCursor());
     	else
-    		super.setCursor(cursor);
+    		super.setCursor(Cursor.getDefaultCursor());
     }
 
 	public void stateChanged(ChangeEvent e) {
@@ -1196,7 +1196,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		rollingAverageAction1.setEnabled(stats.isValid(AverageType.RA, 1));
 		sessionAverageAction.setEnabled(stats.isValid(AverageType.SESSION, 0));
 	}
-	
+
+	private static CALCubeTimer cct; //need this instance to be able to easily set the waiting cursor
 	public static void main(String[] args) {
 		//The error messages are not internationalized because I want people to
 		//be able to google the following messages
@@ -1244,13 +1245,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				UIManager.put(LafWidget.ANIMATION_KIND, LafConstants.AnimationKind.NONE);
 				UIManager.put(SubstanceLookAndFeel.WATERMARK_TO_BLEED, Boolean.TRUE);
 				
-				CALCubeTimer main = new CALCubeTimer();
-				Configuration.addConfigurationChangeListener(main);
-				main.setTitle("CCT " + CCT_VERSION); //$NON-NLS-1$
-				main.setIconImage(cubeIcon.getImage());
-				main.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				main.setSelectedProfile(Configuration.getSelectedProfile()); //this will eventually cause sessionSelected() to be called
-				main.setVisible(true);
+				cct = new CALCubeTimer();
+				Configuration.addConfigurationChangeListener(cct);
+				cct.setTitle("CCT " + CCT_VERSION); //$NON-NLS-1$
+				cct.setIconImage(cubeIcon.getImage());
+				cct.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				cct.setSelectedProfile(Configuration.getSelectedProfile()); //this will eventually cause sessionSelected() to be called
+				cct.setVisible(true);
 			}
 		});
 	}
