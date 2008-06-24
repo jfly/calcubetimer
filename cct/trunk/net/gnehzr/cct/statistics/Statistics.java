@@ -376,6 +376,7 @@ public class Statistics implements ConfigurationChangeListener {
 			SolveTime[] bestWorst = getBestAndWorstTimes(a, b);
 			best = bestWorst[0];
 			worst = bestWorst[1];
+			ignoredSolves = 2;
 		}
 		double total = 0;
 		int multiplier = 1;

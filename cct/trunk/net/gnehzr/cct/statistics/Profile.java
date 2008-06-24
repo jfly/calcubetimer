@@ -1,6 +1,7 @@
 package net.gnehzr.cct.statistics;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -167,7 +168,7 @@ public class Profile {
 	
 	private class DatabaseLoader extends DefaultHandler {
 		public InputSource resolveEntity(String publicId, String systemId) throws IOException, SAXException {
-			return new InputSource(Configuration.databaseDTD);
+			return new InputSource(new FileInputStream(Configuration.databaseDTD));
 		}
 		private int level = 0;
 		private String customization;

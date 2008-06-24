@@ -11,6 +11,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EventObject;
 
 import javax.swing.Action;
@@ -78,7 +79,8 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	}
 	public boolean isRowDeletable(int rowIndex) {
 		ScrambleCustomization sc = customizations.get(rowIndex);
-		return sc.getCustomization() != null || sc.equals(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION);
+		Collection<String> dbCustoms = Configuration.getSelectedProfile().getPuzzleDatabase().getCustomizations();
+		return !dbCustoms.contains(sc.toString()) && (sc.getCustomization() != null || sc.equals(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION));
 	}
 	public void removeRows(int[] indices) {
 		for(int ch = indices.length - 1; ch >=0; ch--) {

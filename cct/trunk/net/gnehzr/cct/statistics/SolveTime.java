@@ -70,6 +70,7 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 		return false;
 	}
 	public void setTime(String time) throws Exception {
+		hundredths = 0; //don't remove this
 		time = time.trim();
 		if(time.isEmpty())
 			throw new Exception(StringAccessor.getString("SolveTime.noemptytimes")); //$NON-NLS-1$

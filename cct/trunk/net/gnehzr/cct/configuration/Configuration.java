@@ -39,7 +39,7 @@ public final class Configuration {
 	public static final File profilesFolder = new File(getRootDirectory(), "profiles/"); //$NON-NLS-1$
 	public static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/"); //$NON-NLS-1$
 	public static final File voicesFolder = new File(getRootDirectory(), "voices/"); //$NON-NLS-1$
-	public static final String databaseDTD = "profiles/database.dtd"; //$NON-NLS-1$
+	public static final File databaseDTD = new File(profilesFolder, "database.dtd"); //$NON-NLS-1$
 	private static final File guiLayoutsFolder = new File(getRootDirectory(), "guiLayouts/"); //$NON-NLS-1$
 	public static final File languagesFolder = new File(getRootDirectory(), "languages/"); //$NON-NLS-1$
 	public static final File flagsFolder = new File(languagesFolder, "flags/"); //$NON-NLS-1$

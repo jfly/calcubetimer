@@ -203,13 +203,17 @@ changes:
 +fixed bug with the ordering/saving of scramble customizations
 +worsttime in dynamic string is broken, it should ignore infinite times, worstTimeOfCurrentAverage should also properly format POP or DNF
 +fixed bug with highlighting the current session's row
++can no longer delete scramble customizations until they are completely removed from the database
++fixed bug w/ database & pure infinite times
 
 TODO:
 
 for release:
+-waiting cursor on databasing stuff, it can take a while w/ large db
 -open source sourceforge!
 -create license, give credit where credit is due
 -update defaults.properties file, about.html (translate), FAQ (esp: new stackmat options, translate)
+	-asciidoc?
 	-include documentation of the DynamicStrings & update link from showDynamicStrings() in ConfigDialog.java
 -create small diagnostic problem that will dump relevant info to a file (java version, os, etc.)
 -write scramble plugin tutorial
