@@ -59,7 +59,7 @@ changes:
 	+capitalization standardized! like java, UpperCamelCase for "classes", lowerCamelCase for variables
 	+configuration rehaul to use VariableKey's instead of old verbose solution
 	+configdialog.java I got lazy with resetting stuff, so i best do this // TODO MERGE ABOVE METHOD AND BELOW METHOD!!!
-+cct remembers focused compenent after gui change
++cct remembers focused component after gui change
 +remove editablejcombobox, and switch to a jlistmutable within configdialog
 +save all scramble lengths to file
 +save profile ordering, just like with custom scramble types
@@ -88,7 +88,7 @@ changes:
 +dtds for xml files
 +keyboard stackmat feature (adam zamora's idea)
 +server scrambles needs link to load
-+behavior when recieving identical averages
++behavior when receiving identical averages
 +replaced TableSorter with built in functionality
 +CCTClient title will revert to normal after focus is regained after receiving a message while unfocused
 +addTime will scroll to show the input box if it's hidden
@@ -212,7 +212,7 @@ TODO:
 for release:
 -open source sourceforge!
 -create license, give credit where credit is due
--update defaults.properties file, about.html, FAQ (esp: new stackmat options, database, and scramble customizations)
+-update defaults.properties file, about.html, FAQ (esp: new stackmat options, database, & scramble plugins & customizations)
 	+include documentation of the DynamicStrings & update link from showDynamicStrings() in ConfigDialog.java
 -create small diagnostic problem that will dump relevant info to a file (java version, os, etc.)
 -write scramble plugin tutorial

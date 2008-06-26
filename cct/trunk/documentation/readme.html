@@ -41,6 +41,8 @@
 			<li><a href="#email">Email</a></li>
 			<li><a href="#umts">Connecting to a Server</a></li>
 			<li><a href="#config">How do I customize my settings?</a></li>
+			<li><a href="#profiling">What is a profile?</a></li>
+			<li><a href="#plugins">Scramble Plugins</a></li>
 			<li><a href="#releases">Release history</a></li>
 			<li><a href="#bugs">I found a bug, help!</a></li>
 		</ul>
@@ -51,6 +53,10 @@
 			<!-- TODO more faqs. also, fixes to old problems in emails, on the group, etc. -->
 			<p>Q: Why does it say: "The jar file "CALCubeTimer.jar" couldn't be launched. Check the Console for possible error messages" or "The main class could not be found"?<br>
 			A: See <a href="#java">this</a>.</p>
+
+			<p>Q: Why can't I start the timer with my keyboard?<br>
+			A: Make sure you've checked the box next to "Use Keyboard Timer". Also, make sure that the stackmat emulation option (Configuration > Options (Cont.))
+			is disabled unless you want to use it.
 
 			<p>Q: Does this program run on Mac OS X?<br>
 			A: Yes, but not without a little work, see <a href="#java">this</a>.</p>
@@ -243,12 +249,46 @@
 			with your favorite text editor. The format of the file is very simple, each setting
 			is on its own line, with a setting name followed by its value. See the
 			defaults.properties file for a description of each setting. There is no need to edit
-			the defaults.properties file, just edit cct.properties, as those settings take
+			the defaults.properties file<del>, just edit cct.properties, as those settings take
 			precedence over that defaults. If at any point you mess up your cct.properties
-			file, you can just delete it, and the defaults will be restored.</p>
-			<p>In version ??? of CCT _________</p>
+			file, you can just delete it, and the defaults will be restored</del>. 
+			<ins>See <a href="#profiling">Profiling</a> for where CCT stores your properties files.</ins></p>
+			
+			<h2><a name="profiling">Profiling</a></h2>
+			<p>When configured properly, CCT will remember every solve you do, and give you interesting
+			statistics based on those solves</p>
+			<p>CCT organizes solves into sessions, which are associated with a single scramble customization.
+			You can create multiple sessions and open each one by simply double clicking on it. By default,
+			CCT will discard these sessions when you close it. However, if you create your own profile (for example, Jeremy), then
+			CCT will automatically save every session to a single XML file called 
+			<span style='white-space: nowrap'>profiles/Jeremy/Jeremy.xml</span>.
+			Within the Jeremy folder, CCT will also store Jeremy.properties, which is the configuration file described
+			in <a href="#config">Configuration</a>.
+			<p>CCT will remember your last used profile, but there is also the option to load any folder from your
+			filesystem as if it were a CCT profile. Simply pass the folder name as a command line argument to CALCubeTimer.
+			For example: "java -jar CALCubeTimer.jar path/to/profile/"
+			
+			<h2><a name="plugins">Scramble Plugins</a></h2>
+			<p>Inside the scramblePlugins folder are various *.class files. Each of these class
+			files corresponds to a different scramble plugin. Scramble plugins can simply be dropped
+			into this folder, and they should appear when you restart CCT. The scramble plugin
+			system was designed to make it easy for people to add new scrambles to CCT without us having
+			to release a new version. Anyone with a strong background in Java should be able to
+			create new plugins for CCT. Just checkout the CCT sourcecode from here ______, and examine
+			Scramble.java. Writing a new plugin is as simple as writing a subclass of Scramble.
+			See CubeScramble, MegaminxScramble, and SquareOneScramble for examples of how to do it.</p>
+			<p>A lot of time has been put into ensuring that it is not possible for scramble plugins to harm your
+			computer or freeze CCT, but care should always be exercised when running a scramble plugin from
+			an unknown or untrusted source.</p>
 
-			<!-- TODO add more stuff, including description of how to use EVERYTHING -->
+			<p>Since CCT keeps track of sessions by date and scramble customization, there is no way that
+			you could mix up your 3x3x3 times with your 4x4x4 times. But what if you want to do 3x3x3 blindfolded (BLD)?
+			Or one handed? Or one handed and blindfolded?! Clearly there are too many possiblities for them to be
+			hardcoded into CCT. Instead, under Configuration > Profile Settings, you can create your own scramble
+			customizations. Scroll down to the bottom, and double click on "Add new customization...". Choose the 
+			type of scrambles you want for the new customization (choose X for puzzles that do not require scrambles,
+			such as Magic), and give it a short, descriptive name in the text box (such as BLD or OH). Once you've saved your configuration,
+			you can choose the new scramble customization, and begin recording your times!</p>
 
 			<h2><a name="releases">Release History:</a></h2>
 			2007 Apr 15 - Version 0.1
@@ -273,6 +313,27 @@
 				<li>Configuration overhaul</li>
 				<li>Scramble options added, including support for cubes up to 11x11x11</li>
 			</ul>
+			
+			2008 _________________
+			<ul>
+				<li>Scramble plugins created (Square One scrambles added)</li>
+				<li>Customizable XML GUI</li>
+				<li>Profiling via an XML database</li>
+				<li>Scramble placeholder (just click on a part of the scramble to see
+				the state of the puzzle at that point in the scramble)</li>
+				<li>Dual monitor support</li>
+				<li>Metronome added</li>
+				<li>Keyboard stackmat emulation</li>
+				<li>Times list now can show 2 different rolling averages in addition to the individual times</li>
+				<li>Support for the new Sunday Contest</li>
+				<li>Made it more difficult for components to steal focus from the keyboard timer</li>
+				<li>Added undo-redo actions</li>
+				<li>Comments for solves and sessions</li>
+				<li>Added a WCA-style countdown</li>
+				<li>Option to have times spoken</li>
+			</ul>
+			
+			
 			<h2><a name="bugs">Bugs and Feature Requests</a></h2>
 			<p>Please email us at <a href="mailto:cubetimer@gmail.com">cubetimer@gmail.com</a> for any bugs you encounter or features
 			you feel should be implemented.</p>
