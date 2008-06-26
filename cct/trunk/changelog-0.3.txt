@@ -212,8 +212,8 @@ TODO:
 for release:
 -open source sourceforge!
 -create license, give credit where credit is due
--update defaults.properties file, about.html, FAQ (esp: new stackmat options)
-	-include documentation of the DynamicStrings & update link from showDynamicStrings() in ConfigDialog.java
+-update defaults.properties file, about.html, FAQ (esp: new stackmat options, database, and scramble customizations)
+	+include documentation of the DynamicStrings & update link from showDynamicStrings() in ConfigDialog.java
 -create small diagnostic problem that will dump relevant info to a file (java version, os, etc.)
 -write scramble plugin tutorial
 

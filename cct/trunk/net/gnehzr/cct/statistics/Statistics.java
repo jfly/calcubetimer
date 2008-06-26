@@ -298,11 +298,9 @@ public class Statistics implements ConfigurationChangeListener {
 		for(i = 0; i < sorttimes.size() && sorttimes.get(i).compareTo(s) <= 0; i++) ;
 		sorttimes.add(i, s);
 
-		for(int k = 0; k < RA_SIZES_COUNT; k++){
-			if (times.size() >= curRASize[k]) {
+		for(int k = 0; k < RA_SIZES_COUNT; k++)
+			if (times.size() >= curRASize[k])
 				calculateCurrentAverage(k);
-			}
-		}
 
 		solveCounter[s.getType().ordinal()]++;
 		int numPOPs = solveCounter[SolveTime.SolveType.POP.ordinal()];

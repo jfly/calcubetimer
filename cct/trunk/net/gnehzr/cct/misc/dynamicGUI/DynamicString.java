@@ -145,7 +145,7 @@ public class DynamicString{
 		else if(s.equalsIgnoreCase("bestRA")) r = Utils.formatTime(stats.getBestAverage(num)); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("bestSD")) r = Utils.formatTime(stats.getBestSD(num)); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("bestAverageSD")) r = Utils.formatTime(stats.getBestAverageSD(num)); //$NON-NLS-1$
-		else if(s.equalsIgnoreCase("worstTime")) r = stats.getWorstTime().toString(); //TODO - this doesn't work when there is a POP or DNF //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("worstTime")) r = stats.getWorstTime().toString(); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("worstAverage")) r = Utils.formatTime(stats.getWorstAverage(num)); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("worstSD")) r = Utils.formatTime(stats.getWorstSD(num)); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("worstAverageSD")) r = Utils.formatTime(stats.getWorstAverageSD(num)); //$NON-NLS-1$
@@ -174,6 +174,9 @@ public class DynamicString{
 		else if(s.equalsIgnoreCase("bestAverageStats")) r = stats.toStatsString(AverageType.RA, false, num); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("currentAverageStats")) r = stats.toStatsString(AverageType.CURRENT, false, num); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("sessionStats")) r = stats.toStatsString(AverageType.SESSION, false, 0); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("bestAverageStatsWithSplits")) r = stats.toStatsString(AverageType.RA, true, num); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("currentAverageStatsWithSplits")) r = stats.toStatsString(AverageType.CURRENT, true, num); //$NON-NLS-1$
+		else if(s.equalsIgnoreCase("sessionStatsWithSplits")) r = stats.toStatsString(AverageType.SESSION, true, 0); //$NON-NLS-1$
 		
 		else if(s.equalsIgnoreCase("date")) r = Configuration.getDateFormat().format(new Date()); //$NON-NLS-1$
 		//Database queries for current scramble customization

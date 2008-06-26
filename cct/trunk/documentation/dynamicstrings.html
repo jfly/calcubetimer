@@ -11,240 +11,258 @@
 			td {
 				border: 1px #000000 solid;
 			}
+			td.title {
+				font-weight: bold;
+				border: 5px #000000 solid;
+			}
 			
 		</style>
 	</head>
 	<body>
 		<h1>CCT DynamicStrings</h1>
 		<p>What follows is a list of all DyamicStrings accessible within CCT.
-		To distinguish them from plaintext, surround them with $$ and $$. To print $$pops$$ as
-		plaintext, just use \$\$pops\$\$
+		To distinguish them from plaintext, surround them with $$ and $$, for example: $$pops$$. To print $$pops$$ as
+		plaintext, just use <span style='white-space: nowrap'>\$\$pops\$\$</span>
 		Some keys may require a numeric argument specifying which RA you are interested in. Remember that CCT keeps
 		track of all the statistics for two rolling average lengths. For example, to get the latest 
-		average for a given RA number, use $$currentAverage0$$ or $$currentAverage1$$.</p>
+		average for a given RA number, use $$currentAverage0$$ or $$currentAverage1$$. For any key ending in #,
+		the # should be replaced with the number of the desired RA.</p>
+		<p>NOTE: Standard deviations for trimmed (rolling) averages are computed over only the solves included in the average.</p>
 		<table>
 			<tr>
+				<td class="title">Key</td>
+				<td class="title">Description</td>
+			</tr>
+			<tr>
 				<td>sessionAverage</td>
-				<td>How</td>
+				<td>This will be replaced with the average of all non infinite solves in the times list (current session).</td>
 			</tr>
 			<tr>
 				<td>sessionSD</td>
-				<td>oweww</td>
+				<td>This is the standard deviation of all non infinite solves in the current session.</td>
 			</tr>
 			<tr>
 				<td>pops</td>
-				<td>oweww</td>
+				<td>Number of pops in the current session.</td>
 			</tr>
 			<tr>
 				<td>+twos</td>
-				<td>oweww</td>
+				<td>Number of 2 second penalties in the current session.</td>
 			</tr>
 			<tr>
 				<td>dnfs</td>
-				<td>oweww</td>
+				<td>Number of DNFs in the current session.</td>
 			</tr>
 			<tr>
 				<td>solves</td>
-				<td>oweww</td>
+				<td>Number of successful (non-infinite) solves in the current session.</td>
 			</tr>
 			<tr>
 				<td>attempts</td>
-				<td>oweww</td>
+				<td>Total number of attempts in in the current session.</td>
 			</tr>
 			<tr>
 				<td>progressTime</td>
-				<td>oweww</td>
+				<td>The difference between the most recent solve and the solve before it.</td>
 			</tr>
 			<tr>
-				<td>progressAverage</td>
-				<td>oweww</td>
+				<td>progressAverage#</td>
+				<td>The difference between the most recent RA # and the previous RA #.</td>
 			</tr>
 			<tr>
 				<td>progressTimeParens</td>
-				<td>oweww</td>
+				<td>This formats progressAverage between parenthesis, and will be an empty string if the difference was infinite.</td>
 			</tr>
 			<tr>
-				<td>progressAverageParens</td>
-				<td>oweww</td>
+				<td>progressAverageParens#</td>
+				<td>see progressTimeParens</td>
 			</tr>
 			<tr>
 				<td>bestTime</td>
-				<td>oweww</td>
+				<td>This is the best time in the current session, or N/A if there are no solves.</td>
 			</tr>
 			<tr>
-				<td>bestRA</td>
-				<td>oweww</td>
+				<td>bestRA#</td>
+				<td>The is the best rolling average of RA #.</td>
 			</tr>
 			<tr>
-				<td>bestSD</td>
-				<td>oweww</td>
+				<td>bestAverageSD#</td>
+				<td>This is the standard deviation of the best average of RA #.</td>
 			</tr>
 			<tr>
-				<td>bestAverageSD</td>
-				<td>oweww</td>
+				<td>bestSD#</td>
+				<td>The is the best standard deviation of RA #. Not necessarily the same as bestAverageSD, for example, you could have
+				a slower average with very little variation.</td>
 			</tr>
 			<tr>
 				<td>worstTime</td>
-				<td>oweww</td>
+				<td>This is the worst, finite time in the current session.</td>
 			</tr>
 			<tr>
-				<td>worstAverage</td>
-				<td>oweww</td>
+				<td>worstAverage#</td>
+				<td>This is the worst average of RA #.</td>
 			</tr>
 			<tr>
-				<td>worstSD</td>
-				<td>oweww</td>
+				<td>worstAverageSD#</td>
+				<td>The standard deviation of the worst average in RA #.</td>
 			</tr>
 			<tr>
-				<td>worstAverageSD</td>
-				<td>oweww</td>
+				<td>worstSD#</td>
+				<td>This is the worst standard deviation of all rolling averages in RA #.</td>
 			</tr>
 			<tr>
 				<td>currentTime</td>
-				<td>oweww</td>
+				<td>The most recent time.</td>
 			</tr>
 			<tr>
-				<td>currentAverage</td>
-				<td>oweww</td>
+				<td>currentAverage#</td>
+				<td>The current average of RA #.</td>
 			</tr>
 			<tr>
-				<td>currentSD</td>
-				<td>oweww</td>
+				<td>currentSD#</td>
+				<td>The standard deviation of the current average of RA #.</td>
 			</tr>
 			<tr>
 				<td>lastTime</td>
-				<td>oweww</td>
+				<td>This is the time before the currentTime.</td>
 			</tr>
 			<tr>
-				<td>lastAverage</td>
-				<td>oweww</td>
+				<td>lastAverage#</td>
+				<td>This is the 2nd most recent average of RA #.</td>
 			</tr>
 			<tr>
 				<td>lastSD</td>
-				<td>oweww</td>
+				<td>This is the standard deviation of the average in lastAverage#.</td>
 			</tr>
 			<tr>
-				<td>bestTimeOfCurrentAverage</td>
-				<td>oweww</td>
+				<td>bestTimeOfCurrentAverage#</td>
+				<td>Straightforward.</td>
 			</tr>
 			<tr>
-				<td>worstTimeOfCurrentAverage</td>
-				<td>oweww</td>
+				<td>worstTimeOfCurrentAverage#</td>
+				<td>Straightforward.</td>
 			</tr>
 			<tr>
-				<td>bestTimeOfBestAverage</td>
-				<td>oweww</td>
+				<td>bestTimeOfBestAverage#</td>
+				<td>Straightforward.</td>
 			</tr>
 			<tr>
-				<td>worstTimeOfBestAverage</td>
-				<td>oweww</td>
+				<td>worstTimeOfBestAverage#</td>
+				<td>Straightforward.</td>
 			</tr>
 			<tr>
-				<td>bestTimeOfWorstAverage</td>
-				<td>oweww</td>
+				<td>bestTimeOfWorstAverage#</td>
+				<td>Straightforward.</td>
 			</tr>
 			<tr>
-				<td>worstTimeOfWorstAverage</td>
-				<td>oweww</td>
+				<td>worstTimeOfWorstAverage#</td>
+				<td>Straightforward.</td>
 			</tr>
 			<tr>
 				<td>progressSessionAverage</td>
-				<td>oweww</td>
-			</tr>
+				<td>This is the difference between the current session average and the one before it.</td>
 			</tr>
 			<tr>
 				<td>progressSessionSD</td>
-				<td>oweww</td>
-			</tr>
+				<td>This is the difference between the SD of the current session and the one before it.</td>
 			</tr>
 			<tr>
 				<td>progressSessionAverageParens</td>
-				<td>oweww</td>
-			</tr>
+				<td>This formats progressAverageSD nicely.</td>
 			</tr>
 			<tr>
 				<td>progressSessionSDParens</td>
-				<td>oweww</td>
+				<td>This formats progressSessionSD nicely.</td>
 			</tr>
+			
+			<tr>
+				<td>bestAverageList#</td>
+				<td>A comma separated list of the times in the best average of RA #. The best and worst times are
+				surrounded with parenthesis.</td>
 			</tr>
 			<tr>
-				<td>bestAverageList</td>
-				<td>oweww</td>
-			</tr>
-			</tr>
-			<tr>
-				<td>currentAverageList</td>
-				<td>oweww</td>
-			</tr>
+				<td>currentAverageList#</td>
+				<td>see bestAverageList#</td>
 			</tr>
 			<tr>
 				<td>sessionAverageList</td>
-				<td>oweww</td>
-			</tr>
-			</tr>
-			<tr>
-				<td>worstAverageList</td>
-				<td>oweww</td>
-			</tr>
+				<td>see bestAverageList#</td>
 			</tr>
 			<tr>
-				<td>bestAverageStats</td>
-				<td>oweww</td>
+				<td>worstAverageList#</td>
+				<td>see bestAverageList#</td>
 			</tr>
+			
+			<tr>
+				<td>bestAverageStats#</td>
+				<td>This enumerates the times of the best average of RA #, and appends their scramble and comment.</td>
 			</tr>
 			<tr>
-				<td>currentAverageStats</td>
-				<td>oweww</td>
-			</tr>
+				<td>currentAverageStats#</td>
+				<td>see bestAverageStats#</td>
 			</tr>
 			<tr>
 				<td>sessionStats</td>
-				<td>oweww</td>
-			</tr>
+				<td>see bestAverageStats#</td>
 			</tr>
 			<tr>
-				<td>date</td>
-				<td>oweww</td>
+				<td>bestAverageStatsWithSplits#</td>
+				<td>This enumerates the times of the best average of RA #, and appends their scramble, splits, and comment.</td>
 			</tr>
+			<tr>
+				<td>currentAverageStatsWithSplits#</td>
+				<td>see bestAverageStatsWithSplits#</td>
 			</tr>
+			<tr>
+				<td>sessionStatsWithSplits</td>
+				<td>see bestAverageStatsWithSplits#</td>
+			</tr>
+			
+			<tr>
+				<td class="title"></td>
+				<td class="title">The following allow access to global statistics. That is, statistics about every solve you have ever
+				done of the current scramble customization.</td>
+			</tr>			
 			<tr>
 				<td>veryBestTime</td>
-				<td>oweww</td>
-			</tr>
+				<td>This is the best time of all the sessions of the current scramble customization.</td>
 			</tr>
 			<tr>
-				<td>veryBestRA</td>
-				<td>oweww</td>
-			</tr>
+				<td>veryBestRA#</td>
+				<td>The best RA of RA # of all the sessions of the current scramble customization.</td>
 			</tr>
 			<tr>
 				<td>globalAverage</td>
-				<td>oweww</td>
-			</tr>
+				<td>The average of all solves of all the sessions of the current scramble customization.</td>
 			</tr>
 			<tr>
 				<td>globalPops</td>
-				<td>oweww</td>
-			</tr>
+				<td>The total number of pops of all the sessions of the current scramble customization.</td>
 			</tr>
 			<tr>
 				<td>global+twos</td>
-				<td>oweww</td>
-			</tr>
+				<td>The total number of 2 second penalties of all the sessions of the current scramble customization.</td>
 			</tr>
 			<tr>
 				<td>globalDNFs</td>
-				<td>oweww</td>
-			</tr>
+				<td>The total number of DNFs of all the sessions of the current scramble customization.</td>
 			</tr>
 			<tr>
 				<td>globalSolveCount</td>
-				<td>oweww</td>
-			</tr>
+				<td>The total number of successful solves of all the sessions of the current scramble customization.</td>
 			</tr>
 			<tr>
 				<td>globalAttemptCount</td>
-				<td>oweww</td>
+				<td>The total number of solve attempts of all the sessions of the current scramble customization.</td>
+			</tr>
+			
+			<tr>
+				<td class="title"></td>
+				<td class="title">Misc</td>
+			</tr>
+			<tr>
+				<td>date</td>
+				<td>This is the current date and time. This will not be updated every second.</td>
 			</tr>
 		</table>
 	</body>

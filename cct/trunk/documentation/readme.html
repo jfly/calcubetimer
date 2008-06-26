@@ -20,6 +20,9 @@
 			li {
 				padding: 0px 0px 0px 0px;
 			}
+			del {
+				text-decoration: line-through;
+			}
 		</style>
 	</head>
 
@@ -35,6 +38,7 @@
 			<li><a href="#stats">How the statistics work</a></li>
 			<li><a href="#gui">User Interface</a></li>
 			<li><a href="#sc">Sunday Contest</a></li>
+			<li><a href="#email">Email</a></li>
 			<li><a href="#umts">Connecting to a Server</a></li>
 			<li><a href="#config">How do I customize my settings?</a></li>
 			<li><a href="#releases">Release history</a></li>
@@ -95,9 +99,14 @@
 			A way to find your value is to find a value for which the timer changes times when it is being run.
 			If the times do not update as frequently as it should, then your value is too high. If the times
 			sometimes show very large times over 10 minutes, then your value is probably too low.<br>
-			A way to make sure that your value will work is if you run the timer with one hand on one
-			of the pads.</p>
-			<!-- TODO better document this -->
+			The signal is most difficult to interpret when one hand is on the timer, so it is best to test your value
+			while running the timer with a hand on one of the pads.</p>
+			
+			<p><a name="rate">Q: What is the sampling rate?</a><br>
+			A: The sampling rate is the same rate talked about regarding audio recording. A value of 44100 Hz indicates that CCT
+			will record 44100 samples per second. Each sample does not correspond to a time from the timer, it takes many samples
+			for CCT to read the current time from the display. The lower the sampling rate, the less processing power CCT will use. Sampling rates as low
+			as 8000 Hz have successfully been tested.</p>
 
 			<h2><a name="java">Java 1.6</a></h2>
 			<p>You need the latest version of Java (SE 6) to run CCT.
@@ -110,10 +119,13 @@
 
 				<li><p>Macs however, are a little more complicated.
 				For some reason, Apple is developing SE 6 as opposed to Sun.
-				To get Java 6 for OSX, you need to go <a href="http://developer.apple.com/java/">here</a>
+				<del>To get Java 6 for OSX, you need to go <a href="http://developer.apple.com/java/">here</a>
 				and click on Java SE 6.0 Release 1 Developer Preview 6. You'll have to sign
 				up, and then you can download Apple's latest version. It has been tested, and
-				seems to work fine.<br>
+				seems to work fine.</del><br>
+				<ins>UPDATE: Apple has finally released Java 6. Unfortunately, according to 
+				<a href="http://support.apple.com/kb/HT1856">this article</a>, their JRE will
+				only run on 64 bit Intel Macs.</ins><br><br>
 				To verify that the installation was a success, go to the top right of your screen,
 				and click on the search button. Type "terminal" and open it. Once there,
 				type "java -version" and press enter.
@@ -156,23 +168,29 @@
 			<p>Under File > Configuration > Options, you can even specify the length of your
 			rolling average.</p>
 			<p>Finally, the details for Session Averages and Rolling/Current Averages can
-			be configured under File > Configuration, where there is a simple syntax for gettting
-			just what you want out of CCT.</p>
+			be customized under File > Configuration, <del>where there is a simple syntax for getting
+			just what you want out of CCT.</del> <ins>See <a href="dynamicstrings.html">here</a> to 
+			modify the formatting of these statistics.</ins></p>
 
 			<h2><a name="gui">User Interface</a></h2>
-			<p>There are many new user interface options in CCT v0.2. Most of these are related to
-			the keyboard timer. These options can be accessed in the View menu.
+			<p>In CCT _______, we've made the GUI completely customizable via xml files. In your CCT directory, there should
+			be a folder called "guiLayouts". Within that folder, you can create any *.xml file, and CCT will give you the option
+			to load that layout. Some rudimentary knowledge of Java Swing and XML files is required to accomplish anything complicated,
+			however it should be easy for a semi-techinical user to modify the text on various buttons and labels throughout CCT.
+			Statistics relating to your solve times can be accessed through <a href="dynamicstrings.html">DynamicStrings</a>.
+			Look at cct.xml to learn how to create your own layout. Feel free to improve upon the default layout!
+			
+			<p>Some of the interface options from CCT v0.2 have been removed, others have been tweaked.</p>
 			<ul>
-				<li>The first of these options
-				is Integrate Timer and Display. What this does is convert the display (0:00) to the button
-				that starts and stops the timer.</li>
-				<li>If the "integrate" option is selected, then the "Annoying status light" will
+				<li><del>The first of these options is Integrate Timer and Display.
+				What this does is convert the display (0:00) to the button that starts and stops the timer.</del></li>
+				<li><del>If the "integrate" option is selected, then the "Annoying status light" will
 				convert the entire display into a status color which tells you the status of the button.
 				If the status is green, then the button is held down and ready to start/stop. If the button is red,
 				then the button is focused but no key is pressed. If the button is gray, then the button is not focused.
-				This color behavior is by default the same as the start timer button (either integrated or not).</li>
-				<li>The less annoying status light behaves differently than the start timer color. This light will be
-				green if the button is focused, signalling that it is okay to start. It is red if the button is not focused.</li>
+				This color behavior is by default the same as the start timer button (either integrated or not).</del></li>
+				<li>The less annoying status light will be green if the timer is focused, signaling that it is okay to start.
+				If the light is red, then you cannot start keyboard timing until you click on the timer.</li>
 				<li>The "hide scrambles when timer not focused" option will change the color of the scrambles so that
 				if the button is not focused, it is difficult to read the scrambles.</li>
 				<li>Now it is possible to select the length of the scramble with the spinner next to the scramble type.</li>
@@ -181,23 +199,24 @@
 				the scrambles. You are on the 6th scramble, and the stackmat accepts a fake time. You finish your solve and
 				discard your fake time. CCT now believes you just finished the 7th solve and displays the 8th scramble. To
 				fix this problem, all you need to do is rewind one scramble to the 7th and you don't lose your 7th scramble.</li>
-				<li>A new option for scrambles is the multi-slice option. This affects nxnxn cubes where n >= 4. If multi-slice is
+					<li style='margin-left:50px'>UPDATE: As of CCT __________, the scramble history will keep track of every scramble
+					you use, even if you switch scramble customizations. To avoid confusion when going back in your scramble history,
+					the scramble customization dropdown box will be disabled whenever you are not at the latest, non-imported scramble. </li>
+				<li>A new option for scrambles is the multi-slice option. This affects NxNxN cubes where N &#x2265; 4. <del>If multi-slice is
 				enabled (which is the default), then "r" means turn the outer 2 layers. If multi-slice is disabled, then "r" means
-				turn only the inside slice.</li>
+				turn only the inside slice.</del> <ins>Scrambles obey the <a href="http://worldcubeassociation.org/regulations/#notation">2008 WCA regulations</a>.</ins></li>
 			</ul>
-			<!-- TODO new xml gui stuff -->
 
 			<h2><a name="sc">Sunday Contest</a></h2>
 			<p>Not only is there support for importing scrambles from file,
 			there is an option to import times from url. This is perfect for
-			a situation such as the Sunday Contest.</p>
-			<p>In addition, CCT allows you to setup your email (SMTP) server, to allow
-			emailing of times. With this feature, you
-			can do the entire Sunday Contest without even leaving CCT!</p>
-			<p>This may not work if your ISP blocks port 25.</p>
-			<p>There might be some bugs for emailing, so copy your times down before attempting
-			to use the email feature.</p>
-			<!-- TODO update for email vs new sunday, also document email stuff, probably under a different heading -->
+			a situation such as the Sunday Contest. CCT also supports submission
+			to the new, automated Sunday Contest. Just click the "Submit Sunday Contest" button.</p>
+			
+			<h2><a name="email">Email</a></h2>
+			<p>In addition, CCT allows you to setup an email (SMTP) server, to allow
+			emailing of times. This may not work if your ISP blocks port 25. If you choose not to set up an SMTP server, CCT will attempt to use your
+			default mailto: handler.</p>
 
 			<h2><a name="umts">UMTS</a></h2> <p>A server can be created to
 			which you can start up and multiple people can connect to

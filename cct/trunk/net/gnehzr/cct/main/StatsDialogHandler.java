@@ -110,23 +110,6 @@ public class StatsDialogHandler extends JDialog implements ActionListener, Chang
 			textArea.setText(new DynamicString(Configuration.getString(VariableKey.SESSION_STATISTICS, false), statsModel, null).toString());
 			break;
 		}
-		
-//		average = times.average(type, avgNum).toString();
-//		terseTimes = times.toTerseString(type, avgNum);
-//		SolveTime[] bestAndWorst = times.getBestAndWorstTimes(type, avgNum);
-//		String stats = (type == AverageType.SESSION) ?
-//				Configuration.getString(VariableKey.SESSION_STATISTICS, false) :
-//				Configuration.getString(VariableKey.AVERAGE_STATISTICS, false);
-//		stats = stats.replaceAll("\\$D", Configuration.getDateFormat().format(cal.getTime()));
-//		stats = stats.replaceAll("\\$C", "" + times.getSolveCount());
-//		stats = stats.replaceAll("\\$P", "" + times.getPOPCount());
-//		stats = stats.replaceAll("\\$A", times.average(type, avgNum).toString());
-//		stats = stats.replaceAll("\\$S", times.standardDeviation(type, avgNum).toString());
-//		stats = stats.replaceAll("\\$B", bestAndWorst[0].toString());
-//		stats = stats.replaceAll("\\$W", bestAndWorst[1].toString());
-//		stats = stats.replaceAll("\\$T", times.toTerseString(type, avgNum));
-//		stats = stats.replaceAll("\\$I", times.toStatsString(type, false, avgNum));
-//		stats = stats.replaceAll("\\$i", times.toStatsString(type, Configuration.getBoolean(VariableKey.TIMING_SPLITS, false), avgNum));
 	}
 
 	public void promptToSaveStats() {
