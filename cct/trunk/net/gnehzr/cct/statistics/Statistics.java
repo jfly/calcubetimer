@@ -3,6 +3,7 @@ package net.gnehzr.cct.statistics;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.ListIterator;
 
 import net.gnehzr.cct.configuration.Configuration;
@@ -516,9 +517,9 @@ public class Statistics implements ConfigurationChangeListener {
 		return times.subList(a, b).listIterator();
 	}
 
-	private ListIterator<SolveTime> getSublist(AverageType type, int num) {
+	private List<SolveTime> getSublist(AverageType type, int num) {
 		int[] bounds = getBounds(type, num);
-		return times.subList(bounds[0], bounds[1]).listIterator();
+		return times.subList(bounds[0], bounds[1]);
 	}
 
 	private int[] getBounds(AverageType type, int num) {
@@ -564,14 +565,11 @@ public class Statistics implements ConfigurationChangeListener {
 		SolveTime best = SolveTime.WORST;
 		SolveTime worst = SolveTime.BEST;
 		boolean ignoreInfinite = type == AverageType.SESSION;
-		ListIterator<SolveTime> iter = getSublist(type, num);
-		while (iter.hasNext()) {
-			SolveTime time = iter.next();
-			if (best.compareTo(time) >= 0)
+		for(SolveTime time : getSublist(type, num)) {
+			if(best.compareTo(time) >= 0)
 				best = time;
 			// the following should not be an else
-			if (worst.compareTo(time) < 0
-					&& !(ignoreInfinite && time.isInfiniteTime()))
+			if(worst.compareTo(time) < 0 && !(ignoreInfinite && time.isInfiniteTime()))
 				worst = time;
 		}
 		return new SolveTime[] { best, worst };
@@ -581,7 +579,7 @@ public class Statistics implements ConfigurationChangeListener {
 		SolveTime[] bestAndWorst = ((type == AverageType.SESSION) ? new SolveTime[] {
 				null, null }
 				: getBestAndWorstTimes(type, num));
-		return toStatsStringHelper(getSublist(type, num), bestAndWorst[0],
+		return toStatsStringHelper(getSublist(type, num).listIterator(), bestAndWorst[0],
 				bestAndWorst[1], showSplits);
 	}
 
@@ -622,11 +620,10 @@ public class Statistics implements ConfigurationChangeListener {
 		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		SolveTime[] bestAndWorst = getBestAndWorstTimes(type, num);
-		ListIterator<SolveTime> list = getSublist(type, num);
-		if (list.hasNext())
-			return toTerseStringHelper(list, bestAndWorst[0], bestAndWorst[1]);
-		else
+		List<SolveTime> list = getSublist(type, num);
+		if(list.size() != curRASize[num])
 			return "N/A"; //$NON-NLS-1$
+		return toTerseStringHelper(list.listIterator(), bestAndWorst[0], bestAndWorst[1]);
 	}
 
 	private String toTerseStringHelper(ListIterator<SolveTime> printMe,

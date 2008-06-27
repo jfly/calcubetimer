@@ -21,7 +21,7 @@ public class DynamicSelectableLabel extends JEditorPane implements StatisticsUpd
 		setOpaque(false);
 		Configuration.addConfigurationChangeListener(this);
 	}
-
+	
 	public void updateUI() {
 		Border b = getBorder();
 		super.updateUI();

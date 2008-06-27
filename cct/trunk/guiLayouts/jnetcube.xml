@@ -42,10 +42,12 @@
 								<panel/>
 							</panel>
 						</panel>
-						<panel border=";Best Average">
-							<selectablelabel><![CDATA[<html>
-									Average: $$bestAverage1$$<br/>
-									Individual Times: $$bestAverageList$$</html>]]></selectablelabel>
+						<panel border="Best Average" layout="border">
+							<line_start>
+								<selectablelabel>
+									<![CDATA[<html>Average: $$bestRA0$$<br/>Individual Times: $$bestAverageList$$</html>]]>
+								</selectablelabel>
+							</line_start>
 						</panel>
 					</panel>
 				</south>

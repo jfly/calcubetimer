@@ -23,7 +23,7 @@ public class AboutScrollFrame extends JFrame implements ActionListener, WindowLi
 	private Timer autoscroll;
 	public AboutScrollFrame(URL helpURL, Image icon) throws Exception {
 		this.setIconImage(icon);
-		this.setAlwaysOnTop(true);
+//		this.setAlwaysOnTop(true);
 		JTextPane pane = new JTextPane();
 		pane.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 		pane.setOpaque(false);

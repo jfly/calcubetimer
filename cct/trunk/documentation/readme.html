@@ -51,7 +51,6 @@
 		<div id="content">
 			<h2><a name="faq">FAQs</a></h2>
 
-			<!-- TODO more faqs. also, fixes to old problems in emails, on the group, etc. -->
 			<p>Q: Why does it say: "The jar file "CALCubeTimer.jar" couldn't be launched. Check the Console for possible error messages" or "The main class could not be found"?<br>
 			A: See <a href="#java">this</a>.</p>
 
@@ -180,7 +179,7 @@
 			modify the formatting of these statistics.</ins></p>
 
 			<h2><a name="gui">User Interface</a></h2>
-			<p>In CCT _______, we've made the GUI completely customizable via xml files. In your CCT directory, there should
+			<p>In CCT 1.0, we've made the GUI completely customizable via xml files. In your CCT directory, there should
 			be a folder called "guiLayouts". Within that folder, you can create any *.xml file, and CCT will give you the option
 			to load that layout. Some rudimentary knowledge of Java Swing and XML files is required to accomplish anything complicated,
 			however it should be easy for a semi-techinical user to modify the text on various buttons and labels throughout CCT.
@@ -206,7 +205,7 @@
 				the scrambles. You are on the 6th scramble, and the stackmat accepts a fake time. You finish your solve and
 				discard your fake time. CCT now believes you just finished the 7th solve and displays the 8th scramble. To
 				fix this problem, all you need to do is rewind one scramble to the 7th and you don't lose your 7th scramble.</li>
-					<li style='margin-left:50px'>UPDATE: As of CCT __________, the scramble history will keep track of every scramble
+					<li style='margin-left:50px'>UPDATE: As of CCT 1.0, the scramble history will keep track of every scramble
 					you use, even if you switch scramble customizations. To avoid confusion when going back in your scramble history,
 					the scramble customization dropdown box will be disabled whenever you are not at the latest, non-imported scramble. </li>
 				<li>A new option for scrambles is the multi-slice option. This affects NxNxN cubes where N &#x2265; 4. <del>If multi-slice is
@@ -275,7 +274,7 @@
 			into this folder, and they should appear when you restart CCT. The scramble plugin
 			system was designed to make it easy for people to add new scrambles to CCT without us having
 			to release a new version. Anyone with a strong background in Java should be able to
-			create new plugins for CCT. Just checkout the CCT sourcecode from here ______, and examine
+			create new plugins for CCT. Just checkout the CCT sourcecode from here ???, and examine
 			Scramble.java. Writing a new plugin is as simple as writing a subclass of Scramble.
 			See CubeScramble, MegaminxScramble, and SquareOneScramble for examples of how to do it.</p>
 			<p>A lot of time has been put into ensuring that it is not possible for scramble plugins to harm your
@@ -339,7 +338,7 @@
 				<li>Scramble options added, including support for cubes up to 11x11x11</li>
 			</ul>
 			
-			2008 _________________
+			2008 ?????? - Version 1.0
 			<ul>
 				<li>Support for multiple languages</li>
 				<li>Scramble plugins created (Square One scrambles added)</li>
@@ -358,6 +357,9 @@
 				<li>Added a WCA-style countdown</li>
 				<li>Option to have times spoken</li>
 				<li>Scramble import dialog box now validates scrambles</li>
+				<li>The stackmat interpreter protocol now reads in stereo, which should
+				fix CCT on soundcards that didn't work in previous releases</li>
+				<li>Released the code under a ??? license</li>
 			</ul>
 			
 			<h2><a name="bugs">Bugs and Feature Requests</a></h2>
