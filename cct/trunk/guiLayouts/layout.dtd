@@ -71,6 +71,7 @@
 <!ATTLIST menuitem alignmentX CDATA #IMPLIED>
 <!ATTLIST checkboxmenuitem alignmentX CDATA #IMPLIED>
 <!ATTLIST label alignmentX CDATA #IMPLIED>
+<!ATTLIST selectablelabel alignmentX CDATA #IMPLIED>
 
 <!ATTLIST panel alignmentY CDATA #IMPLIED>
 <!ATTLIST component alignmentY CDATA #IMPLIED>
@@ -78,12 +79,16 @@
 <!ATTLIST checkbox alignmentY CDATA #IMPLIED>
 <!ATTLIST menuitem alignmentY CDATA #IMPLIED>
 <!ATTLIST checkboxmenuitem alignmentY CDATA #IMPLIED>
+<!ATTLIST label alignmentY CDATA #IMPLIED>
+<!ATTLIST selectablelabel alignmentY CDATA #IMPLIED>
 
 <!ATTLIST component border CDATA #IMPLIED>
 <!ATTLIST button border CDATA #IMPLIED>
 <!ATTLIST checkbox border CDATA #IMPLIED>
 <!ATTLIST menuitem border CDATA #IMPLIED>
 <!ATTLIST checkboxmenuitem border CDATA #IMPLIED>
+<!ATTLIST label border CDATA #IMPLIED>
+<!ATTLIST selectablelabel border CDATA #IMPLIED>
 
 <!ATTLIST component opaque CDATA #IMPLIED>
 <!ATTLIST button opaque CDATA #IMPLIED>

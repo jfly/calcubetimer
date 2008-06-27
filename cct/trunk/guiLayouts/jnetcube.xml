@@ -29,31 +29,51 @@
 				</center>
 				<south>
 					<panel layout="box" orientation="page">
-						<panel layout="flow" hgap="5" vgap="5">
-							<panel layout="grid" cols="3">
-								<button action="addTime">Add Time</button>
-								<checkbox action="keyboardTiming">Use keyboard timer</checkbox>
-								<button action="reset">Reset</button>
-								<button action="currentAverage0"><![CDATA[<html><font color="$$color_currentAverage$$">Current Average: $$currentAverage0$$</font></html>]]></button>
-								<button action="bestAverage0"><![CDATA[<html><font color="$$color_bestAverage$$">Best Rolling Average: $$bestAverage0$$</font></html>]]></button>
-								<button action="sessionAverage">Session Average: $$sessionAverage</button>
-								<button action="currentAverage1"><![CDATA[<html><font color="$$color_currentAverage$$">Current Average: $$currentAverage1$$</font></html>]]></button>
-								<button action="bestAverage1"><![CDATA[<html><font color="$$color_bestAverage$$">Best Rolling Average: $$bestAverage1$$</font></html>]]></button>
-								<panel/>
+						<panel layout="box" orientation="line">
+							<panel layout="border" border="Session Statistics">
+								<center>
+									<panel layout="box" orientation="page">
+										<label>Recent Time: $$currentTime$$</label>
+										<label>Previous Time: $$lastTime$$</label>
+										<label>Progress: $$progressTime$$ seconds</label>
+										<panel preferredsize="10x15"></panel>
+										<label>Cubes Solved: $$solves$$</label>
+										<label>Session Average: $$sessionAverage$$ seconds</label>
+									</panel>
+								</center>
+								<line_end>
+									<panel layout="box" orientation="page">
+										<button action="sessionAverage">Detail</button>
+										<button action="addTime">Add Time</button>
+										<button action="reset">Reset</button>
+									</panel>
+								</line_end>
+							</panel>
+							<panel layout="border" border="Rolling Average">
+								<panel layout="box" orientation="page">
+									<label>Current Average: $$currentAverage$$</label>
+									<label>Progress: $$progressAverage0$$</label>
+									<panel preferredsize="10x15"></panel>
+									<label>Fastest Time: $$bestTimeOfCurrentAverage0$$</label>
+									<label>Slowest Time: $$worstTimeOfCurrentAverage0$$</label>
+									<label>Standard Deviation: $$currentSD$$</label>
+								</panel>
 							</panel>
 						</panel>
-						<panel border="Best Average" layout="border">
-							<line_start>
-								<selectablelabel>
-									<![CDATA[<html>Average: $$bestRA0$$<br/>Individual Times: $$bestAverageList$$</html>]]>
-								</selectablelabel>
-							</line_start>
+						<panel border="Best Average" layout="box" orientation="page">
+							<button action="bestAverage0" alignmentX=".99">Details</button>
+							<selectablelabel border=";000000" alignmentX=".99">
+								<![CDATA[<html>Average: $$bestRA0$$<br/>Individual Times: $$bestAverageList0$$</html>]]>
+							</selectablelabel>
 						</panel>
 					</panel>
 				</south>
 			</panel>
 			<panel nominsize="false" layout="border">
-				<component type="timesList"/>
+				<tabbedpane>
+					<component name="Times" type="timesList"/>
+					<component name="Sessions" type="sessionsList"/>
+				</tabbedpane>
 			</panel>
 		</splitpane>
 	</panel>
