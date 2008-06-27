@@ -672,8 +672,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
     public void setCursor(Cursor cursor) {
     	if(loading)
     		super.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-    	else
+    	else if(cursor == null)
     		super.setCursor(Cursor.getDefaultCursor());
+    	else
+    		super.setCursor(cursor);
     }
 
 	public void stateChanged(ChangeEvent e) {
