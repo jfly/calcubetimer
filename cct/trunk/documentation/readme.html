@@ -43,6 +43,7 @@
 			<li><a href="#config">How do I customize my settings?</a></li>
 			<li><a href="#profiling">What is a profile?</a></li>
 			<li><a href="#plugins">Scramble Plugins</a></li>
+			<li><a href="#i18n">How can I get CCT in my own language?</a></li>
 			<li><a href="#releases">Release history</a></li>
 			<li><a href="#bugs">I found a bug, help!</a></li>
 		</ul>
@@ -290,6 +291,30 @@
 			such as Magic), and give it a short, descriptive name in the text box (such as BLD or OH). Once you've saved your configuration,
 			you can choose the new scramble customization, and begin recording your times!</p>
 
+			<h2><a name="i18n">CCT in another language</a></h2>
+			<p>We want to provide CCT as many languages as possible. If you use CCT and speak another language
+			we would certainly appreciate your help translating the program. Knowledge of Java is not required!</p>
+			<p>We sought to make translating CCT as easy as possible on those translating it. Internationalization is provided 
+			through properties files that contain a bunch of lines of the format "keyword=internationalized text".
+			Whenever CCT prints out some text, it goes to these properties files, and looks for a line starting
+			with "keyword=...". CCT will then print out "...", or whatever is contained there. This means
+			that if you translate every word to the right of every equals sign, CCT will display in your own language.</p>
+			<p>To fully translate CCT, you need to translate the files under the languages, scramblePlugins, and guiLayouts folders.</p>
+			<ul>
+				<li>languages/*.properties (cctString.properites, javax_swing.properties, NOT installed.properties!)</li>
+				<li>scramblePlugins/*.properties (CubeScramble.properties, SquareOneScramble.properties)</li>
+				<li>guiLayouts/*.properties (cct.properties)</li>
+			</ul>
+			<p>CCT provides you with a dropdown box to select from each of the installed languages. CCT identifies
+			languages by the ending of the file names. Properties files should end in xx_YY.properties. xx is a
+			2 letter language identifier as defined <a href="http://www.ics.uci.edu/pub/ietf/http/related/iso639.txt">here</a>.
+			YY corresponds to a <a href="http://www.chemie.fu-berlin.de/diverse/doc/ISO_3166.html">2 letter country code</a>
+			Once you've copied all of the default *.properties files over to *_xx_YY.properties, to get CCT to recognize the new language,
+			you must update installed.properties. installed.properties contains a bunch of lines of the form xx_YY=fooBar, where fooBar
+			is the name of the language, in that language. Simply add your new language to installed.properties to have the drop down option
+			for that language. If a key is undefined for a particular language, CCT will fall back to the default *.properties files
+			to find that key.</p>
+
 			<h2><a name="releases">Release History:</a></h2>
 			2007 Apr 15 - Version 0.1
 			<ul>
@@ -316,6 +341,7 @@
 			
 			2008 _________________
 			<ul>
+				<li>Support for multiple languages</li>
 				<li>Scramble plugins created (Square One scrambles added)</li>
 				<li>Customizable XML GUI</li>
 				<li>Profiling via an XML database</li>
@@ -331,8 +357,8 @@
 				<li>Comments for solves and sessions</li>
 				<li>Added a WCA-style countdown</li>
 				<li>Option to have times spoken</li>
+				<li>Scramble import dialog box now validates scrambles</li>
 			</ul>
-			
 			
 			<h2><a name="bugs">Bugs and Feature Requests</a></h2>
 			<p>Please email us at <a href="mailto:cubetimer@gmail.com">cubetimer@gmail.com</a> for any bugs you encounter or features
