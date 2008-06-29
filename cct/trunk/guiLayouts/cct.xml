@@ -7,7 +7,7 @@
 				<center>
 					<panel layout="box" orientation="page">
 						<component type="timerDisplay"/>
-						<component type="scrambleText"/>
+						<component type="scrambleArea"/>
 					</panel>
 				</center>
 				<south>

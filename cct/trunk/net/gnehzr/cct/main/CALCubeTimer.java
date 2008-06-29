@@ -63,7 +63,6 @@ import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
@@ -158,14 +157,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private JScrollPane timesScroller = null;
 	private SessionsTable sessionsTable = null;
 	private JScrollPane sessionsScroller = null;
-	private ScrambleArea scramblePanel = null;
+	private ScrambleArea scrambleArea = null;
 	private ScrambleChooserComboBox scrambleChooser = null;
 	private JPanel scrambleAttributes = null;
 	private JSpinner scrambleNumber, scrambleLength = null;
 	private DateTimeLabel currentTimeLabel = null;
 	private JComboBox profiles = null;
 	private JComboBox languages = null;
-	private JTextArea commentArea = null;
 	private TimerLabel timeLabel = null;
 	//all of the above components belong in this HashMap, so we can find them
 	//when they are referenced in the xml gui (type="blah...blah")
@@ -469,18 +467,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		sessionsScroller = new JScrollPane(sessionsTable);
 		sessionsTable.setSessionListener(this);
 
-		commentArea = new JTextArea();
-		commentArea.setEnabled(false);
-		commentArea.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
-		
-		scramblePanel = new ScrambleArea(scramblePopup);
-		scramblePanel.setAlignmentX(.5f);
+		scrambleArea = new ScrambleArea(scramblePopup);
+		scrambleArea.setAlignmentX(.5f);
 
 		stackmatTimer = new StackmatInterpreter();
 		new StackmatHandler(this, stackmatTimer);
 		
-		timeLabel = new TimerLabel(scramblePanel);
-		bigTimersDisplay = new TimerLabel(scramblePanel);
+		timeLabel = new TimerLabel(scrambleArea);
+		bigTimersDisplay = new TimerLabel(scrambleArea);
 		
 		KeyboardHandler keyHandler = new KeyboardHandler(this);
 		timeLabel.setKeyboardHandler(keyHandler);
@@ -507,13 +501,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		persistentComponents.put("scramblelength", scrambleLength);
 		persistentComponents.put("scrambleattributes", scrambleAttributes);
 		persistentComponents.put("stackmatstatuslabel", onLabel);
-		persistentComponents.put("scrambletext", scramblePanel);
+		persistentComponents.put("scramblearea", scrambleArea);
 		persistentComponents.put("timerdisplay", timeLabel);
 		persistentComponents.put("timeslist", timesScroller);
 		persistentComponents.put("customguimenu", customGUIMenu);
 		persistentComponents.put("languagecombobox", languages);
 		persistentComponents.put("profilecombobox", profiles);
-		persistentComponents.put("commentarea", commentArea);
 		persistentComponents.put("sessionslist", sessionsScroller);
 		persistentComponents.put("clock", currentTimeLabel);
 	}
@@ -711,7 +704,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 		timesScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		timesScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		scramblePanel.resetPreferredSize();
+		scrambleArea.resetPreferredSize();
 		timeLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 		timeLabel.setMinimumSize(new Dimension(0, 150));
 		timeLabel.setPreferredSize(new Dimension(0, 150));
@@ -1292,7 +1285,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			safeSetScrambleNumberMax(scramblesList.size());
 			//update new scramble number
 			safeSetValue(scrambleNumber, scramblesList.getScrambleNumber());
-			scramblePanel.setScramble(current.getScramble(), scramblesList.getScrambleCustomization()); //this will update scramblePopup
+			scrambleArea.setScramble(current.getScramble(), scramblesList.getScrambleCustomization()); //this will update scramblePopup
 			
 			boolean canChangeStuff = scramblesList.size() == scramblesList.getScrambleNumber();
 			scrambleChooser.setEnabled(canChangeStuff);
@@ -1477,7 +1470,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				else if(focusedComponent != null)
 					focusedComponent.requestFocusInWindow();
 				else
-					scramblePanel.requestFocusInWindow();
+					scrambleArea.requestFocusInWindow();
 				timeLabel.componentResized(null);
 				
 				//dispose the old fullscreen frame, and create a new one
@@ -1609,7 +1602,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	public void hideScramblesAction(){
 		Configuration.setBoolean(VariableKey.HIDE_SCRAMBLES, (Boolean)hideScramblesAction.getValue(Action.SELECTED_KEY));
-		scramblePanel.refresh();
+		scrambleArea.refresh();
 	}
 
 	public void requestScrambleAction(){

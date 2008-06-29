@@ -7,7 +7,7 @@
 				<center>
 					<panel layout="box" orientation="page">
 						<component type="timerDisplay"/>
-						<component type="scrambleText"/>
+						<component type="scrambleArea"/>
 					</panel>
 				</center>
 				<south>
@@ -97,13 +97,6 @@
 									<line_start>
 										<checkbox alignmentX=".5" action="togglescramblepopup">Show scramble?</checkbox>
 									</line_start>
-									<center>
-										<panel layout="border" preferredsize="100x100">
-											<scrollpane verticalpolicy="always" horizontalpolicy="always">
-												<component type="commentarea"/>
-											</scrollpane>
-										</panel>
-									</center>
 								</panel>
 							</south>
 						</panel>

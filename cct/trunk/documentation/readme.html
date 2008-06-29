@@ -28,6 +28,19 @@
 
 	<body>
 		<h1>CCT Readme</h1>
+		
+		<h2>CCT Documentation</h2>
+		<ul>
+			<li><a href="readme.html">CCT Readme</a></li>
+			<li><a href="readme.html#gui">XML GUI</a>
+				<ul>
+					<li><a href="actions.html">CCT Actions</a></li>
+					<li><a href="persistentcomponents.html">CCT Persistent Components</a></li>
+					<li><a href="dynamicstrings.html">CCT Dynamic Strings</a></li>
+				</ul>			
+			</li>
+		</ul>
+		
 		<p>Note: An up to date version of this file can be found
 		<a href="http://gnehzr.net/cct/readme.html">here</a>.</p>
 		<h2>Table of Contents</h2>
@@ -41,7 +54,9 @@
 			<li><a href="#email">Email</a></li>
 			<li><a href="#umts">Connecting to a Server</a></li>
 			<li><a href="#config">How do I customize my settings?</a></li>
-			<li><a href="#profiling">What is a profile?</a></li>
+			<li><a href="#profiling">What is a profile?</a>
+				<ul><li><a href="#backup">How do I back up my profile?</a></li></ul>
+			</li>
 			<li><a href="#plugins">Scramble Plugins</a></li>
 			<li><a href="#i18n">How can I get CCT in my own language?</a></li>
 			<li><a href="#releases">Release history</a></li>
@@ -179,12 +194,15 @@
 			modify the formatting of these statistics.</ins></p>
 
 			<h2><a name="gui">User Interface</a></h2>
-			TODO - document actions!
 			<p>In CCT 1.0, we've made the GUI completely customizable via xml files. In your CCT directory, there should
 			be a folder called "guiLayouts". Within that folder, you can create any *.xml file, and CCT will give you the option
 			to load that layout. Some rudimentary knowledge of Java Swing and XML files is required to accomplish anything complicated,
 			however it should be easy for a semi-techinical user to modify the text on various buttons and labels throughout CCT.
-			Statistics relating to your solve times can be accessed through <a href="dynamicstrings.html">DynamicStrings</a>.
+			All of the text applied to components will be interpreted as <a href="dynamicstrings.html">Dynamic Strings</a>.
+			Buttons and checkboxes can be made to do something when clicked by giving them one of the <a href="actions.html">Action Attributes</a>.
+			There are also a number of <a href="persistentcomponents.html">Persistent Components</a> that are built into CCT.
+			Persistent components provide the underlying functionalities of CCT that can't be represented simply
+			by an action attribute.
 			Look at cct.xml to learn how to create your own layout. Feel free to improve upon the default layout!
 			
 			<p>Some of the interface options from CCT v0.2 have been removed, others have been tweaked.</p>
@@ -206,9 +224,9 @@
 				the scrambles. You are on the 6th scramble, and the stackmat accepts a fake time. You finish your solve and
 				discard your fake time. CCT now believes you just finished the 7th solve and displays the 8th scramble. To
 				fix this problem, all you need to do is rewind one scramble to the 7th and you don't lose your 7th scramble.</li>
-					<li style='margin-left:50px'>UPDATE: As of CCT 1.0, the scramble history will keep track of every scramble
+					<ul><li>UPDATE: As of CCT 1.0, the scramble history will keep track of every scramble
 					you use, even if you switch scramble customizations. To avoid confusion when going back in your scramble history,
-					the scramble customization dropdown box will be disabled whenever you are not at the latest, non-imported scramble. </li>
+					the scramble customization dropdown box will be disabled whenever you are not at the latest, non-imported scramble. </li></ul>
 				<li>A new option for scrambles is the multi-slice option. This affects NxNxN cubes where N &#x2265; 4. <del>If multi-slice is
 				enabled (which is the default), then "r" means turn the outer 2 layers. If multi-slice is disabled, then "r" means
 				turn only the inside slice.</del> <ins>Scrambles obey the <a href="http://worldcubeassociation.org/regulations/#notation">2008 WCA regulations</a>.</ins></li>
@@ -261,13 +279,23 @@
 			<p>CCT organizes solves into sessions, which are associated with a single scramble customization.
 			You can create multiple sessions and open each one by simply double clicking on it. By default,
 			CCT will discard these sessions when you close it. However, if you create your own profile (for example, Jeremy), then
-			CCT will automatically save every session to a single XML file called 
-			<span style='white-space: nowrap'>profiles/Jeremy/Jeremy.xml</span>.
+			CCT will automatically save every session to a single XML file called "profiles/Jeremy/Jeremy.xml".
 			Within the Jeremy folder, CCT will also store Jeremy.properties, which is the configuration file described
 			in <a href="#config">Configuration</a>.
+			<p>To start a new session, just click the "New Session" button. This will save your current session to the database, and
+			give you a fresh session to work on. To change scramble customizations, use the drop down box. To discard the current
+			session, press the "Clear Session" button.</p>
 			<p>CCT will remember your last used profile, but there is also the option to load any folder from your
 			filesystem as if it were a CCT profile. Simply pass the folder name as a command line argument to CALCubeTimer.
-			For example: "java -jar CALCubeTimer.jar path/to/profile/"
+			For example: "java -jar CALCubeTimer.jar path/to/profile/"</p>
+			
+			<h3><a name="backup">Backing up a profile</a></h3>
+			<p>If you've been using CCT for several months and have developed a rather large database of times,
+			CCT will slow down whenever it has to load and save the database. If you want to backup your times in order
+			to upgrade CCT, move to another computer, or to just be safe, you will need to backup your profile's folder from the
+			"profiles" folder in your CCT directory. There is no need to backup the entire "profiles" folder, just the 
+			sub folders of interest. You can simply move these folders from your old CCT into your new
+			CCT profiles folder. We will try to refrain from changing CCT's directory structure drastically in future releases.</p>
 			
 			<h2><a name="plugins">Scramble Plugins</a></h2>
 			<p>Inside the scramblePlugins folder are various *.class files. Each of these class
@@ -298,7 +326,8 @@
 			through properties files that contain a bunch of lines of the format "keyword=internationalized text".
 			Whenever CCT prints out some text, it goes to these properties files, and looks for a line starting
 			with "keyword=...". CCT will then print out "...", or whatever is contained there. This means
-			that if you translate every word to the right of every equals sign, CCT will display in your own language.</p>
+			that if you translate every word to the right of every equals sign, CCT will display in your own language.
+			NOTE: The keyword is case sensitive, if you don't copy it exactly, CCT will be unable to find your internationalized text.</p>
 			<p>To fully translate CCT, you need to translate the files under the languages, scramblePlugins, and guiLayouts folders.</p>
 			<ul>
 				<li>languages/*.properties (cctString.properites, javax_swing.properties, NOT installed.properties!)</li>

@@ -206,14 +206,15 @@ changes:
 +can no longer delete scramble customizations until they are completely removed from the database
 +fixed bug w/ database & pure infinite times
 +waiting cursor on databasing stuff, it can take a while w/ large db
++update defaults.properties file, FAQ (esp: new stackmat options, database, & scramble plugins & customizations)
+	+include documentation of the DynamicStrings & update link from showDynamicStrings() in ConfigDialog.java
 
 TODO:
 
 for release:
 -open source sourceforge!
+-about.html: add a blurb for version 1.0
 -create license, give credit where credit is due
--update defaults.properties file, about.html, FAQ (esp: new stackmat options, database, & scramble plugins & customizations)
-	+include documentation of the DynamicStrings & update link from showDynamicStrings() in ConfigDialog.java
 -create small diagnostic problem that will dump relevant info to a file (java version, os, etc.)
 -write scramble plugin tutorial
 

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<title>CCT DynamicStrings</title>
+		<title>CCT Dynamic Strings</title>
 		<style type="text/css">
 			table {
 				border: 1px #000000 solid;
@@ -15,22 +15,47 @@
 				font-weight: bold;
 				border: 5px #000000 solid;
 			}
-			
 		</style>
 	</head>
 	<body>
-		<h1>CCT DynamicStrings</h1>
-		<p>What follows is a list of all DyamicStrings accessible within CCT.
-		To distinguish them from plaintext, surround them with $$ and $$, for example: $$pops$$. To print $$pops$$ as
-		plaintext, just use <span style='white-space: nowrap'>\$\$pops\$\$</span>
+		<h1>CCT Dynamic Strings</h1>
+		
+		<h2>CCT Documentation</h2>
+		<ul>
+			<li><a href="readme.html">CCT Readme</a></li>
+			<li><a href="readme.html#gui">XML GUI</a>
+				<ul>
+					<li><a href="actions.html">CCT Actions</a></li>
+					<li><a href="persistentcomponents.html">CCT Persistent Components</a></li>
+					<li><a href="dynamicstrings.html">CCT Dynamic Strings</a></li>
+				</ul>
+			</li>
+		</ul>
+		
+		<p>All of the text in CCT is formatted as dynamic strings. Dynamic strings can be used as
+		plaintext, but can also access statistics that CCT keeps track of. Using dynamic strings,
+		you can get CCT to display just the information that you are interested in.
+		<p>Here's a simple example: "Your best time: $$besttime$$". If your best time is 15.12 seconds, this
+		will be formatted by CCT as "Your best time: 15.12". However, to make it easy to translate your xml layout,
+		you can externalize the "Your best time" string as well. The dynamic string would then become "%%besttimemessage%%: $$besttime$$.
+		If your layout is called "My Awesome Layout.xml", then you must also create "My Awesome Layout.properties" containing this line:
+		"besttimemessage=Your best time". NOTE: This will not work if your xml layout file contains more than one period.
+		See <a href="readme.html#i18n">CCT Readme</a> for a more detailed description of properties files
+		and internationalization.</p>
+		
+		What follows is a list of all the $$ properties accessible within CCT.
+		As described above, to distinguish the keys from plaintext, surround them with $$ and $$, for example: $$pops$$. To print "$$pops$$" as
+		plaintext, just use "\$\$pops\$\$"
 		Some keys may require a numeric argument specifying which RA you are interested in. Remember that CCT keeps
 		track of all the statistics for two rolling average lengths. For example, to get the latest 
 		average for a given RA number, use $$currentAverage0$$ or $$currentAverage1$$. For any key ending in #,
 		the # should be replaced with the number of the desired RA.</p>
-		<p>NOTE: Standard deviations for trimmed (rolling) averages are computed over only the solves included in the average.</p>
+		<p>NOTE: Standard deviations for trimmed (rolling) averages are computed over only the solves included in the average.<br />
+		FURTHER NOTE: Capitalization of the $$ keywords does not matter.</p>
+		
 		<table>
 			<tr>
-				<td class="title">Key</td>
+				<td class="title">$$ Keyword</td>
 				<td class="title">Description</td>
 			</tr>
 			<tr>

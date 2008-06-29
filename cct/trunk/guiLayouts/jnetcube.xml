@@ -21,7 +21,7 @@
 								<component type="scrambleAttributes"/>
 							</panel>
 							<panel layout="box" orientation="page" preferredsize="500x100">
-								<component border="Use this algorithm to scramble your cube;000000" type="scrambleText"/>
+								<component border="Use this algorithm to scramble your cube;000000" type="scrambleArea"/>
 							</panel>
 						</panel>
 						<component type="timerDisplay"/>
