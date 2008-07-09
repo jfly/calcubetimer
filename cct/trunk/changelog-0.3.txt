@@ -208,11 +208,12 @@ changes:
 +waiting cursor on databasing stuff, it can take a while w/ large db
 +update defaults.properties file, FAQ (esp: new stackmat options, database, & scramble plugins & customizations)
 	+include documentation of the DynamicStrings & update link from showDynamicStrings() in ConfigDialog.java
++BUG: titled borders are not anti-aliased (substance bug!) fixed w/ AABorder.java
++add color options to font choosers
 
 TODO:
 
 for release:
--add color options to font choosers
 -open source sourceforge!
 -about.html: add a blurb for version 1.0
 -create license, give credit where credit is due
@@ -222,7 +223,6 @@ for release:
 misc:
 -java webstart? applet?
 -dynamic string multiple argument format
--BUG: titled borders are not anti-aliased (substance bug!)
 
 cleanup:
 -"Options" menu is getting cut to "Op" when the gui is made small

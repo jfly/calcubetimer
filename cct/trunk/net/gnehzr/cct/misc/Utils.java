@@ -60,6 +60,11 @@ public class Utils {
 				hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "" )) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 			+ format(seconds);
 	}
+	
+	public static Color invertColor(Color c) {
+		if(c == null) return Color.BLACK;
+		return new Color(255 - c.getRed(), 255 - c.getGreen(), 255 - c.getBlue());
+	}
 
 	public static String colorToString(Color c) {
 		if(c == null) return "";

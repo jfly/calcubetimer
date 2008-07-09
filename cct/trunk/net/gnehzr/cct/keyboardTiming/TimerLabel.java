@@ -27,6 +27,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Timer;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
@@ -35,6 +36,7 @@ import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.main.ScrambleArea;
+import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
 
 public class TimerLabel extends JColorComponent implements ComponentListener, ConfigurationChangeListener, FocusListener, KeyListener, MouseListener {
@@ -208,10 +210,8 @@ public class TimerLabel extends JColorComponent implements ComponentListener, Co
 				borderColor = Color.GRAY;
 			}
 		}
-		//TODO - properly do beveled border
-		//TODO - change border font color so it's always visible
-		Border b = BorderFactory.createBevelBorder(lowered ? BevelBorder.LOWERED : BevelBorder.RAISED, borderColor, borderColor.brighter());
-		setBorder(BorderFactory.createTitledBorder(b, title));
+		Border b = BorderFactory.createBevelBorder(lowered ? BevelBorder.LOWERED : BevelBorder.RAISED, borderColor, borderColor.darker().darker());
+		setBorder(BorderFactory.createTitledBorder(b, title, TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, null, Utils.invertColor(getBackground())));
 		repaint();
 	}
 	
@@ -289,11 +289,8 @@ public class TimerLabel extends JColorComponent implements ComponentListener, Co
 	//called when a key is physically pressed
 	private void keyReallyPressed(KeyEvent e) {
 		boolean stackmatEmulation = Configuration.getBoolean(VariableKey.STACKMAT_EMULATION, false);
-		int sekey1 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY1, false);
-		int sekey2 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY2, false);
-
 		int key = e.getKeyCode();
-		if(key == 0) {
+		if(key == 0) { //ignore unrecognized keys, such as media buttons
 		} else if(keyHandler.isRunning() && !keyHandler.isInspecting()) {
 			if(Configuration.getBoolean(VariableKey.TIMING_SPLITS, false) && key == Configuration.getInt(VariableKey.SPLIT_KEY, false)) {
 				keyHandler.split();
@@ -303,7 +300,7 @@ public class TimerLabel extends JColorComponent implements ComponentListener, Co
 			}
 		} else if(key == KeyEvent.VK_ESCAPE) {
 			releaseAllKeys();
-		} else if(!stackmatEmulation && !ignoreKey(e, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false), stackmatEmulation, sekey1, sekey2) || stackmatEmulation && stackmatKeysDown()){
+		} else if(!stackmatEmulation) {
 			keysDown = true;
 		}
 	}

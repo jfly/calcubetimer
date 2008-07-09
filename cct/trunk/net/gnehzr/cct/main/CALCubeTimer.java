@@ -1,7 +1,6 @@
 package net.gnehzr.cct.main;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Desktop;
@@ -21,13 +20,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -45,7 +40,6 @@ import java.util.ResourceBundle;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -530,20 +524,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		persistentComponents.put("sessionslist", sessionsScroller);
 		persistentComponents.put("clock", currentTimeLabel);
 	}
-	
-    //Create and set up a colored label.
-    private JLabel createColoredLabel(String text, Color color) {
-        JLabel label = new JLabel(text);
-        label.setVerticalAlignment(JLabel.TOP);
-        label.setHorizontalAlignment(JLabel.CENTER);
-        label.setOpaque(true);
-        label.setBackground(color);
-        label.setForeground(Color.black);
-        label.setBorder(BorderFactory.createLineBorder(Color.black));
-        label.setPreferredSize(new Dimension(140, 140));
-        return label;
-    }
-
 	
 	void refreshCustomGUIMenu() {
 		customGUIMenu.removeAll();

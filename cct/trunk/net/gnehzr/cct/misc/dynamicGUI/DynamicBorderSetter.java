@@ -1,7 +1,10 @@
 package net.gnehzr.cct.misc.dynamicGUI;
 
+import java.awt.Color;
+
 import javax.swing.BorderFactory;
 import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 
 import net.gnehzr.cct.i18n.XMLGuiMessages;
 import net.gnehzr.cct.main.CALCubeTimer;
@@ -41,14 +44,14 @@ public class DynamicBorderSetter { //implements ConfigurationChangeListener, Sta
 		String[] titleAttrs = dynamicString.split(";"); //$NON-NLS-1$
 		DynamicString titleString = new DynamicString(titleAttrs[0], CALCubeTimer.statsModel, XMLGuiMessages.XMLGUI_ACCESSOR);
 		DynamicString colorString = null;
-		if(titleAttrs.length > 1) {
+		if(titleAttrs.length > 1)
 			colorString = new DynamicString(titleAttrs[1], null, XMLGuiMessages.XMLGUI_ACCESSOR);
-		}		
+		
 		Border border = null;
 		if(colorString == null)
 			border = BorderFactory.createEtchedBorder();
 		else
 			border = BorderFactory.createLineBorder(Utils.stringToColor(colorString.toString(), false));
-		return BorderFactory.createTitledBorder(border, titleString.toString());
+		return new AABorder(BorderFactory.createTitledBorder(border, titleString.toString(), TitledBorder.LEFT, TitledBorder.DEFAULT_POSITION, null, Color.BLACK));
 	}
 }

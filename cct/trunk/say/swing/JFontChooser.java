@@ -144,6 +144,7 @@ public class JFontChooser extends JComponent implements MouseListener {
 				public void actionPerformed(ActionEvent e) {
 					background.setBackground(null);
 					background.repaint();
+					updateSampleFont();
 				}
 			});
 		}
@@ -523,6 +524,10 @@ public class JFontChooser extends JComponent implements MouseListener {
 
 		public void actionPerformed(ActionEvent e) {
 			background.setBackground(bg);
+			if(bg == null) {
+				background.setForeground(Color.BLACK);
+				background.repaint();
+			}
 			foreground.setBackground(fg);
 			setSelectedFont(defaultFont);
 		}

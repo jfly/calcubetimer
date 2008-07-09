@@ -10,6 +10,8 @@ import java.awt.RenderingHints;
 
 import javax.swing.JComponent;
 
+import net.gnehzr.cct.misc.Utils;
+
 public class JColorComponent extends JComponent {
 	private final static int PAD_HEIGHT = 6;
 	private final static int PAD_WIDTH = 10;
@@ -44,10 +46,9 @@ public class JColorComponent extends JComponent {
 	private Color bg;
 	public void setBackground(Color bg) {
 		this.bg = bg;
-		super.setBackground(bg);
 		setOpaque(bg != null);
-		if(bg != null)
-			super.setForeground(new Color(255 - bg.getRed(), 255 - bg.getGreen(), 255 - bg.getBlue()));
+		super.setBackground(bg);
+		super.setForeground(Utils.invertColor(bg));
 	}
 	//we keep track of the bg ourselves to be able to return null
 	public Color getBackground() {

@@ -68,6 +68,7 @@ import net.gnehzr.cct.misc.JTextAreaWithHistory;
 import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.ProfileEditor;
+import net.gnehzr.cct.misc.dynamicGUI.AABorder;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
@@ -584,7 +585,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private JPanel emailOptions;
 	private JPanel makeSundaySetupPanel() {
 		JPanel sundayOptions = new JPanel(new GridBagLayout());
-		sundayOptions.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), StringAccessor.getString("ConfigurationDialog.sundaycontest"))); //$NON-NLS-1$
+		sundayOptions.setBorder(new AABorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), StringAccessor.getString("ConfigurationDialog.sundaycontest")))); //$NON-NLS-1$
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(2, 2, 2, 2);
 		c.fill = GridBagConstraints.BOTH;
@@ -645,7 +646,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		sundayOptions.add(showEmail, c);
 
 		emailOptions = new JPanel(new GridBagLayout());
-		emailOptions.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), StringAccessor.getString("ConfigurationDialog.emailsetup"))); //$NON-NLS-1$
+		emailOptions.setBorder(new AABorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), StringAccessor.getString("ConfigurationDialog.emailsetup")))); //$NON-NLS-1$
 		c = new GridBagConstraints();
 		c.insets = new Insets(2, 2, 2, 2);
 		c.fill = GridBagConstraints.BOTH;
