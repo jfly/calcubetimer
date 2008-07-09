@@ -15,7 +15,6 @@ import net.gnehzr.cct.statistics.ProfileDatabase;
 import net.gnehzr.cct.statistics.Session;
 import net.gnehzr.cct.statistics.StatisticsTableModel;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class SessionsTable extends DraggableJTable implements SelectionListener {
 	private StatisticsTableModel statsModel;
 	public SessionsTable(StatisticsTableModel statsModel) {

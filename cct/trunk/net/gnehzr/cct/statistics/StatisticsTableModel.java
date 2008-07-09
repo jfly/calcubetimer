@@ -17,9 +17,8 @@ import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class StatisticsTableModel extends DraggableJTableModel {
-	private Statistics stats;
+	Statistics stats;
 	private Session sesh;
 	public void setSession(Session sesh) {
 		this.sesh = sesh;
@@ -120,7 +119,10 @@ public class StatisticsTableModel extends DraggableJTableModel {
 		return t.isEmpty() ? null : t;
 	}
 
-	private JRadioButtonMenuItem none, plusTwo, pop, dnf;
+	JRadioButtonMenuItem none;
+	JRadioButtonMenuItem plusTwo;
+	JRadioButtonMenuItem pop;
+	JRadioButtonMenuItem dnf;
 	public void showPopup(MouseEvent e, final DraggableJTable timesTable) {
 		ActionListener al = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -129,7 +131,7 @@ public class StatisticsTableModel extends DraggableJTableModel {
 				int selectedRow = timesTable.getSelectedRow();
 
 				SolveType newType = null;
-				if (source == plusTwo) {
+				if(source == plusTwo) {
 					newType = SolveType.PLUS_TWO;
 				} else if(source == dnf) {
 					newType = SolveType.DNF;
@@ -140,9 +142,9 @@ public class StatisticsTableModel extends DraggableJTableModel {
 				}
 				if(newType != null) {
 					stats.setSolveType(selectedRow, newType);
-				} else if (command.equals(StringAccessor.getString("StatisticsTableModel.discard"))) { //$NON-NLS-1$
+				} else if(command.equals(StringAccessor.getString("StatisticsTableModel.discard"))) { //$NON-NLS-1$
 					timesTable.deleteSelectedRows(false);
-				} else if (command.equals(StringAccessor.getString("StatisticsTableModel.edittime"))) { //$NON-NLS-1$
+				} else if(command.equals(StringAccessor.getString("StatisticsTableModel.edittime"))) { //$NON-NLS-1$
 					timesTable.editCellAt(selectedRow, 0);
 				}
 			}

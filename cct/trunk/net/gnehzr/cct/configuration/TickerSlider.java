@@ -18,6 +18,7 @@ import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.JSpinner.NumberEditor;
 import javax.swing.event.ChangeEvent;
@@ -25,11 +26,10 @@ import javax.swing.event.ChangeListener;
 
 import net.gnehzr.cct.i18n.StringAccessor;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class TickerSlider extends JPanel implements ChangeListener {
-	private final Timer tickTock;
-	private Clip clip;
-	private JSlider slider;
+	final Timer tickTock;
+	Clip clip;
+	JSlider slider;
 	private JSpinner spinner;
 	public TickerSlider(Timer ticker) {
 		this.tickTock = ticker;
@@ -55,7 +55,7 @@ public class TickerSlider extends JPanel implements ChangeListener {
 			e.printStackTrace();
 		}
 
-		slider = new JSlider(JSlider.HORIZONTAL);
+		slider = new JSlider(SwingConstants.HORIZONTAL);
 		spinner = new JSpinner();
 		spinner.setToolTipText(StringAccessor.getString("TickerSlider.Delaymillis")); //$NON-NLS-1$
 		add(slider);

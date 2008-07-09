@@ -36,10 +36,7 @@ public class Utils {
 	public static String formatTime(double seconds) {
 		if(seconds == Double.POSITIVE_INFINITY) return "N/A"; //$NON-NLS-1$
 		seconds = round(seconds, 2);
-		if(Configuration.getBoolean(VariableKey.CLOCK_FORMAT, false))
-			return clockFormat(seconds);
-		else
-			return format(seconds);
+		return Configuration.getBoolean(VariableKey.CLOCK_FORMAT, false) ? clockFormat(seconds) : format(seconds);
 	}
 	
 	private static String format(double seconds) {

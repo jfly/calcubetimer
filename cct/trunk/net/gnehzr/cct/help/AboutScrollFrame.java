@@ -13,11 +13,11 @@ import javax.swing.JFrame;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.Timer;
 
 import org.jvnet.lafwidget.LafWidget;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class AboutScrollFrame extends JFrame implements ActionListener, WindowListener {
 	private JScrollPane editorScrollPane;
 	private Timer autoscroll;
@@ -39,7 +39,7 @@ public class AboutScrollFrame extends JFrame implements ActionListener, WindowLi
 		}
 
 		editorScrollPane = new JScrollPane(pane);
-		editorScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		editorScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		editorScrollPane.setPreferredSize(new Dimension(250, 145));
 		editorScrollPane.setMinimumSize(new Dimension(10, 10));
 		this.addWindowListener(this);

@@ -31,7 +31,6 @@ import net.gnehzr.cct.misc.dynamicGUI.DynamicString;
 import net.gnehzr.cct.statistics.StatisticsTableModel;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class StatsDialogHandler extends JDialog implements ActionListener, ChangeListener {
 	private JButton emailButton = null;
 	private JButton submitButton = null;

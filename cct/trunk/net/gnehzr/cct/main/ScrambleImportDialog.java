@@ -25,6 +25,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -41,7 +42,6 @@ import net.gnehzr.cct.scrambles.ScramblePlugin;
 
 import org.jvnet.lafwidget.LafWidget;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class ScrambleImportDialog extends JDialog implements ActionListener, DocumentListener {
 	private URLHistoryBox urlField;
 	private JButton browse, addToArea;
@@ -86,7 +86,7 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 		scrambles = new JTextAreaWithHistory();
 		scrambles.getDocument().addDocumentListener(this);
 		scrambles.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
-		JScrollPane scramblePane = new JScrollPane(scrambles, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane scramblePane = new JScrollPane(scrambles, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		qualityControl = new JEditorPane();
 		qualityControl.setContentType("text/html"); //$NON-NLS-1$
 		qualityControl.setEditable(false);

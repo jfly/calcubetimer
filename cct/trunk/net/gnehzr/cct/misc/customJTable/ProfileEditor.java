@@ -15,7 +15,6 @@ import net.gnehzr.cct.configuration.ProfileListModel;
 import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.statistics.Profile;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class ProfileEditor extends DefaultCellEditor {
 	private Profile value;
 	private ProfileListModel model;

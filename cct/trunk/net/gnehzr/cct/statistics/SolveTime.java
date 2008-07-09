@@ -145,12 +145,11 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 			return "POP" + (rawTime ? " " + rawSecondsValue() : ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		default:
 			if(hundredths == Integer.MAX_VALUE || hundredths < 0) return "N/A"; //$NON-NLS-1$
-			else {
-				String t = Utils.formatTime(secondsValue()) + (type == SolveType.PLUS_TWO ? "+" : ""); //$NON-NLS-1$ //$NON-NLS-2$
-				if(rawTime)
-					t = toUSFormatting(t);
-				return t;
-			}
+		
+			String t = Utils.formatTime(secondsValue()) + (type == SolveType.PLUS_TWO ? "+" : ""); //$NON-NLS-1$ //$NON-NLS-2$
+			if(rawTime)
+				t = toUSFormatting(t);
+			return t;
 		}
 	}
 	public String toSplitsString() {

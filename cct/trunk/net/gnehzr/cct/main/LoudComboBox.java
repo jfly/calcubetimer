@@ -4,7 +4,6 @@ import java.awt.event.ItemEvent;
 
 import javax.swing.JComboBox;
 
-@SuppressWarnings("serial")
 public class LoudComboBox extends JComboBox {
 	//overriden to cause selected events to be fired even if the new item
 	//is already selected (this helps simplify cct startup logic)

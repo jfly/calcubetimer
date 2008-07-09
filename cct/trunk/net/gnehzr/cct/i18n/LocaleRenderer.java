@@ -10,7 +10,6 @@ import net.gnehzr.cct.configuration.Configuration;
 
 import org.jvnet.substance.SubstanceDefaultListCellRenderer;
 
-@SuppressWarnings("serial")
 public class LocaleRenderer extends SubstanceDefaultListCellRenderer {
 	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 		Icon i = null;

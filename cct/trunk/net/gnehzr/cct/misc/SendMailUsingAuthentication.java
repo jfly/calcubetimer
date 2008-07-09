@@ -58,7 +58,7 @@ public class SendMailUsingAuthentication {
 		System.out.println("Sucessfully sent mail to All Users");
 	}*/
 
-	private char[] pass = null;
+	char[] pass = null;
 	public SendMailUsingAuthentication(char[] pass) {
 		this.pass = pass;
 	}
@@ -106,17 +106,19 @@ public class SendMailUsingAuthentication {
 	 * server requires it.
 	 */
 	private class SMTPAuthenticator extends javax.mail.Authenticator {
-
+		public SMTPAuthenticator() {}
 		public PasswordAuthentication getPasswordAuthentication() {
 			String username = Configuration.getString(VariableKey.SMTP_USERNAME, false);
-			String password = pass == null ? Configuration.getString(VariableKey.SMTP_PASSWORD, false) : new String(pass);
-			PasswordAuthentication p = new PasswordAuthentication(username, password);
-			if(pass != null){
+			String password;
+			if(pass == null) {
+				password = Configuration.getString(VariableKey.SMTP_PASSWORD, false);
+			} else {
+				password = new String(pass);
 				for(int i = 0; i < pass.length; i++){
 					pass[i] = 0;
 				}
 			}
-
+			PasswordAuthentication p = new PasswordAuthentication(username, password);
 			return p;
 		}
 	}

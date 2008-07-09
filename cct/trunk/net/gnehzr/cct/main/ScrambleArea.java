@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -29,21 +30,20 @@ import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 import org.jvnet.lafwidget.LafWidget;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class ScrambleArea extends JScrollPane implements ComponentListener, HyperlinkListener {
 	private ScrambleFrame scramblePopup;
 	private JEditorPane scramblePane = null;
 	public ScrambleArea(ScrambleFrame scramblePopup) {
-		super(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		super(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		this.scramblePopup = scramblePopup;
 		this.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
-		scramblePane = new JEditorPane("text/html", null) {
+		scramblePane = new JEditorPane("text/html", null) { //$NON-NLS-1$
 			public void updateUI() {
 				Border t = getBorder();
 				super.updateUI();
 				setBorder(t);
 			}
-		}; //$NON-NLS-1$
+		};
 		scramblePane.setEditable(false);
 		scramblePane.setBorder(null);
 		scramblePane.setOpaque(false);

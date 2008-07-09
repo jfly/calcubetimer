@@ -55,7 +55,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -83,12 +85,12 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 
 import say.swing.JFontChooser;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class ConfigurationDialog extends JDialog implements KeyListener, MouseListener, ActionListener, ItemListener, HyperlinkListener {
 	private static final float DISPLAY_FONT_SIZE = 20;
 	private static final String[] FONT_SIZES = { "8", "9", "10", "11", "12", "14", "16", "18", "20", "22", "24", "26", "28", "36" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$
 
 	private static abstract class SyncGUIListener implements ActionListener {
+		public SyncGUIListener() {}
 		public final void actionPerformed(ActionEvent e) {
 			//this happens if the event was fired by a real button, which means we want to reset with the defaults
 			syncGUIWithConfig(true);
@@ -99,7 +101,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private ComboItem[] items;
 	private StackmatInterpreter stackmat;
 	private Timer tickTock;
-	private JTable timesTable;
+	JTable timesTable;
 	public ConfigurationDialog(JFrame parent, boolean modal, StackmatInterpreter stackmat, Timer tickTock, JTable timesTable) {
 		super(parent, modal);
 		this.stackmat = stackmat;
@@ -199,7 +201,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		pack();
 	}
 
-	@SuppressWarnings("serial") //$NON-NLS-1$
 	private static class JColorComponent extends JComponent {
 		final static int PAD_HEIGHT = 6;
 		final static int PAD_WIDTH = 10;
@@ -231,13 +232,28 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		}
 	}
 
-	private JCheckBox clockFormat, promptForNewTime, scramblePopup, inspectionCountdown, speakInspection, speakTimes, splits, metronome, showRA0, showRA1;
-	private JSpinner minSplitTime, RASize0 = null, RASize1 = null;
+	JCheckBox clockFormat;
+	JCheckBox promptForNewTime;
+	JCheckBox scramblePopup;
+	JCheckBox inspectionCountdown;
+	JCheckBox speakInspection;
+	JCheckBox speakTimes;
+	JCheckBox splits;
+	JCheckBox metronome;
+	JCheckBox showRA0;
+	JCheckBox showRA1;
+	JSpinner minSplitTime;
+	JSpinner RASize0 = null;
+	JSpinner RASize1 = null;
 	public TickerSlider metronomeDelay = null;
-	private JColorComponent bestRA, currentAverage, currentAndRA, bestTime, worstTime = null;
+	JColorComponent bestRA;
+	JColorComponent currentAverage;
+	JColorComponent currentAndRA;
+	JColorComponent bestTime;
+	JColorComponent worstTime = null;
 	private JPanel desktopPanel;
 	private JButton refreshDesktops;
-	private JComboBox voices;
+	JComboBox voices;
 	private JPanel makeStandardOptionsPanel1() {
 		JPanel options = new JPanel();
 		JPanel colorPanel = new JPanel(new GridLayout(0, 1, 0, 5));
@@ -348,15 +364,20 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		return sideBySide(BoxLayout.PAGE_AXIS, Box.createVerticalGlue(), options, sideBySide(BoxLayout.LINE_AXIS, desktopPanel, reset), Box.createVerticalGlue());
 	}
 
-	private JTextArea splitsKeySelector, stackmatKeySelector1, stackmatKeySelector2;
-	private JCheckBox stackmatEmulation;
-	private int splitkey, sekey1, sekey2;
-	private JCheckBox flashyWindow;
-	private JCheckBox isBackground;
-	private JTextField backgroundFile;
-	private JButton browse;
-	private JSlider opacity;
-	private JButton scrambleFontButton, timerFontButton;
+	JTextArea splitsKeySelector;
+	JTextArea stackmatKeySelector1;
+	JTextArea stackmatKeySelector2;
+	JCheckBox stackmatEmulation;
+	int splitkey;
+	int sekey1;
+	int sekey2;
+	JCheckBox flashyWindow;
+	JCheckBox isBackground;
+	JTextField backgroundFile;
+	JButton browse;
+	JSlider opacity;
+	JButton scrambleFontButton;
+	JButton timerFontButton;
 	private JPanel makeStandardOptionsPanel2() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -417,7 +438,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		browse.addActionListener(this);
 		panel.add(sideBySide(null, isBackground, new JLabel(StringAccessor.getString("ConfigurationDialog.file")), backgroundFile, browse));
 
-		opacity = new JSlider(JSlider.HORIZONTAL, 0, 10, 0);
+		opacity = new JSlider(SwingConstants.HORIZONTAL, 0, 10, 0);
 		panel.add(sideBySide(null, new JLabel(StringAccessor.getString("ConfigurationDialog.opacity")), opacity));
 
 		scrambleFontButton = new JButton(StringAccessor.getString("ConfigurationDialog.scramblefont")); //$NON-NLS-1$
@@ -467,8 +488,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		return panel;
 	}
 
-	private ScrambleCustomizationListModel puzzlesModel = new ScrambleCustomizationListModel();
-	private ProfileListModel profilesModel = new ProfileListModel();
+	ScrambleCustomizationListModel puzzlesModel = new ScrambleCustomizationListModel();
+	ProfileListModel profilesModel = new ProfileListModel();
 	private JPanel makeScrambleTypeOptionsPanel() {
 		JPanel panel = new JPanel(new BorderLayout(10, 10));
 
@@ -510,14 +531,14 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		return panel;
 	}
 
-	private JSpinner stackmatValue = null;
-	private JCheckBox invertedHundredths = null;
-	private JCheckBox invertedSeconds = null;
-	private JCheckBox invertedMinutes = null;
+	JSpinner stackmatValue = null;
+	JCheckBox invertedHundredths = null;
+	JCheckBox invertedSeconds = null;
+	JCheckBox invertedMinutes = null;
 	private JComboBox lines = null;
 	private JPanel mixerPanel = null;
 	private JButton stackmatRefresh = null;
-	private JSpinner stackmatSamplingRate = null;
+	JSpinner stackmatSamplingRate = null;
 	private JPanel makeStackmatOptionsPanel() {
 		JPanel options = new JPanel(new GridLayout(0, 1));
 
@@ -580,15 +601,18 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		return options;
 	}
 
-	private JTextField name, country = null;
-	private JTextField sundayQuote = null;
-	private JTextField sundayEmailAddress = null;
-	private JTextField smtpEmailAddress = null;
-	private JTextField host, port = null;
-	private JTextField username = null;
-	private JCheckBox SMTPauth = null;
-	private JPasswordField password = null;
-	private JCheckBox useSMTPServer, showEmail = null;
+	JTextField name;
+	JTextField country = null;
+	JTextField sundayQuote = null;
+	JTextField sundayEmailAddress = null;
+	JTextField smtpEmailAddress = null;
+	JTextField host;
+	JTextField port = null;
+	JTextField username = null;
+	JCheckBox SMTPauth = null;
+	JPasswordField password = null;
+	JCheckBox useSMTPServer;
+	JCheckBox showEmail = null;
 	private JPanel emailOptions;
 	private JPanel makeSundaySetupPanel() {
 		JPanel sundayOptions = new JPanel(new GridBagLayout());
@@ -811,7 +835,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		}
 	}
 	
-	private JTextAreaWithHistory sessionStats = null;
+	JTextAreaWithHistory sessionStats = null;
 	private JPanel makeSessionSetupPanel() {
 		JPanel options = new JPanel(new BorderLayout(10, 0));
 		sessionStats = new JTextAreaWithHistory();
@@ -831,7 +855,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		options.add(sideBySide(BoxLayout.LINE_AXIS, getStatsLegend(), Box.createHorizontalGlue(), reset), BorderLayout.PAGE_END);
 		return options;
 	}
-	private JTextAreaWithHistory currentAverageStats = null;
+	JTextAreaWithHistory currentAverageStats = null;
 	private JPanel makeCurrentAverageSetupPanel() {
 		JPanel options = new JPanel(new BorderLayout(10, 0));
 		currentAverageStats = new JTextAreaWithHistory();
@@ -851,7 +875,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		options.add(sideBySide(BoxLayout.LINE_AXIS, getStatsLegend(), Box.createHorizontalGlue(), reset), BorderLayout.PAGE_END);
 		return options;
 	}
-	private JTextAreaWithHistory bestRAStats = null;
+	JTextAreaWithHistory bestRAStats = null;
 	private JPanel makeBestRASetupPanel() {
 		JPanel options = new JPanel(new BorderLayout(10, 0));
 		bestRAStats = new JTextAreaWithHistory();
@@ -878,7 +902,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		JPanel options = new JPanel();
 		options.setLayout(new BoxLayout(options, BoxLayout.LINE_AXIS));
 		options.add(Box.createHorizontalGlue());
-		JScrollPane scroller = new JScrollPane(options, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane scroller = new JScrollPane(options, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scroller.getHorizontalScrollBar().setUnitIncrement(10);
 		ArrayList<ScramblePlugin> scramblePlugins = ScramblePlugin.getScramblePlugins();
 		solvedPuzzles = new ScrambleViewComponent[scramblePlugins.size()];
@@ -959,7 +983,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			String toDisplay = null;
 			Font f;
 			if(source == timerFontButton) {
-				f = Configuration.getFont(VariableKey.TIMER_FONT, true).deriveFont((float) DISPLAY_FONT_SIZE);
+				f = Configuration.getFont(VariableKey.TIMER_FONT, true).deriveFont(DISPLAY_FONT_SIZE);
 				toDisplay = "0123456789:.,"; //$NON-NLS-1$
 			} else {
 				f = Configuration.getFont(VariableKey.SCRAMBLE_FONT, true);
@@ -997,7 +1021,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		}
 	}
 
-	private void refreshDesktops() {
+	void refreshDesktops() {
 		Component focused = getFocusOwner();
 		desktopPanel.removeAll();
 		ButtonGroup g = new ButtonGroup();

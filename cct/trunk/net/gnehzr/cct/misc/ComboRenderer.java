@@ -7,7 +7,6 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class ComboRenderer extends JLabel implements ListCellRenderer {
 	public ComboRenderer() {
 		setOpaque(true);

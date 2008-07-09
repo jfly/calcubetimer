@@ -40,7 +40,6 @@ import net.gnehzr.cct.scrambles.ScrambleVariation;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.utils.SubstanceConstants;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class ScrambleCustomizationListModel extends DraggableJTableModel implements TableCellRenderer, TableCellEditor, MouseListener {
 	private ArrayList<ScrambleCustomization> customizations;
 	public void setContents(ArrayList<ScrambleCustomization> contents) {
@@ -73,8 +72,8 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
 		if(columnIndex == 1)
 			return true;
-		else
-			return customizations.get(rowIndex).getCustomization() != null;
+		
+		return customizations.get(rowIndex).getCustomization() != null;
 			
 	}
 	public boolean isRowDeletable(int rowIndex) {
@@ -132,21 +131,20 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	}
 
 	public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-		if(value instanceof ScrambleCustomization) {
+		if(value instanceof ScrambleCustomization)
 			customization = (ScrambleCustomization) value;
-		} else {
+		else
 			customization = new ScrambleCustomization(ScramblePlugin.getCurrentScrambleCustomization().getScrambleVariation(), ""); //$NON-NLS-1$
-		}
-		if(column == 0) {
+		
+		if(column == 0)
 			return getCustomizationPanel(customization);
-		} else {
-			return getLengthPanel(customization);
-		}
+		
+		return getLengthPanel(customization);
 	}
 
-	private ScrambleCustomization customization;
-	private ScrambleChooserComboBox scrambleVariations;
-	private JSpinner scramLength;
+	ScrambleCustomization customization;
+	ScrambleChooserComboBox scrambleVariations;
+	JSpinner scramLength;
 	private JTextField customField;
 	private String originalFieldText;
 
@@ -161,9 +159,8 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 			scrambleVariations.setSelectedItem(custom.getScrambleVariation());
 			scrambleVariations.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent e) {
-					if(e.getStateChange() == ItemEvent.SELECTED) {
+					if(e.getStateChange() == ItemEvent.SELECTED)
 						customization.setScrambleVariation((ScrambleVariation) scrambleVariations.getSelectedItem());
-					}
 				}
 			});
 			scrambleVariations.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.selectvariation")); //$NON-NLS-1$

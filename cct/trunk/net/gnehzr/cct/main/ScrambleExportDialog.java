@@ -25,7 +25,6 @@ import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleList;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class ScrambleExportDialog extends JDialog implements ActionListener {
 	private JTextField urlField;
 	private JButton browse;

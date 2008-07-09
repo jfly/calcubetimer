@@ -31,10 +31,10 @@ public class ServerUserThread extends Thread{
 				client.write(Protocol.MESSAGE_SERVER, server.serverMessage());
 			}
 			else{
-				server.println("Failed login: " + name + "@" + (InetSocketAddress)socket.getRemoteSocketAddress() + " Error code: " + loginStatus);
+				server.println("Failed login: " + name + "@" + socket.getRemoteSocketAddress() + " Error code: " + loginStatus);
 			}
 		} catch(IOException e){
-			server.println("Failed connect: IO error. " + (InetSocketAddress)socket.getRemoteSocketAddress());
+			server.println("Failed connect: IO error. " + socket.getRemoteSocketAddress());
 		}
 
 		if(!connected) return;
@@ -67,7 +67,7 @@ public class ServerUserThread extends Thread{
 		}
 	}
 
-	private void processInput(char type, String s) throws IOException{
+	private void processInput(char type, String s) {
 		switch(type){
 			case Protocol.DATA_CURRENT_TIME:
 				server.broadcastCurrentTime(client.getUsername(), s);

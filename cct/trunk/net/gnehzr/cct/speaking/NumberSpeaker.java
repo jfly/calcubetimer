@@ -173,7 +173,7 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
     }
 
     // test client
-    public static void main(String[] args) throws IOException, JavaLayerException {
+    public static void main(String[] args) {
     	NumberSpeaker carrie = getSpeaker("carrie"); //$NON-NLS-1$
 		for(int ch = 20000; ch < 60000; ch+=10) {
 			System.out.println("TIME: " + ch / 100.); //$NON-NLS-1$

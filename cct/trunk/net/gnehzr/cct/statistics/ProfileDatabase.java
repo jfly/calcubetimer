@@ -24,7 +24,6 @@ import net.gnehzr.cct.misc.customJTable.SessionListener;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class ProfileDatabase extends DraggableJTableModel implements ActionListener {
 	private HashMap<String, PuzzleStatistics> database = new HashMap<String, PuzzleStatistics>();
 	private Profile owner;

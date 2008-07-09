@@ -42,7 +42,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class SundayContestDialog extends JDialog implements ActionListener {
 	private JTextField nameField, countryField, emailField, averageField, timesField;
 	private JTextAreaWithHistory quoteArea;
@@ -156,9 +155,11 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 	}
 
 	private static class FindResultsHandler extends DefaultHandler {
+		public FindResultsHandler() {}
+		
 		private int level = 0;
 		private int resultsLevel = -1;
-		private String results = ""; //$NON-NLS-1$
+		String results = ""; //$NON-NLS-1$
 		public void startElement(String uri, String localName, String name,
 				Attributes attributes) throws SAXException {
 			if(resultsLevel != -1)

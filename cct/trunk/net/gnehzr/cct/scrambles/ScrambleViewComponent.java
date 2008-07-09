@@ -23,18 +23,15 @@ import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.Utils;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class ScrambleViewComponent extends JComponent implements ComponentListener, MouseListener, MouseMotionListener {
 	private static final int DEFAULT_GAP = 5;
-	private static int GAP = DEFAULT_GAP;
+	static Integer GAP = DEFAULT_GAP;
 	static {
 		Configuration.addConfigurationChangeListener(new ConfigurationChangeListener() {
 			public void configurationChanged() {
-				Integer t = Configuration.getInt(VariableKey.POPUP_GAP, false);
-				if(t == null)
+				GAP = Configuration.getInt(VariableKey.POPUP_GAP, false);
+				if(GAP == null)
 					GAP = DEFAULT_GAP;
-				else
-					GAP = t;
 			}
 		});
 	}

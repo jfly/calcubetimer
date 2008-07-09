@@ -13,7 +13,6 @@ import javax.swing.table.TableCellRenderer;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.statistics.Session;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class SessionRenderer extends JLabel implements TableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {

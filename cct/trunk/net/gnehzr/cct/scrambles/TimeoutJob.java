@@ -11,8 +11,8 @@ public final class TimeoutJob {
 	
 	public static final ScramblePluginClassLoader PLUGIN_LOADER = new ScramblePluginClassLoader();
 	private static class ThreadJob<T> extends Thread {
-		private T result;
-		private Throwable error;
+		T result;
+		Throwable error;
 		private Callable<T> callMe;
 		public ThreadJob(Callable<T> callMe) {
 			this.callMe = callMe;

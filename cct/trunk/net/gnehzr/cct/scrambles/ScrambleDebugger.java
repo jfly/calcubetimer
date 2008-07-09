@@ -3,14 +3,13 @@ package net.gnehzr.cct.scrambles;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 
 import javax.swing.AbstractAction;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.WindowConstants;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.main.ScrambleFrame;
@@ -18,7 +17,6 @@ import net.gnehzr.cct.main.ScrambleFrame;
 import org.jvnet.substance.SubstanceLookAndFeel;
 
 public class ScrambleDebugger extends ScramblePlugin {
-	@SuppressWarnings("serial")
 	public ScrambleDebugger(File plugin, int length) throws SecurityException, IllegalArgumentException, NoSuchMethodException, NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
 		super(plugin);
 		//TODO - add stuff for unit token
@@ -37,7 +35,7 @@ public class ScrambleDebugger extends ScramblePlugin {
 		ScrambleFrame view = new ScrambleFrame(null, aa, true);
 		view.setTitle("ScrambleDebugger");
 		view.setScramble(s, new ScrambleVariation(this, ""));
-		view.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		view.pack();
 		view.setVisible(true);
 		System.out.println("New default scramble: " + s);
@@ -46,8 +44,7 @@ public class ScrambleDebugger extends ScramblePlugin {
 		System.out.println("Usage: ScrambleDebugger [class filename] (scramble length)");
 	}
 
-	@SuppressWarnings("serial")
-	public static void main(String... args) throws IOException, URISyntaxException {
+	public static void main(String... args) throws IOException {
 		String fileName;
 		int scramLength = -1;
 		if(args.length >= 1) {

@@ -212,6 +212,7 @@ changes:
 TODO:
 
 for release:
+-add color options to font choosers
 -open source sourceforge!
 -about.html: add a blurb for version 1.0
 -create license, give credit where credit is due

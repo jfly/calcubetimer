@@ -9,7 +9,6 @@ import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
 import org.jvnet.lafwidget.LafWidget;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class DynamicSelectableLabel extends JEditorPane implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener{
 	private DynamicString s = null;
 

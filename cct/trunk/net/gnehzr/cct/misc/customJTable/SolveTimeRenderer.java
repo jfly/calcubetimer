@@ -16,7 +16,6 @@ import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.StatisticsTableModel;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class SolveTimeRenderer extends JLabel implements TableCellRenderer {
 	// Will highlight times from current average and from best rolling average
 	private StatisticsTableModel statsModel;

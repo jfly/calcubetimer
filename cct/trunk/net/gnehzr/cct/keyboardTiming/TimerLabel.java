@@ -25,6 +25,7 @@ import java.util.Hashtable;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.Border;
 
@@ -36,12 +37,11 @@ import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.main.ScrambleArea;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class TimerLabel extends JLabel implements ComponentListener, ConfigurationChangeListener, FocusListener, KeyListener, MouseListener {
 	private KeyboardHandler keyHandler;
 	private ScrambleArea scrambleArea;
 	public TimerLabel(ScrambleArea scrambleArea) {
-		super("", JLabel.CENTER); //$NON-NLS-1$
+		super("", SwingConstants.CENTER); //$NON-NLS-1$
 		this.scrambleArea = scrambleArea;
 		addComponentListener(this);
 		setFocusable(true);
@@ -101,8 +101,8 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 			String newTime = getText();
 			Insets border = getInsets();
 			Rectangle2D bounds = font.getStringBounds(newTime, new FontRenderContext(null, true, true));
-			double height = (double) (getHeight() - border.top - border.bottom) / bounds.getHeight();
-			double width = (double) (getWidth() - border.left - border.right) / (bounds.getWidth()+10);
+			double height = (getHeight() - border.top - border.bottom) / bounds.getHeight();
+			double width = (getWidth() - border.left - border.right) / (bounds.getWidth()+10);
 			double ratio = Math.min(width, height);
 			super.setFont(font.deriveFont(AffineTransform.getScaleInstance(ratio, ratio)));
 		}
@@ -218,12 +218,12 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 	
 	//What follows is some really nasty code to deal with linux and window's differing behavior for keyrepeats
 	private Hashtable<Integer, Long> timeup = new Hashtable<Integer, Long>(KeyEvent.KEY_LAST);
-	private long getTime(int keycode) {
+	long getTime(int keycode) {
 		Long temp = timeup.get(keycode);
 		return (temp == null) ? 0 : temp;
 	}
-	private Hashtable<Integer, Boolean> keyDown = new Hashtable<Integer, Boolean>(KeyEvent.KEY_LAST);
-	private boolean isKeyDown(int keycode) {
+	Hashtable<Integer, Boolean> keyDown = new Hashtable<Integer, Boolean>(KeyEvent.KEY_LAST);
+	boolean isKeyDown(int keycode) {
 		Boolean temp = keyDown.get(keycode);
 		return (temp == null) ? false : temp;
 	}
@@ -309,7 +309,7 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 	}
 
 	//called when a key is physically released
-	private void keyReallyReleased(KeyEvent e) {
+	void keyReallyReleased(KeyEvent e) {
 		boolean stackmatEmulation = Configuration.getBoolean(VariableKey.STACKMAT_EMULATION, false);
 		int sekey1 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY1, false);
 		int sekey2 = Configuration.getInt(VariableKey.STACKMAT_EMULATION_KEY2, false);

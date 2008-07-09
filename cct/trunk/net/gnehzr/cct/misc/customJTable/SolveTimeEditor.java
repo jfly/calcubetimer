@@ -14,7 +14,6 @@ import javax.swing.border.LineBorder;
 import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.statistics.SolveTime;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class SolveTimeEditor extends DefaultCellEditor {
 	private SolveTime value;
 	public SolveTimeEditor() {

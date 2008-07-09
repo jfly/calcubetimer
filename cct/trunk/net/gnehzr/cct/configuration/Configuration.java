@@ -261,7 +261,7 @@ public final class Configuration {
 	}
 
 	private static SortedProperties defaults, props;
-	public static void loadConfiguration(File f) throws IOException, URISyntaxException {
+	public static void loadConfiguration(File f) throws IOException {
 		InputStream in = null;
 		try {
 			in = new FileInputStream(defaultsFile);
@@ -382,8 +382,7 @@ public final class Configuration {
 		}
 		if(getXMLLayoutsAvailable() == null)
 			return null;
-		else
-			return getXMLLayoutsAvailable()[0];
+		return getXMLLayoutsAvailable()[0];
 	}
 	public static File getXMLFile(String xmlGUIName) {
 		for(File f : getXMLLayoutsAvailable()) {
@@ -423,8 +422,8 @@ public final class Configuration {
 		return jvmDefaultLocale;
 	}
 	
-	private static class SubstanceFontPolicy implements FontPolicy {
-		private FontUIResource f;
+	static class SubstanceFontPolicy implements FontPolicy {
+		FontUIResource f;
 		public void setFont(Font f) {
 			this.f = new FontUIResource(f);
 		}

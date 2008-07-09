@@ -10,7 +10,6 @@ import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 import org.jvnet.substance.SubstanceDefaultListCellRenderer;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class PuzzleCustomizationCellRenderer extends SubstanceDefaultListCellRenderer {
 	private boolean icons;
 	public PuzzleCustomizationCellRenderer(boolean i) {

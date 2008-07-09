@@ -167,6 +167,8 @@ public class Profile {
 	}
 	
 	private class DatabaseLoader extends DefaultHandler {
+		public DatabaseLoader() {}
+		
 		public InputSource resolveEntity(String publicId, String systemId) throws IOException, SAXException {
 			return new InputSource(new FileInputStream(Configuration.databaseDTD));
 		}
@@ -264,7 +266,7 @@ public class Profile {
 	
 	//Database stuff
 	//this maps from ScrambleVariations to PuzzleStatistics
-	private ProfileDatabase puzzleDB = new ProfileDatabase(this);
+	ProfileDatabase puzzleDB = new ProfileDatabase(this);
 	public ProfileDatabase getPuzzleDatabase() {
 		return puzzleDB;
 	}

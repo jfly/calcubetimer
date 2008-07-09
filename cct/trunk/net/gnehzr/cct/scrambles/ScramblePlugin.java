@@ -160,14 +160,18 @@ public class ScramblePlugin {
 		this.attributes = attributes;
 	}
 
-	private String pluginClassName;
+	String pluginClassName;
 	
 	private Class<? extends Scramble> pluginClass = null;
 	
-	private Constructor<? extends Scramble> newScrambleConstructor = null;
-	private Constructor<? extends Scramble> importScrambleConstructor = null;
+	Constructor<? extends Scramble> newScrambleConstructor = null;
+	Constructor<? extends Scramble> importScrambleConstructor = null;
 	
-	private Method getNewUnitSize, getImageSize, getScrambleImage, getFaces, htmlify;
+	Method getNewUnitSize;
+	Method getImageSize;
+	Method getScrambleImage;
+	Method getFaces;
+	Method htmlify;
 
 	protected String PUZZLE_NAME;
 	protected String[][] FACE_NAMES_COLORS;

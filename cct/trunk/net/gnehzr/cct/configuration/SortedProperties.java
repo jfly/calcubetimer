@@ -5,7 +5,6 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class SortedProperties extends Properties {
 	public SortedProperties(SortedProperties defaults) {
 		super(defaults);

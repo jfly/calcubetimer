@@ -33,6 +33,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
@@ -61,7 +63,7 @@ import net.gnehzr.cct.i18n.StringAccessor;
 *   }
 * <pre>
 **/
-@SuppressWarnings("serial") //$NON-NLS-1$
+
 public class JFontChooser extends JComponent {
 	/**
 	 * Return value from showDialog(Component parent).
@@ -117,7 +119,7 @@ public class JFontChooser extends JComponent {
 		this(DEFAULT_FONT_SIZE_STRINGS, defaultFont, sizing, max, null);
 	}
 
-	private Font defaultFont;
+	Font defaultFont;
 	private Integer maxSize;
 	private String toDisplay;
 	public JFontChooser(String[] fontSizeStrings, Font defaultFont, boolean sizingEnabled, Integer max, String toDisplay) {
@@ -554,8 +556,7 @@ public class JFontChooser extends JComponent {
 
 			JScrollPane scrollPane = new JScrollPane(getFontFamilyList());
 			scrollPane.getVerticalScrollBar().setFocusable(false);
-			scrollPane
-					.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+			scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
 			JPanel p = new JPanel();
 			p.setLayout(new BorderLayout());
@@ -563,8 +564,8 @@ public class JFontChooser extends JComponent {
 			p.add(scrollPane, BorderLayout.CENTER);
 
 			JLabel label = new JLabel(StringAccessor.getString("JFontChooser.FontName")); //$NON-NLS-1$
-			label.setHorizontalAlignment(JLabel.LEFT);
-			label.setHorizontalTextPosition(JLabel.LEFT);
+			label.setHorizontalAlignment(SwingConstants.LEFT);
+			label.setHorizontalTextPosition(SwingConstants.LEFT);
 			label.setLabelFor(getFontFamilyTextField());
 			label.setDisplayedMnemonic('F');
 
@@ -585,8 +586,7 @@ public class JFontChooser extends JComponent {
 
 			JScrollPane scrollPane = new JScrollPane(getFontStyleList());
 			scrollPane.getVerticalScrollBar().setFocusable(false);
-			scrollPane
-					.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+			scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
 			JPanel p = new JPanel();
 			p.setLayout(new BorderLayout());
@@ -594,8 +594,8 @@ public class JFontChooser extends JComponent {
 			p.add(scrollPane, BorderLayout.CENTER);
 
 			JLabel label = new JLabel(StringAccessor.getString("JFontChooser.FontStyle")); //$NON-NLS-1$
-			label.setHorizontalAlignment(JLabel.LEFT);
-			label.setHorizontalTextPosition(JLabel.LEFT);
+			label.setHorizontalAlignment(SwingConstants.LEFT);
+			label.setHorizontalTextPosition(SwingConstants.LEFT);
 			label.setLabelFor(getFontStyleTextField());
 			label.setDisplayedMnemonic('Y');
 
@@ -615,8 +615,7 @@ public class JFontChooser extends JComponent {
 
 			JScrollPane scrollPane = new JScrollPane(getFontSizeList());
 			scrollPane.getVerticalScrollBar().setFocusable(false);
-			scrollPane
-					.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+			scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
 			JPanel p = new JPanel();
 			p.setLayout(new BorderLayout());
@@ -624,8 +623,8 @@ public class JFontChooser extends JComponent {
 			p.add(scrollPane, BorderLayout.CENTER);
 
 			JLabel label = new JLabel(StringAccessor.getString("JFontChooser.FontSize")); //$NON-NLS-1$
-			label.setHorizontalAlignment(JLabel.LEFT);
-			label.setHorizontalTextPosition(JLabel.LEFT);
+			label.setHorizontalAlignment(SwingConstants.LEFT);
+			label.setHorizontalTextPosition(SwingConstants.LEFT);
 			label.setLabelFor(getFontSizeTextField());
 			label.setDisplayedMnemonic('S');
 

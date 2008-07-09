@@ -15,7 +15,6 @@ import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class ScrambleFrame extends JDialog implements ConfigurationChangeListener {
 	private ScrambleViewComponent scrambleView;
 	private AbstractAction visibilityAction;

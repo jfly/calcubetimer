@@ -11,7 +11,6 @@ import net.gnehzr.cct.i18n.XMLGuiMessages;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class DynamicTabbedPane extends JTabbedPane implements StatisticsUpdateListener, ConfigurationChangeListener {
 	private ArrayList<DynamicString> tabNames = new ArrayList<DynamicString>();
 

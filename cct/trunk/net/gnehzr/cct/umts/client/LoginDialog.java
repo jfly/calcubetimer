@@ -16,7 +16,6 @@ import javax.swing.JTextField;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.main.URLHistoryBox;
 
-@SuppressWarnings("serial")
 public class LoginDialog extends JDialog implements ActionListener, KeyListener {
 	public LoginDialog(JFrame parent, boolean modal) {
 		super(parent, "Choose server to connect to", modal);

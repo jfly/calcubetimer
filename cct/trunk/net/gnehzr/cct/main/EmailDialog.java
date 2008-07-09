@@ -33,10 +33,10 @@ import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.JTextAreaWithHistory;
 import net.gnehzr.cct.misc.SendMailUsingAuthentication;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class EmailDialog extends JDialog implements ActionListener, CaretListener {
-	private JTextField toAddress, subject = null;
-	private JTextAreaWithHistory body = null;
+	private JTextField toAddress;
+	JTextField subject = null;
+	JTextAreaWithHistory body = null;
 	private JButton sendButton, doneButton = null;
 	public EmailDialog(JDialog owner, String bodyText) {
 		super(owner, true);
@@ -101,7 +101,7 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		setLocationRelativeTo(null);
 	}
 
-	private static String toPrettyString(String[] recievers) {
+	static String toPrettyString(String[] recievers) {
 		String result = ""; //$NON-NLS-1$
 		for(String reciever : recievers) {
 			result += ", " + reciever; //$NON-NLS-1$
@@ -112,7 +112,7 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 	private class EmailWorker extends SwingWorker<Void, Void> {
 		private SendMailUsingAuthentication smtpMailSender;
 		private String[] receivers;
-		private WaitingDialog waiting;
+		WaitingDialog waiting;
 		private Exception error;
 		public EmailWorker(JDialog owner, char[] pass, String[] receivers) {
 			smtpMailSender = new SendMailUsingAuthentication(pass);
@@ -218,7 +218,6 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 			setVisible(false);
 		}
 	}
-	@SuppressWarnings("serial") //$NON-NLS-1$
 	private static class PasswordPrompt extends JDialog implements ActionListener {
 		private boolean canceled = true;
 		private JPasswordField pass = null;

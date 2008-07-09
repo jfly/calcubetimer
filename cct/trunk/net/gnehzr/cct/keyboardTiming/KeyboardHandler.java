@@ -9,7 +9,6 @@ import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.main.TimingListener;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class KeyboardHandler extends Timer {
 	private static final int PERIOD = 90; //measured in milliseconds
 	private TimingListener tl;

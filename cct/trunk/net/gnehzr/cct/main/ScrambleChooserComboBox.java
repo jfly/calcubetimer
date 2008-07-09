@@ -11,7 +11,6 @@ import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class ScrambleChooserComboBox extends LoudComboBox implements TableCellRenderer, ConfigurationChangeListener {
 	private boolean customizations;
 	public ScrambleChooserComboBox(boolean icons, boolean customizations) {

@@ -5,7 +5,6 @@ import javax.swing.JComboBox;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class URLHistoryBox extends JComboBox {
 	private VariableKey<String[]> values;
 	public URLHistoryBox(VariableKey<String[]> values) {

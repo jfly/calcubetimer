@@ -20,7 +20,6 @@ package net.gnehzr.cct.speaking;
  *************************************************************************/
 
 import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import javazoom.jl.decoder.JavaLayerException;
@@ -58,7 +57,7 @@ public class MP3 {
 
 
     // test client
-    public static void main(String[] args) throws FileNotFoundException, JavaLayerException {
+    public static void main(String[] args) {
 		for(int ch = 0; ch < 20; ch++) {
 			try {
 				MP3 mp3 = new MP3(ch + ".mp3"); //$NON-NLS-1$

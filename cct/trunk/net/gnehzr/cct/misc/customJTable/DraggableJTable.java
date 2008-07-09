@@ -36,9 +36,8 @@ import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.Utils;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class DraggableJTable extends JTable implements MouseListener, MouseMotionListener, KeyListener, ActionListener {
-	private String addText;
+	String addText;
 
 	//You must set any editors or renderers before setting this table's model
 	//because the preferred size is computed inside setModel()
@@ -120,22 +119,24 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 				if(columnIndex == 0)
 					return addText;
 				return ""; //$NON-NLS-1$
-			} else
-				return wrapped.getValueAt(rowIndex, columnIndex);
+			}
+			
+			return wrapped.getValueAt(rowIndex, columnIndex);
 		}
 		public boolean isCellEditable(int rowIndex, int columnIndex) {
 			if(rowIndex == wrapped.getRowCount()) {
 				if(columnIndex == 0)
 					return true;
 				return false;
-			} else
-				return wrapped.isCellEditable(rowIndex, columnIndex);
+			}
+			
+			return wrapped.isCellEditable(rowIndex, columnIndex);
 		}
 		public boolean isRowDeletable(int rowIndex) {
 			if(rowIndex == wrapped.getRowCount())
 				return false;
-			else
-				return wrapped.isRowDeletable(rowIndex);
+			
+			return wrapped.isRowDeletable(rowIndex);
 		}
 		public void removeRows(int[] indices) {
 			wrapped.removeRows(indices);
@@ -173,11 +174,11 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		return temp;
 	}
 	
-	public static class HideableTableColumn {
-		private TableColumn col;
-		private boolean isVisible;
-		private int viewIndex;
-		private int modelIndex;
+	private static class HideableTableColumn {
+		TableColumn col;
+		boolean isVisible;
+		int viewIndex;
+		int modelIndex;
 		public HideableTableColumn(TableColumn col, boolean isVisible, int modelIndex, int viewIndex) {
 			this.col = col;
 			this.isVisible = isVisible;
@@ -200,7 +201,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			return viewIndex+"="+isVisible; //$NON-NLS-1$
 		}
 	}
-	private Vector<HideableTableColumn> cols;
+	Vector<HideableTableColumn> cols;
 	public Vector<HideableTableColumn> getAllColumns() {
 		return cols;
 	}
@@ -212,7 +213,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		}
 		return null;
 	}
-	private HideableTableColumn getHideableTableColumn(TableColumn col) {
+	HideableTableColumn getHideableTableColumn(TableColumn col) {
 		for(HideableTableColumn c : cols) {
 			if(col == c.col) { 
 				return c;
@@ -280,7 +281,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			cols.get(c).col.setHeaderValue(model.getColumnName(c));
 		}
 	}
-	private void moveHideableColumn(int from, int to) {
+	void moveHideableColumn(int from, int to) {
 		if(from == to || ignoreMoving)
 			return;
 		if(from + 1 < to) {

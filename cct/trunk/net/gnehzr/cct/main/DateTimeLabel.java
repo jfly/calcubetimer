@@ -11,7 +11,6 @@ import javax.swing.Timer;
 
 import net.gnehzr.cct.configuration.Configuration;
 
-@SuppressWarnings("serial") //$NON-NLS-1$
 public class DateTimeLabel extends JLabel implements ActionListener, HierarchyListener {
 	private Timer updateTimer;
 	public DateTimeLabel() {

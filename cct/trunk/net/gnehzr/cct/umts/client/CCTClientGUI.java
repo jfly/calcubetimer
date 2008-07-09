@@ -35,6 +35,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.Timer;
+import javax.swing.WindowConstants;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.event.TableModelEvent;
@@ -54,12 +55,12 @@ import org.jvnet.lafwidget.LafWidget;
 
 public class CCTClientGUI implements MouseListener, ActionListener, KeyListener, TableModelListener, HyperlinkListener {
 	private final static SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
-	private CCTClient client = null;
+	CCTClient client = null;
 	private UserTable users = null;
 	private Image icon = null;
-	private Timer flasher = null;
-	private boolean isFocused = false;
-	private String title = null;
+	Timer flasher = null;
+	boolean isFocused = false;
+	String title = null;
 	public CCTClientGUI(CCTClient client, Image icon, String title) {
 		this.client = client;
 		this.users = client.getUsers();
@@ -72,7 +73,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 //		messageAppender.start();
 	}
 
-	private CCTFrame frame = null;
+	CCTFrame frame = null;
 	private JFrame fullscreenFrame = null;
 	private JEditorPane messageLog = null;
 //	private Timer messageAppender = null;
@@ -149,7 +150,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		frame = new CCTFrame(title);
 		frame.setIconImage(icon);
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.setResizable(true);
 
 		frame.addWindowListener(new WindowAdapter() {
@@ -180,7 +181,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 		JFrame.setDefaultLookAndFeelDecorated(false);
 		fullscreenFrame = new JFrame();
 		fullscreenFrame.setUndecorated(true);
-		fullscreenFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		fullscreenFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
 		pane = fullscreenFrame.getContentPane();
 		pane.add(bigTimersDisplay, BorderLayout.CENTER);
@@ -322,11 +323,10 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 		SolveTime next = printMe.next();
 		if (next == best || next == worst)
 			return "(" + next.toString() + ")" + (printMe.hasNext() ? ", " + toStringHelper(printMe, best, worst) : "");
-		else
-			return next.toString() + (printMe.hasNext() ? ", " + toStringHelper(printMe, best, worst) : "");
+		
+		return next.toString() + (printMe.hasNext() ? ", " + toStringHelper(printMe, best, worst) : "");
 	}
 
-	@SuppressWarnings("serial")
 	private class CCTFrame extends JFrame {
 		public CCTFrame(String title) {
 			super(title);
