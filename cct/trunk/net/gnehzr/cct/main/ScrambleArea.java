@@ -22,6 +22,7 @@ import javax.swing.text.html.HTMLDocument;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
@@ -89,10 +90,13 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 			fontStyle += "font-weight: bold; "; //$NON-NLS-1$
 		else
 			fontStyle += "font-weight: normal; "; //$NON-NLS-1$
+		
+		String selected = Utils.colorToString(Configuration.getColor(VariableKey.SCRAMBLE_SELECTED, false));
+		String unselected = Utils.colorToString(Configuration.getColor(VariableKey.SCRAMBLE_UNSELECTED, false));
 		part1 = "<html><head><style type=\"text/css\">" + //$NON-NLS-1$
-			"a {color: black;text-decoration: none;}" + //$NON-NLS-1$
+			"a { color: #" + unselected + "; text-decoration: none; }" + //$NON-NLS-1$
 			"a#"; //$NON-NLS-1$
-		part2 = " { color: red; }" + //$NON-NLS-1$
+		part2 = " { color: #" + selected + "; }" + //$NON-NLS-1$
 			"span { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "; " + fontStyle + "; }" + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			"sub { font-size: " + (font.getSize() / 2 + 1) + "; }" + //$NON-NLS-1$ //$NON-NLS-2$
 			"</style></head><body>"; //$NON-NLS-1$

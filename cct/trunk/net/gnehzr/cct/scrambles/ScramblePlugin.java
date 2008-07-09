@@ -538,7 +538,7 @@ public class ScramblePlugin {
 			String c = Configuration.getString(VariableKey.PUZZLE_COLOR(this, FACE_NAMES_COLORS[0][face]), defaults);
 			if(c == null)
 				c = FACE_NAMES_COLORS[1][face];
-			scheme[face] = Utils.stringToColor(c);
+			scheme[face] = Utils.stringToColor(c, false);
 		}
 		return scheme;
 	}

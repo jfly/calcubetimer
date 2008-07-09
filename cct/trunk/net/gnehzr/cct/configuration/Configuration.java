@@ -165,11 +165,14 @@ public final class Configuration {
 		props.setProperty(key.toKey(), newValue.x + "," + newValue.y); //$NON-NLS-1$
 	}
 
-	public static Color getColor(VariableKey<Color> key, boolean defaultValue) {
-		return getColor(defaultValue ? defaults : props, key.toKey());
+	public static Color getColorNullIfInvalid(VariableKey<Color> key, boolean defaultValue) {
+		return getColor(defaultValue ? defaults : props, key.toKey(), true);
 	}
-	private static Color getColor(Properties props, String key) {
-		return Utils.stringToColor(props.getProperty(key));
+	public static Color getColor(VariableKey<Color> key, boolean defaultValue) {
+		return getColor(defaultValue ? defaults : props, key.toKey(), false);
+	}
+	private static Color getColor(Properties props, String key, boolean nullIfInvalid) {
+		return Utils.stringToColor(props.getProperty(key), nullIfInvalid);
 	}
 	public static void setColor(VariableKey<Color> key, Color c) {
 		props.setProperty(key.toKey(), Utils.colorToString(c));

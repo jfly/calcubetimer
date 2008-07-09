@@ -4,26 +4,35 @@
 package say.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -46,6 +55,9 @@ import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
 
+import org.jvnet.substance.SubstanceLookAndFeel;
+
+import net.gnehzr.cct.configuration.JColorComponent;
 import net.gnehzr.cct.i18n.StringAccessor;
 
 /**
@@ -64,7 +76,7 @@ import net.gnehzr.cct.i18n.StringAccessor;
 * <pre>
 **/
 
-public class JFontChooser extends JComponent {
+public class JFontChooser extends JComponent implements MouseListener {
 	/**
 	 * Return value from showDialog(Component parent).
 	 */
@@ -80,15 +92,7 @@ public class JFontChooser extends JComponent {
 	 */
 	public static final int ERROR_OPTION = -1;
 
-	private static final Font DEFAULT_SELECTED_FONT = new Font("Serif", Font.PLAIN, 12); //$NON-NLS-1$
-
-
-	private static final int[] FONT_STYLE_CODES = { Font.PLAIN, Font.BOLD,
-			Font.ITALIC, Font.BOLD | Font.ITALIC };
-
-	private static final String[] DEFAULT_FONT_SIZE_STRINGS = { "8", "9", "10", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			"11", "12", "14", "16", "18", "20", "22", "24", "26", "28", "36", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
-			"48", "72", }; //$NON-NLS-1$ //$NON-NLS-2$
+	private static final int[] FONT_STYLE_CODES = { Font.PLAIN, Font.BOLD, Font.ITALIC, Font.BOLD | Font.ITALIC };
 
 	protected int dialogResultValue = ERROR_OPTION;
 
@@ -109,32 +113,48 @@ public class JFontChooser extends JComponent {
 	private JPanel fontSizePanel = null;
 	private JPanel samplePanel = null;
 
-	private JTextField sampleText = null;
+	private JColorComponent sampleText = null;
+	JColorComponent foreground = null;
+	JColorComponent background = null;
+	private JButton setTrans = null;
 	
-	public JFontChooser() {
-		this(DEFAULT_SELECTED_FONT, true, null);
-	}
-
-	public JFontChooser(Font defaultFont, boolean sizing, Integer max) {
-		this(DEFAULT_FONT_SIZE_STRINGS, defaultFont, sizing, max, null);
-	}
-
+	Color bg, fg;
 	Font defaultFont;
 	private Integer maxSize;
 	private String toDisplay;
-	public JFontChooser(String[] fontSizeStrings, Font defaultFont, boolean sizingEnabled, Integer max, String toDisplay) {
+	public JFontChooser(String[] fontSizeStrings, Font defaultFont, boolean sizingEnabled, Integer max, String toDisplay, Color bg, Color fg, boolean transparency) {
 		this.defaultFont = defaultFont;
 		this.fontSizeStrings = fontSizeStrings;
 		this.toDisplay = toDisplay;
 		maxSize = max;
 
+		this.bg = bg;
+		this.fg = fg;
+		background = new JColorComponent(StringAccessor.getString("JFontChooser.background"));
+		background.addMouseListener(this);
+		background.setBackground(bg);
+		foreground = new JColorComponent(StringAccessor.getString("JFontChooser.foreground"));
+		foreground.setBackground(fg);
+		foreground.addMouseListener(this);
+		
+		if(transparency) {
+			setTrans = new JButton("X");
+			setTrans.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, true);
+			setTrans.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					background.setBackground(null);
+					background.repaint();
+				}
+			});
+		}
+		
 		JPanel selectPanel = new JPanel();
 		selectPanel.setLayout(new BoxLayout(selectPanel, BoxLayout.X_AXIS));
 		selectPanel.add(getFontFamilyPanel());
 		selectPanel.add(getFontStylePanel());
 		if(sizingEnabled)
 			selectPanel.add(getFontSizePanel());
-
+		
 		JPanel contentsPanel = new JPanel();
 		contentsPanel.setLayout(new GridLayout(2, 1));
 		contentsPanel.add(selectPanel, BorderLayout.NORTH);
@@ -266,6 +286,13 @@ public class JFontChooser extends JComponent {
 		Font font = new Font(getSelectedFontFamily(), getSelectedFontStyle(),
 				getSelectedFontSize());
 		return font;
+	}
+	
+	public Color getSelectedBG() {
+		return background.getBackground();
+	}
+	public Color getSelectedFG() {
+		return foreground.getBackground();
 	}
 
 	public void setSelectedFontFamily(String name) {
@@ -495,6 +522,8 @@ public class JFontChooser extends JComponent {
 		}
 
 		public void actionPerformed(ActionEvent e) {
+			background.setBackground(bg);
+			foreground.setBackground(fg);
 			setSelectedFont(defaultFont);
 		}
 	}
@@ -514,10 +543,22 @@ public class JFontChooser extends JComponent {
 		JButton resetButton = new JButton(resetAction);
 
 		JPanel buttonsPanel = new JPanel();
-		buttonsPanel.setLayout(new GridLayout(3, 1));
+		buttonsPanel.setLayout(new GridLayout(0, 1));
 		buttonsPanel.add(okButton);
 		buttonsPanel.add(resetButton);
 		buttonsPanel.add(cancelButton);
+		buttonsPanel.add(Box.createVerticalGlue());
+		
+		JPanel back = new JPanel();
+		back.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		back.add(background, c);
+		if(setTrans != null) {
+			c.gridx=1;
+			back.add(setTrans, c);
+		}
+		buttonsPanel.add(back);
+		buttonsPanel.add(foreground);
 		buttonsPanel.setBorder(BorderFactory.createEmptyBorder(25, 0, 10, 10));
 
 		ActionMap actionMap = buttonsPanel.getActionMap();
@@ -544,14 +585,15 @@ public class JFontChooser extends JComponent {
 	protected void updateSampleFont() {
 		Font font = getSelectedFont();
 		getSampleTextField().setFont(font);
+		getSampleTextField().setBackground(background.getBackground()); //this call needs to be before the call to setForeground()
+		getSampleTextField().setForeground(foreground.getBackground());
 	}
 
 	protected JPanel getFontFamilyPanel() {
 		if (fontNamePanel == null) {
 			fontNamePanel = new JPanel();
 			fontNamePanel.setLayout(new BorderLayout());
-			fontNamePanel
-					.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+			fontNamePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 			fontNamePanel.setPreferredSize(new Dimension(180, 130));
 
 			JScrollPane scrollPane = new JScrollPane(getFontFamilyList());
@@ -580,8 +622,7 @@ public class JFontChooser extends JComponent {
 		if (fontStylePanel == null) {
 			fontStylePanel = new JPanel();
 			fontStylePanel.setLayout(new BorderLayout());
-			fontStylePanel.setBorder(BorderFactory
-					.createEmptyBorder(5, 5, 5, 5));
+			fontStylePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 			fontStylePanel.setPreferredSize(new Dimension(140, 130));
 
 			JScrollPane scrollPane = new JScrollPane(getFontStyleList());
@@ -610,8 +651,7 @@ public class JFontChooser extends JComponent {
 			fontSizePanel = new JPanel();
 			fontSizePanel.setLayout(new BorderLayout());
 			fontSizePanel.setPreferredSize(new Dimension(70, 130));
-			fontSizePanel
-					.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+			fontSizePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
 			JScrollPane scrollPane = new JScrollPane(getFontSizeList());
 			scrollPane.getVerticalScrollBar().setFocusable(false);
@@ -651,12 +691,9 @@ public class JFontChooser extends JComponent {
 		return samplePanel;
 	}
 
-	protected JTextField getSampleTextField() {
+	protected JColorComponent getSampleTextField() {
 		if (sampleText == null) {
-			Border lowered = BorderFactory.createLoweredBevelBorder();
-
-			sampleText = new JTextField((toDisplay == null) ? StringAccessor.getString("JFontChooser.SampleString") : toDisplay); //$NON-NLS-1$
-			sampleText.setBorder(lowered);
+			sampleText = new JColorComponent((toDisplay == null) ? StringAccessor.getString("JFontChooser.SampleString") : toDisplay); //$NON-NLS-1$
 			sampleText.setPreferredSize(new Dimension(300, 100));
 		}
 		return sampleText;
@@ -672,7 +709,7 @@ public class JFontChooser extends JComponent {
 	}
 
 	protected String[] getFontStyleNames() {
-		if (fontStyleNames == null) {
+		if(fontStyleNames == null) {
 			int i = 0;
 			fontStyleNames = new String[4];
 			fontStyleNames[i++] = StringAccessor.getString("JFontChooser.Plain"); //$NON-NLS-1$
@@ -681,5 +718,29 @@ public class JFontChooser extends JComponent {
 			fontStyleNames[i++] = StringAccessor.getString("JFontChooser.BoldItalic"); //$NON-NLS-1$
 		}
 		return fontStyleNames;
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		Object source = e.getSource();
+		if(source instanceof JColorComponent) {
+			JColorComponent label = (JColorComponent) source;
+			Color selected = JColorChooser.showDialog(this, StringAccessor.getString("ConfigurationDialog.choosecolor"), label.getBackground()); //$NON-NLS-1$
+			if(selected != null)
+				label.setBackground(selected);
+		}
+		updateSampleFont();
+	}
+	public void mouseEntered(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {}
+	public void mousePressed(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {}
+
+	public void setFontForeground(Color foreground) {
+		this.foreground.setBackground(foreground);
+		updateSampleFont();
+	}
+	public void setFontBackground(Color background) {
+		this.background.setBackground(background);
+		updateSampleFont();
 	}
 }

@@ -24,24 +24,24 @@ import java.util.Hashtable;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
 import javax.swing.Timer;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
+import net.gnehzr.cct.configuration.JColorComponent;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.main.ScrambleArea;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
 
-public class TimerLabel extends JLabel implements ComponentListener, ConfigurationChangeListener, FocusListener, KeyListener, MouseListener {
+public class TimerLabel extends JColorComponent implements ComponentListener, ConfigurationChangeListener, FocusListener, KeyListener, MouseListener {
 	private KeyboardHandler keyHandler;
 	private ScrambleArea scrambleArea;
 	public TimerLabel(ScrambleArea scrambleArea) {
-		super("", SwingConstants.CENTER); //$NON-NLS-1$
+		super("");
 		this.scrambleArea = scrambleArea;
 		addComponentListener(this);
 		setFocusable(true);
@@ -75,16 +75,15 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 
 	private TimerState time;
 	public void setTime(TimerState time) {
+		setForeground(Configuration.getColor(VariableKey.TIMER_FG, false));
 		this.time = time;
 		super.setText(time.toString());
-//		refreshTimer();
 		componentResized(null);
 	}
-	
-	public void setText(String arg0) {
+	public void setText(String s) {
+		setForeground(Color.RED);
 		time = null;
-		super.setText(arg0);
-//		refreshTimer();
+		super.setText(s);
 		componentResized(null);
 	}
 	public void componentHidden(ComponentEvent arg0) {}
@@ -95,7 +94,7 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 		this.font = font;
 		super.setFont(font);
 	}
-
+	
 	public void componentResized(ComponentEvent e) {
 		if(font != null) { //this is to avoid an exception before showing the component
 			String newTime = getText();
@@ -118,12 +117,12 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 			e.printStackTrace();
 		}
 	}
-	public void paint(Graphics g) {
+	public void paintComponent(Graphics g) {
 		if(Configuration.getBoolean(VariableKey.LESS_ANNOYING_DISPLAY, false))
 			g.drawImage(curr, 10, 20, null);
 		g.drawImage(getImageForHand(leftHand), 10, getHeight() - 50, null);
 		g.drawImage(getImageForHand(rightHand), getWidth() - 50, getHeight() - 50, null);
-		super.paint(g);
+		super.paintComponent(g);
 	}
 	private Boolean leftHand, rightHand;
 	public void setHands(Boolean leftHand, Boolean rightHand) {
@@ -140,10 +139,13 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 	}
 
 	public void configurationChanged() {
-//		setKeyboard(!Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false));
+		setBackground(Configuration.getColorNullIfInvalid(VariableKey.TIMER_BG, false));
+		
 		setFont(Configuration.getFont(VariableKey.TIMER_FONT, false));
 		if(time != null) //this will deal with any internationalization issues, if appropriate
 			setTime(time);
+		else
+			setText(getText());
 		refreshTimer();
 	}
 	public void focusGained(FocusEvent e) {
@@ -163,20 +165,22 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 
 	private void refreshTimer() {
 		boolean inspectionEnabled = Configuration.getBoolean(VariableKey.COMPETITION_INSPECTION, false);
-		Border b = BorderFactory.createRaisedBevelBorder();
 		String title;
 		boolean keyboard = !Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
+
+		Color borderColor = null;
+		boolean lowered = false;
 		if(keyboard) {
 			boolean focused = isFocusOwner();
 			scrambleArea.setTimerFocused(focused);
 			if(focused) {
 				curr = green;
 				if(keysDown)
-					b = BorderFactory.createLoweredBevelBorder();
+					lowered = true;
 				if(keysDown && canStartTimer())
-					setBackground(Color.GREEN);
+					borderColor = Color.GREEN;
 				else
-					setBackground(Color.RED);
+					borderColor = Color.RED;
 				if(keyHandler.isRunning())
 					title = StringAccessor.getString("TimerLabel.stoptimer"); //$NON-NLS-1$
 				else if(keyHandler.isInspecting() || !inspectionEnabled)
@@ -186,7 +190,7 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 			} else {
 				curr = red;
 				title = StringAccessor.getString("TimerLabel.clickme"); //$NON-NLS-1$
-				setBackground(Color.GRAY);
+				borderColor = Color.GRAY;
 				releaseAllKeys();
 			}
 		} else {
@@ -194,16 +198,19 @@ public class TimerLabel extends JLabel implements ComponentListener, Configurati
 			if(on) {
 				curr = green;
 				if(greenLight) {
-					b = BorderFactory.createLoweredBevelBorder();
-					setBackground(Color.GREEN);
+					lowered = true;
+					borderColor = Color.GREEN;
 				} else {
-					setBackground(Color.RED);
+					borderColor = Color.RED;
 				}
 			} else {
 				curr = red;
-				setBackground(Color.GRAY);
+				borderColor = Color.GRAY;
 			}
 		}
+		//TODO - properly do beveled border
+		//TODO - change border font color so it's always visible
+		Border b = BorderFactory.createBevelBorder(lowered ? BevelBorder.LOWERED : BevelBorder.RAISED, borderColor, borderColor.brighter());
 		setBorder(BorderFactory.createTitledBorder(b, title));
 		repaint();
 	}

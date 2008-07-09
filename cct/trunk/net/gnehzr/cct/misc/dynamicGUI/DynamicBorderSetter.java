@@ -48,7 +48,7 @@ public class DynamicBorderSetter { //implements ConfigurationChangeListener, Sta
 		if(colorString == null)
 			border = BorderFactory.createEtchedBorder();
 		else
-			border = BorderFactory.createLineBorder(Utils.stringToColor(colorString.toString()));
+			border = BorderFactory.createLineBorder(Utils.stringToColor(colorString.toString(), false));
 		return BorderFactory.createTitledBorder(border, titleString.toString());
 	}
 }

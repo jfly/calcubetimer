@@ -103,7 +103,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	protected void paintComponent(Graphics g) {
 		int width = getWidth();
 		int height = getHeight();
-		if (isOpaque()) {
+		if(isOpaque()) {
 			g.setColor(getBackground());
 			g.fillRect(0, 0, width, height);
 		}

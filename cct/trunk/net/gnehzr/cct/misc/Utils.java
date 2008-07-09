@@ -62,6 +62,7 @@ public class Utils {
 	}
 
 	public static String colorToString(Color c) {
+		if(c == null) return "";
 		return padWith0s(Integer.toHexString(c.getRGB() & 0xffffff));
 	}
 
@@ -73,11 +74,11 @@ public class Utils {
 		return s;
 	}
 
-	public static Color stringToColor(String s) {
+	public static Color stringToColor(String s, boolean nullIfInvalid) {
 		try {
 			return new Color(Integer.parseInt(s, 16));
 		} catch(Exception e) {
-			return Color.WHITE;
+			return nullIfInvalid ? null : Color.WHITE;
 		}
 	}
 

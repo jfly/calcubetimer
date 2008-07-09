@@ -74,7 +74,7 @@ public class VariableKey<H> {
 	public static final VariableKey<String> METRONOME_CLICK_FILE = new VariableKey<String>("Misc_Metronome_clickFile"); //$NON-NLS-1$
 	public static final VariableKey<String> XML_LAYOUT = new VariableKey<String>("GUI_xmlLayout_file"); //$NON-NLS-1$
 	public static final VariableKey<String> DEFAULT_SCRAMBLE_CUSTOMIZATION = new VariableKey<String>("Scramble_Default_scrambleCustomization"); //$NON-NLS-1$
-	public static final VariableKey<String> PUZZLE_COLOR(ScramblePlugin plugin, String faceName) {
+	public static final VariableKey<String> PUZZLE_COLOR(ScramblePlugin plugin, String faceName) { //TODO - fix this?
 		return new VariableKey<String>("Puzzle_Color_" + plugin.getPuzzleName() + "_face" + faceName); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -134,6 +134,10 @@ public class VariableKey<H> {
 	public static final VariableKey<Point> SCRAMBLE_VIEW_LOCATION = new VariableKey<Point>("GUI_ScrambleView_location"); //$NON-NLS-1$
 	public static final VariableKey<Point> MAIN_FRAME_LOCATION = new VariableKey<Point>("GUI_MainFrame_location"); //$NON-NLS-1$
 
+	public static final VariableKey<Color> TIMER_BG = new VariableKey<Color>("GUI_Timer_Color_background"); //$NON-NLS-1$
+	public static final VariableKey<Color> TIMER_FG = new VariableKey<Color>("GUI_Timer_Color_foreground"); //$NON-NLS-1$
+	public static final VariableKey<Color> SCRAMBLE_UNSELECTED = new VariableKey<Color>("Scramble_Color_unselected"); //$NON-NLS-1$
+	public static final VariableKey<Color> SCRAMBLE_SELECTED = new VariableKey<Color>("Scramble_Color_selected"); //$NON-NLS-1$
 	public static final VariableKey<Color> BEST_AND_CURRENT = new VariableKey<Color>("Statistics_Color_bestAndCurrentAverage"); //$NON-NLS-1$
 	public static final VariableKey<Color> BEST_RA = new VariableKey<Color>("Statistics_Color_bestRA"); //$NON-NLS-1$
 	public static final VariableKey<Color> BEST_TIME = new VariableKey<Color>("Statistics_Color_bestTime"); //$NON-NLS-1$

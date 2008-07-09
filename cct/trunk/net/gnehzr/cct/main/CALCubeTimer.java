@@ -19,9 +19,15 @@ import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -39,6 +45,7 @@ import java.util.ResourceBundle;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -50,6 +57,7 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
@@ -170,8 +178,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	//we also reset their attributes before parsing the xml gui
 	ComponentsMap persistentComponents;
 	
-	private TimerLabel bigTimersDisplay = null;
-	JPanel fullscreenPanel = null;
+	TimerLabel bigTimersDisplay = null;
+	JLayeredPane fullscreenPanel = null;
 	ScrambleFrame scramblePopup = null;
 	ScrambleList scramblesList = new ScrambleList();
 	private StackmatInterpreter stackmatTimer = null;
@@ -483,10 +491,19 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timeLabel.setKeyboardHandler(keyHandler);
 		bigTimersDisplay.setKeyboardHandler(keyHandler);
 
-		fullscreenPanel = new JPanel(new BorderLayout());
-		fullscreenPanel.add(bigTimersDisplay, BorderLayout.CENTER);
-		JButton fullScreenButton = new JButton(flipFullScreenAction);
-		fullscreenPanel.add(fullScreenButton, BorderLayout.PAGE_END);
+		fullscreenPanel = new JLayeredPane();
+		final JButton fullScreenButton = new JButton(flipFullScreenAction);
+		
+        fullscreenPanel.add(bigTimersDisplay, new Integer(0));
+        fullscreenPanel.add(fullScreenButton, new Integer(1));
+
+        fullscreenPanel.addComponentListener(new ComponentAdapter() {
+        	private static final int LENGTH = 30;
+        	public void componentResized(ComponentEvent e) {
+        		bigTimersDisplay.setBounds(0, 0, e.getComponent().getWidth(), e.getComponent().getHeight());
+        		fullScreenButton.setBounds(e.getComponent().getWidth() - LENGTH, 0, LENGTH, LENGTH);
+        	}
+        });
 
 		customGUIMenu = new JMenu();
 
@@ -513,6 +530,20 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		persistentComponents.put("sessionslist", sessionsScroller);
 		persistentComponents.put("clock", currentTimeLabel);
 	}
+	
+    //Create and set up a colored label.
+    private JLabel createColoredLabel(String text, Color color) {
+        JLabel label = new JLabel(text);
+        label.setVerticalAlignment(JLabel.TOP);
+        label.setHorizontalAlignment(JLabel.CENTER);
+        label.setOpaque(true);
+        label.setBackground(color);
+        label.setForeground(Color.black);
+        label.setBorder(BorderFactory.createLineBorder(Color.black));
+        label.setPreferredSize(new Dimension(140, 140));
+        return label;
+    }
+
 	
 	void refreshCustomGUIMenu() {
 		customGUIMenu.removeAll();
@@ -1068,9 +1099,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					if((temp = attrs.getValue("opaque")) != null) //$NON-NLS-1$
 						com.setOpaque(Boolean.parseBoolean(temp));
 					if((temp = attrs.getValue("background")) != null) //$NON-NLS-1$
-						com.setBackground(Utils.stringToColor(temp));
+						com.setBackground(Utils.stringToColor(temp, false));
 					if((temp = attrs.getValue("foreground")) != null) //$NON-NLS-1$
-						com.setForeground(Utils.stringToColor(temp));
+						com.setForeground(Utils.stringToColor(temp, false));
 					if((temp = attrs.getValue("orientation")) != null){ //$NON-NLS-1$
 						if(com instanceof JSeparator){
 							if(temp.equalsIgnoreCase("horizontal")) //$NON-NLS-1$
@@ -1432,7 +1463,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			} catch (FileNotFoundException e) {
 				in = CALCubeTimer.class.getResourceAsStream(Configuration.getString(VariableKey.WATERMARK_FILE, true));
 			}
-			SubstanceLookAndFeel.setCurrentWatermark(new SubstanceImageWatermark(in));
+			SubstanceLookAndFeel.setCurrentWatermark(new SubstanceImageWatermark(in) {
+//				public void drawWatermarkImage(Graphics g, Component c, int x, int y, int width, int height) {
+//					super.drawWatermarkImage(g, c, x, y, width, height);
+//					AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f);
+//					((Graphics2D)g).setComposite(ac);
+//					g.setColor(Configuration.getColor(VariableKey.TIMER_BG, false));
+//					g.fillRect(0, 0, c.getWidth(), c.getHeight());
+//				}
+			});
 		} else
 			SubstanceLookAndFeel.setCurrentWatermark(new SubstanceNoneWatermark());
 
@@ -1730,13 +1769,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			time = StringAccessor.getString("CALCubeTimer.+2penalty"); //$NON-NLS-1$
 		} else
 			time = "" + inspection; //$NON-NLS-1$
-		Color fore = Color.RED;
-		timeLabel.setForeground(fore);
 		timeLabel.setText(time);
-		if(isFullscreen) {
-			bigTimersDisplay.setForeground(fore);
+		if(isFullscreen)
 			bigTimersDisplay.setText(time);
-		}
 	}
 	
 	private SolveType penalty = SolveType.NORMAL;
@@ -1748,11 +1783,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 //			reset = newState.isReset();
 		}
 		if(!isInspecting()) {
-			Color fore = Color.BLACK;
-//			String time = newTime.toString();
-			timeLabel.setForeground(fore);
 			timeLabel.setTime(newTime);
-			bigTimersDisplay.setForeground(fore);
 			bigTimersDisplay.setTime(newTime);
 //			boolean reset = false;
 //			if(!reset) //TODO - test out on server!
