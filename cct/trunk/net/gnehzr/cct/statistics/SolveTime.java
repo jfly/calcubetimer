@@ -11,7 +11,25 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	public static final SolveTime BEST = new SolveTime(0, null);
 	public static final SolveTime WORST = new SolveTime();
 
-	public static enum SolveType { NORMAL, POP, PLUS_TWO, DNF }
+	public static enum SolveType {
+		NORMAL("StatisticsTableModel.none", true), POP("POP", false), PLUS_TWO("+2", false), DNF("DNF", false);
+		private String desc;
+		private boolean i18n;
+		private SolveType(String desc, boolean i18n) {
+			this.desc = desc;
+			this.i18n = i18n;
+		}
+		public String toString() {
+			if(i18n)
+				return StringAccessor.getString(desc);
+			return desc;
+		}
+		//this returns true if the solvetype is a time in and of itself,
+		//ex: POP or DNF
+		public boolean isSoloTime() {
+			return this == POP || this == DNF;
+		}
+	}
 	
 	private SolveType type = SolveType.NORMAL;
 	private int hundredths;
@@ -60,14 +78,15 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 
 	//returns true if s represents a valid solvetype
 	private boolean determineSolveType(String s) {
-		if(s.equalsIgnoreCase("DNF")) { //$NON-NLS-1$
-			type = SolveType.DNF;
+		try {
+			SolveType t = SolveType.valueOf(s);
+			if(!t.isSoloTime())
+				return false;
+			type = t;
 			return true;
-		} else if(s.equalsIgnoreCase("POP")) { //$NON-NLS-1$
-			type = SolveType.POP;
-			return true;
+		} catch(IllegalArgumentException e) {
+			return false; //this happens when the enum doesn't exist
 		}
-		return false;
 	}
 	public void setTime(String time) throws Exception {
 		hundredths = 0; //don't remove this

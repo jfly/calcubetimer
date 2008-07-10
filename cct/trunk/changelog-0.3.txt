@@ -214,6 +214,7 @@ changes:
 TODO:
 
 for release:
+-tags for solves? possibly by expand functionality of pop/dnf/+2?
 -open source sourceforge!
 -about.html: add a blurb for version 1.0
 -create license, give credit where credit is due

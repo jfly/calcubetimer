@@ -174,8 +174,8 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 
 	public void commitColorSchemeToConfiguration() {
 		for(int face = 0; face < colorScheme.length; face++) {
-			Configuration.setString(VariableKey.PUZZLE_COLOR(currentPlugin, currentPlugin.FACE_NAMES_COLORS[0][face]),
-					Utils.colorToString(colorScheme[face]));
+			Configuration.setColor(VariableKey.PUZZLE_COLOR(currentPlugin, currentPlugin.FACE_NAMES_COLORS[0][face]),
+					colorScheme[face]);
 		}
 	}
 

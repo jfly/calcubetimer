@@ -119,33 +119,18 @@ public class StatisticsTableModel extends DraggableJTableModel {
 		return t.isEmpty() ? null : t;
 	}
 
-	JRadioButtonMenuItem none;
-	JRadioButtonMenuItem plusTwo;
-	JRadioButtonMenuItem pop;
-	JRadioButtonMenuItem dnf;
+	JMenuItem edit, discard;
 	public void showPopup(MouseEvent e, final DraggableJTable timesTable) {
 		ActionListener al = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String command = e.getActionCommand();
 				Object source = e.getSource();
-				int selectedRow = timesTable.getSelectedRow();
-
-				SolveType newType = null;
-				if(source == plusTwo) {
-					newType = SolveType.PLUS_TWO;
-				} else if(source == dnf) {
-					newType = SolveType.DNF;
-				} else if(source == pop) {
-					newType = SolveType.POP;
-				} else if(source == none) {
-					newType = SolveType.NORMAL;
-				}
-				if(newType != null) {
-					stats.setSolveType(selectedRow, newType);
-				} else if(command.equals(StringAccessor.getString("StatisticsTableModel.discard"))) { //$NON-NLS-1$
+				if(source == discard) {
 					timesTable.deleteSelectedRows(false);
-				} else if(command.equals(StringAccessor.getString("StatisticsTableModel.edittime"))) { //$NON-NLS-1$
-					timesTable.editCellAt(selectedRow, 0);
+				} else if(source == edit) {
+					timesTable.editCellAt(timesTable.getSelectedRow(), 0);
+				} else { //one of the jradio buttons
+					SolveType newType = SolveType.values()[Integer.parseInt(e.getActionCommand())];
+					stats.setSolveType(timesTable.getSelectedRow(), newType);
 				}
 			}
 		};
@@ -175,41 +160,27 @@ public class StatisticsTableModel extends DraggableJTableModel {
 			jpopup.addSeparator();
 
 			ButtonGroup group = new ButtonGroup();
-
-			none = new JRadioButtonMenuItem(StringAccessor.getString("StatisticsTableModel.none"), selectedSolve.getType() == SolveTime.SolveType.NORMAL); //$NON-NLS-1$
-			group.add(none);
-			none.addActionListener(al);
-			jpopup.add(none);
-			none.setEnabled(!selectedSolve.isTrueWorstTime());
-
-			plusTwo = new JRadioButtonMenuItem("+2", selectedSolve.getType() == SolveTime.SolveType.PLUS_TWO); //$NON-NLS-1$
-			group.add(plusTwo);
-			plusTwo.addActionListener(al);
-			jpopup.add(plusTwo);
-			plusTwo.setEnabled(!selectedSolve.isTrueWorstTime());
-
-			pop = new JRadioButtonMenuItem("POP", selectedSolve.getType() == SolveTime.SolveType.POP); //$NON-NLS-1$
-			group.add(pop);
-			pop.addActionListener(al);
-			jpopup.add(pop);
-			pop.setEnabled(!selectedSolve.isTrueWorstTime());
-
-			dnf = new JRadioButtonMenuItem("DNF", selectedSolve.getType() == SolveTime.SolveType.DNF); //$NON-NLS-1$
-			group.add(dnf);
-			dnf.addActionListener(al);
-			jpopup.add(dnf);
-			dnf.setEnabled(!selectedSolve.isTrueWorstTime());
+			SolveType[] types = SolveType.values();
+			for(int c = 0; c < types.length; c++) {
+				SolveType type = types[c];
+				JRadioButtonMenuItem attr = new JRadioButtonMenuItem(type.toString(), selectedSolve.getType() == type);
+				attr.setActionCommand(c+"");
+				group.add(attr);
+				attr.addActionListener(al);
+				jpopup.add(attr);
+				attr.setEnabled(!selectedSolve.isTrueWorstTime());
+			}
 
 			jpopup.addSeparator();
 
-			JMenuItem edit = new JMenuItem(StringAccessor.getString("StatisticsTableModel.edittime")); //$NON-NLS-1$
+			edit = new JMenuItem(StringAccessor.getString("StatisticsTableModel.edittime")); //$NON-NLS-1$
 			edit.addActionListener(al);
 			jpopup.add(edit);
 
 			jpopup.addSeparator();
 		}
 
-		JMenuItem discard = new JMenuItem(StringAccessor.getString("StatisticsTableModel.discard")); //$NON-NLS-1$
+		discard = new JMenuItem(StringAccessor.getString("StatisticsTableModel.discard")); //$NON-NLS-1$
 		discard.addActionListener(al);
 		jpopup.add(discard);
 		timesTable.requestFocusInWindow();

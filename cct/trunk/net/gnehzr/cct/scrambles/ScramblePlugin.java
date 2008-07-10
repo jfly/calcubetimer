@@ -535,10 +535,9 @@ public class ScramblePlugin {
 			return null;
 		Color[] scheme = new Color[FACE_NAMES_COLORS[0].length];
 		for(int face = 0; face < scheme.length; face++) {
-			String c = Configuration.getString(VariableKey.PUZZLE_COLOR(this, FACE_NAMES_COLORS[0][face]), defaults);
-			if(c == null)
-				c = FACE_NAMES_COLORS[1][face];
-			scheme[face] = Utils.stringToColor(c, false);
+			scheme[face] = Configuration.getColorNullIfInvalid(VariableKey.PUZZLE_COLOR(this, FACE_NAMES_COLORS[0][face]), defaults);
+			if(scheme[face] == null)
+				scheme[face] = Utils.stringToColor(FACE_NAMES_COLORS[1][face], false);
 		}
 		return scheme;
 	}

@@ -74,9 +74,6 @@ public class VariableKey<H> {
 	public static final VariableKey<String> METRONOME_CLICK_FILE = new VariableKey<String>("Misc_Metronome_clickFile"); //$NON-NLS-1$
 	public static final VariableKey<String> XML_LAYOUT = new VariableKey<String>("GUI_xmlLayout_file"); //$NON-NLS-1$
 	public static final VariableKey<String> DEFAULT_SCRAMBLE_CUSTOMIZATION = new VariableKey<String>("Scramble_Default_scrambleCustomization"); //$NON-NLS-1$
-	public static final VariableKey<String> PUZZLE_COLOR(ScramblePlugin plugin, String faceName) { //TODO - fix this?
-		return new VariableKey<String>("Puzzle_Color_" + plugin.getPuzzleName() + "_face" + faceName); //$NON-NLS-1$ //$NON-NLS-2$
-	}
 
 	public static final VariableKey<String[]> IMPORT_URLS = new VariableKey<String[]>("Misc_scrambleURLs"); //$NON-NLS-1$
 	public static final VariableKey<String[]> CHAT_SERVERS = new VariableKey<String[]>("UMTS_Client_serverURLs"); //$NON-NLS-1$
@@ -143,6 +140,9 @@ public class VariableKey<H> {
 	public static final VariableKey<Color> BEST_TIME = new VariableKey<Color>("Statistics_Color_bestTime"); //$NON-NLS-1$
 	public static final VariableKey<Color> CURRENT_AVERAGE = new VariableKey<Color>("Statistics_Color_currentAverage"); //$NON-NLS-1$
 	public static final VariableKey<Color> WORST_TIME = new VariableKey<Color>("Statistics_Color_worstTime"); //$NON-NLS-1$
+	public static final VariableKey<Color> PUZZLE_COLOR(ScramblePlugin plugin, String faceName) { //TODO - fix this?
+		return new VariableKey<Color>("Puzzle_Color_" + plugin.getPuzzleName() + "_face" + faceName); //$NON-NLS-1$ //$NON-NLS-2$
+	}
 
 	public static final VariableKey<Float> OPACITY = new VariableKey<Float>("Watermark_opacity"); //$NON-NLS-1$
 
