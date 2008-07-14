@@ -132,6 +132,7 @@ import net.gnehzr.cct.statistics.UndoRedoListener;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
 import net.gnehzr.cct.umts.client.CCTClient;
+import net.gnehzr.cct.umts.ircclient.IRCClientGUI;
 
 import org.jvnet.lafwidget.LafWidget;
 import org.jvnet.lafwidget.utils.LafConstants;
@@ -1353,13 +1354,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			return;
 		isFullscreen = b;
 		if(isFullscreen) {
-
 			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			GraphicsDevice[] gs = ge.getScreenDevices();
 			GraphicsDevice gd = gs[Configuration.getInt(VariableKey.FULLSCREEN_DESKTOP, false)];
 			DisplayMode screenSize = gd.getDisplayMode();
 			fullscreenFrame.setSize(screenSize.getWidth(), screenSize.getHeight());
-			
 			fullscreenFrame.validate();
 			bigTimersDisplay.requestFocusInWindow();
 		}
@@ -1925,7 +1924,8 @@ class ConnectToServerAction extends AbstractAction{
 	}
 
 	public void actionPerformed(ActionEvent e){
-		cct.connectToServer();
+//		cct.connectToServer();
+		new IRCClientGUI();
 	}
 }
 class FlipFullScreenAction extends AbstractAction{

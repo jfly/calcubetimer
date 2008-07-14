@@ -1,5 +1,6 @@
 package net.gnehzr.cct.configuration;
 
+import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
@@ -9,7 +10,7 @@ import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.statistics.Profile;
 
 public class ProfileListModel extends DraggableJTableModel {
-	private enum editAction {ADDED, RENAMED, REMOVED};
+	private enum editAction { ADDED, RENAMED, REMOVED };
 	private static class ProfileEditAction {
 		private editAction act;
 		private Profile p1;
@@ -116,5 +117,5 @@ public class ProfileListModel extends DraggableJTableModel {
 		fireTableDataChanged();
 	}
 
-	public void showPopup(MouseEvent e, DraggableJTable source) {}
+	public void showPopup(MouseEvent e, DraggableJTable source, Component prevFocusOwner) {}
 }

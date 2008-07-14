@@ -52,6 +52,9 @@ public class VariableKey<H> {
 		return new VariableKey<Integer[]>("GUI_xmlLayout_" + componentID + "_columns"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
+	public static final VariableKey<String> IRC_NAME = new VariableKey<String>("IRC_name"); //$NON-NLS-1$
+	public static final VariableKey<String> IRC_EMAIL = new VariableKey<String>("IRC_email"); //$NON-NLS-1$
+	public static final VariableKey<String> IRC_NICK = new VariableKey<String>("IRC_nick"); //$NON-NLS-1$
 	public static final VariableKey<String> LANGUAGE = new VariableKey<String>("GUI_I18N_language"); //$NON-NLS-1$
 	public static final VariableKey<String> REGION = new VariableKey<String>("GUI_I18N_region"); //$NON-NLS-1$
 	public static final VariableKey<String> VOICE = new VariableKey<String>("Misc_Voices_person"); //$NON-NLS-1$
@@ -76,7 +79,7 @@ public class VariableKey<H> {
 	public static final VariableKey<String> DEFAULT_SCRAMBLE_CUSTOMIZATION = new VariableKey<String>("Scramble_Default_scrambleCustomization"); //$NON-NLS-1$
 
 	public static final VariableKey<String[]> IMPORT_URLS = new VariableKey<String[]>("Misc_scrambleURLs"); //$NON-NLS-1$
-	public static final VariableKey<String[]> CHAT_SERVERS = new VariableKey<String[]>("UMTS_Client_serverURLs"); //$NON-NLS-1$
+	public static final VariableKey<String[]> IRC_SERVERS = new VariableKey<String[]>("IRC_Client_serverURLs"); //$NON-NLS-1$
 	public static final VariableKey<String[]> SCRAMBLE_CUSTOMIZATIONS = new VariableKey<String[]>("Scramble_customizations"); //$NON-NLS-1$
 	public static final VariableKey<String[]> PUZZLE_ATTRIBUTES(ScramblePlugin plugin) {
 		return new VariableKey<String[]>("Puzzle_Attributes_" + plugin.getPuzzleName()); //$NON-NLS-1$
@@ -110,7 +113,7 @@ public class VariableKey<H> {
 	public static final VariableKey<Boolean> SMTP_ENABLED = new VariableKey<Boolean>("SMTP_isEnabled"); //$NON-NLS-1$
 	public static final VariableKey<Boolean> SMTP_AUTHENTICATION = new VariableKey<Boolean>("SMTP_isSmtpAuth"); //$NON-NLS-1$
 	public static final VariableKey<Boolean> SCRAMBLE_POPUP = new VariableKey<Boolean>("Scramble_Popup_isEnabled"); //$NON-NLS-1$
-	public static final VariableKey<Boolean> CHAT_WINDOW_FLASH = new VariableKey<Boolean>("UMTS_Client_isChatWindowFlash"); //$NON-NLS-1$
+	public static final VariableKey<Boolean> CHAT_WINDOW_FLASH = new VariableKey<Boolean>("IRC_Client_isChatWindowFlash"); //$NON-NLS-1$
 	public static final VariableKey<Boolean> TIMING_SPLITS = new VariableKey<Boolean>("Splits_isEnabled"); //$NON-NLS-1$
 	public static final VariableKey<Boolean> WATERMARK_ENABLED = new VariableKey<Boolean>("Watermark_isEnabled"); //$NON-NLS-1$
 	public static final VariableKey<Boolean> STACKMAT_ENABLED = new VariableKey<Boolean>("Stackmat_isEnabled"); //$NON-NLS-1$

@@ -1,5 +1,6 @@
 package net.gnehzr.cct.statistics;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -17,7 +18,7 @@ import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
-public class StatisticsTableModel extends DraggableJTableModel {
+public class StatisticsTableModel extends DraggableJTableModel implements ActionListener {
 	Statistics stats;
 	private Session sesh;
 	public void setSession(Session sesh) {
@@ -119,21 +120,27 @@ public class StatisticsTableModel extends DraggableJTableModel {
 		return t.isEmpty() ? null : t;
 	}
 
-	JMenuItem edit, discard;
-	public void showPopup(MouseEvent e, final DraggableJTable timesTable) {
-		ActionListener al = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Object source = e.getSource();
-				if(source == discard) {
-					timesTable.deleteSelectedRows(false);
-				} else if(source == edit) {
-					timesTable.editCellAt(timesTable.getSelectedRow(), 0);
-				} else { //one of the jradio buttons
-					SolveType newType = SolveType.values()[Integer.parseInt(e.getActionCommand())];
-					stats.setSolveType(timesTable.getSelectedRow(), newType);
-				}
+	public void actionPerformed(ActionEvent e) {
+		Object source = e.getSource();
+		if(source == edit) {
+			timesTable.editCellAt(timesTable.getSelectedRow(), 0);
+		} else {
+			if(source == discard) {
+				timesTable.deleteSelectedRows(false);
+			} else { //one of the jradio buttons
+				SolveType newType = SolveType.values()[Integer.parseInt(e.getActionCommand())];
+				stats.setSolveType(timesTable.getSelectedRow(), newType);
 			}
-		};
+			prevFocusOwner.requestFocusInWindow();
+		}
+	}
+
+	private JMenuItem edit, discard;
+	private DraggableJTable timesTable;
+	private Component prevFocusOwner;
+	public void showPopup(MouseEvent e, DraggableJTable timesTable, Component prevFocusOwner) {
+		this.timesTable = timesTable;
+		this.prevFocusOwner = prevFocusOwner;
 		JPopupMenu jpopup = new JPopupMenu();
 		int[] selectedSolves = timesTable.getSelectedRows();
 		if(selectedSolves.length == 0)
@@ -166,7 +173,7 @@ public class StatisticsTableModel extends DraggableJTableModel {
 				JRadioButtonMenuItem attr = new JRadioButtonMenuItem(type.toString(), selectedSolve.getType() == type);
 				attr.setActionCommand(c+"");
 				group.add(attr);
-				attr.addActionListener(al);
+				attr.addActionListener(this);
 				jpopup.add(attr);
 				attr.setEnabled(!selectedSolve.isTrueWorstTime());
 			}
@@ -174,14 +181,14 @@ public class StatisticsTableModel extends DraggableJTableModel {
 			jpopup.addSeparator();
 
 			edit = new JMenuItem(StringAccessor.getString("StatisticsTableModel.edittime")); //$NON-NLS-1$
-			edit.addActionListener(al);
+			edit.addActionListener(this);
 			jpopup.add(edit);
 
 			jpopup.addSeparator();
 		}
 
 		discard = new JMenuItem(StringAccessor.getString("StatisticsTableModel.discard")); //$NON-NLS-1$
-		discard.addActionListener(al);
+		discard.addActionListener(this);
 		jpopup.add(discard);
 		timesTable.requestFocusInWindow();
 		jpopup.show(e.getComponent(), e.getX(), e.getY());

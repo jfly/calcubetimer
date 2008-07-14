@@ -582,10 +582,11 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	JPasswordField password = null;
 	JCheckBox useSMTPServer;
 	JCheckBox showEmail = null;
+	JTextField ircname, ircemail, ircnick;
 	private JPanel emailOptions;
 	private JPanel makeSundaySetupPanel() {
 		JPanel sundayOptions = new JPanel(new GridBagLayout());
-		sundayOptions.setBorder(new AABorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), StringAccessor.getString("ConfigurationDialog.sundaycontest")))); //$NON-NLS-1$
+		sundayOptions.setBorder(new AABorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), StringAccessor.getString("ConfigurationDialog.sundaycontest")))); //$NON-NLS-1$
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(2, 2, 2, 2);
 		c.fill = GridBagConstraints.BOTH;
@@ -644,9 +645,47 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridy = 2;
 		showEmail = new JCheckBox(StringAccessor.getString("ConfigurationDialog.address")); //$NON-NLS-1$
 		sundayOptions.add(showEmail, c);
+		
+		JPanel ircOptions = new JPanel(new GridBagLayout());
+		ircOptions.setBorder(new AABorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), StringAccessor.getString("ConfigurationDialog.ircsetup")))); //$NON-NLS-1$
+		c = new GridBagConstraints();
+		c.insets = new Insets(2, 2, 2, 2);
+		c.fill = GridBagConstraints.BOTH;
+		c.ipady = 5;
+		
+		ircname = new JTextField(18);
+		ircemail = new JTextField(18);
+		ircnick = new JTextField(18);
+		
+		c.weightx = 0;
+		c.gridx = 0;
+		c.gridy = 0;
+		ircOptions.add(new JLabel(StringAccessor.getString("ConfigurationDialog.name")), c);
+		c.weightx = 1;
+		c.gridx = 1;
+		c.gridy = 0;
+		ircOptions.add(ircname, c);
 
+		c.weightx = 0;
+		c.gridx = 0;
+		c.gridy = 1;
+		ircOptions.add(new JLabel(StringAccessor.getString("ConfigurationDialog.ircemail")), c);
+		c.weightx = 1;
+		c.gridx = 1;
+		c.gridy = 1;
+		ircOptions.add(ircemail, c);
+
+		c.weightx = 0;
+		c.gridx = 0;
+		c.gridy = 2;
+		ircOptions.add(new JLabel(StringAccessor.getString("ConfigurationDialog.ircnick")), c);
+		c.weightx = 1;
+		c.gridx = 1;
+		c.gridy = 2;
+		ircOptions.add(ircnick, c);
+		
 		emailOptions = new JPanel(new GridBagLayout());
-		emailOptions.setBorder(new AABorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), StringAccessor.getString("ConfigurationDialog.emailsetup")))); //$NON-NLS-1$
+		emailOptions.setBorder(new AABorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), StringAccessor.getString("ConfigurationDialog.emailsetup")))); //$NON-NLS-1$
 		c = new GridBagConstraints();
 		c.insets = new Insets(2, 2, 2, 2);
 		c.fill = GridBagConstraints.BOTH;
@@ -732,10 +771,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		useSMTPServer.setSelected(true);
 		useSMTPServer.setSelected(false); // need both to ensure that an itemStateChanged event is fired
 
-		JPanel sundayEmail = new JPanel(new GridLayout(0, 1));
-		sundayEmail.add(sundayOptions);
-		sundayEmail.add(emailOptions);
-		
 		SyncGUIListener sl = new SyncGUIListener() {
 			public void syncGUIWithConfig(boolean defaults) {
 				// makeSundaySetupPanel
@@ -752,17 +787,20 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 				password.setText(Configuration.getString(VariableKey.SMTP_PASSWORD, defaults));
 				password.setEnabled(SMTPauth.isSelected());
 				showEmail.setSelected(Configuration.getBoolean(VariableKey.SHOW_EMAIL, defaults));
+				ircemail.setText(Configuration.getString(VariableKey.IRC_EMAIL, defaults));
+				ircname.setText(Configuration.getString(VariableKey.IRC_NAME, defaults));
+				ircnick.setText(Configuration.getString(VariableKey.IRC_NICK, defaults));
 			}
 		};
 		resetListeners.add(sl);
 		JButton reset = getResetButton(false);
-		
 		reset.addActionListener(sl);
 		
-		sundayEmail.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		JPanel side = sideBySide(null, sundayOptions, ircOptions);
+		side.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		emailOptions.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		reset.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		
-		return sideBySide(BoxLayout.PAGE_AXIS, sundayEmail, reset);
+		return sideBySide(BoxLayout.PAGE_AXIS, side, emailOptions, reset);
 	}
 
 	public void itemStateChanged(ItemEvent e) {
@@ -1083,6 +1121,10 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setString(VariableKey.SMTP_PASSWORD, new String(password.getPassword()));
 		Configuration.setBoolean(VariableKey.SMTP_ENABLED, useSMTPServer.isSelected());
 		Configuration.setString(VariableKey.SMTP_FROM_ADDRESS, smtpEmailAddress.getText());
+		
+		Configuration.setString(VariableKey.IRC_EMAIL, ircemail.getText());
+		Configuration.setString(VariableKey.IRC_NAME, ircname.getText());
+		Configuration.setString(VariableKey.IRC_NICK, ircnick.getText());
 
 		Configuration.setString(VariableKey.SESSION_STATISTICS, sessionStats.getText());
 		Configuration.setString(VariableKey.CURRENT_AVERAGE_STATISTICS, currentAverageStats.getText());

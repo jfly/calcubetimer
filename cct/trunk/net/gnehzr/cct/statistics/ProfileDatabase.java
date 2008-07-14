@@ -1,5 +1,6 @@
 package net.gnehzr.cct.statistics;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -185,7 +186,7 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 		return t.isEmpty() ? null : t;
 	}
 	private static final String SEND_TO_PROFILE = "sendToProfile"; //$NON-NLS-1$
-	public void showPopup(MouseEvent e, final DraggableJTable source) {
+	public void showPopup(MouseEvent e, final DraggableJTable source, Component prevFocusOwner) {
 		JPopupMenu jpopup = new JPopupMenu();
 
 		JMenuItem discard = new JMenuItem(StringAccessor.getString("ProfileDatabase.discard")); //$NON-NLS-1$

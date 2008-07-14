@@ -1,5 +1,6 @@
 package net.gnehzr.cct.misc.customJTable;
 
+import java.awt.Component;
 import java.awt.event.MouseEvent;
 
 import javax.swing.table.AbstractTableModel;
@@ -23,7 +24,7 @@ public abstract class DraggableJTableModel extends AbstractTableModel {
 	 * NOTE: Must be sorted!
 	 */
 	public abstract void deleteRows(int[] indices);
-	public abstract void showPopup(MouseEvent e, DraggableJTable source);
+	public abstract void showPopup(MouseEvent e, DraggableJTable source, Component prevFocusOwner);
 	//return null to have no tooltip
 	public abstract String getToolTip(int rowIndex);
 }

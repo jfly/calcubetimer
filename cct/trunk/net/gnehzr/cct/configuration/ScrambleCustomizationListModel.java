@@ -104,7 +104,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 			fireTableRowsUpdated(rowIndex, rowIndex);
 		}
 	}
-	public void showPopup(MouseEvent e, DraggableJTable source) {}
+	public void showPopup(MouseEvent e, DraggableJTable source, Component prevFocusOwner) {}
 	public String getToolTip(int rowIndex) {
 		return null;
 	}

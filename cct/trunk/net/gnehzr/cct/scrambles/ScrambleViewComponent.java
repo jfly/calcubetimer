@@ -21,7 +21,6 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.i18n.StringAccessor;
-import net.gnehzr.cct.misc.Utils;
 
 public class ScrambleViewComponent extends JComponent implements ComponentListener, MouseListener, MouseMotionListener {
 	private static final int DEFAULT_GAP = 5;

@@ -210,10 +210,12 @@ changes:
 	+include documentation of the DynamicStrings & update link from showDynamicStrings() in ConfigDialog.java
 +BUG: titled borders are not anti-aliased (substance bug!) fixed w/ AABorder.java
 +add color options to font choosers
++restore focus to timer after right clicking time
 
 TODO:
 
 for release:
+-test out sunday contest!
 -tags for solves? possibly by expand functionality of pop/dnf/+2?
 -open source sourceforge!
 -about.html: add a blurb for version 1.0

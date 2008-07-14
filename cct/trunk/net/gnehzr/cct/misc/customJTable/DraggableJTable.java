@@ -3,6 +3,7 @@ package net.gnehzr.cct.misc.customJTable;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -144,9 +145,9 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		public void setValueAt(Object value, int rowIndex, int columnIndex) {
 			wrapped.setValueAt(value, rowIndex, columnIndex);
 		}
-		public void showPopup(MouseEvent e, DraggableJTable source) {
+		public void showPopup(MouseEvent e, DraggableJTable source, Component prevFocusOwner) {
 			if(rowAtPoint(e.getPoint()) != wrapped.getRowCount())
-				wrapped.showPopup(e, source);
+				wrapped.showPopup(e, source, prevFocusOwner);
 		}
 		public Class<?> getColumnClass(int columnIndex) {
 			return wrapped.getColumnClass(columnIndex);
@@ -490,11 +491,12 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			if(e.getSource() == this) {
 				int row;
 				if((row = rowAtPoint(e.getPoint())) != -1) {
+					Component c = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
 					if(getSelectedRowCount() <= 1) {
 						// if right clicking on a single cell, this will select it first
 						setRowSelectionInterval(row, row);
 					}
-					model.showPopup(e, this);
+					model.showPopup(e, this, c);
 				}
 			} else if(e.getSource() == headers) {
 				JPopupMenu j = new JPopupMenu();
