@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -13,7 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.main.URLHistoryBox;
 
 public class LoginDialog extends JDialog implements ActionListener, KeyListener {
@@ -37,7 +37,7 @@ public class LoginDialog extends JDialog implements ActionListener, KeyListener 
 		c.ipadx = 5;
 		c.ipady = 3;
 
-		server = new URLHistoryBox(VariableKey.CHAT_SERVERS);
+//		server = new URLHistoryBox(VariableKey.CHAT_SERVERS);
 		port = new JTextField("" + CCTClient.DEFAULT_PORT);
 		userName = new JTextField();
 		userName.setToolTipText("Username must not be the same as anyone already connected," +

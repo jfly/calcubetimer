@@ -168,7 +168,6 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 			}
 		}
 		repaint();
-	
 	}
 
 	public void commitColorSchemeToConfiguration() {

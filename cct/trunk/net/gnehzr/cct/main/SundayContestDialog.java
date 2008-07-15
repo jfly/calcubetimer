@@ -32,6 +32,7 @@ import javax.xml.parsers.SAXParserFactory;
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.i18n.StringAccessor;
+import net.gnehzr.cct.misc.DialogWithDetails;
 import net.gnehzr.cct.misc.JTextAreaWithHistory;
 import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.statistics.Statistics;
@@ -185,7 +186,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		}
 	}
 
-	private static String submitSundayContest(String name, String country, String email,
+	private static String[] submitSundayContest(String name, String country, String email,
 			String average, String times, String quote, boolean showemail) throws IOException {
 		String data = URLEncoder.encode("name", "UTF-8") + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		+ URLEncoder.encode(name, "UTF-8"); //$NON-NLS-1$
@@ -199,8 +200,9 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		+ URLEncoder.encode(times, "UTF-8"); //$NON-NLS-1$
 		data += "&" + URLEncoder.encode("quote", "UTF-8") + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		+ URLEncoder.encode(quote, "UTF-8"); //$NON-NLS-1$
-		data += "&" + URLEncoder.encode("showemail", "UTF-8") + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		+ URLEncoder.encode(showemail ? "on" : "off", "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		if(showemail)
+			data += "&" + URLEncoder.encode("showemail", "UTF-8") + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			+ URLEncoder.encode("on", "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
 		data += "&" + URLEncoder.encode("submit", "UTF-8") + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		+ URLEncoder.encode("submit times", "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -214,12 +216,10 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		printout.flush();
 		printout.close();
 
-		BufferedReader rd = new BufferedReader(new InputStreamReader(
-				urlConn.getInputStream()));
+		BufferedReader rd = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
 		String str = "", temp; //$NON-NLS-1$
-		while (null != ((temp = rd.readLine()))) {
-			str += temp;
-		}
+		while (null != ((temp = rd.readLine())))
+			str += temp + "\n";
 
 		FindResultsHandler handler = new FindResultsHandler();
 		SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -245,24 +245,21 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		} finally {
 			rd.close();
 		}
-
-		str = "<html>" + handler.results + "</html>"; //$NON-NLS-1$ //$NON-NLS-2$
-		return str;
+		return new String[] { "<html>" + handler.results + "</html>", str }; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if(source == submitButton) {
 			try {
-				String result = submitSundayContest(nameField.getText(),
+				final String[] result = submitSundayContest(nameField.getText(),
 						countryField.getText(),
 						emailField.getText(),
 						averageField.getText(),
 						timesField.getText(),
 						quoteArea.getText(),
 						showEmailBox.isSelected());
-				Utils.showConfirmDialog(this, 
-						StringAccessor.getString("SundayContestDialog.serverresponse") + "\n" + result);
+				new DialogWithDetails(this, StringAccessor.getString("SundayContestDialog.serverresponse"), result[0], result[1]).setVisible(true);
 			} catch (IOException e1) {
 				Utils.showErrorDialog(this, e1.getLocalizedMessage());
 				e1.printStackTrace();
