@@ -232,7 +232,7 @@ submitted to the server for processing. Please make sure that your submission
 conforms to the <a href="rules.htm">Rules</a>. Note all times must be in seconds.</p>
 
 <a name="form" />
-<form name="frm" method="post" action="<? echo $_SERVER['PHP_SELF']; ?>">
+<form id="frm" name="frm" method="post" action="<? echo $_SERVER['PHP_SELF']; ?>">
 <table>
 <tr>
 	<td><label for="name">Name</label></td>
@@ -321,7 +321,10 @@ conforms to the <a href="rules.htm">Rules</a>. Note all times must be in seconds
 </tr>
 <tr>
 	<td></td>
-	<td><input class="check" id="submit" name="submit" value="Submit times" title="Click to submit" type="submit" /></td>
+	<td>
+	<input class="check" id="submit" name="submit" value="Submit times" title="Click to submit" type="submit" />
+	<input type="button" value="Reset" onclick="document.getElementById('frm').reset();validateAll()" />
+	</td>
 	<td></td>
 </tr>
 </table>
