@@ -99,7 +99,7 @@ function validateTimes() {
 		div.innerHTML = timeArray[i] + " is not a valid time!";
 	}
 	times.style.border = getBorder(valid);
-	return true;
+	return valid;
 }
 function countrySelected() {
 	var country = document.getElementById("country");
