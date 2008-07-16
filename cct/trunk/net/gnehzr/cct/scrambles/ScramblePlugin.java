@@ -541,4 +541,8 @@ public class ScramblePlugin {
 		}
 		return scheme;
 	}
+
+	public int getDefaultUnitSize() {
+		return DEFAULT_UNIT_SIZE;
+	}
 }
