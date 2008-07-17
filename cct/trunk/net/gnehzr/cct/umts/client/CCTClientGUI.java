@@ -374,12 +374,8 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 			} catch (BadLocationException e1) {}
 		}
 	}
-	public void keyReleased(KeyEvent e) {
-
-	}
-	public void keyTyped(KeyEvent e) {
-
-	}
+	public void keyReleased(KeyEvent e) {}
+	public void keyTyped(KeyEvent e) {}
 	//Listeners for the JLabel of users
 	public void mouseClicked(MouseEvent e) {}
 	public void mouseEntered(MouseEvent e) {}
@@ -427,7 +423,7 @@ public class CCTClientGUI implements MouseListener, ActionListener, KeyListener,
 					String s = e.getSourceElement().getDocument().getText(start, end - start);
 					String var = s.substring(0, s.indexOf(":"));
 					String scr = s.substring(s.indexOf(":") + 1);
-					client.getCCT().setScramble(var, scr);
+//					client.getCCT().setScramble(var, scr);
 				} catch(Exception ex){ ex.printStackTrace(); }
 			}
 		}

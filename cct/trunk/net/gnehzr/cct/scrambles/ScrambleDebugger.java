@@ -15,6 +15,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.main.ScrambleFrame;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
+import org.jvnet.substance.skin.SubstanceAutumnLookAndFeel;
 
 public class ScrambleDebugger extends ScramblePlugin {
 	public ScrambleDebugger(File plugin, int length) throws SecurityException, IllegalArgumentException, NoSuchMethodException, NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
@@ -60,7 +61,7 @@ public class ScrambleDebugger extends ScramblePlugin {
 		Configuration.loadConfiguration(Configuration.guestProfile.getConfigurationFile());
 
 		try {
-			UIManager.setLookAndFeel(new SubstanceLookAndFeel());
+			UIManager.setLookAndFeel(new SubstanceAutumnLookAndFeel());
 			JDialog.setDefaultLookAndFeelDecorated(true);
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();

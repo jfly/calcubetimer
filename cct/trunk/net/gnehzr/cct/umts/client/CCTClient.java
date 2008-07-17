@@ -36,7 +36,7 @@ public class CCTClient {
 	private AbstractAction enableDisable = null;
 
 	public static void main(String[] args) throws UnsupportedLookAndFeelException{
-		UIManager.setLookAndFeel(new SubstanceLookAndFeel());
+//		UIManager.setLookAndFeel(new SubstanceLookAndFeel());
 		JDialog.setDefaultLookAndFeelDecorated(true);
 		new CCTClient(null, new ImageIcon());
 	}

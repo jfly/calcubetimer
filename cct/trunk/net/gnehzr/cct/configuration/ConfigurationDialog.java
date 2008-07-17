@@ -471,7 +471,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		DraggableJTable scramTable = new DraggableJTable(true, false);
 		scramTable.setAddText(StringAccessor.getString("ConfigurationDialog.addpuzzle")); //$NON-NLS-1$
 		scramTable.getTableHeader().setReorderingAllowed(false);
-		scramTable.putClientProperty(SubstanceLookAndFeel.WATERMARK_IGNORE, Boolean.TRUE);
+		scramTable.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.FALSE);
 		scramTable.setShowGrid(false);
 
 		scramTable.setDefaultRenderer(ScrambleCustomization.class, puzzlesModel);

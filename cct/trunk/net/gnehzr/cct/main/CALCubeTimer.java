@@ -112,9 +112,11 @@ import net.gnehzr.cct.misc.dynamicGUI.DynamicSelectableLabel;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicString;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicStringSettable;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicTabbedPane;
+import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleList;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
+import net.gnehzr.cct.scrambles.ScrambleVariation;
 import net.gnehzr.cct.scrambles.TimeoutJob;
 import net.gnehzr.cct.scrambles.ScrambleList.ScrambleString;
 import net.gnehzr.cct.speaking.NumberSpeaker;
@@ -137,10 +139,10 @@ import net.gnehzr.cct.umts.ircclient.IRCClientGUI;
 import org.jvnet.lafwidget.LafWidget;
 import org.jvnet.lafwidget.utils.LafConstants;
 import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.painter.AlphaControlBackgroundComposite;
-import org.jvnet.substance.utils.SubstanceConstants;
+import org.jvnet.substance.api.SubstanceConstants;
 import org.jvnet.substance.watermark.SubstanceImageWatermark;
-import org.jvnet.substance.watermark.SubstanceNoneWatermark;
+import org.jvnet.substance.watermark.SubstanceNullWatermark;
+import org.jvnet.substance.watermark.SubstanceWatermark;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -199,7 +201,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private StatisticsAction rollingAverageAction1;
 	private StatisticsAction sessionAverageAction;
 	private AddTimeAction addTimeAction;
-	private ImportScramblesAction importScramblesAction;
+//	private ImportScramblesAction importScramblesAction;
 	private ExportScramblesAction exportScramblesAction;
 	private ExitAction exitAction;
 	private AboutAction aboutAction;
@@ -250,11 +252,17 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		flipFullScreenAction.putValue(Action.NAME, "+"); //$NON-NLS-1$
 		actionMap.put("togglefullscreen", flipFullScreenAction); //$NON-NLS-1$
 
-		importScramblesAction = new ImportScramblesAction(this);
-		importScramblesAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_I);
-		importScramblesAction.putValue(Action.ACCELERATOR_KEY,
-				KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
-		actionMap.put("importscrambles", importScramblesAction); //$NON-NLS-1$
+
+		actionMap.put("importscrambles", new AbstractAction() { //$NON-NLS-1$
+			{
+				putValue(Action.MNEMONIC_KEY, KeyEvent.VK_I);
+				putValue(Action.ACCELERATOR_KEY,
+						KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
+			}
+			public void actionPerformed(ActionEvent e){
+				new ScrambleImportDialog(CALCubeTimer.this, scramblesList.getScrambleCustomization());
+			}
+		});
 
 		exportScramblesAction = new ExportScramblesAction(this);
 		exportScramblesAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_E);
@@ -986,9 +994,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 						return new Dimension(0, 0);
 					}
 				};
-				scroll.putClientProperty(SubstanceLookAndFeel.OVERLAY_PROPERTY, Boolean.TRUE);
-				scroll.putClientProperty(SubstanceLookAndFeel.BACKGROUND_COMPOSITE,
-						new AlphaControlBackgroundComposite(0.3f, 0.5f));
+//				scroll.putClientProperty(SubstanceLookAndFeel.OVERLAY_PROPERTY, Boolean.TRUE);
+//				scroll.putClientProperty(SubstanceLookAndFeel.BACKGROUND_COMPOSITE,
+//						new AlphaControlBackgroundComposite(0.3f, 0.5f));
 				com = scroll;
 			}
 			else if(elementName.equals("tabbedpane")) { //$NON-NLS-1$
@@ -1248,14 +1256,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				UIManager.put(LafWidget.TEXT_EDIT_CONTEXT_MENU, Boolean.TRUE);
 				UIManager.put(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.TRUE);
 				UIManager.put(LafWidget.ANIMATION_KIND, LafConstants.AnimationKind.NONE);
-				UIManager.put(SubstanceLookAndFeel.WATERMARK_TO_BLEED, Boolean.TRUE);
+				UIManager.put(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.TRUE);
 				
 				cct = new CALCubeTimer();
 				Configuration.addConfigurationChangeListener(cct);
 				cct.setTitle("CCT " + CCT_VERSION); //$NON-NLS-1$
 				cct.setIconImage(cubeIcon.getImage());
 				cct.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-				cct.setSelectedProfile(Configuration.getSelectedProfile()); //this will eventually cause sessionSelected() to be called
+				cct.setSelectedProfile(Configuration.getSelectedProfile()); //this will eventually cause sessionSelected() and configurationChanged() to be called
 				cct.setVisible(true);
 			}
 		});
@@ -1263,11 +1271,43 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	static void setLookAndFeel() {
 		try {
-			UIManager.setLookAndFeel(new SubstanceLookAndFeel());
+//			UIManager.setLookAndFeel(new SubstanceLegacyDefaultLookAndFeel());
 //			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//			UIManager.setLookAndFeel(new org.jvnet.substance.skin.SubstanceModerateLookAndFeel());
+			UIManager.setLookAndFeel(new org.jvnet.substance.skin.SubstanceModerateLookAndFeel());
 		} catch (Exception e1) {
 			e1.printStackTrace();
+		}
+		updateWatermark();
+	}
+	private static void updateWatermark() {
+		SubstanceWatermark sw;
+		if(Configuration.getBoolean(VariableKey.WATERMARK_ENABLED, false)) {
+			InputStream in;
+			try {
+				in = new FileInputStream(Configuration.getString(VariableKey.WATERMARK_FILE, false));
+			} catch (FileNotFoundException e) {
+				in = CALCubeTimer.class.getResourceAsStream(Configuration.getString(VariableKey.WATERMARK_FILE, true));
+			}
+			SubstanceImageWatermark siw = new SubstanceImageWatermark(in);
+//			{
+//				public void drawWatermarkImage(Graphics g, Component c, int x, int y, int width, int height) {
+//					super.drawWatermarkImage(g, c, x, y, width, height);
+//					AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f);
+//					((Graphics2D)g).setComposite(ac);
+//					g.setColor(Configuration.getColor(VariableKey.TIMER_BG, false));
+//					g.fillRect(0, 0, c.getWidth(), c.getHeight());
+//				}
+//			};
+			siw.setKind(SubstanceConstants.ImageWatermarkKind.APP_CENTER);
+			siw.setOpacity(Configuration.getFloat(VariableKey.OPACITY, false));
+			sw = siw;
+		} else
+			sw = new SubstanceNullWatermark();
+		SubstanceLookAndFeel.setSkin(SubstanceLookAndFeel.getCurrentSkin().withWatermark(sw));
+
+		Window[] frames = Window.getWindows();
+		for(int ch = 0; ch < frames.length; ch++) {
+			frames[ch].repaint();
 		}
 	}
 
@@ -1423,43 +1463,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 	}
 	
-	public void setScramble(String customization, String s) {
-		ScrambleCustomization sc = ScramblePlugin.getCustomizationFromString(customization);
-		if(sc != null)
-			scrambleChooser.setSelectedItem(sc);
-		scramblesList.removeLatestAndFutureScrambles();
-		scramblesList.addScramble(s.trim());
-		updateScramble();
-	}
-
-	private static void updateWatermark() {
-		if(Configuration.getBoolean(VariableKey.WATERMARK_ENABLED, false)) {
-			SubstanceLookAndFeel.setImageWatermarkKind(SubstanceConstants.ImageWatermarkKind.APP_CENTER);
-			SubstanceLookAndFeel.setImageWatermarkOpacity(Configuration.getFloat(VariableKey.OPACITY, false));
-			InputStream in;
-			try {
-				in = new FileInputStream(Configuration.getString(VariableKey.WATERMARK_FILE, false));
-			} catch (FileNotFoundException e) {
-				in = CALCubeTimer.class.getResourceAsStream(Configuration.getString(VariableKey.WATERMARK_FILE, true));
-			}
-			SubstanceLookAndFeel.setCurrentWatermark(new SubstanceImageWatermark(in) {
-//				public void drawWatermarkImage(Graphics g, Component c, int x, int y, int width, int height) {
-//					super.drawWatermarkImage(g, c, x, y, width, height);
-//					AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.75f);
-//					((Graphics2D)g).setComposite(ac);
-//					g.setColor(Configuration.getColor(VariableKey.TIMER_BG, false));
-//					g.fillRect(0, 0, c.getWidth(), c.getHeight());
-//				}
-			});
-		} else
-			SubstanceLookAndFeel.setCurrentWatermark(new SubstanceNoneWatermark());
-
-		Window[] frames = Window.getWindows();
-		for(int ch = 0; ch < frames.length; ch++) {
-			frames[ch].repaint();
-		}
-	}
-	
 	private void loadXMLGUI() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -1496,20 +1499,18 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				GraphicsDevice[] gs = ge.getScreenDevices();
 				GraphicsDevice gd = gs[Configuration.getInt(VariableKey.FULLSCREEN_DESKTOP, false)];
 				fullscreenFrame = new JFrame(gd.getDefaultConfiguration());
-				fullscreenFrame.setUndecorated(true);
-				fullscreenFrame.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
-				
+				fullscreenFrame.getRootPane().setWindowDecorationStyle(JRootPane.NONE); //this is causing a nullpointer in SubstanceRootPaneUI
 				fullscreenFrame.setResizable(false);
 				fullscreenFrame.setUndecorated(true);
 				fullscreenFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-				fullscreenFrame.setContentPane(fullscreenPanel);
+				fullscreenPanel.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.TRUE);
+				fullscreenFrame.add(fullscreenPanel);
 				setFullScreen(isFullscreen);
 			}
 		});
 	}
 	
 	public void configurationChanged() {
-		updateWatermark();
 		boolean stackmatEnabled = Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
 		keyboardTimingAction.putValue(Action.SELECTED_KEY, !stackmatEnabled);
 		lessAnnoyingDisplayAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.LESS_ANNOYING_DISPLAY, false));
@@ -1519,6 +1520,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		profiles.setModel(new DefaultComboBoxModel(Configuration.getProfiles().toArray(new Profile[0])));
 		safeSelectItem(profiles, Configuration.getSelectedProfile());
 		languages.setSelectedItem(Configuration.getDefaultLocale()); //this will force an update of the xml gui
+		updateWatermark();
 
 		ScramblePlugin.reloadLengthsFromConfiguration(false);
 		ScrambleCustomization newCustom = ScramblePlugin.getCurrentScrambleCustomization();
@@ -1549,9 +1551,17 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 	}
 
-	public void importScramblesAction() {
-		ScrambleCustomization sc = new ScrambleImportDialog(this, scramblesList).getScrambleCustomization();
-		scrambleChooser.setSelectedItem(sc);
+	public void importScrambles(ScrambleVariation sv, ArrayList<Scramble> scrambles) {
+		if(!((ScrambleCustomization)scrambleChooser.getSelectedItem()).getScrambleVariation().equals(sv))
+			scramblesList.setScrambleCustomization(ScramblePlugin.getCustomizationFromString("" + sv.toString()));
+		scrambleChooser.setSelectedItem(scramblesList.getScrambleCustomization());
+		scramblesList.importScrambles(scrambles);
+		updateScramble();
+	}
+	public void importScrambles(ScrambleCustomization sc, ArrayList<Scramble> scrambles) {
+		scramblesList.setScrambleCustomization(sc);
+		scramblesList.importScrambles(scrambles);
+		scrambleChooser.setSelectedItem(scramblesList.getScrambleCustomization());
 		updateScramble();
 	}
 
@@ -1850,16 +1860,6 @@ class ResetAction extends AbstractAction{
 		cct.resetAction();
 	}
 }
-class ImportScramblesAction extends AbstractAction{
-	private CALCubeTimer cct;
-	public ImportScramblesAction(CALCubeTimer cct){
-		this.cct = cct;
-	}
-
-	public void actionPerformed(ActionEvent e){
-		cct.importScramblesAction();
-	}
-}
 class ExportScramblesAction extends AbstractAction{
 	private CALCubeTimer cct;
 	public ExportScramblesAction(CALCubeTimer cct){
@@ -1925,7 +1925,7 @@ class ConnectToServerAction extends AbstractAction{
 
 	public void actionPerformed(ActionEvent e){
 //		cct.connectToServer();
-		new IRCClientGUI();
+		new IRCClientGUI(cct);
 	}
 }
 class FlipFullScreenAction extends AbstractAction{

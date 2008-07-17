@@ -25,7 +25,6 @@ public class ScrambleFrame extends JDialog implements ConfigurationChangeListene
 		this.getContentPane().add(scrambleView, BorderLayout.CENTER);
 		Configuration.addConfigurationChangeListener(this);
 	}
-	
 	public void refreshPopup() {
 		pack();
 		setVisible(scrambleView.scrambleHasImage() && Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false));

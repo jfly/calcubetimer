@@ -38,7 +38,7 @@ import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.utils.SubstanceConstants;
+import org.jvnet.substance.api.SubstanceConstants;
 
 public class ScrambleCustomizationListModel extends DraggableJTableModel implements TableCellRenderer, TableCellEditor, MouseListener {
 	private ArrayList<ScrambleCustomization> customizations;

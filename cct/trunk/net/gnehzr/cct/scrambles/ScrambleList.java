@@ -31,11 +31,15 @@ public class ScrambleList {
 	}
 	//this should only be called if we're on the last scramble in this list
 	public void setScrambleCustomization(ScrambleCustomization sc) {
+		if(sc == null)
+			sc = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION;
 		if(custom == null || !sc.getScrambleVariation().equals(custom.getScrambleVariation())) {
-			if(scrambleNumber != scrambles.size())
-				scrambles.remove(scrambles.size() - 1);
+			removeLatestAndFutureScrambles();
+//			if(scrambleNumber != scrambles.size())
+//				scrambles.remove(scrambles.size() - 1);
 		}
-		custom = sc;
+		if(!sc.equals(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION))
+			custom = sc;
 	}
 	
 	public void removeLatestAndFutureScrambles() {

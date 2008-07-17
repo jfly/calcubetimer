@@ -8,7 +8,7 @@ import javax.swing.JList;
 
 import net.gnehzr.cct.configuration.Configuration;
 
-import org.jvnet.substance.SubstanceDefaultListCellRenderer;
+import org.jvnet.substance.api.renderers.SubstanceDefaultListCellRenderer;
 
 public class LocaleRenderer extends SubstanceDefaultListCellRenderer {
 	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {

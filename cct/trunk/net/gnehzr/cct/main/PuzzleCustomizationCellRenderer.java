@@ -8,7 +8,7 @@ import javax.swing.JList;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 
-import org.jvnet.substance.SubstanceDefaultListCellRenderer;
+import org.jvnet.substance.api.renderers.SubstanceDefaultListCellRenderer;
 
 public class PuzzleCustomizationCellRenderer extends SubstanceDefaultListCellRenderer {
 	private boolean icons;

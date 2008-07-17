@@ -66,7 +66,13 @@ public class ScramblePlugin {
 		}
 		return scrambleVariations;
 	}
-
+	public static ScrambleVariation getBestMatchVariation(String variation) {
+		if(variation == null) return null;
+		for(ScrambleVariation var : ScramblePlugin.getScrambleVariations())
+			if(var.toString().toLowerCase().startsWith(variation))
+				return var;
+		return null;
+	}
 	public static ScrambleCustomization getCurrentScrambleCustomization() {
 		String scName = Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, false);
 		ScrambleCustomization sc = getCustomizationFromString(scName);

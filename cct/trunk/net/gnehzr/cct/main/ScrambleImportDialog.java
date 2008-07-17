@@ -22,7 +22,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
@@ -37,7 +36,6 @@ import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
-import net.gnehzr.cct.scrambles.ScrambleList;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 
 import org.jvnet.lafwidget.LafWidget;
@@ -49,12 +47,11 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 	private JEditorPane qualityControl;
 	private ScrambleChooserComboBox scrambleChooser;
 	private JButton importButton, cancelButton;
-	private ScrambleList scramblesList;
-	public ScrambleImportDialog(JFrame owner, ScrambleList scramblesList) {
-		super(owner, StringAccessor.getString("ScrambleImportDialog.importscrambles"), true); //$NON-NLS-1$
+	private CALCubeTimer cct;
+	public ScrambleImportDialog(CALCubeTimer cct, ScrambleCustomization sc) {
+		super(cct, StringAccessor.getString("ScrambleImportDialog.importscrambles"), true); //$NON-NLS-1$
+		this.cct = cct;
 
-		this.scramblesList = scramblesList;
-		
 		JPanel contentPane = new JPanel(new BorderLayout());
 		setContentPane(contentPane);
 		
@@ -77,7 +74,7 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 
 		scrambleChooser = new ScrambleChooserComboBox(false, true);
 		scrambleChooser.addItem(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION);
-		scrambleChooser.setSelectedItem(scramblesList.getScrambleCustomization());
+		scrambleChooser.setSelectedItem(sc);
 		scrambleChooser.addActionListener(this);
 		topBot.add(scrambleChooser);
 
@@ -110,7 +107,7 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 		validateScrambles();
 		setMinimumSize(new Dimension(450, 250));
 		pack();
-		setLocationRelativeTo(owner);
+		setLocationRelativeTo(cct);
 		setVisible(true);
 	}
 
@@ -148,10 +145,7 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 				Utils.showErrorDialog(this, e.toString());
 			}
 		} else if(source == importButton) {
-			ScrambleCustomization sc = getScrambleCustomization();
-			if(!sc.equals(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION))
-				scramblesList.setScrambleCustomization(sc);
-			scramblesList.importScrambles(scrams);
+			cct.importScrambles(getSelectedCustomization(), scrams);
 			setVisible(false);
 		} else if(source == cancelButton) {
 			setVisible(false);
@@ -160,11 +154,7 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 		}
 	}
 	
-	public ScrambleCustomization getScrambleCustomization() {
-		return (ScrambleCustomization) scrambleChooser.getSelectedItem();
-	}
-
-	public ScrambleCustomization getSelectedCustomization() {
+	private ScrambleCustomization getSelectedCustomization() {
 		return (ScrambleCustomization) scrambleChooser.getSelectedItem();
 	}
 
