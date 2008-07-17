@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
@@ -99,20 +100,20 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 				file = new URI(urlField.getText()).toURL();
 			} catch (Exception e1) {
 				Utils.showErrorDialog(this, e1.getMessage() + "\n" + StringAccessor.getString("ScrambleExportDialog.badfilename"));
+				return;
 			}
-			if(file != null)
-				exportScramblesToHTML(file, getNumberOfScrambles(), getVariation());
-			setVisible(false);
+			if(exportScramblesToHTML(file, getNumberOfScrambles(), getVariation()))
+				setVisible(false);
 		} else if(source == exportButton) {
 			URL file = null;
 			try {
 				file = new URI(urlField.getText()).toURL();
 			} catch (Exception e1) {
 				Utils.showErrorDialog(this, e1.getMessage() + "\n" + StringAccessor.getString("ScrambleExportDialog.badfilename"));
+				return;
 			}
-			if(file != null)
-				exportScrambles(file, getNumberOfScrambles(), getVariation());
-			setVisible(false);
+			if(exportScrambles(file, getNumberOfScrambles(), getVariation()))
+				setVisible(false);
 		} else if(source == cancelButton) {
 			setVisible(false);
 		}
@@ -129,7 +130,7 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 		return var;
 	}
 
-	private void exportScrambles(URL outputFile, int numberOfScrambles, ScrambleVariation scrambleVariation) {
+	private boolean exportScrambles(URL outputFile, int numberOfScrambles, ScrambleVariation scrambleVariation) {
 		try {
 			PrintWriter out = new PrintWriter(new FileWriter(new File(outputFile.toURI())));
 			ScrambleList generatedScrambles = new ScrambleList();
@@ -141,24 +142,29 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 			Utils.showConfirmDialog(this, StringAccessor.getString("ScrambleExportDialog.successmessage") + "\n" + outputFile.getPath());
 		} catch(Exception e) {
 			Utils.showErrorDialog(this, e.toString());
+			return false;
 		}
+		return true;
 	}
-
-	private void exportScramblesToHTML(URL outputFile, int numberOfScrambles, ScrambleVariation scrambleVariation) {
-		String path = outputFile.getPath();
-		File imageDir = new File(path + ".files");
-		if(imageDir.exists()){
-			if(!imageDir.isDirectory()){
-				Utils.showErrorDialog(this, StringAccessor.getString("ScrambleExportDialog.directoryexists") + "\n" + imageDir);
-			}
+	
+	private boolean exportScramblesToHTML(URL outputFile, int numberOfScrambles, ScrambleVariation scrambleVariation) {
+		File htmlFile = null;
+		try {
+			htmlFile = new File(outputFile.toURI());
+		} catch (URISyntaxException e1) {
+			e1.printStackTrace();
+			Utils.showErrorDialog(this, e1.toString());
+			return false;
 		}
-		else{
-			imageDir.mkdir();
+		File imageDir = new File(htmlFile.getParentFile(), htmlFile.getName() + ".files");
+		if(imageDir.isFile()){
+			Utils.showErrorDialog(this, StringAccessor.getString("ScrambleExportDialog.directoryexists") + "\n" + imageDir);
+			return false;
 		}
-
-		Color[] colors = new Color[12];
-		for(int i = 0; i < colors.length; i++){
-			colors[i] = new Color((float)Math.random(), (float)Math.random(), (float)Math.random());
+		//need to check isDirectory() because mkdir() returns false if the directory exists
+		if(!imageDir.isDirectory() && !imageDir.mkdir()) {
+			Utils.showErrorDialog(this, StringAccessor.getString("ScrambleExportDialog.mkdirfail") + "\n" + imageDir);
+			return false;
 		}
 
 		ScramblePlugin sp = scrambleVariation.getScramblePlugin();
@@ -174,16 +180,18 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 				String str = s.toString();
 				BufferedImage image = sp.getScrambleImage(s, Configuration.getInt(VariableKey.POPUP_GAP, false).intValue(), sp.getDefaultUnitSize(), sp.getColorScheme(false));
 
-				File file = new File(imageDir + "/scramble" + ch + ".png");
+				File file = new File(imageDir, "scramble" + ch + ".png");
 				ImageIO.write(image, "png", file);
-
-				out.println("<tr><td>" + (ch+1) + "</td><td width='100%'>" + str + "</td><td><img src='" + imageDir.toString().substring(imageDir.toString().lastIndexOf(File.separator) + 1) + "/scramble" + ch + ".png" + "'></td></tr>");
+				out.println("<tr><td>" + (ch+1) + "</td><td width='100%'>" + str + "</td><td><img src='" + imageDir.getName() + File.separator + file.getName() + "'></td></tr>");
 			}
 			out.println("</table></body></html>");
 			out.close();
 			Utils.showConfirmDialog(this, StringAccessor.getString("ScrambleExportDialog.successmessage") + "\n" + outputFile.getPath());
 		} catch(Exception e) {
+			e.printStackTrace();
 			Utils.showErrorDialog(this, e.toString());
+			return false;
 		}
+		return true;
 	}
 }
