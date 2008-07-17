@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.net.ConnectException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -127,6 +126,11 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 			URL url = null;
 			try {
 				url = new URI(urlField.getSelectedItem().toString()).toURL();
+			} catch(Exception ee) {
+				Utils.showErrorDialog(this, ee.getMessage() + "\n" + StringAccessor.getString("ScrambleImportDialog.badname")); //$NON-NLS-1$ //$NON-NLS-2$
+				return;
+			}
+			try {
 				BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 				String line, all = ""; //$NON-NLS-1$
 				while((line = in.readLine()) != null) {
@@ -135,14 +139,13 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 				scrambles.append(all);
 				in.close();
 				urlField.commitCurrentItem();
-			} catch(MalformedURLException ee) {
-				Utils.showErrorDialog(this, ee.getMessage() + "\n" + StringAccessor.getString("ScrambleImportDialog.badname")); //$NON-NLS-1$ //$NON-NLS-2$
 			} catch(ConnectException ee) {
 				Utils.showErrorDialog(this, StringAccessor.getString("ScrambleImportDialog.connectionrefused"));
 			} catch(FileNotFoundException ee) {
 				Utils.showErrorDialog(this, url + "\n" + StringAccessor.getString("ScrambleImportDialog.notfound"));
 			} catch(Exception ee) {
-				Utils.showErrorDialog(this, e.toString());
+				ee.printStackTrace();
+				Utils.showErrorDialog(this, ee.toString());
 			}
 		} else if(source == importButton) {
 			cct.importScrambles(getSelectedCustomization(), scrams);
