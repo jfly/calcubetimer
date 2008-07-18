@@ -105,6 +105,7 @@ public class ScramblePlugin {
 		for(ScrambleVariation t : getScrambleVariations())
 			scrambleCustomizations.add(new ScrambleCustomization(t, null));
 		String[] customNames = Configuration.getStringArray(VariableKey.SCRAMBLE_CUSTOMIZATIONS, defaults);
+		if(customNames == null)	customNames = new String[0];
 		Iterator<String> databaseCustoms = Configuration.getSelectedProfile().getPuzzleDatabase().getCustomizations().iterator();
 		int ch = customNames.length - 1;
 		while(true) {

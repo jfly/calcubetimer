@@ -8,9 +8,12 @@ import net.gnehzr.cct.configuration.VariableKey;
 public class URLHistoryBox extends JComboBox {
 	private VariableKey<String[]> values;
 	public URLHistoryBox(VariableKey<String[]> values) {
-		super(Configuration.getStringArray(values, false));
+		this(Configuration.getStringArray(values, false));
 		this.values = values;
 		setEditable(true);
+	}
+	private URLHistoryBox(String[] values) {
+		super(values == null ? new String[0] : values);
 	}
 	
 	public void commitCurrentItem() {
