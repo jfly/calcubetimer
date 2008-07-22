@@ -24,6 +24,12 @@ public class Scramble {
 	protected static final int random(int choices) {
 		return r.nextInt(choices);
 	}
+	//assumes m > 0
+	protected static final int modulo(int x, int m) {
+		if(x > 0)
+			return x % m;
+		return (m * (-x/m + 1) + x) % m;
+	}
 	
 
 	/******** Required fields, methods, and constructors **********/
