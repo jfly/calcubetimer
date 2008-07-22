@@ -151,7 +151,7 @@ public class MegaminxScramble extends Scramble {
 				} while(last >= 0 && comm[side][last] != 0);
 				last = side;
 				int dir = random(4) + 1;
-				scramble = scramble + FACE_NAMES_COLORS[0][side] + (dir != 1 ? dir : "") + " ";
+				scramble += " " + FACE_NAMES_COLORS[0][side] + (dir != 1 ? dir : "");
 
 				turn(side, dir);
 			}
@@ -162,7 +162,7 @@ public class MegaminxScramble extends Scramble {
 				for(int j = 0; i < length && j < 10; i++, j++){
 					int side = j % 2;
 					dir = random(2);
-					scramble += ((side == 0) ? "R" : "D") + ((dir == 0) ? "++ " : "-- ");
+					scramble += " " + ((side == 0) ? "R" : "D") + ((dir == 0) ? "++" : "--");
 					bigTurn(side, (dir == 0) ? 2 : 3);
 				}
 				dir = random(2);
@@ -171,10 +171,11 @@ public class MegaminxScramble extends Scramble {
 				bigTurn(1, (dir == 0) ? 2 : 3);
 				turn(0, (dir == 0) ? 3 : 2);
 				*/
-				scramble += "U" + ((dir == 0) ? " " : "' ");
+				scramble += " U" + ((dir == 0) ? "" : "'");
 				turn(0, (dir == 0) ? 1 : 4);
 			}
 		}
+		scramble = scramble.substring(1);
 	}
 
 	private void turn(int side, int dir){

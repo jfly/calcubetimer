@@ -19,11 +19,11 @@ import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 
 @SuppressWarnings("unused")
-public class SquareOneScramble extends Scramble {
+public class SquareOneBandagedScramble extends Scramble {
 	private static final String[][] FACE_NAMES_COLORS =
 	{ { "L",	  "B", 		"R", 	  "F",		"U",	  "D" },
 	  { "ffff00", "ff0000", "0000ff", "ffc800", "ffffff", "00ff00" } };
-	private static final String PUZZLE_NAME = "Square-1";
+	private static final String PUZZLE_NAME = "Arnaud Bandaged Square-1";
 	private static final int[] DEFAULT_LENGTHS = { 40 };
 	private static final int DEFAULT_UNIT_SIZE = 32;
 	private static final Pattern TOKEN_REGEX = Pattern.compile("^(\\( *-?\\d+ *, *-?\\d+ *\\)|/)(.*)$");
@@ -33,16 +33,16 @@ public class SquareOneScramble extends Scramble {
 	private int[] state, turns;
 	private boolean slashes;
 
-	public SquareOneScramble(String variation, int length, String... attrs) {
+	public SquareOneBandagedScramble(String variation, int length, String... attrs) {
 		this(length, attrs);
 	}
 
-	private SquareOneScramble(int length, String... attrs) {
+	private SquareOneBandagedScramble(int length, String... attrs) {
 		this.length = length;
 		setAttributes(attrs);
 	}
 
-	public SquareOneScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
+	public SquareOneBandagedScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
 		super(s);
 		if(!setAttributes(attrs))
 			throw new InvalidScrambleException(s);
@@ -84,7 +84,7 @@ public class SquareOneScramble extends Scramble {
 				} else {
 					move=random(23)-11;
 				}
-			} while( (twistCount>1 && move>=-6 && move<0) || domove(i, move));
+			} while(domove(i, move));
 			if(move>0) ls=1;
 			else if(move<0) ls=2;
 			else { ls=0; }
@@ -116,9 +116,9 @@ public class SquareOneScramble extends Scramble {
 		if(l!=0) scramble += ")";
 		scramble = scramble.substring(1);
 	}
-	
-	//returns true if invalid, false if valid
+
 	private boolean domove(int index, int m) {
+		if(m > 0) return true;
 		int i,c,f=m;
 		//do move f
 		if(f == 0) {

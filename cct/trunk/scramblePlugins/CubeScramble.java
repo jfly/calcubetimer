@@ -112,7 +112,7 @@ public class CubeScramble extends Scramble {
 					}
 
 					int n = ((slice * 6 + face) * 4 + direction);
-					scramble += moveString(n) + " ";
+					scramble += " " + moveString(n);
 					do{
 						slice(face, slice, direction);
 						slice--;
@@ -121,6 +121,7 @@ public class CubeScramble extends Scramble {
 			}
 			lastAxis = axis;
 		}
+		scramble = scramble.substring(1);
 	}
 	
 	public static String htmlify(String formatMe) {
