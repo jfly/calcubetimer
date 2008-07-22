@@ -133,7 +133,6 @@ import net.gnehzr.cct.statistics.StatisticsTableModel;
 import net.gnehzr.cct.statistics.UndoRedoListener;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
-import net.gnehzr.cct.umts.client.CCTClient;
 import net.gnehzr.cct.umts.ircclient.IRCClientGUI;
 
 import org.jvnet.lafwidget.LafWidget;
@@ -180,7 +179,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	ScrambleFrame scramblePopup = null;
 	ScrambleList scramblesList = new ScrambleList();
 	private StackmatInterpreter stackmatTimer = null;
-	private CCTClient client;
+	IRCClientGUI client;
 	ConfigurationDialog configurationDialog;
 
 	public CALCubeTimer() {
@@ -201,14 +200,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private StatisticsAction rollingAverageAction1;
 	private StatisticsAction sessionAverageAction;
 	private AddTimeAction addTimeAction;
-//	private ImportScramblesAction importScramblesAction;
 	private ExportScramblesAction exportScramblesAction;
 	private ExitAction exitAction;
 	private AboutAction aboutAction;
 	private DocumentationAction documentationAction;
 	private ShowConfigurationDialogAction showConfigurationDialogAction;
-	private ConnectToServerAction connectToServerAction;
-	private FlipFullScreenAction flipFullScreenAction;
 	private KeyboardTimingAction keyboardTimingAction;
 	private SpacebarOptionAction spacebarOptionAction;
 	private FullScreenTimingAction fullScreenTimingAction;
@@ -216,6 +212,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private LessAnnoyingDisplayAction lessAnnoyingDisplayAction;
 	private ResetAction resetAction;
 	private RequestScrambleAction requestScrambleAction;
+	private AbstractAction flipFullScreenAction; 
 	AbstractAction undo;
 	AbstractAction redo;
 	private AbstractAction toggleScrambleView;
@@ -248,10 +245,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		sessionAverageAction = new StatisticsAction(this, statsModel, AverageType.SESSION, 0);
 		actionMap.put("sessionaverage", sessionAverageAction); //$NON-NLS-1$
 
-		flipFullScreenAction = new FlipFullScreenAction(this);
-		flipFullScreenAction.putValue(Action.NAME, "+"); //$NON-NLS-1$
-		actionMap.put("togglefullscreen", flipFullScreenAction); //$NON-NLS-1$
-
+		flipFullScreenAction = new AbstractAction() { //$NON-NLS-1$
+			{ putValue(Action.NAME, "+"); }
+			public void actionPerformed(ActionEvent e) {
+				setFullScreen(!isFullscreen);
+			}
+		};
+		actionMap.put("togglefullscreen", flipFullScreenAction);
 
 		actionMap.put("importscrambles", new AbstractAction() { //$NON-NLS-1$
 			{
@@ -269,12 +269,23 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		exportScramblesAction.putValue(Action.ACCELERATOR_KEY,
 				KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
 		actionMap.put("exportscrambles", exportScramblesAction); //$NON-NLS-1$
-
-		connectToServerAction = new ConnectToServerAction(this);
-		connectToServerAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
-		connectToServerAction.putValue(Action.ACCELERATOR_KEY,
-				KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
-		actionMap.put("connecttoserver", connectToServerAction); //$NON-NLS-1$
+				
+		actionMap.put("connecttoserver", new AbstractAction() { //$NON-NLS-1$
+			{
+				putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
+				putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+			}
+			public void actionPerformed(ActionEvent e) {
+				if(e == null) { //this means that the client gui was disposed
+					this.setEnabled(true);
+				} else {
+					if(client == null)
+						client = new IRCClientGUI(CALCubeTimer.this, this);
+					client.setVisible(true);
+					this.setEnabled(false);
+				}
+			}
+		});
 
 		showConfigurationDialogAction = new ShowConfigurationDialogAction(this);
 		showConfigurationDialogAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_C);
@@ -465,6 +476,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		};
 
 		timesTable = new DraggableJTable(false, true); //$NON-NLS-1$
+//		timesTable.setFocusable(false); //Man, this is almost perfect for us
 		timesTable.setName("timesTable"); //$NON-NLS-1$
 		timesTable.setDefaultEditor(SolveTime.class, new SolveTimeEditor()); //$NON-NLS-1$
 		timesTable.setDefaultRenderer(SolveTime.class, new SolveTimeRenderer(statsModel));
@@ -663,7 +675,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		statsModel.fireStringUpdates(); //this is necessary to update the undo-redo actions
 //		timeLabel.refreshTimer(); //this is inside of parse_xml
 
-		flipFullScreenAction.putValue(Action.SHORT_DESCRIPTION, StringAccessor.getString("CALCubeTimer.togglefullscreen")); //$NON-NLS-1$
 		customGUIMenu.setText(StringAccessor.getString("CALCubeTimer.loadcustomgui")); //$NON-NLS-1$
 		timesTable.setAddText(StringAccessor.getString("CALCubeTimer.addtime")); //$NON-NLS-1$
 		scramblePopup.setTitle(StringAccessor.getString("CALCubeTimer.scrambleview"));
@@ -1441,25 +1452,25 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	private void sendCurrentTime(String s){
 		if(client != null && client.isConnected()){
-			client.sendCurrentTime(s);
+//			client.sendCurrentTime(s);
 		}
 	}
 
 	private void sendTime(SolveTime s){
 		if(client != null && client.isConnected()){
-			client.sendTime(s);
+//			client.sendTime(s);
 		}
 	}
 
 	private void sendAverage(String s) {
 		if(client != null && client.isConnected()) {
-			client.sendAverage(s, statsModel.getCurrentStatistics());
+//			client.sendAverage(s, statsModel.getCurrentStatistics());
 		}
 	}
 
 	private void sendBestAverage(String s) {
 		if(client != null && client.isConnected()) {
-			client.sendBestAverage(s, statsModel.getCurrentStatistics());
+//			client.sendBestAverage(s, statsModel.getCurrentStatistics());
 		}
 	}
 	
@@ -1499,7 +1510,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				GraphicsDevice[] gs = ge.getScreenDevices();
 				GraphicsDevice gd = gs[Configuration.getInt(VariableKey.FULLSCREEN_DESKTOP, false)];
 				fullscreenFrame = new JFrame(gd.getDefaultConfiguration());
-				fullscreenFrame.getRootPane().setWindowDecorationStyle(JRootPane.NONE); //this is causing a nullpointer in SubstanceRootPaneUI
+				//TODO - this is causing a nullpointer in SubstanceRootPaneUI, possible substance bug?
+				fullscreenFrame.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
 				fullscreenFrame.setResizable(false);
 				fullscreenFrame.setUndecorated(true);
 				fullscreenFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -1590,12 +1602,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 		});
 	}
-
-	public void connectToServer(){
-		client = new CCTClient(this, cubeIcon);
-		client.enableAndDisable(connectToServerAction);
-	}
-
+	
 	public void flipFullScreen(){
 		setFullScreen(!isFullscreen);
 	}
@@ -1915,17 +1922,6 @@ class ShowConfigurationDialogAction extends AbstractAction{
 
 	public void actionPerformed(ActionEvent e){
 		cct.showConfigurationDialog();
-	}
-}
-class ConnectToServerAction extends AbstractAction{
-	private CALCubeTimer cct;
-	public ConnectToServerAction(CALCubeTimer cct){
-		this.cct = cct;
-	}
-
-	public void actionPerformed(ActionEvent e){
-//		cct.connectToServer();
-		new IRCClientGUI(cct);
 	}
 }
 class FlipFullScreenAction extends AbstractAction{
