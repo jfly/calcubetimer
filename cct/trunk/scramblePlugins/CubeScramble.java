@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.image.BufferedImage;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
@@ -25,10 +26,11 @@ public class CubeScramble extends Scramble {
 	private static final String[] ATTRIBUTES = {"%%multislice%%"};
 	private static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
 	private static final int DEFAULT_UNIT_SIZE = 11;
-	private static final Pattern TOKEN_REGEX = Pattern.compile("^([LDBRUFldbruf](?:\\(\\d+\\))?w?[2']?)(.*)$");
+	private static final Pattern TOKEN_REGEX = Pattern.compile("^((?:\\d+)?[LDBRUFldbruf](?:\\(\\d+\\))?w?[2']?)(.*)$");
 	
 	private static final String FACES = "LDBRUFldbruf";
 	private static final boolean wideNotation = true;
+	private static final boolean danCohenNotation = true;
 	private int size;
 	private int[][][] image;
 
@@ -144,8 +146,16 @@ public class CubeScramble extends Scramble {
 			}
 		}
 		else{
-			move += FACES.charAt(face % 6);
-			if(face / 6 != 0) move += "(" + (face / 6 + 1) + ")";
+			String f = "" + FACES.charAt(face % 6);
+			if(face / 6 == 0) {
+				move += f;
+			} else {
+				if(danCohenNotation) {
+					move += (face / 6 + 1) + f;
+				} else {
+					move += f + "(" + (face / 6 + 1) + ")";
+				}
+			}
 		}
 		if(direction != 0) move += " 2'".charAt(direction);
 
@@ -153,7 +163,8 @@ public class CubeScramble extends Scramble {
 	}
 	private final static String regexp23 = "^[LDBRUF][2']?$";
 	private final static String regexp45 = "^(?:[LDBRUF]w?|[ldbruf])[2']?$";
-	private final static String regexp = "^[LDBRUF](?:\\(\\d+\\))?[2']?$";
+	private final static String regexp = "^(\\d+)?[LDBRUF](?:\\(\\d+\\))?[2']?$";
+	private final static Pattern cohen = Pattern.compile("^(\\d+)?([LDBRUF])(?:\\((\\d+)\\))?[2']?$");
 	private boolean validateScramble(){
 		String[] strs = scramble.split(" ");
 		length = strs.length;
@@ -188,14 +199,29 @@ public class CubeScramble extends Scramble {
 
 		try{
 			for(int i = 0; i < cstrs.length; i++){
-				int face = FACES.indexOf(cstrs[i].charAt(0) + "");
+				int face;
+				String slice1 = null;
+				if(size > 5) {
+					Matcher m = cohen.matcher(cstrs[i]);
+					if(!m.matches()) {
+						return false;
+					}
+					slice1 = m.group(1);
+					String slice2 = m.group(3);
+					if(slice1 != null && slice2 != null) //only dan cohen's notation or the old style is allowed, not both
+						return false;
+					if(slice1 == null)
+						slice1 = slice2;
+					face = FACES.indexOf(m.group(2));
+				} else {
+					face = FACES.indexOf(cstrs[i].charAt(0) + "");
+				}
 				if(cstrs[i].indexOf("w") >= 0) face += 6;
 				int slice = face / 6;
 				int dir = 0;
 
-				if(cstrs[i].indexOf("(") >= 0){
-					slice = Integer.parseInt(cstrs[i].substring(cstrs[i].indexOf("(") + 1, cstrs[i].indexOf(")"))) - 1;
-				}
+				if(slice1 != null)
+					slice = Integer.parseInt(slice1) - 1;
 
 				dir = " 2'".indexOf(cstrs[i].charAt(cstrs[i].length() - 1) + "");
 				if(dir < 0) dir = 0;

@@ -20,10 +20,10 @@ public class CCTSecurityManager extends SecurityManager implements Configuration
 		//we can't do this by setting a policy,
 		//because of doPrivileged() calls in APIs
 		//like swing
-		if(enabled)
-			for(Class<?> c : getClassContext())
-				if(pluginLoader.equals(c.getClassLoader()))
-					throw new SecurityException(perm.toString());
+//		if(enabled)
+//			for(Class<?> c : getClassContext())
+//				if(pluginLoader.equals(c.getClassLoader()))
+//					throw new SecurityException(perm.toString());
 //		super.checkPermission(perm);
 	}
 }
