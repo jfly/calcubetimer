@@ -121,7 +121,8 @@ public class CubeScramble extends Scramble {
 			}
 			lastAxis = axis;
 		}
-		scramble = scramble.substring(1);
+		if(!scramble.isEmpty())
+			scramble = scramble.substring(1);
 	}
 	
 	public static String htmlify(String formatMe) {

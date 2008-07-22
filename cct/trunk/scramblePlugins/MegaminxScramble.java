@@ -175,7 +175,8 @@ public class MegaminxScramble extends Scramble {
 				turn(0, (dir == 0) ? 1 : 4);
 			}
 		}
-		scramble = scramble.substring(1);
+		if(!scramble.isEmpty())
+			scramble = scramble.substring(1);
 	}
 
 	private void turn(int side, int dir){
