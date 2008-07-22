@@ -6,12 +6,19 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.Border;
@@ -22,6 +29,7 @@ import javax.swing.text.html.HTMLDocument;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
@@ -31,9 +39,11 @@ import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 import org.jvnet.lafwidget.LafWidget;
 
-public class ScrambleArea extends JScrollPane implements ComponentListener, HyperlinkListener {
+public class ScrambleArea extends JScrollPane implements ComponentListener, HyperlinkListener, MouseListener, MouseMotionListener {
 	private ScrambleFrame scramblePopup;
 	private JEditorPane scramblePane = null;
+	private JPopupMenu success;
+	private JLabel successMsg;
 	public ScrambleArea(ScrambleFrame scramblePopup) {
 		super(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		this.scramblePopup = scramblePopup;
@@ -56,7 +66,41 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		resetPreferredSize();
 		addComponentListener(this);
 		scramblePane.setFocusable(false); //this way, we never steal focus from the keyboard timer
+		scramblePane.addMouseListener(this);
+		scramblePane.addMouseMotionListener(this);
+		scramblePane.putClientProperty(LafWidget.TEXT_EDIT_CONTEXT_MENU, Boolean.FALSE);
+		
+		success = new JPopupMenu();
+		success.setFocusable(false);
+		success.add(successMsg = new JLabel());
+		updateStrings();
 	}
+	public void mouseClicked(MouseEvent e) {
+		if(e.getClickCount() == 2) {
+	        StringSelection ss = new StringSelection(currentScramble);
+	        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
+
+			success.show(e.getComponent(), e.getX() + 10, e.getY() + 10);
+		}
+	}
+	public void updateStrings() {
+		scramblePane.setToolTipText(StringAccessor.getString("ScrambleArea.tooltip"));
+		successMsg.setText(StringAccessor.getString("ScrambleArea.copymessage"));
+		success.pack();
+	}
+	public void mousePressed(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {}
+	public void mouseEntered(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {
+		success.setVisible(false);
+	}
+	public void mouseDragged(MouseEvent e) {
+		success.setVisible(false);
+	}
+	public void mouseMoved(MouseEvent e) {
+		success.setVisible(false);
+	}
+
 	
 	public void updateUI() {
 		Border t = getBorder();

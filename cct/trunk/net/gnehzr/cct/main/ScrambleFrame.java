@@ -16,6 +16,7 @@ import net.gnehzr.cct.scrambles.ScrambleVariation;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 
 public class ScrambleFrame extends JDialog implements ConfigurationChangeListener {
+	//TODO - disable substance watermark here?
 	private ScrambleViewComponent scrambleView;
 	private AbstractAction visibilityAction;
 	public ScrambleFrame(JFrame parent, AbstractAction scrambleVisibility, boolean detectColorClicks) {

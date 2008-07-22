@@ -680,6 +680,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scramblePopup.setTitle(StringAccessor.getString("CALCubeTimer.scrambleview"));
 		scrambleNumber.setToolTipText(StringAccessor.getString("CALCubeTimer.scramblenumber")); //$NON-NLS-1$
 		scrambleLength.setToolTipText(StringAccessor.getString("CALCubeTimer.scramblelength")); //$NON-NLS-1$
+		scrambleArea.updateStrings();
 
 		stackmatOn(false);
 		timesTable.refreshColumnNames();

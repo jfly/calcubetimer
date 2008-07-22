@@ -213,12 +213,13 @@ changes:
 +restore focus to timer after right clicking time
 +fixed sunday contest, added javascript validation (emailed jon morris 7/14/08)
 	+added "details" button to the server response dialog
++copy by double click for scramble field
 
 TODO:
 
 for release:
+-dan cohen's big big cube notation
 -saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files?
--copy for scramble field
 -copy shortcuts for mac & command q?
 -split screen scramble?
 -multiple timers?
