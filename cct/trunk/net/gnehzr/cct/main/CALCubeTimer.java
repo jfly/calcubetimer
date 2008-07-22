@@ -1274,9 +1274,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				Configuration.addConfigurationChangeListener(cct);
 				cct.setTitle("CCT " + CCT_VERSION); //$NON-NLS-1$
 				cct.setIconImage(cubeIcon.getImage());
-				cct.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+				cct.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 				cct.setSelectedProfile(Configuration.getSelectedProfile()); //this will eventually cause sessionSelected() and configurationChanged() to be called
 				cct.setVisible(true);
+				Runtime.getRuntime().addShutdownHook(new Thread() {
+					public void run() {
+						cct.prepareForProfileSwitch();
+					}
+				});
 			}
 		});
 	}
@@ -1355,7 +1360,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 	}
 
-	private void prepareForProfileSwitch() {
+	void prepareForProfileSwitch() {
 		Profile p = Configuration.getSelectedProfile();
 		try {
 			p.saveDatabase();
@@ -1376,11 +1381,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 	}
 
-	public void dispose() {
-		prepareForProfileSwitch();
-		super.dispose();
-		System.exit(0);
-	}
 	private void saveToConfiguration() {
 		Configuration.setString(VariableKey.DEFAULT_SCRAMBLE_CUSTOMIZATION, scramblesList.getScrambleCustomization().toString());
 		ScramblePlugin.saveLengthsToConfiguration();
