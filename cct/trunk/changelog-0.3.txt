@@ -215,14 +215,15 @@ changes:
 	+added "details" button to the server response dialog
 +copy by double click for scramble field
 +improvaed shutdown of cct, test command q with os x (dan cohen)
++split screen scramble (accessible via right click or configdialog)
 
 TODO:
 
 for release:
+-generator groups for scramble plugins
 -dan cohen's big big cube notation
 -saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files?
 -copy shortcuts for mac?
--split screen scramble?
 -multiple timers?
 -mean of 3 instead of average
 -associate scramble customization w/ RA 0 & RA 1

@@ -676,7 +676,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 //		timeLabel.refreshTimer(); //this is inside of parse_xml
 
 		customGUIMenu.setText(StringAccessor.getString("CALCubeTimer.loadcustomgui")); //$NON-NLS-1$
-		timesTable.setAddText(StringAccessor.getString("CALCubeTimer.addtime")); //$NON-NLS-1$
+		timesTable.refreshStrings(StringAccessor.getString("CALCubeTimer.addtime")); //$NON-NLS-1$
 		scramblePopup.setTitle(StringAccessor.getString("CALCubeTimer.scrambleview"));
 		scrambleNumber.setToolTipText(StringAccessor.getString("CALCubeTimer.scramblenumber")); //$NON-NLS-1$
 		scrambleLength.setToolTipText(StringAccessor.getString("CALCubeTimer.scramblelength")); //$NON-NLS-1$
@@ -1284,6 +1284,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				});
 			}
 		});
+	}
+	//this happens in windows when alt+f4 is pressed
+	public void dispose() {
+		super.dispose();
+		System.exit(0);
 	}
 
 	static void setLookAndFeel() {

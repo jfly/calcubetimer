@@ -39,10 +39,12 @@ import net.gnehzr.cct.misc.Utils;
 
 public class DraggableJTable extends JTable implements MouseListener, MouseMotionListener, KeyListener, ActionListener {
 	String addText;
+	private boolean columnChooser; 
 
 	//You must set any editors or renderers before setting this table's model
 	//because the preferred size is computed inside setModel()
 	public DraggableJTable(boolean draggable, boolean columnChooser) {
+		this.columnChooser = columnChooser;
 		this.addMouseListener(this);
 		if(draggable) {
 			setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -72,13 +74,18 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 				}
 			});
 		}
+		refreshStrings(null);
 	}
 	
 	public String getToolTipText(MouseEvent event) {
 		return model.getToolTip(convertRowIndexToModel(rowAtPoint(event.getPoint())));
 	}
 
-	public void setAddText(String addText) {
+	//this will refresh any draggablejtable specific strings
+	//and the addtext for the editable row at bottom
+	public void refreshStrings(String addText) {
+		if(columnChooser)
+			headers.setToolTipText(StringAccessor.getString("DraggableJTable.columntooltip"));
 		this.addText = addText;
 	}
 	

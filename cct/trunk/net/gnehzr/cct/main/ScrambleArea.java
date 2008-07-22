@@ -111,17 +111,18 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		setPreferredSize(new Dimension(0, 100));
 	}
 	private String currentScramble;
+	private Scramble fullScramble;
 	private ScrambleCustomization currentCustomization;
 	private String part1, part2;
 	private static final Pattern NULL_SCRAMBLE_REGEX = Pattern.compile("^(.+)()$");
 	public void setScramble(String newScramble, ScrambleCustomization sc) {
 		currentCustomization = sc;
-		Scramble scram = null;
 		try {
-			scram = currentCustomization.getScrambleVariation().generateScramble(newScramble);
-			currentScramble = scram.toString();
+			fullScramble = currentCustomization.getScrambleVariation().generateScramble(newScramble);
+			currentScramble = fullScramble.toString();
 		} catch(Exception e) { //if we can't parse this scramble, we'll just treat it as a null scramble
 			currentScramble = newScramble.trim();
+			fullScramble = null;
 		}
 
 		Font font = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
@@ -149,7 +150,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		Matcher m;
 		int num = 0;
 		Pattern regex = currentCustomization.getScramblePlugin().getTokenRegex();
-		if(regex == null || scram == null)
+		if(regex == null || fullScramble == null)
 			regex = NULL_SCRAMBLE_REGEX;
 		
 		String description = ""; //$NON-NLS-1$
@@ -197,7 +198,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 					e1.printStackTrace();
 				}
 			}
-			scramblePopup.setScramble(s, sv);
+			scramblePopup.setScramble(s, fullScramble, sv);
 		}
 	}
 

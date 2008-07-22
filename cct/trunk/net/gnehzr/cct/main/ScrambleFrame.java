@@ -1,41 +1,57 @@
 package net.gnehzr.cct.main;
 
-import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 
-public class ScrambleFrame extends JDialog implements ConfigurationChangeListener {
-	//TODO - disable substance watermark here?
-	private ScrambleViewComponent scrambleView;
+import org.jvnet.substance.SubstanceLookAndFeel;
+
+public class ScrambleFrame extends JDialog implements ConfigurationChangeListener, MouseListener, ActionListener {
+	private JPanel pane;
+	private ScrambleViewComponent incrementalScrambleView, finalView;
 	private AbstractAction visibilityAction;
 	public ScrambleFrame(JFrame parent, AbstractAction scrambleVisibility, boolean detectColorClicks) {
 		super(parent);
 		visibilityAction = scrambleVisibility;
-		scrambleView = new ScrambleViewComponent(false, detectColorClicks);
-		this.getContentPane().add(scrambleView, BorderLayout.CENTER);
+		incrementalScrambleView = new ScrambleViewComponent(false, detectColorClicks);
+		finalView = new ScrambleViewComponent(false, detectColorClicks);
+		pane = new JPanel(new GridLayout(1, 0));
+		pane.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.FALSE);
+		pane.add(incrementalScrambleView);
+		this.setContentPane(pane);
 		Configuration.addConfigurationChangeListener(this);
+		addMouseListener(this);
+		setFinalViewVisible(Configuration.getBoolean(VariableKey.SIDE_BY_SIDE_SCRAMBLE, false));
 	}
 	public void refreshPopup() {
 		pack();
-		setVisible(scrambleView.scrambleHasImage() && Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false));
+		setVisible(incrementalScrambleView.scrambleHasImage() && Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, false));
 	}
 	public void setVisible(boolean c) {
 		//this is here to prevent calls to setVisible(true) when the popup is already visible
 		//if we were to allow these, then the main gui could pop up on top of our fullscreen panel
 		if(isVisible() == c)
 			return;
-		if(scrambleView.scrambleHasImage()) {
+		if(incrementalScrambleView.scrambleHasImage()) {
 			Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, c);
 			visibilityAction.putValue(Action.SELECTED_KEY, c);
 		}
@@ -43,14 +59,53 @@ public class ScrambleFrame extends JDialog implements ConfigurationChangeListene
 	}
 
 	public void configurationChanged() {
-		scrambleView.syncColorScheme(false);
+		setFinalViewVisible(Configuration.getBoolean(VariableKey.SIDE_BY_SIDE_SCRAMBLE, false));
+		incrementalScrambleView.syncColorScheme(false);
 		refreshPopup();
 		Point location = Configuration.getPoint(VariableKey.SCRAMBLE_VIEW_LOCATION, false);
 		if(location != null)
 			setLocation(location);
 	}
-	public void setScramble(Scramble newScramble, ScrambleVariation newVariation) {
-		scrambleView.setScramble(newScramble, newVariation);
+	public void setScramble(Scramble incrementalScramble, Scramble fullScramble, ScrambleVariation newVariation) {
+		incrementalScrambleView.setScramble(incrementalScramble, newVariation);
+		finalView.setScramble(fullScramble, newVariation);
 		refreshPopup();
+	}
+	public void mouseClicked(MouseEvent e) {
+		maybeShowPopup(e);
+	}
+	public void mouseEntered(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {}
+	public void mousePressed(MouseEvent e) {
+		maybeShowPopup(e);
+	}
+	public void mouseReleased(MouseEvent e) {
+		maybeShowPopup(e);
+	}
+	private void maybeShowPopup(MouseEvent e) {
+		if(e.isPopupTrigger()) {
+			JPopupMenu popup = new JPopupMenu();
+			JCheckBoxMenuItem showFinal = new JCheckBoxMenuItem(StringAccessor.getString("ScrambleFrame.showfinalview"), isFinalViewVisible());
+			showFinal.addActionListener(this);
+			popup.add(showFinal);
+			popup.show(this, e.getX(), e.getY());
+		}
+	}
+	public void actionPerformed(ActionEvent e) {
+		JCheckBoxMenuItem src = (JCheckBoxMenuItem) e.getSource();
+		setFinalViewVisible(src.isSelected());
+	}
+	
+	private boolean isFinalViewVisible() {
+		return finalView.getParent() == pane;
+	}
+	public void setFinalViewVisible(boolean visible) {
+		Configuration.setBoolean(VariableKey.SIDE_BY_SIDE_SCRAMBLE, visible);
+		if(isFinalViewVisible() == visible) return;
+		if(visible)
+			pane.add(finalView);
+		else
+			pane.remove(finalView);
+		pack();
 	}
 }

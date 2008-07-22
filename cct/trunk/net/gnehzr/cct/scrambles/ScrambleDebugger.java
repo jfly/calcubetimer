@@ -21,6 +21,7 @@ public class ScrambleDebugger extends ScramblePlugin {
 	public ScrambleDebugger(File plugin, int length) throws SecurityException, IllegalArgumentException, NoSuchMethodException, NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
 		super(plugin);
 		//TODO - add stuff for unit token
+		//TODO - appears to not be working
 		System.out.println("Puzzle name: " + super.PUZZLE_NAME);
 		System.out.println("Puzzle faces and default colors: " + Arrays.deepToString(super.FACE_NAMES_COLORS));
 		System.out.println("Default unit size: " + super.DEFAULT_UNIT_SIZE);
@@ -35,7 +36,7 @@ public class ScrambleDebugger extends ScramblePlugin {
 		AbstractAction aa = new AbstractAction() {public void actionPerformed(ActionEvent e) {}};
 		ScrambleFrame view = new ScrambleFrame(null, aa, true);
 		view.setTitle("ScrambleDebugger");
-		view.setScramble(s, new ScrambleVariation(this, ""));
+		view.setScramble(null, s, new ScrambleVariation(this, ""));
 		view.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		view.pack();
 		view.setVisible(true);

@@ -99,6 +99,7 @@ public class VariableKey<H> {
 	public static final VariableKey<Font> TIMER_FONT = new VariableKey<Font>("Timer_font"); //$NON-NLS-1$
 	public static final VariableKey<Font> SCRAMBLE_FONT = new VariableKey<Font>("Scramble_font"); //$NON-NLS-1$
 
+	public static final VariableKey<Boolean> SIDE_BY_SIDE_SCRAMBLE = new VariableKey<Boolean>("GUI_ScrambleView_sideBySide"); //$NON-NLS-1$
 	public static final VariableKey<Boolean> SCRAMBLE_PLUGINS_SECURE = new VariableKey<Boolean>("Scramble_Plugins_secure"); //$NON-NLS-1$
 	public static final VariableKey<Boolean> SPEAK_INSPECTION = new VariableKey<Boolean>("Misc_Voices_readInspection"); //$NON-NLS-1$
 	public static final VariableKey<Boolean> SPEAK_TIMES = new VariableKey<Boolean>("Misc_Voices_readTimes"); //$NON-NLS-1$

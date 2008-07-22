@@ -432,7 +432,7 @@ public class ScramblePlugin {
 	}
 	
 	public BufferedImage getScrambleImage(final Scramble instance, final int gap, final int unitSize, final Color[] colorScheme) {
-		if(getScrambleImage != null && pluginClass.equals(instance.getClass())) {
+		if(getScrambleImage != null && pluginClass != null && instance != null && pluginClass.equals(instance.getClass())) {
 			try {
 				return TimeoutJob.doWork(new Callable<BufferedImage>() {
 					public BufferedImage call() throws Exception {

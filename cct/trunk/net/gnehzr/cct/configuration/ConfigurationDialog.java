@@ -199,7 +199,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 	JCheckBox clockFormat;
 	JCheckBox promptForNewTime;
-	JCheckBox scramblePopup;
+	JCheckBox scramblePopup, sideBySideScramble;
 	JCheckBox inspectionCountdown;
 	JCheckBox speakInspection;
 	JCheckBox speakTimes;
@@ -236,7 +236,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		rightPanel.add(promptForNewTime);
 
 		scramblePopup = new JCheckBox(StringAccessor.getString("ConfigurationDialog.scramblepopup")); //$NON-NLS-1$
-		rightPanel.add(scramblePopup);
+		sideBySideScramble = new JCheckBox(StringAccessor.getString("ConfigurationDialog.sidebysidescramble")); //$NON-NLS-1$
+		rightPanel.add(sideBySide(null, scramblePopup, sideBySideScramble));
 		
 		inspectionCountdown = new JCheckBox(StringAccessor.getString("ConfigurationDialog.inspection")); //$NON-NLS-1$
 		inspectionCountdown.addItemListener(this);
@@ -304,6 +305,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 				clockFormat.setSelected(Configuration.getBoolean(VariableKey.CLOCK_FORMAT, defaults));
 				promptForNewTime.setSelected(Configuration.getBoolean(VariableKey.PROMPT_FOR_NEW_TIME, defaults));
 				scramblePopup.setSelected(Configuration.getBoolean(VariableKey.SCRAMBLE_POPUP, defaults));
+				sideBySideScramble.setSelected(Configuration.getBoolean(VariableKey.SIDE_BY_SIDE_SCRAMBLE, defaults));
 				inspectionCountdown.setSelected(Configuration.getBoolean(VariableKey.COMPETITION_INSPECTION, defaults));
 				speakInspection.setSelected(Configuration.getBoolean(VariableKey.SPEAK_INSPECTION, defaults));
 				speakInspection.setEnabled(inspectionCountdown.isSelected());
@@ -463,13 +465,13 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		JPanel panel = new JPanel(new BorderLayout(10, 10));
 
 		DraggableJTable profilesTable = new DraggableJTable(true, false);
-		profilesTable.setAddText(StringAccessor.getString("ConfigurationDialog.addprofile")); //$NON-NLS-1$
+		profilesTable.refreshStrings(StringAccessor.getString("ConfigurationDialog.addprofile")); //$NON-NLS-1$
 		profilesTable.getTableHeader().setReorderingAllowed(false);
 		profilesTable.setModel(profilesModel);
 		profilesTable.setDefaultEditor(Profile.class, new ProfileEditor(StringAccessor.getString("ConfigurationDialog.newprofile"), profilesModel)); //$NON-NLS-1$
 
 		DraggableJTable scramTable = new DraggableJTable(true, false);
-		scramTable.setAddText(StringAccessor.getString("ConfigurationDialog.addpuzzle")); //$NON-NLS-1$
+		scramTable.refreshStrings(StringAccessor.getString("ConfigurationDialog.addpuzzle")); //$NON-NLS-1$
 		scramTable.getTableHeader().setReorderingAllowed(false);
 		scramTable.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.FALSE);
 		scramTable.setShowGrid(false);
@@ -1089,6 +1091,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setBoolean(VariableKey.CLOCK_FORMAT, clockFormat.isSelected());
 		Configuration.setBoolean(VariableKey.PROMPT_FOR_NEW_TIME, promptForNewTime.isSelected());
 		Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, scramblePopup.isSelected());
+		Configuration.setBoolean(VariableKey.SIDE_BY_SIDE_SCRAMBLE, sideBySideScramble.isSelected());
 		Configuration.setBoolean(VariableKey.COMPETITION_INSPECTION, inspectionCountdown.isSelected());
 		Configuration.setBoolean(VariableKey.SPEAK_INSPECTION, speakInspection.isSelected());
 		Configuration.setInt(VariableKey.RA_SIZE0, (Integer) RASize0.getValue());
