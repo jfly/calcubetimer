@@ -173,7 +173,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	//when they are referenced in the xml gui (type="blah...blah")
 	//we also reset their attributes before parsing the xml gui
 	ComponentsMap persistentComponents;
-	
+
 	TimerLabel bigTimersDisplay = null;
 	JLayeredPane fullscreenPanel = null;
 	ScrambleFrame scramblePopup = null;
@@ -188,7 +188,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		initializeGUIComponents();
 		stackmatTimer.execute();
 	}
-	
+
 	public void setSelectedProfile(Profile p) {
 		profiles.setSelectedItem(p);
 	}
@@ -212,7 +212,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private LessAnnoyingDisplayAction lessAnnoyingDisplayAction;
 	private ResetAction resetAction;
 	private RequestScrambleAction requestScrambleAction;
-	private AbstractAction flipFullScreenAction; 
+	private AbstractAction flipFullScreenAction;
 	AbstractAction undo;
 	AbstractAction redo;
 	private AbstractAction toggleScrambleView;
@@ -269,7 +269,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		exportScramblesAction.putValue(Action.ACCELERATOR_KEY,
 				KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
 		actionMap.put("exportscrambles", exportScramblesAction); //$NON-NLS-1$
-				
+
 		actionMap.put("connecttoserver", new AbstractAction() { //$NON-NLS-1$
 			{
 				putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
@@ -356,7 +356,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				redo.putValue(Action.NAME, StringAccessor.getString("CALCubeTimer.redo") + redoable); //$NON-NLS-1$
 			}
 		});
-		
+
 		final SundayContestDialog submitter = new SundayContestDialog(this);
 		actionMap.put("submitsundaycontest", new AbstractAction() { //$NON-NLS-1$
 			public void actionPerformed(ActionEvent e) {
@@ -448,7 +448,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		tickTock = new Timer(0, null);
 
 		currentTimeLabel = new DateTimeLabel();
-		
+
 		scrambleChooser = new ScrambleChooserComboBox(true, true);
 		scrambleChooser.addItemListener(this);
 
@@ -498,38 +498,38 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		stackmatTimer = new StackmatInterpreter();
 		new StackmatHandler(this, stackmatTimer);
-		
+
 		timeLabel = new TimerLabel(scrambleArea);
 		bigTimersDisplay = new TimerLabel(scrambleArea);
-		
+
 		KeyboardHandler keyHandler = new KeyboardHandler(this);
 		timeLabel.setKeyboardHandler(keyHandler);
 		bigTimersDisplay.setKeyboardHandler(keyHandler);
 
 		fullscreenPanel = new JLayeredPane();
 		final JButton fullScreenButton = new JButton(flipFullScreenAction);
-		
-        fullscreenPanel.add(bigTimersDisplay, new Integer(0));
-        fullscreenPanel.add(fullScreenButton, new Integer(1));
 
-        fullscreenPanel.addComponentListener(new ComponentAdapter() {
-        	private static final int LENGTH = 30;
-        	public void componentResized(ComponentEvent e) {
-        		bigTimersDisplay.setBounds(0, 0, e.getComponent().getWidth(), e.getComponent().getHeight());
-        		fullScreenButton.setBounds(e.getComponent().getWidth() - LENGTH, 0, LENGTH, LENGTH);
-        	}
-        });
+		fullscreenPanel.add(bigTimersDisplay, new Integer(0));
+		fullscreenPanel.add(fullScreenButton, new Integer(1));
+
+		fullscreenPanel.addComponentListener(new ComponentAdapter() {
+			private static final int LENGTH = 30;
+			public void componentResized(ComponentEvent e) {
+				bigTimersDisplay.setBounds(0, 0, e.getComponent().getWidth(), e.getComponent().getHeight());
+				fullScreenButton.setBounds(e.getComponent().getWidth() - LENGTH, 0, LENGTH, LENGTH);
+			}
+		});
 
 		customGUIMenu = new JMenu();
 
 		profiles = new LoudComboBox();
 		profiles.addItemListener(this);
-		
+
 		languages = new LoudComboBox();
 		languages.setModel(new DefaultComboBoxModel(Configuration.getAvailableLocales().toArray()));
 		languages.addItemListener(this);
 		languages.setRenderer(new LocaleRenderer());
-		
+
 		persistentComponents = new ComponentsMap();
 		persistentComponents.put("scramblechooser", scrambleChooser);
 		persistentComponents.put("scramblenumber", scrambleNumber);
@@ -545,7 +545,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		persistentComponents.put("sessionslist", sessionsScroller);
 		persistentComponents.put("clock", currentTimeLabel);
 	}
-	
+
 	void refreshCustomGUIMenu() {
 		customGUIMenu.removeAll();
 		ButtonGroup group = new ButtonGroup();
@@ -615,7 +615,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				prepareForProfileSwitch();
 			} else if(e.getStateChange() == ItemEvent.SELECTED) {
 				statsModel.removeTableModelListener(this); //we don't want to know about the loading of the most recent session, or we could possibly hear it all spoken
-				
+
 				Configuration.setSelectedProfile(affected);
 				if(!affected.loadDatabase()) {
 					//the user will be notified of this in the profiles combobox
@@ -635,7 +635,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			if(e.getStateChange() == ItemEvent.SELECTED) {
 				loadXMLGUI(); //this needs to be here so we reload the gui when configuration is changed
 				if(!newLocale.equals(loadedLocale)) {
-					if(loadedLocale != null) //we don't want to save the gui state if cct is starting up 
+					if(loadedLocale != null) //we don't want to save the gui state if cct is starting up
 						saveToConfiguration();
 					loadedLocale = newLocale;
 					Configuration.setDefaultLocale(newLocale);
@@ -649,16 +649,17 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 		}
 	}
-	
+
 	private static boolean loading = false;
 	public static void setWaiting(boolean loading) {
 		CALCubeTimer.loading = loading;
 		cct.setCursor(null);
 	}
+
 	private LocaleAndIcon loadedLocale;
 	void loadStringsFromDefaultLocale() {
 		setWaiting(true);
-		
+
 		//this loads the strings for the swing components we use (JColorChooser and JFileChooser)
 		UIManager.getDefaults().setDefaultLocale(Locale.getDefault());
 		AppContext.getAppContext().put("JComponent.defaultLocale", Locale.getDefault());
@@ -669,7 +670,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		} catch(MissingResourceException e) {
 			e.printStackTrace();
 		}
-		
+
 		StringAccessor.clearResources();
 		XMLGuiMessages.reloadResources();
 		statsModel.fireStringUpdates(); //this is necessary to update the undo-redo actions
@@ -685,24 +686,25 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		stackmatOn(false);
 		timesTable.refreshColumnNames();
 		sessionsTable.refreshColumnNames();
-		
+
 		setLookAndFeel();
 		createScrambleAttributes();
 		configurationDialog = null; //this will force the config dialog to reload when necessary
-		
+
 		SwingUtilities.updateComponentTreeUI(this);
 		SwingUtilities.updateComponentTreeUI(scramblePopup);
-		
+
 		setWaiting(false);
 	}
-    public void setCursor(Cursor cursor) {
-    	if(loading)
-    		super.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-    	else if(cursor == null)
-    		super.setCursor(Cursor.getDefaultCursor());
-    	else
-    		super.setCursor(cursor);
-    }
+
+	public void setCursor(Cursor cursor) {
+		if(loading)
+			super.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		else if(cursor == null)
+			super.setCursor(Cursor.getDefaultCursor());
+		else
+			super.setCursor(cursor);
+	}
 
 	public void stateChanged(ChangeEvent e) {
 		Object source = e.getSource();
@@ -744,7 +746,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timeLabel.setAlignmentX(.5f);
 		timeLabel.configurationChanged();
 		bigTimersDisplay.configurationChanged();
-		
+
 		XMLGuiMessages.reloadResources();
 
 		DefaultHandler handler = new GUIParser(this);
@@ -838,7 +840,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			strs = new ArrayList<String>();
 			needText = new ArrayList<Boolean>();
 			elementNames = new ArrayList<String>();
-			
+
 			tabbedPanes = new ArrayList<JTabbedPane>();
 			splitPanes = new ArrayList<JSplitPane>();
 		}
@@ -895,7 +897,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 						Object o = this.getClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY);
 						if(o != null && !((Boolean) o))
 							return super.getMinimumSize();
-						
+
 						return new Dimension(0, 0);
 					}
 				};
@@ -1089,7 +1091,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 						}
 						if((temp = attrs.getValue("resizeweight")) != null) { //$NON-NLS-1$
 							double resizeWeight;
-							try { 
+							try {
 								resizeWeight = Double.parseDouble(temp);
 							} catch(Exception e) {
 								resizeWeight = .5;
@@ -1154,7 +1156,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 									((JSplitPane) c).setRightComponent(com);
 								}
 							} else if(c instanceof JTabbedPane) {
-								((JTabbedPane) c).addTab(com.getName(), com); 
+								((JTabbedPane) c).addTab(com.getName(), com);
 							} else
 								c.add(com);
 						} else {
@@ -1182,7 +1184,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				if(needText.get(level) && strs.get(level).length() > 0) {
 					if(componentTree.get(level) instanceof DynamicStringSettable)
 						((DynamicStringSettable)componentTree.get(level)).setDynamicString(new DynamicString(strs.get(level), statsModel, XMLGuiMessages.XMLGUI_ACCESSOR));
-				} 
+				}
 				if(componentTree.get(level) instanceof JTabbedPane) {
 					JTabbedPane temp = (JTabbedPane) componentTree.get(level);
 					Integer t = Configuration.getInt(VariableKey.JCOMPONENT_VALUE(temp.getName(), true), false);
@@ -1260,7 +1262,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-		        
+
 				JDialog.setDefaultLookAndFeelDecorated(true);
 				JFrame.setDefaultLookAndFeelDecorated(true);
 				setLookAndFeel();
@@ -1269,7 +1271,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				UIManager.put(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.TRUE);
 				UIManager.put(LafWidget.ANIMATION_KIND, LafConstants.AnimationKind.NONE);
 				UIManager.put(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.TRUE);
-				
+
 				cct = new CALCubeTimer();
 				Configuration.addConfigurationChangeListener(cct);
 				cct.setTitle("CCT " + CCT_VERSION); //$NON-NLS-1$
@@ -1358,7 +1360,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			//update new scramble number
 			safeSetValue(scrambleNumber, scramblesList.getScrambleNumber());
 			scrambleArea.setScramble(current.getScramble(), scramblesList.getScrambleCustomization()); //this will update scramblePopup
-			
+
 			boolean canChangeStuff = scramblesList.size() == scramblesList.getScrambleNumber();
 			scrambleChooser.setEnabled(canChangeStuff);
 			scrambleLength.setEnabled(current.getLength() != 0 && canChangeStuff && !current.isImported());
@@ -1394,7 +1396,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		Configuration.setPoint(VariableKey.SCRAMBLE_VIEW_LOCATION, scramblePopup.getLocation());
 		Configuration.setDimension(VariableKey.MAIN_FRAME_DIMENSION, this.getSize());
 		Configuration.setPoint(VariableKey.MAIN_FRAME_LOCATION, this.getLocation());
-		
+
 		for(JSplitPane jsp : splitPanes)
 			Configuration.setInt(VariableKey.JCOMPONENT_VALUE(jsp.getName(), true), jsp.getDividerLocation());
 		for(JTabbedPane jtp : tabbedPanes)
@@ -1440,7 +1442,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			timesTable.invalidate(); //the table needs to be invalidated to force the new time to "show up"!!!
 			Rectangle newTimeRect = timesTable.getCellRect(statsModel.getRowCount(), 0, true);
 			timesTable.scrollRectToVisible(newTimeRect);
-			
+
 			if(Configuration.getBoolean(VariableKey.SPEAK_TIMES, false)) {
 				new Thread(new Runnable() { //speak the time
 					public void run() {
@@ -1479,7 +1481,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 //			client.sendBestAverage(s, statsModel.getCurrentStatistics());
 		}
 	}
-	
+
 	private void loadXMLGUI() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -1508,7 +1510,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				else
 					scrambleArea.requestFocusInWindow();
 				timeLabel.componentResized(null);
-				
+
 				//dispose the old fullscreen frame, and create a new one
 				if(fullscreenFrame != null)
 					fullscreenFrame.dispose();
@@ -1527,7 +1529,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 		});
 	}
-	
+
 	public void configurationChanged() {
 		boolean stackmatEnabled = Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
 		keyboardTimingAction.putValue(Action.SELECTED_KEY, !stackmatEnabled);
@@ -1608,7 +1610,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 		});
 	}
-	
+
 	public void flipFullScreen(){
 		setFullScreen(!isFullscreen);
 	}
@@ -1633,7 +1635,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		ps.addSession(s);
 		return s;
 	}
-	
+
 	public void lessAnnoyingDisplayAction(){
 		Configuration.setBoolean(VariableKey.LESS_ANNOYING_DISPLAY, (Boolean)lessAnnoyingDisplayAction.getValue(Action.SELECTED_KEY));
 		timeLabel.repaint();
@@ -1759,7 +1761,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private boolean isInspecting() {
 		return inspectionStart != 0;
 	}
-	
+
 	void updateInspection() {
 		int inspection = getInpectionValue();
 		String time;
@@ -1775,7 +1777,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if(isFullscreen)
 			bigTimersDisplay.setText(time);
 	}
-	
+
 	private SolveType penalty = SolveType.NORMAL;
 	private void updateTime(TimerState newTime) {
 		if(newTime instanceof StackmatState) {
@@ -1797,7 +1799,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	public void timerAccidentlyReset(TimerState lastTimeRead) {
 		penalty = SolveType.NORMAL;
 	}
-	
+
 	public void refreshDisplay(TimerState currTime) {
 		updateTime(currTime);
 	}
@@ -1821,7 +1823,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false))
 			stopMetronome();
 	}
-	
+
 	public void stackmatOn(boolean on) {
 		if(!Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false)) {
 			onLabel.setText(""); //$NON-NLS-1$

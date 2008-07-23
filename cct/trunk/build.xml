@@ -12,12 +12,13 @@
 	</target>
 	
 	<target name="compile" description="Compilation target">
-		<javac srcdir="net/:say/:scramblePlugins/" classpath="substance-lite-feel.jar:mailapi.jar:javazoom.jar:." debug="true" debuglevel="lines,vars,source"/>
+		<javac srcdir="net/:say/:scramblePlugins/" classpath="substance-lite-feel.jar:mailapi.jar:javazoom.jar:pircbot.jar:." debug="true" debuglevel="lines,vars,source"/>
 	</target>
 	
 	<target name="warnings" description="Compilation target">
-		<javac srcdir="net/:say/:scramblePlugins/" classpath="substance-lite-feel.jar:mailapi.jar:javazoom.jar:." debug="true" debuglevel="lines,vars,source">
+		<javac srcdir="net/:say/:scramblePlugins/" classpath="substance-lite-feel.jar:mailapi.jar:javazoom.jar:pircbot.jar:." debug="true" debuglevel="lines,vars,source">
 			<compilerarg value="-Xlint:unchecked"/>
+			<compilerarg value="-Xlint:deprecation"/>
 		</javac>
 	</target>
 
@@ -33,6 +34,7 @@
 			<zipfileset src="smtp.jar" excludes="META-INF/MANIFEST.MF, META-INF/SUN_MICR.RSA, META-INF/SUN_MICR.SF"/>
 			<zipfileset src="substance-lite-feel.jar" excludes="META-INF/MANIFEST.MF"/>
 			<zipfileset src="javazoom.jar"/>
+			<zipfileset src="pircbot.jar"/>
 		</jar>
 		<copy todir="${dist}">
 			<fileset dir=".">

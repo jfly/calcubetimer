@@ -1,4 +1,4 @@
-CLASSPATH=.:mailapi.jar:substance-lite-feel.jar
+CLASSPATH=.:mailapi.jar:substance-lite-feel.jar:javazoom.jar:pircbot.jar
 EXEC=net.gnehzr.cct.main.CALCubeTimer
 SERVER=net.gnehzr.cct.umts.server.CCTServer
 
