@@ -40,7 +40,7 @@
 								</panel>
 								<panel layout="box" orientation="line">
 									<label>%%raof%% $$RASize1$$</label>
-									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$currentAverage1$$ $$progressAverageParens1$$</font></font></html>]]></button>
+									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$currentAverage1$$ $$progressAverageParens1$$</font></html>]]></button>
 									<button action="bestAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">%%bestra%% $$bestRA1$$</font></html>]]></button>
 								</panel>
 								<panel layout="box" orientation="line">
