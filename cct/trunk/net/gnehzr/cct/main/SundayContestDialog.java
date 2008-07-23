@@ -186,7 +186,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		}
 	}
 
-	private static String[] submitSundayContest(String name, String country, String email,
+	private static String[] submitSundayContest(String URL, String name, String country, String email,
 			String average, String times, String quote, boolean showemail) throws IOException {
 		String data = URLEncoder.encode("name", "UTF-8") + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		+ URLEncoder.encode(name, "UTF-8"); //$NON-NLS-1$
@@ -206,7 +206,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		data += "&" + URLEncoder.encode("submit", "UTF-8") + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		+ URLEncoder.encode("submit times", "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
 
-		URL url = new URL(Configuration.getString(VariableKey.SUNDAY_SUBMIT_URL, false));
+		URL url = new URL(URL);
 		URLConnection urlConn = url.openConnection();
 		urlConn.setDoOutput(true);
 		urlConn.setUseCaches(false);
@@ -245,21 +245,25 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		} finally {
 			rd.close();
 		}
-		return new String[] { "<html>" + handler.results + "</html>", str }; //$NON-NLS-1$ //$NON-NLS-2$
+		return new String[] { handler.results, str }; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if(source == submitButton) {
 			try {
-				final String[] result = submitSundayContest(nameField.getText(),
+				String url = Configuration.getString(VariableKey.SUNDAY_SUBMIT_URL, false);
+				final String[] result = submitSundayContest(url, nameField.getText(),
 						countryField.getText(),
 						emailField.getText(),
 						averageField.getText(),
 						timesField.getText(),
 						quoteArea.getText(),
 						showEmailBox.isSelected());
-				new DialogWithDetails(this, StringAccessor.getString("SundayContestDialog.serverresponse"), result[0], result[1]).setVisible(true);
+				if(result[0].isEmpty())
+					result[0] = StringAccessor.getString("SundayContestDialog.noresponse");
+				DialogWithDetails dwd = new DialogWithDetails(this, StringAccessor.getString("SundayContestDialog.serverresponse") + ": " + url, "<html>" + result[0] + "</html>", result[1]);
+				dwd.setVisible(true);
 			} catch (IOException e1) {
 				Utils.showErrorDialog(this, e1.getLocalizedMessage());
 				e1.printStackTrace();
