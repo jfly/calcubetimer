@@ -57,6 +57,17 @@ public class TimerLabel extends JColorComponent implements ComponentListener, Co
 	public void setKeyboardHandler(KeyboardHandler keyHandler) {
 		this.keyHandler = keyHandler;
 	}
+	
+	private static final Dimension MIN_SIZE = new Dimension(0, 150);
+	public Dimension getMaximumSize() {
+		return new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
+	}
+	public Dimension getMinimumSize() {
+		return MIN_SIZE;
+	}
+	public Dimension getPreferredSize() {
+		return MIN_SIZE;
+	}
 
 	private boolean keysDown;
 	private boolean on;

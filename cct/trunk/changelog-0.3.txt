@@ -219,18 +219,18 @@ changes:
 +dan cohen's big big cube notation
 +mean of 3 instead of average
 +associate scramble customization w/ RA 0 & RA 1 (unaffected by reset all)
++minimum size of timer display is FIXED!
 
 TODO:
 
 for release:
--minimum size of timer display is broken
 -generator groups for scramble plugins
 -saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files?
 -copy shortcuts for mac?
 -multiple timers?
 -tags for solves? possibly by expanding functionality of pop/dnf/+2?
 -open source sourceforge!
--about.html: add a blurb for version 1.0
+-about.html: add a blurb for version 1.0 (dan cohen + lucas garron)
 -create license, give credit where credit is due
 -create small diagnostic problem that will dump relevant info to a file (java version, os, etc.)
 -write scramble plugin tutorial

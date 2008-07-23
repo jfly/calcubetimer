@@ -73,6 +73,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		success.add(successMsg = new JLabel());
 		updateStrings();
 	}
+	
 	public void mouseClicked(MouseEvent e) {
 		if(e.getClickCount() == 2) {
 	        StringSelection ss = new StringSelection(currentScramble);

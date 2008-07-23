@@ -740,9 +740,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timesScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		timesScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrambleArea.resetPreferredSize();
-		timeLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
-		timeLabel.setMinimumSize(new Dimension(0, 150));
-		timeLabel.setPreferredSize(new Dimension(0, 150));
 		timeLabel.setAlignmentX(.5f);
 		timeLabel.configurationChanged();
 		bigTimersDisplay.configurationChanged();
