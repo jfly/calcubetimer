@@ -132,11 +132,8 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			return wrapped.getValueAt(rowIndex, columnIndex);
 		}
 		public boolean isCellEditable(int rowIndex, int columnIndex) {
-			if(rowIndex == wrapped.getRowCount()) {
-				if(columnIndex == 0)
-					return true;
-				return false;
-			}
+			if(rowIndex == wrapped.getRowCount())
+				return columnIndex == 0;
 			
 			return wrapped.isCellEditable(rowIndex, columnIndex);
 		}
@@ -361,7 +358,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		
 		Object render = addText;
 		for(int ch = 0; ch < columns.getColumnCount(); ch++) {
-			if(!model.isCellEditable(0, ch))
+			if(!model.isCellEditable(0, ch) && ch == 0) //it's probably allright to just always execute the else statement
 				columns.getColumn(ch).sizeWidthToFit();
 			else {
 				int width = Math.max(getRendererPreferredSize(render, ch).width, getEditorPreferredSize(render, ch).width);
@@ -474,7 +471,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 	public void mouseDragged(MouseEvent e) {
 		if(e.getSource() == this) {
 			int toRow = this.getSelectedRow();
-			if (toRow == -1 || toRow == fromRow || fromRow == this.getRowCount() - 1 || toRow == this.getRowCount() - 1)
+			if (toRow == -1 || fromRow == -1 || toRow == fromRow || fromRow == this.getRowCount() - 1 || toRow == this.getRowCount() - 1)
 				return;
 			Object element = model.getValueAt(fromRow, 0);
 			model.removeRows(new int[]{fromRow});

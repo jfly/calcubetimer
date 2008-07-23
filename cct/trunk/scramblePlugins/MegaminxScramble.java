@@ -31,13 +31,13 @@ public class MegaminxScramble extends Scramble {
 	private boolean pochmann = false;
 	private int[][] image;
 
-	public MegaminxScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
+	public MegaminxScramble(String variation, String s, String generatorGroup, String... attrs) throws InvalidScrambleException {
 		super(s);
 		pochmann = variation.equals(VARIATIONS[1]);
 		if(!setAttributes(attrs)) throw new InvalidScrambleException(s);
 	}
 
-	public MegaminxScramble(String variation, int length, String... attrs) {
+	public MegaminxScramble(String variation, int length, String generatorGroup, String... attrs) {
 		this.length = length;
 		pochmann = variation.equals(VARIATIONS[1]);
 		setAttributes(attrs);

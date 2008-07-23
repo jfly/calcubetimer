@@ -33,7 +33,7 @@ public class SquareOneScramble extends Scramble {
 	private int[] state, turns;
 	private boolean slashes;
 
-	public SquareOneScramble(String variation, int length, String... attrs) {
+	public SquareOneScramble(String variation, int length, String generatorGroup, String... attrs) {
 		this(length, attrs);
 	}
 
@@ -42,7 +42,7 @@ public class SquareOneScramble extends Scramble {
 		setAttributes(attrs);
 	}
 
-	public SquareOneScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
+	public SquareOneScramble(String variation, String s, String generatorGroup, String... attrs) throws InvalidScrambleException {
 		super(s);
 		if(!setAttributes(attrs))
 			throw new InvalidScrambleException(s);

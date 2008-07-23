@@ -17,6 +17,7 @@ import java.util.EventObject;
 import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -56,7 +57,10 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	public Class<?> getColumnClass(int columnIndex) {
 		return ScrambleCustomization.class;
 	}
-	private String[] columnNames = new String[]{ StringAccessor.getString("ScrambleCustomizationListModel.scramblecustomization"), StringAccessor.getString("ScrambleCustomizationListModel.length") }; //$NON-NLS-1$ //$NON-NLS-2$
+	private String[] columnNames = new String[]{ StringAccessor.getString("ScrambleCustomizationListModel.scramblecustomization"), //$NON-NLS-1$
+			StringAccessor.getString("ScrambleCustomizationListModel.length"), //$NON-NLS-1$
+			StringAccessor.getString("ScrambleCustomizationListModel.generatorgroup"),
+			"RA 0", "RA 1"};
 	public int getColumnCount() {
 		return columnNames.length;
 	}
@@ -70,7 +74,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		return customizations.get(rowIndex);
 	}
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		if(columnIndex == 1)
+		if(columnIndex >= 1)
 			return true;
 		
 		return customizations.get(rowIndex).getCustomization() != null;
@@ -115,7 +119,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		if(value instanceof ScrambleCustomization) {
 			ScrambleCustomization customization = (ScrambleCustomization) value;
 			ScrambleVariation v = customization.getScrambleVariation();
-			if(column == 0) {
+			if(column == 0) { //scramble customization
 				String bolded = v.getVariation();
 				if(bolded.isEmpty())
 					bolded = customization.getScramblePlugin().getPuzzleName();
@@ -123,23 +127,74 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 				if(customization.getCustomization() != null)
 					val += ":" + customization.getCustomization(); //$NON-NLS-1$
 				val += "<html>"; //$NON-NLS-1$
-			} else if(column == 1) {
+			} else if(column == 1) { //scramble length
 				val = "" + v.getLength(); //$NON-NLS-1$
+			} else if(column == 2) { //generator group
+				
+			} else if(column == 3) { //ra 0
+				val = customization.getRASize(0) + " " + (customization.isTrimmed(0) ? "Trimmed" : "Untrimmed");
+			} else if(column == 4) { //ra 1
+				val = customization.getRASize(1) + " " + (customization.isTrimmed(1) ? "Trimmed" : "Untrimmed");
 			}
 		}
 		return new JLabel(val, SwingConstants.CENTER);
 	}
 
+	private int editingColumn;
 	public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
 		if(value instanceof ScrambleCustomization)
 			customization = (ScrambleCustomization) value;
 		else
 			customization = new ScrambleCustomization(ScramblePlugin.getCurrentScrambleCustomization().getScrambleVariation(), ""); //$NON-NLS-1$
-		
-		if(column == 0)
+		editingColumn = column;
+		if(column == 0) //customization
 			return getCustomizationPanel(customization);
+		else if(column == 1) //length
+			return getLengthPanel(customization);
+		else if(column == 2) //generator
+			return getGeneratorPanel(customization);
+		else if(column == 3) //ra0
+			return getRAPanel(0, customization);
+		else if(column == 4) //ra1
+			return getRAPanel(1, customization);
 		
-		return getLengthPanel(customization);
+		return null;
+	}
+	
+	private JTextField generator;
+	private JPanel getGeneratorPanel(ScrambleCustomization sc) {
+		JPanel temp = new JPanel();
+		temp.setLayout(new BoxLayout(temp, BoxLayout.LINE_AXIS));
+		temp.add(generator = new JTextField("generator")); //TODO
+		disabledComponents = new ArrayList<Component>();
+		listenToContainer(temp);
+		return temp;
+	}
+	
+	private int raIndex;
+	JSpinner raSize;
+	JCheckBox trimmed;
+	private JPanel getRAPanel(final int index, final ScrambleCustomization sc) {
+		raIndex = index;
+		raSize = new JSpinner(new SpinnerNumberModel(sc.getRASize(index), 0, null, 1));
+		raSize.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.specifylength")); //$NON-NLS-1$
+		((JSpinner.DefaultEditor) raSize.getEditor()).getTextField().setColumns(3);
+		JPanel temp = new JPanel();
+		temp.setLayout(new BoxLayout(temp, BoxLayout.LINE_AXIS));
+		temp.add(raSize);
+		temp.add(trimmed = new JCheckBox(StringAccessor.getString("ScrambleCustomizationListModel.trimmed"), sc.isTrimmed(index)));
+		JButton resetRA = new JButton("X");
+		resetRA.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE);
+		resetRA.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				raSize.setValue(Configuration.getInt(VariableKey.RA_SIZE(index, null), false));
+				trimmed.setSelected(Configuration.getBoolean(VariableKey.RA_TRIMMED(index, null), false));
+			}
+		});
+		temp.add(resetRA);
+		disabledComponents = new ArrayList<Component>();
+		listenToContainer(temp);
+		return temp;
 	}
 
 	ScrambleCustomization customization;
@@ -147,12 +202,10 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	JSpinner scramLength;
 	private JTextField customField;
 	private String originalFieldText;
-
 	private JPanel getCustomizationPanel(ScrambleCustomization custom) {
 		JPanel customPanel = new JPanel();
 		customPanel.setLayout(new BoxLayout(customPanel, BoxLayout.LINE_AXIS));
 		if(custom.getCustomization() != null) {
-			scramLength = null; //this has to be null so we know what to do when stopCellEditing() is called
 			scrambleVariations = new ScrambleChooserComboBox(false, false);
 			scrambleVariations.addItem(ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation());
 			scrambleVariations.setMaximumRowCount(Configuration.getInt(VariableKey.SCRAMBLE_COMBOBOX_ROWS, false));
@@ -189,7 +242,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		((JSpinner.DefaultEditor) scramLength.getEditor()).getTextField().setColumns(3);
 		lengthPanel.add(scramLength);
 
-		JButton resetButton = new JButton(StringAccessor.getString("ScrambleCustomizationListModel.reset")); //$NON-NLS-1$
+		JButton resetButton = new JButton("X"); //$NON-NLS-1$
 		resetButton.setEnabled(false);
 		resetButton.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.resetlength")); //$NON-NLS-1$
 		resetButton.setFocusable(false);
@@ -200,6 +253,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 				scramLength.setValue(customization.getScrambleVariation().getScrambleLength(true));
 			}
 		});
+		resetButton.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.TRUE);
 		resetButton.putClientProperty(SubstanceLookAndFeel.BUTTON_SIDE_PROPERTY, new SubstanceConstants.Side[] { SubstanceConstants.Side.LEFT });
 		lengthPanel.add(resetButton);
 		disabledComponents = new ArrayList<Component>();
@@ -208,7 +262,6 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	}
 
 	private ArrayList<Component> disabledComponents;
-
 	private void listenToContainer(Component c) {
 		c.addMouseListener(this);
 		c.setEnabled(false);
@@ -230,7 +283,6 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	}
 
 	private CellEditorListener listener;
-
 	public void addCellEditorListener(CellEditorListener l) {
 		listener = l;
 	}
@@ -263,7 +315,8 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	}
 
 	public boolean stopCellEditing() {
-		if(customization.getCustomization() != null) {
+		if(editingColumn == 0) { //customization
+//		if(customization.getCustomization() != null) {
 			String customName = customField.getText();
 			String error = null;
 			if(customName.isEmpty()) { //$NON-NLS-1$
@@ -288,11 +341,16 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 				return false;
 			}
 			customization.setCustomization(customField.getText());
-		}
-		if(scramLength != null) {
+		} else if(editingColumn == 1) { //length
+//		if(scramLength != null) {
 			customization.getScrambleVariation().setLength((Integer) scramLength.getValue());
+		} else if(editingColumn == 2) { //generator
+			
+		} else if(editingColumn == 3) { //ra 0
+			customization.setRA(0, (Integer) raSize.getValue(), trimmed.isSelected());
+		} else if(editingColumn == 4) { //ra 1
+			customization.setRA(1, (Integer) raSize.getValue(), trimmed.isSelected());
 		}
-		scramLength = null;
 		listener.editingStopped(null);
 		return true;
 	}

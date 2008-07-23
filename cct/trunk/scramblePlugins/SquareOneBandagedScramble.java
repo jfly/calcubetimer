@@ -33,7 +33,7 @@ public class SquareOneBandagedScramble extends Scramble {
 	private int[] state, turns;
 	private boolean slashes;
 
-	public SquareOneBandagedScramble(String variation, int length, String... attrs) {
+	public SquareOneBandagedScramble(String variation, int length, String generatorGroup, String... attrs) {
 		this(length, attrs);
 	}
 
@@ -42,7 +42,7 @@ public class SquareOneBandagedScramble extends Scramble {
 		setAttributes(attrs);
 	}
 
-	public SquareOneBandagedScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
+	public SquareOneBandagedScramble(String variation, String s, String generatorGroup, String... attrs) throws InvalidScrambleException {
 		super(s);
 		if(!setAttributes(attrs))
 			throw new InvalidScrambleException(s);

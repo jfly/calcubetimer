@@ -38,7 +38,7 @@ public class CubeScramble extends Scramble {
 		return variation.isEmpty() ? 3 : Integer.parseInt(variation.split("x")[0]);
 	}
 
-	public CubeScramble(String variation, int length, String... attrs) {
+	public CubeScramble(String variation, int length, String generatorGroup, String... attrs) {
 		this(getSizeFromVariation(variation), length, attrs);
 	}
 
@@ -48,7 +48,7 @@ public class CubeScramble extends Scramble {
 		setAttributes(attrs);
 	}
 
-	public CubeScramble(String variation, String s, String... attrs) throws InvalidScrambleException {
+	public CubeScramble(String variation, String s, String generatorGroup, String... attrs) throws InvalidScrambleException {
 		super(s);
 		this.size = Integer.parseInt(variation.split("x")[0]);
 		if(!setAttributes(attrs))

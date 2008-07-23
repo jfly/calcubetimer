@@ -14,7 +14,6 @@ public class PuzzleStatistics implements StatisticsUpdateListener {
 		//We need some way for each profile database to listen for updates,
 		//this seems fine to me, although nasty
 		CALCubeTimer.statsModel.addStatisticsUpdateListener(this);
-	
 	}
 	public String getCustomization() {
 		return customization;

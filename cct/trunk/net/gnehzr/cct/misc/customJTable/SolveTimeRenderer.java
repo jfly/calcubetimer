@@ -45,7 +45,7 @@ public class SolveTimeRenderer extends JLabel implements TableCellRenderer {
 			SolveTime st = (SolveTime) value;
 			int whichRA;
 			if((whichRA = st.getWhichRA()) != -1) { //this indicates we're dealing with an average, not a solve time
-				int raSize = Configuration.getInt((whichRA == 0) ? VariableKey.RA_SIZE0 : VariableKey.RA_SIZE1, false);
+				int raSize = times.getRASize(whichRA);
 				memberOfBestRA = times.getIndexOfBestRA(whichRA) + raSize == row + 1;
 				memberOfCurrentAverage = (row == times.getAttemptCount() - 1);
 			} else {

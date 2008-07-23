@@ -18,9 +18,15 @@ public class Session extends Commentable implements Comparable<Session> {
 	public Statistics getStatistics() {
 		return s;
 	}
+	private ScrambleCustomization sc;
 	//this should only be called by PuzzleStatistics
 	public void setPuzzleStatistics(PuzzleStatistics puzzStats) {
+		sc = ScramblePlugin.getCustomizationFromString(puzzStats.getCustomization());
+		s.setCustomization(sc);
 		this.puzzStats = puzzStats;
+	}
+	public ScrambleCustomization getCustomization() {
+		return sc;
 	}
 	public PuzzleStatistics getPuzzleStatistics() {
 		return puzzStats;
@@ -44,14 +50,13 @@ public class Session extends Commentable implements Comparable<Session> {
 	public String toString() {
 		return toDateString();
 	}
-	public ScrambleCustomization getCustomization() {
-		return ScramblePlugin.getCustomizationFromString(puzzStats.getCustomization());
-	}
 	public void setCustomization(String customization) {
 		if(!customization.equals(puzzStats.getCustomization())) {
 			puzzStats.removeSession(this);
 			puzzStats = puzzStats.getPuzzleDatabase().getPuzzleStatistics(customization);
 			puzzStats.addSession(this);
+			sc = ScramblePlugin.getCustomizationFromString(puzzStats.getCustomization());
+			s.setCustomization(sc);
 //			s.notifyListeners(false); //If we're changing an unselected session to the current sessions customization, we won't see the global stats updates if we just do this
 			CALCubeTimer.statsModel.fireStringUpdates();
 		}

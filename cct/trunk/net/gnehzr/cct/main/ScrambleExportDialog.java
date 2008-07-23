@@ -59,7 +59,7 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 		subPanel.add(scrambleChooser);
 
 		scrambleLength = new JSpinnerWithText(selected.getLength(), 1, StringAccessor.getString("ScrambleExportDialog.lengthscrambles")); //$NON-NLS-1$
-		numberOfScrambles = new JSpinnerWithText(Configuration.getInt(VariableKey.RA_SIZE0, false), 1, StringAccessor.getString("ScrambleExportDialog.numberscrambles")); //$NON-NLS-1$
+		numberOfScrambles = new JSpinnerWithText(ScramblePlugin.getCustomizationFromVariation(selected).getRASize(0), 1, StringAccessor.getString("ScrambleExportDialog.numberscrambles")); //$NON-NLS-1$
 		subPanel.add(scrambleLength);
 		subPanel.add(numberOfScrambles);
 		
@@ -93,6 +93,7 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 		} else if(source == scrambleChooser && scrambleLength != null) {
 			ScrambleVariation curr = (ScrambleVariation) scrambleChooser.getSelectedItem();
 			scrambleLength.setValue(curr.getLength());
+			numberOfScrambles.setValue(ScramblePlugin.getCustomizationFromVariation(curr).getRASize(0));
 		} else if(source == htmlExportButton) {
 			URL file = null;
 			try {

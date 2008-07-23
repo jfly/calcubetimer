@@ -217,6 +217,8 @@ changes:
 +improvaed shutdown of cct, test command q with os x (dan cohen)
 +split screen scramble (accessible via right click or configdialog)
 +dan cohen's big big cube notation
++mean of 3 instead of average
++associate scramble customization w/ RA 0 & RA 1 (unaffected by reset all)
 
 TODO:
 
@@ -226,8 +228,6 @@ for release:
 -saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files?
 -copy shortcuts for mac?
 -multiple timers?
--mean of 3 instead of average
--associate scramble customization w/ RA 0 & RA 1
 -tags for solves? possibly by expanding functionality of pop/dnf/+2?
 -open source sourceforge!
 -about.html: add a blurb for version 1.0

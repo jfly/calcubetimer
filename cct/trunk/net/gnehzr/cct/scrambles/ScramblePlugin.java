@@ -90,13 +90,15 @@ public class ScramblePlugin {
 		return sc;
 	}
 	
+	public static ScrambleCustomization getCustomizationFromVariation(ScrambleVariation sv) {
+		return getCustomizationFromString(sv.toString());
+	}
 	public static ScrambleCustomization getCustomizationFromString(String customName) {
 		ArrayList<ScrambleCustomization> scrambleCustomizations = getScrambleCustomizations(false);
-		for(ScrambleCustomization custom : scrambleCustomizations) {
-			if(custom.toString().equals(customName)) {
+		for(ScrambleCustomization custom : scrambleCustomizations)
+			if(custom.toString().equals(customName))
 				return custom;
-			}
-		}
+		
 		return null;
 	}
 
@@ -187,6 +189,7 @@ public class ScramblePlugin {
 	protected String[] VARIATIONS;
 	protected String[] ATTRIBUTES;
 	protected String[] DEFAULT_ATTRIBUTES;
+	protected String[] DEFAULT_GENERATORS;
 	protected Pattern TOKEN_REGEX;
 
 	public ScramblePlugin(String variationName) {
@@ -232,8 +235,8 @@ public class ScramblePlugin {
 
 		try {
 			//validating methods/constructors
-			newScrambleConstructor = pluginClass.getConstructor(String.class, int.class, String[].class);
-			importScrambleConstructor = pluginClass.getConstructor(String.class, String.class, String[].class);
+			newScrambleConstructor = pluginClass.getConstructor(String.class, int.class, String.class, String[].class);
+			importScrambleConstructor = pluginClass.getConstructor(String.class, String.class, String.class, String[].class);
 			
 			try {
 				getScrambleImage = pluginClass.getMethod("getScrambleImage", int.class, int.class, Color[].class);
@@ -357,6 +360,9 @@ public class ScramblePlugin {
 			} catch(NoSuchFieldException e) {
 				
 			}
+			
+			//TODO - add this functionality to scramble
+			DEFAULT_GENERATORS = new String[VARIATIONS.length];
 		} catch(NoClassDefFoundError e) {
 			if(e.getCause() != null)
 				e.getCause().printStackTrace();
@@ -392,12 +398,12 @@ public class ScramblePlugin {
 		return pluginClassName;
 	}
 
-	public Scramble newScramble(final String variation, final int length, final String[] attributes) {
+	public Scramble newScramble(final String variation, final int length, final String generatorGroup, final String[] attributes) {
 		if(newScrambleConstructor != null) {
 			try {
 				return TimeoutJob.doWork(new Callable<Scramble>() {
 					public Scramble call() throws Exception {
-						return newScrambleConstructor.newInstance(variation, length, attributes);
+						return newScrambleConstructor.newInstance(variation, length, generatorGroup, attributes);
 					}
 				});
 			} catch (InvocationTargetException e) {
@@ -411,12 +417,12 @@ public class ScramblePlugin {
 		return new Scramble(""); //$NON-NLS-1$
 	}
 	
-	public Scramble importScramble(final String variation, final String scramble, final String[] attributes) throws InvalidScrambleException {
+	public Scramble importScramble(final String variation, final String scramble, final String generatorGroup, final String[] attributes) throws InvalidScrambleException {
 		if(importScrambleConstructor != null) {
 			try {
 				return TimeoutJob.doWork(new Callable<Scramble>() {
 					public Scramble call() throws Exception {
-						return importScrambleConstructor.newInstance(variation, scramble, attributes);
+						return importScrambleConstructor.newInstance(variation, scramble, generatorGroup, attributes);
 					}
 				});
 			} catch (InvocationTargetException e) {
@@ -449,14 +455,27 @@ public class ScramblePlugin {
 	}
 
 	public int getDefaultScrambleLength(ScrambleVariation var) {
+		int c = getIndexOfVariation(var);
+		if(c == -1)
+			return 0;
+		return DEFAULT_LENGTHS[c];
+	}
+	public String getDefaultGeneratorGroup(ScrambleVariation var) {
+		int c = getIndexOfVariation(var);
+		if(c == -1)
+			return null;
+		return DEFAULT_GENERATORS[c];
+	}
+	
+	private int getIndexOfVariation(ScrambleVariation var) {
 		int c;
 		for(c = 0; c < VARIATIONS.length; c++)
 			if(VARIATIONS[c].equals(var.getVariation()))
 				break;
 		
 		if(c == VARIATIONS.length)
-			return 0;
-		return DEFAULT_LENGTHS[c];
+			return -1;
+		return c;
 	}
 
 	public String[][] getFaceNames() {

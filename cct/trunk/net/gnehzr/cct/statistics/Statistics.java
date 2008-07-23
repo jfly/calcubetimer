@@ -8,10 +8,10 @@ import java.util.ListIterator;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
-import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
+import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
 public class Statistics implements ConfigurationChangeListener {
@@ -128,6 +128,7 @@ public class Statistics implements ConfigurationChangeListener {
 	private int[] solveCounter;
 
 	private int[] curRASize;
+	private boolean[] curRATrimmed;
 
 	public static final int RA_SIZES_COUNT = 2;
 	private Date dateStarted;
@@ -138,9 +139,9 @@ public class Statistics implements ConfigurationChangeListener {
 		dateStarted = d;
 		Configuration.addConfigurationChangeListener(this); //TODO - this makes me worry about garbage collection (sap memory analyzer, weakreference, http://www.pawlan.com/Monica/refobjs/)
 
+		//we'll initialized these arrays when our scramble customization is set
 		curRASize = new int[RA_SIZES_COUNT];
-		curRASize[0] = Configuration.getInt(VariableKey.RA_SIZE0, false);
-		curRASize[1] = Configuration.getInt(VariableKey.RA_SIZE1, false);
+		curRATrimmed = new boolean[RA_SIZES_COUNT];
 
 		averages = new ArrayList[RA_SIZES_COUNT];
 		sds = new ArrayList[RA_SIZES_COUNT];
@@ -163,6 +164,11 @@ public class Statistics implements ConfigurationChangeListener {
 		times = new ArrayList<SolveTime>();
 		sorttimes = new ArrayList<SolveTime>();
 		initialize();
+	}
+	private ScrambleCustomization customization;
+	public void setCustomization(ScrambleCustomization sc) {
+		customization = sc;
+		configurationChanged();
 	}
 
 	private void initialize() {
@@ -319,7 +325,7 @@ public class Statistics implements ConfigurationChangeListener {
 	}
 
 	private void calculateCurrentAverage(int k) {
-		double avg = calculateRA(times.size() - curRASize[k], times.size(), k, true);
+		double avg = calculateRA(times.size() - curRASize[k], times.size(), k, curRATrimmed[k]);
 		if(avg > 0) {
 			Double s;
 			int i;
@@ -447,18 +453,20 @@ public class Statistics implements ConfigurationChangeListener {
 	}
 
 	public void configurationChanged() {
+		if(loadRAs()) refresh();
+	}
+	private boolean loadRAs() {
 		boolean refresh = false;
-		int raSize = Configuration.getInt(VariableKey.RA_SIZE0, false);
-		if(raSize != curRASize[0]) {
-			curRASize[0] = raSize;
-			refresh = true;
+		for(int c = 0; c < curRASize.length && customization != null; c++) {
+			int raSize = customization.getRASize(c);
+			boolean raTrimmed = customization.isTrimmed(c);
+			if(raSize != curRASize[c] || raTrimmed != curRATrimmed[c]) {
+				curRASize[c] = raSize;
+				curRATrimmed[c] = raTrimmed;
+				refresh = true;
+			}
 		}
-		raSize = Configuration.getInt(VariableKey.RA_SIZE1, false);
-		if(raSize != curRASize[1]) {
-			curRASize[1] = raSize;
-			refresh = true;
-		}
-		if(refresh) refresh();
+		return refresh;
 	}
 
 	public SolveTime average(AverageType type, int num) {

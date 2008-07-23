@@ -36,17 +36,17 @@ public class Scramble {
 	
 	//public static final String PUZZLE_NAME - cannot contain the character ":"
 
-	//public Constructor(String variation, int length, String... attrs)
+	//public Constructor(String variation, int length, String generatorGroup, String... attrs)
 	
 	//This constructor should parse the scramble and throw an InvalidScrambleException if it is not a valid scramble
-	//public Constructor(String variation, String scramble, String... attrs) throws InvalidScrambleException
+	//public Constructor(String variation, String scramble, String generatorGroup, String... attrs) throws InvalidScrambleException
 	
 	
 	/******** Optional fields and methods **********/
 	
 	//public static final String[] VARIATIONS; //This is so one class can handle 3x3x3-11x11x11, variations cannot contain the character ":" //$NON-NLS-1$
 	
-	//HIGHLY RECOMMENDED, defines default lengths for each element of VARIATIONS (make it a one dimensional array unless you defined VARIATIONS)
+	//HIGHLY RECOMMENDED, defines default lengths for each element of VARIATIONS (make it a one element array unless you defined VARIATIONS)
 	//public static final int[] DEFAULT_LENGTHS;
 	
 	//As of now, there is support for named booleans to affect scrambles (attributes).

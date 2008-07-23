@@ -20,7 +20,6 @@ import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
@@ -36,7 +35,6 @@ import net.gnehzr.cct.scrambles.InvalidScrambleException;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
-import net.gnehzr.cct.scrambles.ScrambleVariation;
 
 import org.jvnet.lafwidget.LafWidget;
 
@@ -119,7 +117,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 	public void setScramble(String newScramble, ScrambleCustomization sc) {
 		currentCustomization = sc;
 		try {
-			fullScramble = currentCustomization.getScrambleVariation().generateScramble(newScramble);
+			fullScramble = currentCustomization.generateScramble(newScramble);
 			currentScramble = fullScramble.toString();
 		} catch(Exception e) { //if we can't parse this scramble, we'll just treat it as a null scramble
 			currentScramble = newScramble.trim();
@@ -175,7 +173,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
 			String scramble = e.getDescription();
-			ScrambleVariation sv = currentCustomization.getScrambleVariation();
+//			ScrambleVariation sv = currentCustomization.getScrambleVariation();
 			String[] moveAndScramble = scramble.split(" ", 2); //$NON-NLS-1$
 			if(moveAndScramble.length != 2) { //this happens if we have an empty null scramble
 				scramble = "";
@@ -190,16 +188,16 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 			}
 			Scramble s = null;
 			try {
-				s = sv.generateScramble(scramble);
+				s = currentCustomization.generateScramble(scramble);
 			} catch(InvalidScrambleException e0) { //this could happen if a null scramble is imported
-				sv = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation();
+				currentCustomization = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION;
 				try {
-					s = sv.generateScramble(scramble);
+					s = currentCustomization.generateScramble(scramble);
 				} catch (InvalidScrambleException e1) {
 					e1.printStackTrace();
 				}
 			}
-			scramblePopup.setScramble(s, fullScramble, sv);
+			scramblePopup.setScramble(s, fullScramble, currentCustomization.getScrambleVariation());
 		}
 	}
 

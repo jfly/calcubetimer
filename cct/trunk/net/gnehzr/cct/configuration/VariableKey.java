@@ -11,6 +11,7 @@ import java.io.IOException;
 import javax.swing.JTable;
 
 import net.gnehzr.cct.main.CALCubeTimer;
+import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 
@@ -19,8 +20,6 @@ public class VariableKey<H> {
 	public static final VariableKey<Integer> STATS_DIALOG_FONT_SIZE = new VariableKey<Integer>("GUI_StatsDialog_fontSize"); //$NON-NLS-1$
 	public static final VariableKey<Integer> DELAY_UNTIL_INSPECTION = new VariableKey<Integer>("GUI_Timer_delayUntilInspection"); //$NON-NLS-1$
 	public static final VariableKey<Integer> DELAY_BETWEEN_SOLVES = new VariableKey<Integer>("GUI_Timer_delayBetweenSolves"); //$NON-NLS-1$
-	public static final VariableKey<Integer> RA_SIZE0 = new VariableKey<Integer>("Statistics_raSize0"); //$NON-NLS-1$
-	public static final VariableKey<Integer> RA_SIZE1 = new VariableKey<Integer>("Statistics_raSize1"); //$NON-NLS-1$
 	public static final VariableKey<Integer> SWITCH_THRESHOLD = new VariableKey<Integer>("Stackmat_switchThreshold"); //$NON-NLS-1$
 	public static final VariableKey<Integer> MIXER_NUMBER = new VariableKey<Integer>("Stackmat_mixerNumber"); //$NON-NLS-1$
 	public static final VariableKey<Integer> SPLIT_KEY = new VariableKey<Integer>("Splits_splitKey"); //$NON-NLS-1$
@@ -39,6 +38,12 @@ public class VariableKey<H> {
 	}
 	public static final VariableKey<Integer> SCRAMBLE_LENGTH(ScrambleVariation var) {
 		return new VariableKey<Integer>("Puzzle_ScrambleLength_" + var.toString()); //$NON-NLS-1$
+	}
+	public static final VariableKey<Integer> RA_SIZE(int index, ScrambleCustomization custom) {
+		String key = "Puzzle_RA" + index + "Size";
+		if(custom != null)
+			key += "_" + custom.toString();
+		return new VariableKey<Integer>(key); //$NON-NLS-1$
 	}
 	public static final VariableKey<Integer> JCOMPONENT_VALUE(String componentID, boolean xmlSpecific) {
 		String key = "GUI_xmlLayout"; //$NON-NLS-1$
@@ -124,6 +129,12 @@ public class VariableKey<H> {
 	public static final VariableKey<Boolean> LESS_ANNOYING_DISPLAY = new VariableKey<Boolean>("GUI_Timer_isLessAnnoyingDisplay"); //$NON-NLS-1$
 	public static final VariableKey<Boolean> FULLSCREEN_TIMING = new VariableKey<Boolean>("GUI_Timer_isFullScreenWhileTiming"); //$NON-NLS-1$
 	public static final VariableKey<Boolean> METRONOME_ENABLED = new VariableKey<Boolean>("Misc_Metronome_isEnabled"); //$NON-NLS-1$
+	public static final VariableKey<Boolean> RA_TRIMMED(int index, ScrambleCustomization var) {
+		String key = "Puzzle_RA" + index + "Trimmed";
+		if(var != null)
+			key += "_" + var.toString();
+		return new VariableKey<Boolean>(key); //$NON-NLS-1$
+	}
 	public static final VariableKey<Boolean> COLUMN_VISIBLE(JTable src, int index) {
 		return new VariableKey<Boolean>("GUI_xmlLayout_" + src.getName() + index); //$NON-NLS-1$
 	}

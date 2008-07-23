@@ -178,6 +178,8 @@ public class DynamicString{
 		else if(s.equalsIgnoreCase("currentAverageStatsWithSplits")) r = stats.toStatsString(AverageType.CURRENT, true, num); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("sessionStatsWithSplits")) r = stats.toStatsString(AverageType.SESSION, true, 0); //$NON-NLS-1$
 		
+		else if(s.equalsIgnoreCase("RASize")) r = "" + stats.getRASize(num);
+		
 		else if(s.equalsIgnoreCase("date")) r = Configuration.getDateFormat().format(new Date()); //$NON-NLS-1$
 		//Database queries for current scramble customization
 		else {

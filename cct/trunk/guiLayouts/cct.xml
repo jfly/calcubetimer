@@ -34,13 +34,13 @@
 						<panel layout="box" orientation="line">
 							<panel border="%%seshstats%%" layout="grid" cols="1">
 								<panel layout="box" orientation="line">
-									<label>%%raof%% $$configuration_Statistics_raSize0$$</label>
+									<label>%%raof%% $$RASize0$$</label>
 									<button action="currentAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$currentAverage0$$ $$progressAverageParens0$$</font></html>]]></button>
 									<button action="bestAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">%%bestra%% $$bestRA0$$</font></html>]]></button>
 								</panel>
 								<panel layout="box" orientation="line">
-									<label>%%raof%% $$configuration_Statistics_raSize1$$</label>
-									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$currentAverage1$$ $$progressAverageParens1$$</font></html>]]></button>
+									<label>%%raof%% $$RASize1$$</label>
+									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$currentAverage1$$ $$progressAverageParens1$$</font></font></html>]]></button>
 									<button action="bestAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">%%bestra%% $$bestRA1$$</font></html>]]></button>
 								</panel>
 								<panel layout="box" orientation="line">
@@ -50,7 +50,7 @@
 							</panel>
 							<panel border="%%history%%" layout="box" orientation="page">
 								<panel><label alignmentX=".5">%%bestever%% $$veryBestTime$$</label></panel>
-								<panel><label alignmentX=".5">%%bestraof%% $$configuration_Statistics_raSize0$$: $$veryBestRA0$$</label></panel>
+								<panel><label alignmentX=".5">%%bestraof%% $$RASize0$$: $$veryBestRA0$$</label></panel>
 								<panel><label alignmentX=".5">$$globalSolveCount$$/$$globalAttemptCount$$ %%globalaverage%% $$globalAverage$$</label></panel>
 							</panel>
 						</panel>

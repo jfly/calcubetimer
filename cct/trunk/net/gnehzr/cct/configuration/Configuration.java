@@ -60,6 +60,10 @@ public final class Configuration {
 	private Configuration() {}
 
 	//********* Start getters and setters *****************//
+	
+	public static boolean keyExists(VariableKey<?> key) {
+		return props.getProperty(key.toKey()) != null;
+	}
 
 	public static String getValue(String key) {
 		String val = props.getProperty(key);

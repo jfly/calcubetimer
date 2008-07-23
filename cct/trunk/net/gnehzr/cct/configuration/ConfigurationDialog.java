@@ -205,11 +205,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	JCheckBox speakTimes;
 	JCheckBox splits;
 	JCheckBox metronome;
-	JCheckBox showRA0;
-	JCheckBox showRA1;
 	JSpinner minSplitTime;
-	JSpinner RASize0 = null;
-	JSpinner RASize1 = null;
 	public TickerSlider metronomeDelay = null;
 	JColorComponent bestRA;
 	JColorComponent currentAverage;
@@ -255,25 +251,25 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		sideBySide.add(voices);
 		rightPanel.add(sideBySide);
 
-		sideBySide = new JPanel();
-		SpinnerNumberModel model = new SpinnerNumberModel(3, 3, null, 1);
-		RASize0 = new JSpinner(model);
-		((JSpinner.DefaultEditor) RASize0.getEditor()).getTextField().setColumns(3);
-		showRA0 = new JCheckBox(StringAccessor.getString("ConfigurationDialog.showra")); //$NON-NLS-1$
-		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.sizera0"))); //$NON-NLS-1$
-		sideBySide.add(RASize0);
-		sideBySide.add(showRA0);
-		rightPanel.add(sideBySide);
-
-		sideBySide = new JPanel();
-		model = new SpinnerNumberModel(3, 3, null, 1);
-		RASize1 = new JSpinner(model);
-		((JSpinner.DefaultEditor) RASize1.getEditor()).getTextField().setColumns(3);
-		showRA1 = new JCheckBox(StringAccessor.getString("ConfigurationDialog.showra")); //$NON-NLS-1$
-		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.sizera1"))); //$NON-NLS-1$
-		sideBySide.add(RASize1);
-		sideBySide.add(showRA1);
-		rightPanel.add(sideBySide);
+//		sideBySide = new JPanel();
+//		SpinnerNumberModel model = new SpinnerNumberModel(3, 3, null, 1);
+//		RASize0 = new JSpinner(model);
+//		((JSpinner.DefaultEditor) RASize0.getEditor()).getTextField().setColumns(3);
+//		showRA0 = new JCheckBox(StringAccessor.getString("ConfigurationDialog.showra")); //$NON-NLS-1$
+//		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.sizera0"))); //$NON-NLS-1$
+//		sideBySide.add(RASize0);
+//		sideBySide.add(showRA0);
+//		rightPanel.add(sideBySide);
+//
+//		sideBySide = new JPanel();
+//		model = new SpinnerNumberModel(3, 3, null, 1);
+//		RASize1 = new JSpinner(model);
+//		((JSpinner.DefaultEditor) RASize1.getEditor()).getTextField().setColumns(3);
+//		showRA1 = new JCheckBox(StringAccessor.getString("ConfigurationDialog.showra")); //$NON-NLS-1$
+//		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.sizera1"))); //$NON-NLS-1$
+//		sideBySide.add(RASize1);
+//		sideBySide.add(showRA1);
+//		rightPanel.add(sideBySide);
 
 		bestRA = new JColorComponent(StringAccessor.getString("ConfigurationDialog.bestra")); //$NON-NLS-1$
 		bestRA.addMouseListener(this);
@@ -314,10 +310,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 				bestTime.setBackground(Configuration.getColor(VariableKey.BEST_TIME, defaults));
 				worstTime.setBackground(Configuration.getColor(VariableKey.WORST_TIME, defaults));
 				currentAverage.setBackground(Configuration.getColor(VariableKey.CURRENT_AVERAGE, defaults));
-				RASize0.setValue(Configuration.getInt(VariableKey.RA_SIZE0, defaults));
-				RASize1.setValue(Configuration.getInt(VariableKey.RA_SIZE1, defaults));
-				showRA0.setSelected(Configuration.getBoolean(VariableKey.COLUMN_VISIBLE(timesTable, 1), defaults));
-				showRA1.setSelected(Configuration.getBoolean(VariableKey.COLUMN_VISIBLE(timesTable, 2), defaults));
 				speakTimes.setSelected(Configuration.getBoolean(VariableKey.SPEAK_TIMES, defaults));
 				voices.setSelectedItem(NumberSpeaker.getCurrentSpeaker());
 				
@@ -475,7 +467,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		scramTable.getTableHeader().setReorderingAllowed(false);
 		scramTable.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.FALSE);
 		scramTable.setShowGrid(false);
-
+		scramTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		scramTable.setDefaultRenderer(ScrambleCustomization.class, puzzlesModel);
 		scramTable.setDefaultEditor(ScrambleCustomization.class, puzzlesModel);
 		scramTable.setDefaultEditor(String.class, puzzlesModel);
@@ -484,7 +476,9 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		JScrollPane jsp = new JScrollPane(profilesTable);
 		jsp.setPreferredSize(new Dimension(150, 0));
 		panel.add(jsp, BorderLayout.LINE_START);
-		panel.add(new JScrollPane(scramTable), BorderLayout.CENTER);
+		jsp = new JScrollPane(scramTable);
+		jsp.setPreferredSize(new Dimension(300, 0));
+		panel.add(jsp, BorderLayout.CENTER);
 		
 		SyncGUIListener sl = new SyncGUIListener() {
 			public void syncGUIWithConfig(boolean defaults) {
@@ -1094,10 +1088,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setBoolean(VariableKey.SIDE_BY_SIDE_SCRAMBLE, sideBySideScramble.isSelected());
 		Configuration.setBoolean(VariableKey.COMPETITION_INSPECTION, inspectionCountdown.isSelected());
 		Configuration.setBoolean(VariableKey.SPEAK_INSPECTION, speakInspection.isSelected());
-		Configuration.setInt(VariableKey.RA_SIZE0, (Integer) RASize0.getValue());
-		Configuration.setInt(VariableKey.RA_SIZE1, (Integer) RASize1.getValue());
-		Configuration.setBoolean(VariableKey.COLUMN_VISIBLE(timesTable, 1), showRA0.isSelected());
-		Configuration.setBoolean(VariableKey.COLUMN_VISIBLE(timesTable, 2), showRA1.isSelected());
 		Configuration.setBoolean(VariableKey.METRONOME_ENABLED, metronome.isSelected());
 		Configuration.setInt(VariableKey.METRONOME_DELAY, metronomeDelay.getMilliSecondsDelay());
 		Configuration.setBoolean(VariableKey.SPEAK_TIMES, speakTimes.isSelected());

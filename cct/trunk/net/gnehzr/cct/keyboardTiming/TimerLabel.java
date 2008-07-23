@@ -1,6 +1,7 @@
 package net.gnehzr.cct.keyboardTiming;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
@@ -108,6 +109,7 @@ public class TimerLabel extends JColorComponent implements ComponentListener, Co
 			super.setFont(font.deriveFont(AffineTransform.getScaleInstance(ratio, ratio)));
 		}
 	}
+	
 	public void componentShown(ComponentEvent arg0) {}
 
 	private static BufferedImage curr, red, green;

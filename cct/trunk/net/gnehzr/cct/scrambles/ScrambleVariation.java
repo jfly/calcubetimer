@@ -53,11 +53,11 @@ public class ScrambleVariation {
 	}
 
 	public Scramble generateScramble() {
-		return scramblePlugin.newScramble(variation, length, scramblePlugin.getEnabledPuzzleAttributes());
+		return scramblePlugin.newScramble(variation, length, scramblePlugin.getDefaultGeneratorGroup(this), scramblePlugin.getEnabledPuzzleAttributes());
 	}
 
 	public Scramble generateScramble(String scramble) throws InvalidScrambleException {
-		return scramblePlugin.importScramble(variation, scramble, scramblePlugin.getEnabledPuzzleAttributes());
+		return scramblePlugin.importScramble(variation, scramble, scramblePlugin.getDefaultGeneratorGroup(this), scramblePlugin.getEnabledPuzzleAttributes());
 	}
 
 	public int getPuzzleUnitSize(boolean defaults) {
