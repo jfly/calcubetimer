@@ -24,10 +24,12 @@
 						<panel layout="border">
 							<line_start><button action="submitSundayContest">%%submitsunday%%</button></line_start>
 							<center><panel><checkbox alignmentX=".5" action="keyboardTiming">%%usekeyboard%%</checkbox></panel></center>
-							<line_end><panel>
-								<button action="newSession">%%newsession%%</button>
-								<button action="reset">%%clearsession%%</button>
-							</panel></line_end>
+							<line_end>
+								<panel>
+									<button action="newSession">%%newsession%%</button>
+									<button action="reset">%%clearsession%%</button>
+								</panel>
+							</line_end>
 						</panel>
 						<panel layout="box" orientation="line">
 							<panel border="%%seshstats%%" layout="grid" cols="1">
@@ -38,7 +40,7 @@
 								</panel>
 								<panel layout="box" orientation="line">
 									<label>%%raof%% $$configuration_Statistics_raSize1$$</label>
-									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$currentAverage1$$ $$progressAverageParens1$$</font></font></html>]]></button>
+									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$currentAverage1$$ $$progressAverageParens1$$</font></html>]]></button>
 									<button action="bestAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">%%bestra%% $$bestRA1$$</font></html>]]></button>
 								</panel>
 								<panel layout="box" orientation="line">
