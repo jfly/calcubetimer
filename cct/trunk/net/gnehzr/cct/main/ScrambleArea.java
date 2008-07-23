@@ -1,6 +1,5 @@
 package net.gnehzr.cct.main;
 
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -100,7 +99,6 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		success.setVisible(false);
 	}
 
-	
 	public void updateUI() {
 		Border t = getBorder();
 		super.updateUI();
@@ -110,9 +108,12 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		setPreferredSize(new Dimension(0, 100));
 	}
 	private String currentScramble;
+	private String incrScramble;
 	private Scramble fullScramble;
 	private ScrambleCustomization currentCustomization;
-	private String part1, part2;
+	private String part1, part2, part3;
+	private int moveNum;
+	private String backgroundColor;
 	private static final Pattern NULL_SCRAMBLE_REGEX = Pattern.compile("^(.+)()$");
 	public void setScramble(String newScramble, ScrambleCustomization sc) {
 		currentCustomization = sc;
@@ -143,7 +144,8 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		part2 = " { color: #" + selected + "; }" + //$NON-NLS-1$
 			"span { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "; " + fontStyle + "; }" + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			"sub { font-size: " + (font.getSize() / 2 + 1) + "; }" + //$NON-NLS-1$ //$NON-NLS-2$
-			"</style></head><body>"; //$NON-NLS-1$
+			"</style></head>"; //$NON-NLS-1$
+		part3 = "";
 		String s = currentScramble;
 		String plainScramble = ""; //$NON-NLS-1$
 		Matcher m;
@@ -157,11 +159,11 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 			String str = m.group(1).trim();
 			plainScramble += " " + str; //$NON-NLS-1$
 			description = num + " " + plainScramble; //$NON-NLS-1$
-			part2 += "<a id='" + num + "' href=\"" + description + "\"><span>" + currentCustomization.getScramblePlugin().htmlify(" " + str) + "</span></a>"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+			part3 += "<a id='" + num + "' href=\"" + description + "\"><span>" + currentCustomization.getScramblePlugin().htmlify(" " + str) + "</span></a>"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 			s = m.group(2).trim();
 			num++;
 		}
-		part2 += "</body></html>"; //$NON-NLS-1$
+		part3 += "</body></html>"; //$NON-NLS-1$
 		scramblePane.setCaretPosition(0);
 		hyperlinkUpdate(new HyperlinkEvent(scramblePane, HyperlinkEvent.EventType.ACTIVATED, null, description));
 		setProperSize();
@@ -172,33 +174,38 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 
 	public void hyperlinkUpdate(HyperlinkEvent e) {
 		if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-			String scramble = e.getDescription();
-//			ScrambleVariation sv = currentCustomization.getScrambleVariation();
-			String[] moveAndScramble = scramble.split(" ", 2); //$NON-NLS-1$
+			incrScramble = e.getDescription();
+			String[] moveAndScramble = incrScramble.split(" ", 2); //$NON-NLS-1$
 			if(moveAndScramble.length != 2) { //this happens if we have an empty null scramble
-				scramble = "";
-				scramblePane.setText(scramble); //$NON-NLS-1$
+				incrScramble = "";
+				scramblePane.setText(incrScramble); //$NON-NLS-1$
 			} else {
-				int moveNum = Integer.parseInt(moveAndScramble[0]);
-				int caretPos = scramblePane.getCaretPosition();
-				scramblePane.setDocument(new HTMLDocument());
-				scramblePane.setText(part1 + moveNum + part2);
-				scramblePane.setCaretPosition(caretPos);
-				scramble = moveAndScramble[1];
+				moveNum = Integer.parseInt(moveAndScramble[0]);
+				incrScramble = moveAndScramble[1];
 			}
+			updateScramblePane();
 			Scramble s = null;
 			try {
-				s = currentCustomization.generateScramble(scramble);
+				s = currentCustomization.generateScramble(incrScramble);
 			} catch(InvalidScrambleException e0) { //this could happen if a null scramble is imported
 				currentCustomization = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION;
 				try {
-					s = currentCustomization.generateScramble(scramble);
+					s = currentCustomization.generateScramble(incrScramble);
 				} catch (InvalidScrambleException e1) {
 					e1.printStackTrace();
 				}
 			}
 			scramblePopup.setScramble(s, fullScramble, currentCustomization.getScrambleVariation());
 		}
+	}
+	private void updateScramblePane() {
+		int caretPos = scramblePane.getCaretPosition();
+		scramblePane.setDocument(new HTMLDocument());
+		String bgColor = "";
+		if(backgroundColor != null)
+			bgColor = " bgcolor='" + backgroundColor + "'";
+		scramblePane.setText(part1 + moveNum + part2 + "<body" + bgColor + ">" + part3);
+		scramblePane.setCaretPosition(caretPos);
 	}
 
 	private boolean focused;
@@ -209,7 +216,8 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 	//this will be called by the KeyboardTimer to hide scrambles when necessary
 	public void setTimerFocused(boolean focused) {
 		this.focused = focused;
-		setBackground(!focused && Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false) ? Color.BLACK: Color.WHITE);
+		backgroundColor = (!focused && Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false)) ? "black" : null;
+		updateScramblePane();
 	}
 
 	private void setProperSize() {
