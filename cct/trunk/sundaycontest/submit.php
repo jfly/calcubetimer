@@ -132,7 +132,7 @@ function changeInputs() {
 <h1>
 <img src="images/cubecoolsmall.gif" alt="cube" border="0" height="47" width="43" />The Sunday Contest<img src="images/cubecoolsmall.gif" alt="cube" border="0" height="47" width="43" />
 </h1>
-<div id="results">
+<div id="results"> <!-- This div with id="results" is what CCT looks for to inform the user of the results of their submission. Please don't remove it! -Jeremy Fleischman --> 
 <? 
 if( isset( $_POST['submit'] ) )
 {
