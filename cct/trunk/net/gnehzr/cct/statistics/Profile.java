@@ -238,6 +238,7 @@ public class Profile {
 					solve.setTime(seshCommentOrSolveTime);
 					session.getStatistics().add(solve);
 				} catch (Exception e) {
+					e.printStackTrace();
 					throw new SAXException("Unable to parse time: " + seshCommentOrSolveTime + " " + e.toString()); //$NON-NLS-1$
 				}
 			} else if(name.equalsIgnoreCase("comment")) { //$NON-NLS-1$

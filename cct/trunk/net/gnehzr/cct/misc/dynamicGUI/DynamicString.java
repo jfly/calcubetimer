@@ -12,11 +12,14 @@ import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.statistics.PuzzleStatistics;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.StatisticsTableModel;
+import net.gnehzr.cct.statistics.SolveTime.SolveType;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
 
 public class DynamicString{
 	private static final char RAW_TEXT = 'a', I18N_TEXT = 'b', STAT = 'c';
 	private static final String CONF = "configuration_"; //$NON-NLS-1$
+	private static final String SOLVE_TYPE = "solvecount_"; //$NON-NLS-1$
+	private static final String GLOBAL_SOLVE_TYPE = "global_solvecount_"; //$NON-NLS-1$
 	
 	private String rawString;
 	private String[] splitText;
@@ -104,8 +107,18 @@ public class DynamicString{
 
 	private String getReplacement(String s, int num){
 		//Configuration section
-		if(s.startsWith(CONF)) {
+		if(s.toLowerCase().startsWith(CONF.toLowerCase()))
 			return Configuration.getValue(s.substring(CONF.length()));
+		
+		Statistics stats = statsModel.getCurrentStatistics();
+		if(s.toLowerCase().startsWith(SOLVE_TYPE.toLowerCase())) {
+			String type = s.substring(SOLVE_TYPE.length());
+			if(type.equalsIgnoreCase("solved"))
+				return "" + stats.getSolveCount();
+			else if(type.equalsIgnoreCase("attempt"))
+				return "" + stats.getAttemptCount();
+			else
+				return "" + stats.getSolveTypeCount(SolveType.valueOf(type));
 		}
 		
 		Pattern p = Pattern.compile("([^0-9]*)([0-9]*)"); //$NON-NLS-1$
@@ -121,7 +134,6 @@ public class DynamicString{
 		}
 
 		String r = ""; //$NON-NLS-1$
-		Statistics stats = statsModel.getCurrentStatistics();
 		if(stats == null)
 			return r;
 		
@@ -132,11 +144,6 @@ public class DynamicString{
 			if(ave == 0) ave = Double.POSITIVE_INFINITY;
 			r = Utils.formatTime(ave);
 		} else if(s.equalsIgnoreCase("sessionSD")) r = Utils.formatTime(stats.getSessionSD()); //$NON-NLS-1$
-		else if(s.equalsIgnoreCase("pops")) r = "" + stats.getPOPCount(); //$NON-NLS-1$ //$NON-NLS-2$
-		else if(s.equalsIgnoreCase("+twos")) r = "" + stats.getPlus2Count(); //$NON-NLS-1$ //$NON-NLS-2$
-		else if(s.equalsIgnoreCase("dnfs")) r = "" + stats.getDNFCount(); //$NON-NLS-1$ //$NON-NLS-2$
-		else if(s.equalsIgnoreCase("solves")) r = "" + stats.getSolveCount(); //$NON-NLS-1$ //$NON-NLS-2$
-		else if(s.equalsIgnoreCase("attempts")) r = "" + stats.getAttemptCount(); //$NON-NLS-1$ //$NON-NLS-2$
 		else if(s.equalsIgnoreCase("progressTime")) r = formatProgressTime(stats.getProgressTime(), false); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("progressAverage")) r = formatProgressTime(stats.getProgressAverage(num), false); //$NON-NLS-1$
 		else if(s.equalsIgnoreCase("progressTimeParens")) r = formatProgressTime(stats.getProgressTime(), true); //$NON-NLS-1$
@@ -187,11 +194,15 @@ public class DynamicString{
 			if(s.equalsIgnoreCase("veryBestTime")) r = ps.getBestTime().toString(); //$NON-NLS-1$
 			else if(s.equalsIgnoreCase("veryBestRA")) r = Utils.formatTime(ps.getBestRA(num)); //$NON-NLS-1$
 			else if(s.equalsIgnoreCase("globalAverage")) r = Utils.formatTime(ps.getGlobalAverage()); //$NON-NLS-1$
-			else if(s.equalsIgnoreCase("globalPops")) r = ""+ps.getPOPCount(); //$NON-NLS-1$ //$NON-NLS-2$
-			else if(s.equalsIgnoreCase("global+twos")) r = ""+ps.getPlusTwoCount(); //$NON-NLS-1$ //$NON-NLS-2$
-			else if(s.equalsIgnoreCase("globalDNFs")) r = ""+ps.getDNFCount(); //$NON-NLS-1$ //$NON-NLS-2$
-			else if(s.equalsIgnoreCase("globalSolveCount")) r = ""+ps.getSolveCount(); //$NON-NLS-1$ //$NON-NLS-2$
-			else if(s.equalsIgnoreCase("globalAttemptCount")) r = ""+ ps.getAttemptCount(); //$NON-NLS-1$ //$NON-NLS-2$
+			else if(s.toLowerCase().startsWith(GLOBAL_SOLVE_TYPE.toLowerCase())) {
+				String type = s.substring(GLOBAL_SOLVE_TYPE.length());
+				if(type.equalsIgnoreCase("solved"))
+					r = "" + ps.getSolveCount();
+				else if(type.equalsIgnoreCase("attempt"))
+					r = "" + ps.getAttemptCount();
+				else
+					r = "" + ps.getSolveTypeCount(SolveType.valueOf(type));
+			}
 		}
 
 		return r;

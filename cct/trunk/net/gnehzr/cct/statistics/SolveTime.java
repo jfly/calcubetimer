@@ -12,7 +12,44 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	public static final SolveTime WORST = new SolveTime();
 
 	public static enum SolveType {
-		NORMAL("StatisticsTableModel.none", true), POP("POP", false), PLUS_TWO("+2", false), DNF("DNF", false);
+		NORMAL("StatisticsTableModel.none", true) {
+			public String toString(SolveTime t, boolean rawTime) {
+				int hundredths = t.hundredths;
+				if(hundredths == Integer.MAX_VALUE || hundredths < 0) return "N/A"; //$NON-NLS-1$
+				
+				String c = Utils.formatTime(t.secondsValue());
+				if(rawTime)
+					c = toUSFormatting(c);
+				return c;
+			}
+		},
+		PLUS_TWO("+2", false) {
+			public String toString(SolveTime t, boolean rawTime) {
+				String c = Utils.formatTime(t.secondsValue()) + "+";
+				if(rawTime)
+					c = toUSFormatting(c);
+				return c;
+			};
+		},
+		POP("POP", false) {
+			public String toString(SolveTime t, boolean rawTime) {
+				if(!rawTime)
+					return toString();
+				
+				return toString() + " " + t.rawSecondsValue();
+			}
+		},
+		DNF("DNF", false) {
+			public String toString(SolveTime t, boolean rawTime) {
+				if(!rawTime)
+					return toString();
+				
+				return toString() + " " + t.rawSecondsValue();
+			}
+		},
+		JFLY("JFLY", false)
+		;
+		
 		private String desc;
 		private boolean i18n;
 		private SolveType(String desc, boolean i18n) {
@@ -24,15 +61,19 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 				return StringAccessor.getString(desc);
 			return desc;
 		}
-		//this returns true if the solvetype is a time in and of itself,
-		//ex: POP or DNF
-		public boolean isSoloTime() {
-			return this == POP || this == DNF;
+		public boolean isSolved() {
+			return this != POP && this != DNF;
+		}
+		public String toString(SolveTime t, boolean rawTime) {
+			String time = Utils.formatTime(t.secondsValue());
+			if(rawTime)
+				return toString() + " " + toUSFormatting(time);
+			return time;
 		}
 	}
 	
 	private SolveType type = SolveType.NORMAL;
-	private int hundredths;
+	int hundredths;
 	private String scramble = null;
 	private ArrayList<SolveTime> splits;
 
@@ -79,10 +120,7 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	//returns true if s represents a valid solvetype
 	private boolean determineSolveType(String s) {
 		try {
-			SolveType t = SolveType.valueOf(s);
-			if(!t.isSoloTime())
-				return false;
-			type = t;
+			type = SolveType.valueOf(s);
 			return true;
 		} catch(IllegalArgumentException e) {
 			return false; //this happens when the enum doesn't exist
@@ -137,7 +175,7 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 		else if(seconds > 21000000) throw new Exception(StringAccessor.getString("SolveTime.toolarge")); //$NON-NLS-1$
 		this.hundredths = (int)(100 * seconds + .5);
 	}
-	private String toUSFormatting(String time) {
+	static String toUSFormatting(String time) {
 		return time.replaceAll(Pattern.quote(Utils.getDecimalSeparator()), "."); //$NON-NLS-1$
 	}
 	
@@ -150,26 +188,11 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	}
 	
 	public String toString() {
-		return toString(false);
+		return type.toString(this, false);
 	}
 	//this is for use by the database, and will save the raw time if the solve was a POP or DNF
 	public String toExternalizableString() {
-		return toString(true);
-	}
-	private String toString(boolean rawTime) {
-		switch(type) {
-		case DNF:
-			return "DNF" + (rawTime ? " " + rawSecondsValue() : ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		case POP:
-			return "POP" + (rawTime ? " " + rawSecondsValue() : ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		default:
-			if(hundredths == Integer.MAX_VALUE || hundredths < 0) return "N/A"; //$NON-NLS-1$
-		
-			String t = Utils.formatTime(secondsValue()) + (type == SolveType.PLUS_TWO ? "+" : ""); //$NON-NLS-1$ //$NON-NLS-2$
-			if(rawTime)
-				t = toUSFormatting(t);
-			return t;
-		}
+		return type.toString(this, true);
 	}
 	public String toSplitsString() {
 		if(splits == null) return ""; //$NON-NLS-1$

@@ -220,7 +220,7 @@ public class Statistics implements ConfigurationChangeListener {
 	public void notifyListeners(boolean newTime) {
 		if(tableListener != null) {
 			if(newTime) {
-				int row = getAttemptCount() - 1;
+				int row = times.size() - 1;
 				tableListener.fireTableRowsInserted(row, row);
 			} else
 				tableListener.fireTableDataChanged();
@@ -244,7 +244,7 @@ public class Statistics implements ConfigurationChangeListener {
 	}
 	
 	public void set(int pos, SolveTime st) {
-		if(pos == getAttemptCount()) {
+		if(pos == times.size()) {
 			addHelper(st);
 			editActions.add(new StatisticsEdit(new int[]{pos}, null, st));
 			notifyListeners(true);
@@ -672,23 +672,30 @@ public class Statistics implements ConfigurationChangeListener {
 		return curSessionSD;
 	}
 
-	public int getPOPCount() {
-		return solveCounter[SolveType.POP.ordinal()];
-	}
-	public int getPlus2Count() {
-		return solveCounter[SolveType.PLUS_TWO.ordinal()];
-	}
-	public int getDNFCount() {
-		return solveCounter[SolveType.DNF.ordinal()];
-	}
-	public int getNormalSolveCount() {
-		return solveCounter[SolveType.NORMAL.ordinal()];
-	}
+//	public int getPOPCount() {
+//		return solveCounter[SolveType.POP.ordinal()];
+//	}
+//	public int getPlus2Count() {
+//		return solveCounter[SolveType.PLUS_TWO.ordinal()];
+//	}
+//	public int getDNFCount() {
+//		return solveCounter[SolveType.DNF.ordinal()];
+//	}
+//	public int getNormalSolveCount() {
+//		return solveCounter[SolveType.NORMAL.ordinal()];
+//	}
 	public int getSolveCount() {
-		return getNormalSolveCount() + getPlus2Count();
+		int unsolved = 0;
+		for(SolveType t : SolveType.values())
+			if(!t.isSolved())
+				unsolved += solveCounter[t.ordinal()];
+		return times.size() - unsolved;
 	}
 	public int getAttemptCount() {
 		return times.size();
+	}
+	public int getSolveTypeCount(SolveType t) {
+		return solveCounter[t.ordinal()];
 	}
 
 	public double getTime(int n) {

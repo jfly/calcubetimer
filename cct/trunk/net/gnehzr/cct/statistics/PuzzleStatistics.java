@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.gnehzr.cct.main.CALCubeTimer;
+import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
 public class PuzzleStatistics implements StatisticsUpdateListener {
 	private String customization;
@@ -53,16 +54,14 @@ public class PuzzleStatistics implements StatisticsUpdateListener {
 	private SolveTime bestTime;
 	private double globalAverage;
 	private double[] bestRAs;
-	private int solveCount;
+	private int solvedCount;
 	private int attemptCount;
-	private int dnfCount, popCount, plusTwoCount;
+	private int[] typeCounter;
 	private void refreshStats() {
 		bestTime = SolveTime.WORST;
-		solveCount = 0;
+		solvedCount = 0;
 		attemptCount = 0;
-		dnfCount = 0;
-		popCount = 0;
-		plusTwoCount = 0;
+		typeCounter = new int[SolveType.values().length];
 		globalAverage = 0;
 		bestRAs = new double[Statistics.RA_SIZES_COUNT];
 		Arrays.fill(bestRAs, Double.POSITIVE_INFINITY);
@@ -77,16 +76,15 @@ public class PuzzleStatistics implements StatisticsUpdateListener {
 					bestRAs[ra] = ave;
 			}
 			int solves = stats.getSolveCount();
-			globalAverage += stats.getSessionAvg()*solves;
+			globalAverage += stats.getSessionAvg() * solves;
 			
-			solveCount += solves;
+			solvedCount += solves;
 			attemptCount += stats.getAttemptCount();
-			dnfCount += stats.getDNFCount();
-			popCount += stats.getPOPCount();
-			plusTwoCount += stats.getPlus2Count();
+			for(SolveType type : SolveType.values())
+				typeCounter[type.ordinal()] += stats.getSolveTypeCount(type);
 		}
-		if(solveCount != 0)
-			globalAverage /= solveCount;
+		if(solvedCount != 0)
+			globalAverage /= solvedCount;
 		else
 			globalAverage = Double.POSITIVE_INFINITY;
 	}
@@ -101,17 +99,11 @@ public class PuzzleStatistics implements StatisticsUpdateListener {
 	public double getGlobalAverage() {
 		return globalAverage;
 	}
-	public int getPOPCount() {
-		return popCount;
-	}
-	public int getPlusTwoCount() {
-		return plusTwoCount;
-	}
-	public int getDNFCount() {
-		return dnfCount;
+	public int getSolveTypeCount(SolveType t) {
+		return typeCounter[t.ordinal()];
 	}
 	public int getSolveCount() {
-		return solveCount;
+		return solvedCount;
 	}
 	public int getAttemptCount() {
 		return attemptCount;

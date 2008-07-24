@@ -44,14 +44,14 @@
 									<button action="bestAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">%%bestra%% $$bestRA1$$</font></html>]]></button>
 								</panel>
 								<panel layout="box" orientation="line">
-									<label>$$solves$$/$$attempts$$ (%%solves%%/%%attempts%%)</label>
+									<label>$$solvecount_solved$$/$$solvecount_attempt$$ (%%solves%%/%%attempts%%)</label>
 									<button action="sessionAverage"><![CDATA[<html>%%seshave%% $$sessionAverage$$ $$progressSessionAverageParens$$</html>]]></button>
 								</panel>
 							</panel>
 							<panel border="%%history%%" layout="box" orientation="page">
 								<panel><label alignmentX=".5">%%bestever%% $$veryBestTime$$</label></panel>
 								<panel><label alignmentX=".5">%%bestraof%% $$RASize0$$: $$veryBestRA0$$</label></panel>
-								<panel><label alignmentX=".5">$$globalSolveCount$$/$$globalAttemptCount$$ %%globalaverage%% $$globalAverage$$</label></panel>
+								<panel><label alignmentX=".5">$$global_solvecount_solved$$/$$global_solvecount_attempt$$ %%globalaverage%% $$globalAverage$$</label></panel>
 							</panel>
 						</panel>
 					</panel>

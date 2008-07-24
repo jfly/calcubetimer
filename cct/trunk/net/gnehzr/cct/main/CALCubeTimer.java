@@ -1273,7 +1273,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				Configuration.addConfigurationChangeListener(cct);
 				cct.setTitle("CCT " + CCT_VERSION); //$NON-NLS-1$
 				cct.setIconImage(cubeIcon.getImage());
-				cct.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+				cct.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 				cct.setSelectedProfile(Configuration.getSelectedProfile()); //this will eventually cause sessionSelected() and configurationChanged() to be called
 				cct.setVisible(true);
 				Runtime.getRuntime().addShutdownHook(new Thread() {
