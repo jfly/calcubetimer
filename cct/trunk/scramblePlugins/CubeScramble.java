@@ -23,7 +23,7 @@ public class CubeScramble extends Scramble {
 	private static final String PUZZLE_NAME = "Cube";
 	private static final String[] VARIATIONS = { "2x2x2", "3x3x3", "4x4x4", "5x5x5", "6x6x6", "7x7x7", "8x8x8", "9x9x9", "10x10x10", "11x11x11" };
 	private static final int[] DEFAULT_LENGTHS = { 25,	 25,		40,		60,		80,			100,	120,	140,	160,		180 };
-	private static final String[] ATTRIBUTES = {"%%multislice%%", "Wide notation"};
+	private static final String[] ATTRIBUTES = {"%%multislice%%", "%%widenotation%%"};
 	private static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
 	private static final int DEFAULT_UNIT_SIZE = 11;
 	private static final Pattern TOKEN_REGEX = Pattern.compile("^((?:\\d+)?[LDBRUFldbruf](?:\\(\\d+\\))?w?[2']?)(.*)$");
@@ -145,7 +145,7 @@ public class CubeScramble extends Scramble {
 				if(face / 6 != 0) move += "w";
 			}
 			else{
-				if(face > FACES.length()) { //wtf?? -Jeremy
+				if(face >= FACES.length()) { //wtf?? -Jeremy
 					if(face / 6 != 0) face += 6;
 					move += FACES.charAt(face % 12);
 				} else
