@@ -23,13 +23,12 @@ public class CubeScramble extends Scramble {
 	private static final String PUZZLE_NAME = "Cube";
 	private static final String[] VARIATIONS = { "2x2x2", "3x3x3", "4x4x4", "5x5x5", "6x6x6", "7x7x7", "8x8x8", "9x9x9", "10x10x10", "11x11x11" };
 	private static final int[] DEFAULT_LENGTHS = { 25,	 25,		40,		60,		80,			100,	120,	140,	160,		180 };
-	private static final String[] ATTRIBUTES = {"%%multislice%%"};
+	private static final String[] ATTRIBUTES = {"%%multislice%%", "Wide notation"};
 	private static final String[] DEFAULT_ATTRIBUTES = ATTRIBUTES;
 	private static final int DEFAULT_UNIT_SIZE = 11;
 	private static final Pattern TOKEN_REGEX = Pattern.compile("^((?:\\d+)?[LDBRUFldbruf](?:\\(\\d+\\))?w?[2']?)(.*)$");
 	
 	private static final String FACES = "LDBRUFldbruf";
-	private static final boolean wideNotation = true;
 	private static final boolean danCohenNotation = true;
 	private int size;
 	private int[][][] image;
@@ -56,11 +55,15 @@ public class CubeScramble extends Scramble {
 	}
 
 	private boolean multislice;
+	private boolean wideNotation;
 	private boolean setAttributes(String... attributes) {
 		multislice = false;
+		wideNotation = false;
 		for(String attr : attributes) {
 			if(attr.equals(ATTRIBUTES[0]))
 				multislice = true;
+			else if(attr.equals(ATTRIBUTES[1]))
+				wideNotation = true;
 		}
 		initializeImage();
 		if(scramble != null)
@@ -142,7 +145,11 @@ public class CubeScramble extends Scramble {
 				if(face / 6 != 0) move += "w";
 			}
 			else{
-				move += FACES.charAt(face);
+				if(face > FACES.length()) { //wtf?? -Jeremy
+					if(face / 6 != 0) face += 6;
+					move += FACES.charAt(face % 12);
+				} else
+					move += FACES.charAt(face);
 			}
 		}
 		else{
@@ -196,7 +203,7 @@ public class CubeScramble extends Scramble {
 			}
 		}
 		else return false;
-
+		String newScram = "";
 		try{
 			for(int i = 0; i < cstrs.length; i++){
 				int face;
@@ -208,8 +215,9 @@ public class CubeScramble extends Scramble {
 					}
 					slice1 = m.group(1);
 					String slice2 = m.group(3);
-					if(slice1 != null && slice2 != null) //only dan cohen's notation or the old style is allowed, not both
+					if(slice1 != null && slice2 != null) { //only dan cohen's notation or the old style is allowed, not both
 						return false;
+					}
 					if(slice1 == null)
 						slice1 = slice2;
 					face = FACES.indexOf(m.group(2));
@@ -225,16 +233,21 @@ public class CubeScramble extends Scramble {
 
 				dir = " 2'".indexOf(cstrs[i].charAt(cstrs[i].length() - 1) + "");
 				if(dir < 0) dir = 0;
-
+				
+				int n = ((slice * 6 + face) * 4 + dir);
+				newScram += " " + moveString(n);
 				do{
 					slice(face, slice, dir);
 					slice--;
 				} while(multislice && slice >= 0);
 			}
 		} catch(Exception e){
+			e.printStackTrace();
 			return false;
 		}
-
+		if(!newScram.isEmpty())
+			newScram = newScram.substring(1);
+		scramble = newScram; //we do this to force notation update when an attribute changes
 		return true;
 	}
 	private void initializeImage(){

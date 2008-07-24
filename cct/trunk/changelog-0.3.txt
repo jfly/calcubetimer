@@ -220,6 +220,7 @@ changes:
 +mean of 3 instead of average
 +associate scramble customization w/ RA 0 & RA 1 (unaffected by reset all)
 +minimum size of timer display is FIXED!
++added wide notation option to cubescramble plugin
 
 TODO:
 
