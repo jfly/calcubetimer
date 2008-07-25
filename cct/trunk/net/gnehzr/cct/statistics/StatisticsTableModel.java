@@ -137,11 +137,10 @@ public class StatisticsTableModel extends DraggableJTableModel implements Action
 				for(SolveType key : typeButtons.keySet())
 					if(typeButtons.get(key).isSelected())
 						types.add(key);
-
 				stats.setSolveTypes(timesTable.getSelectedRow(), types);
 			}
-			prevFocusOwner.requestFocusInWindow();
 		}
+		prevFocusOwner.requestFocusInWindow();
 	}
 
 	private JMenuItem edit, discard;
@@ -182,9 +181,10 @@ public class StatisticsTableModel extends DraggableJTableModel implements Action
 			
 			typeButtons = new HashMap<SolveType, JMenuItem>();
 			ButtonGroup independent = new ButtonGroup();
-			ButtonGroup attributes = new ButtonGroup();
+			ArrayList<JMenuItem> customTags = new ArrayList<JMenuItem>(); //we collect these tags here, so we can add them in the end, together
 			JMenuItem attr = new JRadioButtonMenuItem(StringAccessor.getString("StatisticsTableModel.none"), selectedSolve.getTypes().isEmpty());
 			attr.setEnabled(!selectedSolve.isTrueWorstTime());
+			attr.addActionListener(this);
 			independent.add(attr);
 			Collection<SolveType> types = SolveType.getSolveTypes();
 			for(SolveType type : types) {
@@ -194,7 +194,7 @@ public class StatisticsTableModel extends DraggableJTableModel implements Action
 					independent.add(attr);
 				} else {
 					attr = new JCheckBoxMenuItem(type.toString(), selectedSolve.isType(type));
-					attributes.add(attr);
+					customTags.add(attr);
 				}
 				attr.addActionListener(this);
 				typeButtons.put(type, attr);
@@ -205,9 +205,8 @@ public class StatisticsTableModel extends DraggableJTableModel implements Action
 			
 			jpopup.addSeparator();
 			
-			buttons = attributes.getElements();
-			while(buttons.hasMoreElements())
-				jpopup.add(buttons.nextElement());
+			for(JMenuItem c : customTags)
+				jpopup.add(c);
 			
 			jpopup.addSeparator();
 		}
