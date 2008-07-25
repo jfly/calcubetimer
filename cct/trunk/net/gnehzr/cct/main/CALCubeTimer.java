@@ -194,155 +194,200 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		profiles.setSelectedItem(p);
 	}
 
-	HashMap<String, AbstractAction> actionMap;
-	private StatisticsAction currentAverageAction0;
-	private StatisticsAction rollingAverageAction0;
-	private StatisticsAction currentAverageAction1;
-	private StatisticsAction rollingAverageAction1;
-	private StatisticsAction sessionAverageAction;
-	private AddTimeAction addTimeAction;
-	private ExportScramblesAction exportScramblesAction;
-	private ExitAction exitAction;
-	private AboutAction aboutAction;
-	private DocumentationAction documentationAction;
-	private ShowConfigurationDialogAction showConfigurationDialogAction;
-	private KeyboardTimingAction keyboardTimingAction;
-	private SpacebarOptionAction spacebarOptionAction;
-	private FullScreenTimingAction fullScreenTimingAction;
-	private HideScramblesAction hideScramblesAction;
-	private LessAnnoyingDisplayAction lessAnnoyingDisplayAction;
-	private ResetAction resetAction;
-	private RequestScrambleAction requestScrambleAction;
-	private AbstractAction flipFullScreenAction;
-	AbstractAction undo;
-	AbstractAction redo;
-	private AbstractAction toggleScrambleView;
-	private void createActions(){
-		actionMap = new HashMap<String, AbstractAction>();
+	private ActionMap actionMap;
+	private class ActionMap{
+		private CALCubeTimer cct;
+		private HashMap<String, AbstractAction> actionMap;
 
-		keyboardTimingAction = new KeyboardTimingAction(this);
-		keyboardTimingAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_K);
-		keyboardTimingAction.putValue(Action.SHORT_DESCRIPTION, StringAccessor.getString("CALCubeTimer.stackmatnote")); //$NON-NLS-1$
-		actionMap.put("keyboardtiming", keyboardTimingAction); //$NON-NLS-1$
+		public ActionMap(CALCubeTimer cct){
+			this.cct = cct;
+			actionMap = new HashMap<String, AbstractAction>();
+		}
 
-		addTimeAction = new AddTimeAction(this);
-		addTimeAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
-		addTimeAction.putValue(Action.ACCELERATOR_KEY,
-				KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.ALT_MASK));
-		actionMap.put("addtime", addTimeAction); //$NON-NLS-1$
+		public void put(String s, AbstractAction a){
+			actionMap.put(s, a);
+		}
 
-		resetAction = new ResetAction(this);
-		resetAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
-		actionMap.put("reset", resetAction); //$NON-NLS-1$
-
-		currentAverageAction0 = new StatisticsAction(this, statsModel, AverageType.CURRENT, 0);
-		actionMap.put("currentaverage0", currentAverageAction0); //$NON-NLS-1$
-		rollingAverageAction0 = new StatisticsAction(this, statsModel, AverageType.RA, 0);
-		actionMap.put("bestaverage0", rollingAverageAction0); //$NON-NLS-1$
-		currentAverageAction1 = new StatisticsAction(this, statsModel, AverageType.CURRENT, 1);
-		actionMap.put("currentaverage1", currentAverageAction1); //$NON-NLS-1$
-		rollingAverageAction1 = new StatisticsAction(this, statsModel, AverageType.RA, 1);
-		actionMap.put("bestaverage1", rollingAverageAction1); //$NON-NLS-1$
-		sessionAverageAction = new StatisticsAction(this, statsModel, AverageType.SESSION, 0);
-		actionMap.put("sessionaverage", sessionAverageAction); //$NON-NLS-1$
-
-		flipFullScreenAction = new AbstractAction() { //$NON-NLS-1$
-			{ putValue(Action.NAME, "+"); }
-			public void actionPerformed(ActionEvent e) {
-				setFullScreen(!isFullscreen);
+		public AbstractAction get(String s){
+			s = s.toLowerCase();
+			AbstractAction a = actionMap.get(s);
+			if(a == null){
+				a = initialize(s);
+				actionMap.put(s, a);
 			}
-		};
-		actionMap.put("togglefullscreen", flipFullScreenAction);
+			return a;
+		}
 
-		actionMap.put("importscrambles", new AbstractAction() { //$NON-NLS-1$
-			{
-				putValue(Action.MNEMONIC_KEY, KeyEvent.VK_I);
-				putValue(Action.ACCELERATOR_KEY,
-						KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
+		private AbstractAction initialize(String s){
+			AbstractAction a = null;
+			if(s.equals("keyboardtiming")){ //$NON-NLS-1$
+				a = new KeyboardTimingAction(cct);
+				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_K);
+				a.putValue(Action.SHORT_DESCRIPTION, StringAccessor.getString("CALCubeTimer.stackmatnote")); //$NON-NLS-1$
 			}
-			public void actionPerformed(ActionEvent e){
-				new ScrambleImportDialog(CALCubeTimer.this, scramblesList.getScrambleCustomization());
+			else if(s.equals("addtime")){ //$NON-NLS-1$
+				a = new AddTimeAction(cct);
+				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
+				a.putValue(Action.ACCELERATOR_KEY,
+						KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.ALT_MASK));
 			}
-		});
-
-		exportScramblesAction = new ExportScramblesAction(this);
-		exportScramblesAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_E);
-		exportScramblesAction.putValue(Action.ACCELERATOR_KEY,
-				KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
-		actionMap.put("exportscrambles", exportScramblesAction); //$NON-NLS-1$
-
-		actionMap.put("connecttoserver", new AbstractAction() { //$NON-NLS-1$
-			{
-				putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
-				putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+			else if(s.equals("reset")){ //$NON-NLS-1$
+				a = new ResetAction(cct);
+				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
 			}
-			public void actionPerformed(ActionEvent e) {
-				if(e == null) { //this means that the client gui was disposed
-					this.setEnabled(true);
-				} else {
-					if(client == null)
-						client = new IRCClientGUI(CALCubeTimer.this, this);
-					client.setVisible(true);
-					this.setEnabled(false);
-				}
+			else if(s.equals("currentaverage0")){ //$NON-NLS-1$
+				a = new StatisticsAction(cct, statsModel, AverageType.CURRENT, 0);
 			}
-		});
-
-		showConfigurationDialogAction = new ShowConfigurationDialogAction(this);
-		showConfigurationDialogAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_C);
-		showConfigurationDialogAction.putValue(Action.ACCELERATOR_KEY,
-				KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.ALT_MASK));
-		actionMap.put("showconfiguration", showConfigurationDialogAction); //$NON-NLS-1$
-
-		exitAction = new ExitAction(this);
-		exitAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_X);
-		exitAction.putValue(Action.ACCELERATOR_KEY,
-				KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
-		actionMap.put("exit", exitAction); //$NON-NLS-1$
-
-		lessAnnoyingDisplayAction = new LessAnnoyingDisplayAction(this);
-		lessAnnoyingDisplayAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_L);
-		actionMap.put("togglelessannoyingdisplay", lessAnnoyingDisplayAction); //$NON-NLS-1$
-
-		hideScramblesAction = new HideScramblesAction(this);
-		hideScramblesAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_H);
-		actionMap.put("togglehidescrambles", hideScramblesAction); //$NON-NLS-1$
-
-		spacebarOptionAction = new SpacebarOptionAction();
-		spacebarOptionAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
-		actionMap.put("togglespacebarstartstimer", spacebarOptionAction); //$NON-NLS-1$
-
-		fullScreenTimingAction = new FullScreenTimingAction();
-		fullScreenTimingAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_F);
-		actionMap.put("togglefullscreentiming", fullScreenTimingAction); //$NON-NLS-1$
-
-		toggleScrambleView = new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, ((AbstractButton)e.getSource()).isSelected());
-				scramblePopup.refreshPopup();
+			else if(s.equals("bestaverage0")){ //$NON-NLS-1$
+				a = new StatisticsAction(cct, statsModel, AverageType.RA, 0);
 			}
-		};
-		actionMap.put("togglescramblepopup", toggleScrambleView); //$NON-NLS-1$
-
-		undo = new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				if(statsModel.getCurrentStatistics().undo()) { //should decrement 1 from scramblenumber if possible
-					Object prev = scrambleNumber.getPreviousValue();
-					if(prev != null) {
-						scrambleNumber.setValue(prev);
+			else if(s.equals("currentaverage1")){ //$NON-NLS-1$
+				a = new StatisticsAction(cct, statsModel, AverageType.CURRENT, 1);
+			}
+			else if(s.equals("bestaverage1")){ //$NON-NLS-1$
+				a = new StatisticsAction(cct, statsModel, AverageType.RA, 1);
+			}
+			else if(s.equals("sessionaverage")){ //$NON-NLS-1$
+				a = new StatisticsAction(cct, statsModel, AverageType.SESSION, 0);
+			}
+			else if(s.equals("togglefullscreen")){
+				a = new AbstractAction() {
+					{ putValue(Action.NAME, "+"); }
+					public void actionPerformed(ActionEvent e) {
+						setFullScreen(!isFullscreen);
 					}
-				}
+				};
 			}
-		};
-		undo.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-		actionMap.put("undo", undo); //$NON-NLS-1$
-		redo = new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				statsModel.getCurrentStatistics().redo();
+			else if(s.equals("importscrambles")){
+				a = new AbstractAction() { //$NON-NLS-1$
+					{
+						putValue(Action.MNEMONIC_KEY, KeyEvent.VK_I);
+						putValue(Action.ACCELERATOR_KEY,
+								KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
+					}
+					public void actionPerformed(ActionEvent e){
+						new ScrambleImportDialog(cct, scramblesList.getScrambleCustomization());
+					}
+				};
 			}
-		};
-		redo.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
-		actionMap.put("redo", redo); //$NON-NLS-1$
+			else if(s.equals("exportscrambles")){ //$NON-NLS-1$
+				a = new ExportScramblesAction(cct);
+				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_E);
+				a.putValue(Action.ACCELERATOR_KEY,
+						KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
+			}
+			else if(s.equals("connecttoserver")){ //$NON-NLS-1$
+				a = new AbstractAction() {
+					{
+						putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
+						putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+					}
+					public void actionPerformed(ActionEvent e) {
+						if(e == null) { //this means that the client gui was disposed
+							this.setEnabled(true);
+						} else {
+							if(client == null)
+								client = new IRCClientGUI(cct, this);
+							client.setVisible(true);
+							this.setEnabled(false);
+						}
+					}
+				};
+			}
+			else if(s.equals("showconfiguration")){ //$NON-NLS-1$
+				a = new ShowConfigurationDialogAction(cct);
+				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_C);
+				a.putValue(Action.ACCELERATOR_KEY,
+						KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.ALT_MASK));
+			}
+			else if(s.equals("exit")){ //$NON-NLS-1$
+				a = new ExitAction(cct);
+				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_X);
+				a.putValue(Action.ACCELERATOR_KEY,
+						KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
+			}
+			else if(s.equals("togglelessannoyingdisplay")){ //$NON-NLS-1$
+				a = new LessAnnoyingDisplayAction(cct);
+				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_L);
+			}
+			else if(s.equals("togglehidescrambles")){ //$NON-NLS-1$
+				a = new HideScramblesAction(cct);
+				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_H);
+			}
+			else if(s.equals("togglespacebarstartstimer")){ //$NON-NLS-1$
+				a = new SpacebarOptionAction();
+				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
+			}
+			else if(s.equals("togglefullscreentiming")){ //$NON-NLS-1$
+				a = new FullScreenTimingAction();
+				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_F);
+			}
+			else if(s.equals("togglescramblepopup")){ //$NON-NLS-1$
+				a = new AbstractAction() {
+					public void actionPerformed(ActionEvent e) {
+						Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, ((AbstractButton)e.getSource()).isSelected());
+						scramblePopup.refreshPopup();
+					}
+				};
+			}
+			else if(s.equals("undo")){ //$NON-NLS-1$
+				a = new AbstractAction() {
+					public void actionPerformed(ActionEvent e) {
+						if(statsModel.getCurrentStatistics().undo()) { //should decrement 1 from scramblenumber if possible
+							Object prev = scrambleNumber.getPreviousValue();
+							if(prev != null) {
+								scrambleNumber.setValue(prev);
+							}
+						}
+					}
+				};
+				a.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+			}
+			else if(s.equals("redo")){ //$NON-NLS-1$
+				a = new AbstractAction() {
+					public void actionPerformed(ActionEvent e) {
+						statsModel.getCurrentStatistics().redo();
+					}
+				};
+				a.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
+			}
+			else if(s.equals("submitsundaycontest")){ //$NON-NLS-1$
+				final SundayContestDialog submitter = new SundayContestDialog(cct);
+				a = new AbstractAction() { //$NON-NLS-1$
+					public void actionPerformed(ActionEvent e) {
+						submitter.syncWithStats(statsModel.getCurrentStatistics(), AverageType.CURRENT, 0);
+						submitter.setVisible(true);
+					}
+				};
+			}
+			else if(s.equals("newsession")){ //$NON-NLS-1$
+				a = new AbstractAction() { //$NON-NLS-1$
+					public void actionPerformed(ActionEvent arg0) {
+						if(statsModel.getRowCount() > 0) { //only create a new session if we've added any times to the current one
+							statsModel.setSession(createNewSession(Configuration.getSelectedProfile(), scramblesList.getScrambleCustomization().toString()));
+							timeLabel.reset();
+							scramblesList.clear();
+							updateScramble();
+						}
+					}
+				};
+			}
+			else if(s.equals("showdocumentation")){ //$NON-NLS-1$
+				a = new DocumentationAction(cct);
+			}
+			else if(s.equals("showabout")){ //$NON-NLS-1$
+				a = new AboutAction();
+			}
+			else if(s.equals("requestscramble")){ //$NON-NLS-1$
+				a = new RequestScrambleAction(cct);
+				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
+			}
+			return a;
+		}
+	}
+	private void createActions(){
+		actionMap = new ActionMap(this);
+
 		statsModel.setUndoRedoListener(new UndoRedoListener() {
 			private int undoable, redoable;
 			public void undoRedoChange(int undoable, int redoable) {
@@ -351,41 +396,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				refresh();
 			}
 			public void refresh() {
-				undo.setEnabled(undoable != 0);
-				redo.setEnabled(redoable != 0);
-				undo.putValue(Action.NAME, StringAccessor.getString("CALCubeTimer.undo") + undoable); //$NON-NLS-1$
-				redo.putValue(Action.NAME, StringAccessor.getString("CALCubeTimer.redo") + redoable); //$NON-NLS-1$
+				actionMap.get("undo").setEnabled(undoable != 0);
+				actionMap.get("redo").setEnabled(redoable != 0);
+				actionMap.get("undo").putValue(Action.NAME, StringAccessor.getString("CALCubeTimer.undo") + undoable); //$NON-NLS-1$
+				actionMap.get("redo").putValue(Action.NAME, StringAccessor.getString("CALCubeTimer.redo") + redoable); //$NON-NLS-1$
 			}
 		});
-
-		final SundayContestDialog submitter = new SundayContestDialog(this);
-		actionMap.put("submitsundaycontest", new AbstractAction() { //$NON-NLS-1$
-			public void actionPerformed(ActionEvent e) {
-				submitter.syncWithStats(statsModel.getCurrentStatistics(), AverageType.CURRENT, 0);
-				submitter.setVisible(true);
-			}
-		});
-
-		actionMap.put("newsession", new AbstractAction() { //$NON-NLS-1$
-			public void actionPerformed(ActionEvent arg0) {
-				if(statsModel.getRowCount() > 0) { //only create a new session if we've added any times to the current one
-					statsModel.setSession(createNewSession(Configuration.getSelectedProfile(), scramblesList.getScrambleCustomization().toString()));
-					timeLabel.reset();
-					scramblesList.clear();
-					updateScramble();
-				}
-			}
-		});
-
-		documentationAction = new DocumentationAction(this);
-		actionMap.put("showdocumentation", documentationAction); //$NON-NLS-1$
-
-		aboutAction = new AboutAction();
-		actionMap.put("showabout", aboutAction); //$NON-NLS-1$
-
-		requestScrambleAction = new RequestScrambleAction(this);
-		requestScrambleAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
-		actionMap.put("requestscramble", requestScrambleAction); //$NON-NLS-1$
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -463,7 +479,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		scrambleAttributes = new JPanel();
 
-		scramblePopup = new ScrambleFrame(this, toggleScrambleView, false); //$NON-NLS-1$
+		scramblePopup = new ScrambleFrame(this, actionMap.get("togglescramblepopup"), false); //$NON-NLS-1$
 		scramblePopup.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		scramblePopup.setIconImage(cubeIcon.getImage());
 		scramblePopup.setFocusableWindowState(false);
@@ -508,7 +524,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		bigTimersDisplay.setKeyboardHandler(keyHandler);
 
 		fullscreenPanel = new JLayeredPane();
-		final JButton fullScreenButton = new JButton(flipFullScreenAction);
+		final JButton fullScreenButton = new JButton(actionMap.get("togglefullscreen"));
 
 		fullscreenPanel.add(bigTimersDisplay, new Integer(0));
 		fullscreenPanel.add(fullScreenButton, new Integer(1));
@@ -1037,7 +1053,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			if(com instanceof AbstractButton){
 				if(attrs != null){
 					if((temp = attrs.getValue("action")) != null){ //$NON-NLS-1$
-						AbstractAction a = actionMap.get(temp.toLowerCase());
+						AbstractAction a = actionMap.get(temp);
 						if(a != null) ((AbstractButton)com).setAction(a);
 						else throw new SAXException("parse error in action: " + temp.toLowerCase()); //$NON-NLS-1$
 					}
@@ -1217,11 +1233,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		Statistics stats = statsModel.getCurrentStatistics();
 		sendAverage(stats.average(AverageType.CURRENT, 0).toString());
 		sendBestAverage(stats.average(AverageType.RA, 0).toString());
-		currentAverageAction0.setEnabled(stats.isValid(AverageType.CURRENT, 0));
-		rollingAverageAction0.setEnabled(stats.isValid(AverageType.RA, 0));
-		currentAverageAction1.setEnabled(stats.isValid(AverageType.CURRENT, 1));
-		rollingAverageAction1.setEnabled(stats.isValid(AverageType.RA, 1));
-		sessionAverageAction.setEnabled(stats.isValid(AverageType.SESSION, 0));
+		actionMap.get("currentaverage0").setEnabled(stats.isValid(AverageType.CURRENT, 0));
+		actionMap.get("bestaverage0").setEnabled(stats.isValid(AverageType.RA, 0));
+		actionMap.get("currentaverage1").setEnabled(stats.isValid(AverageType.CURRENT, 1));
+		actionMap.get("bestaverage1").setEnabled(stats.isValid(AverageType.RA, 1));
+		actionMap.get("sessionaverage").setEnabled(stats.isValid(AverageType.SESSION, 0));
 	}
 
 	static CALCubeTimer cct; //need this instance to be able to easily set the waiting cursor
@@ -1530,11 +1546,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	public void configurationChanged() {
 		boolean stackmatEnabled = Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
-		keyboardTimingAction.putValue(Action.SELECTED_KEY, !stackmatEnabled);
-		lessAnnoyingDisplayAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.LESS_ANNOYING_DISPLAY, false));
-		hideScramblesAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false));
-		spacebarOptionAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false));
-		fullScreenTimingAction.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false));
+		actionMap.get("keyboardtiming").putValue(Action.SELECTED_KEY, !stackmatEnabled);
+		actionMap.get("togglelessannoyingdisplay").putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.LESS_ANNOYING_DISPLAY, false));
+		actionMap.get("togglehidescrambles").putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false));
+		actionMap.get("togglespacebarstartstimer").putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false));
+		actionMap.get("togglefullscreen").putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false));
 		profiles.setModel(new DefaultComboBoxModel(Configuration.getProfiles().toArray(new Profile[0])));
 		safeSelectItem(profiles, Configuration.getSelectedProfile());
 		languages.setSelectedItem(Configuration.getDefaultLocale()); //this will force an update of the xml gui
@@ -1614,7 +1630,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	public void keyboardTimingAction() {
-		boolean selected = (Boolean)keyboardTimingAction.getValue(Action.SELECTED_KEY);
+		boolean selected = (Boolean)actionMap.get("keyboardtiming").getValue(Action.SELECTED_KEY);
 		Configuration.setBoolean(VariableKey.STACKMAT_ENABLED, !selected);
 		timeLabel.configurationChanged();
 		bigTimersDisplay.configurationChanged();
@@ -1635,12 +1651,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	public void lessAnnoyingDisplayAction(){
-		Configuration.setBoolean(VariableKey.LESS_ANNOYING_DISPLAY, (Boolean)lessAnnoyingDisplayAction.getValue(Action.SELECTED_KEY));
+		Configuration.setBoolean(VariableKey.LESS_ANNOYING_DISPLAY, (Boolean)actionMap.get("togglelessannoyingdisplay").getValue(Action.SELECTED_KEY));
 		timeLabel.repaint();
 	}
 
 	public void hideScramblesAction(){
-		Configuration.setBoolean(VariableKey.HIDE_SCRAMBLES, (Boolean)hideScramblesAction.getValue(Action.SELECTED_KEY));
+		Configuration.setBoolean(VariableKey.HIDE_SCRAMBLES, (Boolean)actionMap.get("togglehidescrambles").getValue(Action.SELECTED_KEY));
 		scrambleArea.refresh();
 	}
 
