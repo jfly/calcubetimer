@@ -205,7 +205,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 
 		public void put(String s, AbstractAction a){
-			actionMap.put(s, a);
+			actionMap.put(s.toLowerCase(), a);
 		}
 
 		public AbstractAction get(String s){
@@ -1606,7 +1606,6 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	public void showDocumentation() {
 		try {
 			URI uri = Configuration.documentationFile.toURI();
-			uri = null;
 			Desktop.getDesktop().browse(uri);
 		} catch(Exception error) {
 			Utils.showErrorDialog(this, error.toString());
