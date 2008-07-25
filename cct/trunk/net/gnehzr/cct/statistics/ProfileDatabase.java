@@ -23,6 +23,7 @@ import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.misc.customJTable.SessionListener;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
+import net.gnehzr.cct.statistics.SolveTime.SolveType;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
 
 public class ProfileDatabase extends DraggableJTableModel implements ActionListener {
@@ -65,6 +66,13 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 //				database.remove(ps.getCustomization());
 //		}
 //	}
+	
+	public int getDatabaseTypeCount(SolveType t) {
+		int c = 0;
+		for(PuzzleStatistics ps : database.values())
+			c += ps.getSolveTypeCount(t);
+		return c;
+	}
 	
 	public Session getNthSession(int n) {
 		return sessionCache.get(n);

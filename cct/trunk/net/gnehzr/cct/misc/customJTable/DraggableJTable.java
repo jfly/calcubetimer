@@ -39,7 +39,7 @@ import net.gnehzr.cct.misc.Utils;
 
 public class DraggableJTable extends JTable implements MouseListener, MouseMotionListener, KeyListener, ActionListener {
 	String addText;
-	private boolean columnChooser; 
+	private boolean columnChooser;
 
 	//You must set any editors or renderers before setting this table's model
 	//because the preferred size is computed inside setModel()
@@ -462,7 +462,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 	public void mouseExited(MouseEvent e) {}
 	public void mousePressed(MouseEvent e) {
 		if(e.getSource() == this)
-			fromRow = this.getSelectedRow();
+			fromRow = rowAtPoint(e.getPoint());
 		maybeShowPopup(e);
 	}
 	public void mouseReleased(MouseEvent e) {

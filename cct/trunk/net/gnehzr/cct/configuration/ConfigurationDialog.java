@@ -57,6 +57,7 @@ import javax.swing.Timer;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+import net.gnehzr.cct.configuration.SolveTypeTagEditorTableModel.TypeAndName;
 import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.keyboardTiming.TimerLabel;
 import net.gnehzr.cct.misc.ComboItem;
@@ -76,6 +77,7 @@ import net.gnehzr.cct.scrambles.ScrambleViewComponent;
 import net.gnehzr.cct.speaking.NumberSpeaker;
 import net.gnehzr.cct.stackmatInterpreter.StackmatInterpreter;
 import net.gnehzr.cct.statistics.Profile;
+import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
 
@@ -215,6 +217,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private JPanel desktopPanel;
 	private JButton refreshDesktops;
 	JComboBox voices;
+	private SolveTypeTagEditorTableModel tagsModel;
 	private JPanel makeStandardOptionsPanel1() {
 		JPanel options = new JPanel();
 		JPanel colorPanel = new JPanel(new GridLayout(0, 1, 0, 5));
@@ -275,6 +278,15 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		refreshDesktops = new JButton(StringAccessor.getString("ConfigurationDialog.refresh")); //$NON-NLS-1$
 		refreshDesktops.addActionListener(this);
 
+		DraggableJTable tagsTable = new DraggableJTable(true, false);
+		tagsTable.getTableHeader().setReorderingAllowed(false);
+		tagsModel = new SolveTypeTagEditorTableModel(tagsTable);
+		tagsTable.refreshStrings(StringAccessor.getString("ConfigurationDialog.addtag"));
+		tagsTable.setDefaultEditor(TypeAndName.class, tagsModel.editor);
+		tagsTable.setModel(tagsModel);
+		JScrollPane tagScroller = new JScrollPane(tagsTable);
+		tagScroller.setPreferredSize(new Dimension(0, 100));
+		
 		SyncGUIListener al = new SyncGUIListener() {
 			public void syncGUIWithConfig(boolean defaults) {
 				// makeStandardOptionsPanel1
@@ -292,6 +304,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 				currentAverage.setBackground(Configuration.getColor(VariableKey.CURRENT_AVERAGE, defaults));
 				speakTimes.setSelected(Configuration.getBoolean(VariableKey.SPEAK_TIMES, defaults));
 				voices.setSelectedItem(NumberSpeaker.getCurrentSpeaker());
+				tagsModel.setTags(SolveType.getSolveTypes(defaults));
 				
 				refreshDesktops();
 			}
@@ -300,7 +313,11 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		reset.addActionListener(al);
 		resetListeners.add(al);
 		
-		return sideBySide(BoxLayout.PAGE_AXIS, Box.createVerticalGlue(), options, sideBySide(BoxLayout.LINE_AXIS, desktopPanel, reset), Box.createVerticalGlue());
+		return sideBySide(BoxLayout.PAGE_AXIS,
+				Box.createVerticalGlue(),
+				options,
+				sideBySide(BoxLayout.LINE_AXIS, desktopPanel, tagScroller, Box.createHorizontalGlue(), reset),
+				Box.createVerticalGlue());
 	}
 
 	JTextArea splitsKeySelector;
@@ -1134,6 +1151,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		profilesModel.commitChanges();
 		Configuration.setProfileOrdering(profilesModel.getContents());
 
+		tagsModel.apply();
+		
 		Configuration.apply();
 
 		for(int i = 0; i < items.length; i++) {

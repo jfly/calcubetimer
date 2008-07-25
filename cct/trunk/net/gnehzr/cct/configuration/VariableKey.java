@@ -83,6 +83,7 @@ public class VariableKey<H> {
 	public static final VariableKey<String> XML_LAYOUT = new VariableKey<String>("GUI_xmlLayout_file"); //$NON-NLS-1$
 	public static final VariableKey<String> DEFAULT_SCRAMBLE_CUSTOMIZATION = new VariableKey<String>("Scramble_Default_scrambleCustomization"); //$NON-NLS-1$
 
+	public static final VariableKey<String[]> SOLVE_TAGS = new VariableKey<String[]>("Misc_solveTags"); //$NON-NLS-1$
 	public static final VariableKey<String[]> IMPORT_URLS = new VariableKey<String[]>("Misc_scrambleURLs"); //$NON-NLS-1$
 	public static final VariableKey<String[]> IRC_SERVERS = new VariableKey<String[]>("IRC_Client_serverURLs"); //$NON-NLS-1$
 	public static final VariableKey<String[]> SCRAMBLE_CUSTOMIZATIONS = new VariableKey<String[]>("Scramble_customizations"); //$NON-NLS-1$

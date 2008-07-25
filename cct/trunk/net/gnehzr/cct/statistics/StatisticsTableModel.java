@@ -6,11 +6,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.ListIterator;
 
-import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
@@ -68,8 +66,8 @@ public class StatisticsTableModel extends DraggableJTableModel implements Action
 		l.refresh();
 	}
 	
-	private String[] columnNames = new String[] { "StatisticsTableModel.times", "StatisticsTableModel.ra0", "StatisticsTableModel.ra1", "StatisticsTableModel.comment" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-	private Class<?>[] columnClasses = new Class<?>[] { SolveTime.class, SolveTime.class, SolveTime.class, String.class };
+	private String[] columnNames = new String[] { "StatisticsTableModel.times", "StatisticsTableModel.ra0", "StatisticsTableModel.ra1", "StatisticsTableModel.comment", "StatisticsTableModel.tags" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	private Class<?>[] columnClasses = new Class<?>[] { SolveTime.class, SolveTime.class, SolveTime.class, String.class, String.class };
 	public String getColumnName(int column) {
 		return StringAccessor.getString(columnNames[column]);
 	}
@@ -94,6 +92,8 @@ public class StatisticsTableModel extends DraggableJTableModel implements Action
 			return stats.getRA(rowIndex, columnIndex - 1);
 		case 3:
 			return stats.get(rowIndex).getComment();
+		case 4: //tags
+			return stats.get(rowIndex).getTypes().toString();
 		default:
 			return null;
 		}
@@ -181,32 +181,24 @@ public class StatisticsTableModel extends DraggableJTableModel implements Action
 			
 			typeButtons = new HashMap<SolveType, JMenuItem>();
 			ButtonGroup independent = new ButtonGroup();
-			ArrayList<JMenuItem> customTags = new ArrayList<JMenuItem>(); //we collect these tags here, so we can add them in the end, together
-			JMenuItem attr = new JRadioButtonMenuItem(StringAccessor.getString("StatisticsTableModel.none"), selectedSolve.getTypes().isEmpty());
+			JMenuItem attr = new JRadioButtonMenuItem("<html><b>" + StringAccessor.getString("StatisticsTableModel.nopenalty") + "</b></html>", !selectedSolve.isPenalty());
 			attr.setEnabled(!selectedSolve.isTrueWorstTime());
 			attr.addActionListener(this);
+			jpopup.add(attr);
 			independent.add(attr);
-			Collection<SolveType> types = SolveType.getSolveTypes();
+			Collection<SolveType> types = SolveType.getSolveTypes(false);
 			for(SolveType type : types) {
 				if(type.isIndependent()) {
-					attr = new JRadioButtonMenuItem(type.toString(), selectedSolve.isType(type));
+					attr = new JRadioButtonMenuItem("<html><b>" + type.toString() + "</b></html>", selectedSolve.isType(type));
 					attr.setEnabled(!selectedSolve.isTrueWorstTime());
 					independent.add(attr);
 				} else {
 					attr = new JCheckBoxMenuItem(type.toString(), selectedSolve.isType(type));
-					customTags.add(attr);
 				}
 				attr.addActionListener(this);
+				jpopup.add(attr);
 				typeButtons.put(type, attr);
 			}
-			Enumeration<AbstractButton> buttons = independent.getElements();
-			while(buttons.hasMoreElements())
-				jpopup.add(buttons.nextElement());
-			
-			jpopup.addSeparator();
-			
-			for(JMenuItem c : customTags)
-				jpopup.add(c);
 			
 			jpopup.addSeparator();
 		}

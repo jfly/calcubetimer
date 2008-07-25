@@ -81,7 +81,7 @@ public class PuzzleStatistics implements StatisticsUpdateListener {
 			
 			solvedCount += solves;
 			attemptCount += stats.getAttemptCount();
-			for(SolveType type : SolveType.getSolveTypes())
+			for(SolveType type : SolveType.getSolveTypes(false))
 				typeCounter.put(type, getSolveTypeCount(type) + stats.getSolveTypeCount(type));
 		}
 		if(solvedCount != 0)

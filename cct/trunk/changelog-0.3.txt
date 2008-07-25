@@ -221,16 +221,17 @@ changes:
 +associate scramble customization w/ RA 0 & RA 1 (unaffected by reset all)
 +minimum size of timer display is FIXED!
 +added wide notation option to cubescramble plugin
++tags for solves? possibly by expanding functionality of pop/dnf/+2?
+	+add draggable jtable to config dialog
+	+add column to timestable?
 
 TODO:
 
 for release:
 -generator groups for scramble plugins
--saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files?
 -multiple timers?
-+tags for solves? possibly by expanding functionality of pop/dnf/+2?
-	-add draggable jtable to config dialog
-	-add column to timestable?
+-saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files?
+-dynamic string multiple argument format
 -open source sourceforge!
 -about.html: add a blurb for version 1.0 (dan cohen + lucas garron)
 -create license, give credit where credit is due
@@ -239,7 +240,6 @@ for release:
 
 misc:
 -java webstart? applet?
--dynamic string multiple argument format
 
 cleanup:
 -copy shortcuts for mac?

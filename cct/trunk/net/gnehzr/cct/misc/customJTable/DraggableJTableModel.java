@@ -24,7 +24,9 @@ public abstract class DraggableJTableModel extends AbstractTableModel {
 	 * NOTE: Must be sorted!
 	 */
 	public abstract void deleteRows(int[] indices);
-	public abstract void showPopup(MouseEvent e, DraggableJTable source, Component prevFocusOwner);
+	public void showPopup(MouseEvent e, DraggableJTable source, Component prevFocusOwner) {}
 	//return null to have no tooltip
-	public abstract String getToolTip(int rowIndex);
+	public String getToolTip(int rowIndex) {
+		return null;
+	}
 }
