@@ -51,7 +51,7 @@
 							<panel border="%%history%%" layout="box" orientation="page">
 								<panel><label alignmentX=".5">%%bestever%% $$veryBestTime$$</label></panel>
 								<panel><label alignmentX=".5">%%bestraof%% $$RASize0$$: $$veryBestRA0$$</label></panel>
-								<panel><label alignmentX=".5">$$global_solvecount_solved$$/$$global_solvecount_attempt$$ $$global_solvecount_%solved$$% $$global_solvecount_%JFLY$$% %%globalaverage%% $$globalAverage$$</label></panel>
+								<panel><label alignmentX=".5">$$global_solvecount_solved$$/$$global_solvecount_attempt$$ %%globalaverage%% $$globalAverage$$</label></panel>
 							</panel>
 						</panel>
 					</panel>

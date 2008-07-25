@@ -228,7 +228,7 @@ for release:
 -generator groups for scramble plugins
 -saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files?
 -multiple timers?
--tags for solves? possibly by expanding functionality of pop/dnf/+2?
++tags for solves? possibly by expanding functionality of pop/dnf/+2?
 	-add draggable jtable to config dialog
 	-add column to timestable?
 -open source sourceforge!
