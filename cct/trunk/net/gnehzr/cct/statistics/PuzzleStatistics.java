@@ -1,6 +1,7 @@
 package net.gnehzr.cct.statistics;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import net.gnehzr.cct.main.CALCubeTimer;
@@ -56,12 +57,12 @@ public class PuzzleStatistics implements StatisticsUpdateListener {
 	private double[] bestRAs;
 	private int solvedCount;
 	private int attemptCount;
-	private int[] typeCounter;
+	private HashMap<SolveType, Integer> typeCounter;
 	private void refreshStats() {
 		bestTime = SolveTime.WORST;
 		solvedCount = 0;
 		attemptCount = 0;
-		typeCounter = new int[SolveType.values().length];
+		typeCounter = new HashMap<SolveType, Integer>();
 		globalAverage = 0;
 		bestRAs = new double[Statistics.RA_SIZES_COUNT];
 		Arrays.fill(bestRAs, Double.POSITIVE_INFINITY);
@@ -80,8 +81,8 @@ public class PuzzleStatistics implements StatisticsUpdateListener {
 			
 			solvedCount += solves;
 			attemptCount += stats.getAttemptCount();
-			for(SolveType type : SolveType.values())
-				typeCounter[type.ordinal()] += stats.getSolveTypeCount(type);
+			for(SolveType type : SolveType.getSolveTypes())
+				typeCounter.put(type, getSolveTypeCount(type) + stats.getSolveTypeCount(type));
 		}
 		if(solvedCount != 0)
 			globalAverage /= solvedCount;
@@ -100,7 +101,9 @@ public class PuzzleStatistics implements StatisticsUpdateListener {
 		return globalAverage;
 	}
 	public int getSolveTypeCount(SolveType t) {
-		return typeCounter[t.ordinal()];
+		Integer c = typeCounter.get(t);
+		if(c == null) c = 0;
+		return c;
 	}
 	public int getSolveCount() {
 		return solvedCount;

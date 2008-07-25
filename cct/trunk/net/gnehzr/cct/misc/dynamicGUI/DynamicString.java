@@ -113,12 +113,18 @@ public class DynamicString{
 		Statistics stats = statsModel.getCurrentStatistics();
 		if(s.toLowerCase().startsWith(SOLVE_TYPE.toLowerCase())) {
 			String type = s.substring(SOLVE_TYPE.length());
+			boolean percent = type.startsWith("%");
+			if(percent) type = type.substring(1);
+			int val;
 			if(type.equalsIgnoreCase("solved"))
-				return "" + stats.getSolveCount();
+				val = stats.getSolveCount();
 			else if(type.equalsIgnoreCase("attempt"))
-				return "" + stats.getAttemptCount();
+				val = stats.getAttemptCount();
 			else
-				return "" + stats.getSolveTypeCount(SolveType.valueOf(type));
+				val = stats.getSolveTypeCount(SolveType.getSolveType(type));
+			if(percent)
+				return Utils.format((double) 100 * val / stats.getAttemptCount());
+			return "" + val;
 		}
 		
 		Pattern p = Pattern.compile("([^0-9]*)([0-9]*)"); //$NON-NLS-1$
@@ -196,12 +202,18 @@ public class DynamicString{
 			else if(s.equalsIgnoreCase("globalAverage")) r = Utils.formatTime(ps.getGlobalAverage()); //$NON-NLS-1$
 			else if(s.toLowerCase().startsWith(GLOBAL_SOLVE_TYPE.toLowerCase())) {
 				String type = s.substring(GLOBAL_SOLVE_TYPE.length());
+				boolean percent = type.startsWith("%");
+				if(percent) type = type.substring(1);
+				int val;
 				if(type.equalsIgnoreCase("solved"))
-					r = "" + ps.getSolveCount();
+					val = ps.getSolveCount();
 				else if(type.equalsIgnoreCase("attempt"))
-					r = "" + ps.getAttemptCount();
+					val = ps.getAttemptCount();
 				else
-					r = "" + ps.getSolveTypeCount(SolveType.valueOf(type));
+					val = ps.getSolveTypeCount(SolveType.getSolveType(type));
+				if(percent)
+					return Utils.format((double) 100 * val / ps.getAttemptCount());
+				return "" + val;
 			}
 		}
 

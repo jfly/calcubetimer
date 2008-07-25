@@ -235,7 +235,7 @@ public class Profile {
 
 			if(name.equalsIgnoreCase("solve")) { //$NON-NLS-1$
 				try {
-					solve.setTime(seshCommentOrSolveTime);
+					solve.parseTime(seshCommentOrSolveTime);
 					session.getStatistics().add(solve);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -298,7 +298,7 @@ public class Profile {
 	public boolean loadDatabase() {
 		if(this == Configuration.guestProfile) { //disable logging for guest
 			if(puzzleDB.getRowCount() > 0)
-				CALCubeTimer.statsModel.setSession(guestSession); //TODO - does this reand to be here?
+				CALCubeTimer.statsModel.setSession(guestSession); //TODO - does this really need to be here?
 			return false;
 		}
 		FileLock fl = null;

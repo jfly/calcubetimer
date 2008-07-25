@@ -39,7 +39,7 @@ public class Utils {
 		return Configuration.getBoolean(VariableKey.CLOCK_FORMAT, false) ? clockFormat(seconds) : format(seconds);
 	}
 	
-	private static String format(double seconds) {
+	public static String format(double seconds) {
 		return getDecimalFormat().format(seconds);
 	}
 	private static String clockFormat(double seconds) {

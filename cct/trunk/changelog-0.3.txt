@@ -227,9 +227,10 @@ TODO:
 for release:
 -generator groups for scramble plugins
 -saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files?
--copy shortcuts for mac?
 -multiple timers?
 -tags for solves? possibly by expanding functionality of pop/dnf/+2?
+	-add draggable jtable to config dialog
+	-add column to timestable?
 -open source sourceforge!
 -about.html: add a blurb for version 1.0 (dan cohen + lucas garron)
 -create license, give credit where credit is due
@@ -241,13 +242,13 @@ misc:
 -dynamic string multiple argument format
 
 cleanup:
+-copy shortcuts for mac?
 -"Options" menu is getting cut to "Op" when the gui is made small
 -generalize XML syntax (get rid of Dynamic... classes) UPDATE: no idea how to do this...???
 
-Server stuff:
--overhaul to get rid of threads
--latency on server - this is so that clients don't flood the server with too many time messages
--urgent hint for waiting messages on server? nonexistent in java as of 1.6
+IRC stuff:
+-make the fragmentation stuff more strict
+-implement cctbot!
 
 possible puzzles:
 pyraminx

@@ -251,26 +251,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		sideBySide.add(voices);
 		rightPanel.add(sideBySide);
 
-//		sideBySide = new JPanel();
-//		SpinnerNumberModel model = new SpinnerNumberModel(3, 3, null, 1);
-//		RASize0 = new JSpinner(model);
-//		((JSpinner.DefaultEditor) RASize0.getEditor()).getTextField().setColumns(3);
-//		showRA0 = new JCheckBox(StringAccessor.getString("ConfigurationDialog.showra")); //$NON-NLS-1$
-//		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.sizera0"))); //$NON-NLS-1$
-//		sideBySide.add(RASize0);
-//		sideBySide.add(showRA0);
-//		rightPanel.add(sideBySide);
-//
-//		sideBySide = new JPanel();
-//		model = new SpinnerNumberModel(3, 3, null, 1);
-//		RASize1 = new JSpinner(model);
-//		((JSpinner.DefaultEditor) RASize1.getEditor()).getTextField().setColumns(3);
-//		showRA1 = new JCheckBox(StringAccessor.getString("ConfigurationDialog.showra")); //$NON-NLS-1$
-//		sideBySide.add(new JLabel(StringAccessor.getString("ConfigurationDialog.sizera1"))); //$NON-NLS-1$
-//		sideBySide.add(RASize1);
-//		sideBySide.add(showRA1);
-//		rightPanel.add(sideBySide);
-
 		bestRA = new JColorComponent(StringAccessor.getString("ConfigurationDialog.bestra")); //$NON-NLS-1$
 		bestRA.addMouseListener(this);
 		colorPanel.add(bestRA);

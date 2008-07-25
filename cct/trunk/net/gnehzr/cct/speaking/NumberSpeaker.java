@@ -110,7 +110,7 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
     }
     
     public void speak(SolveTime time) throws Exception {
-    	if(time.getType() == SolveType.DNF)
+    	if(time.isType(SolveType.DNF))
     		getMP3FromName("dnf").play(); //$NON-NLS-1$
     	else
     		speak(false, (int)Math.round(time.secondsValue() * 100));

@@ -5,9 +5,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.ListIterator;
 
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
@@ -128,8 +133,12 @@ public class StatisticsTableModel extends DraggableJTableModel implements Action
 			if(source == discard) {
 				timesTable.deleteSelectedRows(false);
 			} else { //one of the jradio buttons
-				SolveType newType = SolveType.values()[Integer.parseInt(e.getActionCommand())];
-				stats.setSolveType(timesTable.getSelectedRow(), newType);
+				ArrayList<SolveType> types = new ArrayList<SolveType>();
+				for(SolveType key : typeButtons.keySet())
+					if(typeButtons.get(key).isSelected())
+						types.add(key);
+
+				stats.setSolveTypes(timesTable.getSelectedRow(), types);
 			}
 			prevFocusOwner.requestFocusInWindow();
 		}
@@ -138,6 +147,7 @@ public class StatisticsTableModel extends DraggableJTableModel implements Action
 	private JMenuItem edit, discard;
 	private DraggableJTable timesTable;
 	private Component prevFocusOwner;
+	private HashMap<SolveType, JMenuItem> typeButtons;
 	public void showPopup(MouseEvent e, DraggableJTable timesTable, Component prevFocusOwner) {
 		this.timesTable = timesTable;
 		this.prevFocusOwner = prevFocusOwner;
@@ -163,27 +173,42 @@ public class StatisticsTableModel extends DraggableJTableModel implements Action
 					jpopup.add(rawTime);
 				}
 			}
-
-			jpopup.addSeparator();
-
-			ButtonGroup group = new ButtonGroup();
-			SolveType[] types = SolveType.values();
-			for(int c = 0; c < types.length; c++) {
-				SolveType type = types[c];
-				JRadioButtonMenuItem attr = new JRadioButtonMenuItem(type.toString(), selectedSolve.getType() == type);
-				attr.setActionCommand(c+"");
-				group.add(attr);
-				attr.addActionListener(this);
-				jpopup.add(attr);
-				attr.setEnabled(!selectedSolve.isTrueWorstTime());
-			}
-
-			jpopup.addSeparator();
-
+			
 			edit = new JMenuItem(StringAccessor.getString("StatisticsTableModel.edittime")); //$NON-NLS-1$
 			edit.addActionListener(this);
 			jpopup.add(edit);
 
+			jpopup.addSeparator();
+			
+			typeButtons = new HashMap<SolveType, JMenuItem>();
+			ButtonGroup independent = new ButtonGroup();
+			ButtonGroup attributes = new ButtonGroup();
+			JMenuItem attr = new JRadioButtonMenuItem(StringAccessor.getString("StatisticsTableModel.none"), selectedSolve.getTypes().isEmpty());
+			attr.setEnabled(!selectedSolve.isTrueWorstTime());
+			independent.add(attr);
+			Collection<SolveType> types = SolveType.getSolveTypes();
+			for(SolveType type : types) {
+				if(type.isIndependent()) {
+					attr = new JRadioButtonMenuItem(type.toString(), selectedSolve.isType(type));
+					attr.setEnabled(!selectedSolve.isTrueWorstTime());
+					independent.add(attr);
+				} else {
+					attr = new JCheckBoxMenuItem(type.toString(), selectedSolve.isType(type));
+					attributes.add(attr);
+				}
+				attr.addActionListener(this);
+				typeButtons.put(type, attr);
+			}
+			Enumeration<AbstractButton> buttons = independent.getElements();
+			while(buttons.hasMoreElements())
+				jpopup.add(buttons.nextElement());
+			
+			jpopup.addSeparator();
+			
+			buttons = attributes.getElements();
+			while(buttons.hasMoreElements())
+				jpopup.add(buttons.nextElement());
+			
 			jpopup.addSeparator();
 		}
 

@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1674,8 +1675,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private ArrayList<SolveTime> splits = new ArrayList<SolveTime>();
 	private boolean addTime(TimerState addMe) {
 		SolveTime protect = addMe.toSolveTime(null, splits);
-		protect.setType(penalty);
-		penalty = SolveType.NORMAL;
+		if(penalty == null)
+			protect.clearType();
+		else
+			protect.setTypes(Arrays.asList(penalty));
+		penalty = null;
 		splits = new ArrayList<SolveTime>();
 		boolean sameAsLast = addMe.compareTo(lastAccepted) == 0;
 		if(sameAsLast) {
@@ -1685,7 +1689,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 		int choice = JOptionPane.YES_OPTION;
 		if(Configuration.getBoolean(VariableKey.PROMPT_FOR_NEW_TIME, false) && !sameAsLast) {
-			String[] OPTIONS = { StringAccessor.getString("CALCubeTimer.accept"), "+2", "POP" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			String[] OPTIONS = { StringAccessor.getString("CALCubeTimer.accept"), SolveType.PLUS_TWO.toString(), SolveType.DNF.toString() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			//This leaves +2 and DNF enabled, even if the user just got a +2 or DNF from inspection.
+			//I don't really care however, since I doubt that anyone even uses this feature. --Jeremy
 			choice = JOptionPane.showOptionDialog(null,
 					StringAccessor.getString("CALCubeTimer.yourtime") + protect.toString() + StringAccessor.getString("CALCubeTimer.newtimedialog"), //$NON-NLS-1$ //$NON-NLS-2$
 					StringAccessor.getString("CALCubeTimer.confirm"), //$NON-NLS-1$
@@ -1697,9 +1703,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 		if(choice == JOptionPane.YES_OPTION) {
 		} else if(choice == JOptionPane.NO_OPTION) {
-			protect.setType(SolveTime.SolveType.PLUS_TWO);
+			protect.setTypes(Arrays.asList(SolveTime.SolveType.PLUS_TWO));
 		} else if(choice == JOptionPane.CANCEL_OPTION) {
-			protect.setType(SolveTime.SolveType.POP);
+			protect.setTypes(Arrays.asList(SolveTime.SolveType.DNF));
 		} else {
 			return false;
 		}
@@ -1775,7 +1781,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			bigTimersDisplay.setText(time);
 	}
 
-	private SolveType penalty = SolveType.NORMAL;
+	private SolveType penalty = null;
 	private void updateTime(TimerState newTime) {
 		if(newTime instanceof StackmatState) {
 			StackmatState newState = (StackmatState) newTime;
@@ -1794,7 +1800,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	//I guess we could add an option to prompt the user to see if they want to keep this time
 	public void timerAccidentlyReset(TimerState lastTimeRead) {
-		penalty = SolveType.NORMAL;
+		penalty = null;
 	}
 
 	public void refreshDisplay(TimerState currTime) {

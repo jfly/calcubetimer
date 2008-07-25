@@ -16,7 +16,7 @@ import org.jibble.pircbot.NickAlreadyInUseException;
 import org.jibble.pircbot.PircBot;
 
 public class CCTBot extends PircBot {
-	//TODO proper error messages, versioning, 512 byte message limit?
+	//TODO - proper error messages, versioning, 512 byte message limit?
 	
 	private static final String VERSION = "0.1";
 	

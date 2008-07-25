@@ -155,7 +155,7 @@ public class VariableKey<H> {
 	public static final VariableKey<Color> BEST_TIME = new VariableKey<Color>("Statistics_Color_bestTime"); //$NON-NLS-1$
 	public static final VariableKey<Color> CURRENT_AVERAGE = new VariableKey<Color>("Statistics_Color_currentAverage"); //$NON-NLS-1$
 	public static final VariableKey<Color> WORST_TIME = new VariableKey<Color>("Statistics_Color_worstTime"); //$NON-NLS-1$
-	public static final VariableKey<Color> PUZZLE_COLOR(ScramblePlugin plugin, String faceName) { //TODO - fix this?
+	public static final VariableKey<Color> PUZZLE_COLOR(ScramblePlugin plugin, String faceName) {
 		return new VariableKey<Color>("Puzzle_Color_" + plugin.getPuzzleName() + "_face" + faceName); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 

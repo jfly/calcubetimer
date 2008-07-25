@@ -1,6 +1,9 @@
 package net.gnehzr.cct.statistics;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.regex.Pattern;
 
 import net.gnehzr.cct.i18n.StringAccessor;
@@ -11,68 +14,46 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	public static final SolveTime BEST = new SolveTime(0, null);
 	public static final SolveTime WORST = new SolveTime();
 
-	public static enum SolveType {
-		NORMAL("StatisticsTableModel.none", true) {
-			public String toString(SolveTime t, boolean rawTime) {
-				int hundredths = t.hundredths;
-				if(hundredths == Integer.MAX_VALUE || hundredths < 0) return "N/A"; //$NON-NLS-1$
-				
-				String c = Utils.formatTime(t.secondsValue());
-				if(rawTime)
-					c = toUSFormatting(c);
-				return c;
-			}
-		},
-		PLUS_TWO("+2", false) {
-			public String toString(SolveTime t, boolean rawTime) {
-				String c = Utils.formatTime(t.secondsValue()) + "+";
-				if(rawTime)
-					c = toUSFormatting(c);
-				return c;
-			};
-		},
-		POP("POP", false) {
-			public String toString(SolveTime t, boolean rawTime) {
-				if(!rawTime)
-					return toString();
-				
-				return toString() + " " + t.rawSecondsValue();
-			}
-		},
-		DNF("DNF", false) {
-			public String toString(SolveTime t, boolean rawTime) {
-				if(!rawTime)
-					return toString();
-				
-				return toString() + " " + t.rawSecondsValue();
-			}
-		},
-		JFLY("JFLY", false)
-		;
-		
+	private HashSet<SolveType> types = new HashSet<SolveType>();
+	public static class SolveType {
+		private static final HashMap<String, SolveType> SOLVE_TYPES = new HashMap<String, SolveType>();
+		private static SolveType createSolveType(String desc) throws Exception {
+			if(desc.isEmpty() || desc.indexOf(',') != -1)
+				throw new Exception(StringAccessor.getString("SolveTime.invalidtype"));
+			if(SOLVE_TYPES.containsKey(desc))
+				return SOLVE_TYPES.get(desc);
+			return new SolveType(desc);
+		}
+		public static SolveType getSolveType(String name) {
+			return SOLVE_TYPES.get(name.toLowerCase());
+		}
+		public static Collection<SolveType> getSolveTypes() {
+			return SOLVE_TYPES.values();
+		}
+		public static final SolveType DNF = new SolveType("DNF");
+		public static final SolveType PLUS_TWO = new SolveType("+2");
+		public static final SolveType POP = new SolveType("POP");
 		private String desc;
-		private boolean i18n;
-		private SolveType(String desc, boolean i18n) {
+		private SolveType(String desc) {
 			this.desc = desc;
-			this.i18n = i18n;
+			SOLVE_TYPES.put(desc.toLowerCase(), this);
+		}
+		public void rename(String newDesc) {
+			SOLVE_TYPES.remove(desc);
+			desc = newDesc;
+			SOLVE_TYPES.put(desc.toLowerCase(), this);
 		}
 		public String toString() {
-			if(i18n)
-				return StringAccessor.getString(desc);
 			return desc;
 		}
-		public boolean isSolved() {
-			return this != POP && this != DNF;
+		public boolean isIndependent() {
+			return this == DNF || this == PLUS_TWO;
 		}
-		public String toString(SolveTime t, boolean rawTime) {
-			String time = Utils.formatTime(t.secondsValue());
-			if(rawTime)
-				return toString() + " " + toUSFormatting(time);
-			return time;
+		public boolean isSolved() {
+			return this != DNF;
 		}
 	}
 	
-	private SolveType type = SolveType.NORMAL;
 	int hundredths;
 	private String scramble = null;
 	private ArrayList<SolveTime> splits;
@@ -98,12 +79,14 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 		setScramble(scramble);
 	}
 
-	public SolveTime(TimerState time, String scramble) {
+	private SolveTime(TimerState time, String scramble) {
 		if (time != null) {
 			hundredths = time.value();
-		} else { //If time == null, then it was a POP
-			type = SolveType.POP;
 		}
+		//This looks ancient, I guess it can go - Jeremy
+//		else { //If time == null, then it was a POP
+//			type = SolveType.POP;
+//		}
 		setScramble(scramble);
 	}
 
@@ -113,42 +96,44 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	}
 
 	public SolveTime(String time, String scramble) throws Exception {
-		setTime(time);
+		setTime(time, false);
 		setScramble(scramble);
 	}
-
-	//returns true if s represents a valid solvetype
-	private boolean determineSolveType(String s) {
-		try {
-			type = SolveType.valueOf(s);
-			return true;
-		} catch(IllegalArgumentException e) {
-			return false; //this happens when the enum doesn't exist
-		}
+	
+	//This will create the appropriate scramble types if necessary, should probably only
+	//be called when parsing the xml gui
+	public void parseTime(String toParse) throws Exception {
+		setTime(toParse, true);
 	}
-	public void setTime(String time) throws Exception {
+
+	private void setTime(String toParse, boolean importing) throws Exception {
 		hundredths = 0; //don't remove this
-		time = time.trim();
-		if(time.isEmpty())
+		toParse = toParse.trim();
+		if(toParse.isEmpty())
 			throw new Exception(StringAccessor.getString("SolveTime.noemptytimes")); //$NON-NLS-1$
-		String[] typeAndTime = time.split(" +"); //$NON-NLS-1$
-		switch(typeAndTime.length) {
-		case 1:
-			if(determineSolveType(time)) //if it was a valid solvetype we're done
-				return;
-			//otherwise, attempt to parse time
-			break;
-		case 2:
-			if(!determineSolveType(typeAndTime[0])) //we have to get a valid SolveType here
-				throw new Exception(typeAndTime[0] + StringAccessor.getString("SolveTime.invalid")); //$NON-NLS-1$
-			time = typeAndTime[1]; //now parse second part for the raw time
-			break;
-		default:
-			throw new Exception(StringAccessor.getString("SolveTime.spaces")); //$NON-NLS-1$
+		
+		String[] split = toParse.split(",");
+		boolean isSolved = true;
+		int c;
+		for(c = 0; c < split.length - 1; c++) {
+			SolveType t = SolveType.getSolveType(split[c]);
+			if(t == null) {
+				if(!importing)
+					throw new Exception(StringAccessor.getString("SolveTime.invalidtype"));
+				t = SolveType.createSolveType(split[c]);
+			}
+			types.add(t);
+			isSolved &= t.isSolved();
 		}
+		String time = split[c];
+		if(time.equals(SolveType.DNF.toString())) { //this indicated a pure dnf (no time associated with it)
+			types.add(SolveType.DNF);
+			return;
+		}
+		
 		//parse time to determine raw seconds
 		if(time.endsWith("+")) { //$NON-NLS-1$
-			type = SolveType.PLUS_TWO;
+			types.add(SolveType.PLUS_TWO);
 			time = time.substring(0, time.length() - 1);
 		}
 		time = toUSFormatting(time);
@@ -170,7 +155,7 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 			if(i != 0 && d >= 60) throw new Exception(StringAccessor.getString("SolveTime.toolarge")); //$NON-NLS-1$
 			seconds += d;
 		}
-		seconds -= (type == SolveType.PLUS_TWO ? 2 : 0);
+		seconds -= (isType(SolveType.PLUS_TWO) ? 2 : 0);
 		if(seconds < 0) throw new Exception(StringAccessor.getString("SolveTime.nonpositive")); //$NON-NLS-1$
 		else if(seconds > 21000000) throw new Exception(StringAccessor.getString("SolveTime.toolarge")); //$NON-NLS-1$
 		this.hundredths = (int)(100 * seconds + .5);
@@ -187,12 +172,28 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 		return scramble == null ? "" : scramble; //$NON-NLS-1$
 	}
 	
+	//this is for display by CCT
 	public String toString() {
-		return type.toString(this, false);
+		if(hundredths == Integer.MAX_VALUE || hundredths < 0) return "N/A"; //$NON-NLS-1$
+		for(SolveType t : types)
+			if(!t.isSolved())
+				return t.toString();
+		return Utils.formatTime(secondsValue()) + (isType(SolveType.PLUS_TWO) ? "+" : "");
 	}
 	//this is for use by the database, and will save the raw time if the solve was a POP or DNF
 	public String toExternalizableString() {
-		return type.toString(this, true);
+		String time = "" + (value() / 100.); //this must work for +2 and DNF
+		String typeString = "";
+		boolean plusTwo = false;
+		for(SolveType t : types) {
+			if(t == SolveType.PLUS_TWO) //no need to append plus two, since we will append + later
+				plusTwo = true;
+			else
+				typeString += t.toString() + ",";
+		}
+		
+		if(plusTwo) time += "+";
+		return typeString + time;
 	}
 	public String toSplitsString() {
 		if(splits == null) return ""; //$NON-NLS-1$
@@ -225,7 +226,7 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	}
 
 	private int value() {
-		return hundredths + (type == SolveType.PLUS_TWO ? 200 : 0);
+		return hundredths + (isType(SolveType.PLUS_TWO) ? 200 : 0);
 	}
 
 	//the behavior of the following 3 methods is kinda contradictory,
@@ -249,14 +250,20 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 		return this.value() - o.value();
 	}
 
-	public SolveType getType() {
-		return type;
+	public ArrayList<SolveType> getTypes() {
+		return new ArrayList<SolveType>(types);
 	}
-	public void setType(SolveType t) {
-		type = t;
+	public boolean isType(SolveType t) {
+		return types.contains(t);
+	}
+	public void clearType() {
+		types.clear();
+	}
+	public void setTypes(Collection<SolveType> newTypes) {
+		types = new HashSet<SolveType>(newTypes);
 	}
 	public boolean isInfiniteTime() {
-		return type == SolveType.POP || type == SolveType.DNF || hundredths == Integer.MAX_VALUE;
+		return isType(SolveType.DNF) || hundredths == Integer.MAX_VALUE;
 	}
 	//"true" in the sense that it was manually entered as POP or DNF
 	public boolean isTrueWorstTime(){

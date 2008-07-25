@@ -67,26 +67,6 @@
 				<td>This is the standard deviation of all non infinite solves in the current session.</td>
 			</tr>
 			<tr>
-				<td>pops</td>
-				<td>Number of pops in the current session.</td>
-			</tr>
-			<tr>
-				<td>+twos</td>
-				<td>Number of 2 second penalties in the current session.</td>
-			</tr>
-			<tr>
-				<td>dnfs</td>
-				<td>Number of DNFs in the current session.</td>
-			</tr>
-			<tr>
-				<td>solves</td>
-				<td>Number of successful (non-infinite) solves in the current session.</td>
-			</tr>
-			<tr>
-				<td>attempts</td>
-				<td>Total number of attempts in in the current session.</td>
-			</tr>
-			<tr>
 				<td>progressTime</td>
 				<td>The difference between the most recent solve and the solve before it.</td>
 			</tr>
@@ -251,7 +231,7 @@
 				<td class="title"></td>
 				<td class="title">The following allow access to global statistics. That is, statistics about every solve you have ever
 				done of the current scramble customization.</td>
-			</tr>			
+			</tr>
 			<tr>
 				<td>veryBestTime</td>
 				<td>This is the best time of all the sessions of the current scramble customization.</td>
@@ -264,26 +244,6 @@
 				<td>globalAverage</td>
 				<td>The average of all solves of all the sessions of the current scramble customization.</td>
 			</tr>
-			<tr>
-				<td>globalPops</td>
-				<td>The total number of pops of all the sessions of the current scramble customization.</td>
-			</tr>
-			<tr>
-				<td>global+twos</td>
-				<td>The total number of 2 second penalties of all the sessions of the current scramble customization.</td>
-			</tr>
-			<tr>
-				<td>globalDNFs</td>
-				<td>The total number of DNFs of all the sessions of the current scramble customization.</td>
-			</tr>
-			<tr>
-				<td>globalSolveCount</td>
-				<td>The total number of successful solves of all the sessions of the current scramble customization.</td>
-			</tr>
-			<tr>
-				<td>globalAttemptCount</td>
-				<td>The total number of solve attempts of all the sessions of the current scramble customization.</td>
-			</tr>
 			
 			<tr>
 				<td class="title"></td>
@@ -292,6 +252,20 @@
 			<tr>
 				<td>date</td>
 				<td>This is the current date and time. This will not be updated every second.</td>
+			</tr>
+			
+			<tr>
+				<td class="title"></td>
+				<td class="title">Solve types and counts. SOLVETYPE can be any of SOLVED, ATTEMPT, POP, DNF, PLUS_TWO, 
+				or any scramble type defined within CCT.</td>
+			</tr>
+			<tr>
+				<td>solvecount_SOLVETYPE</td>
+				<td>This is a count of the number of solves of type SOLVETYPE in the current session.</td>
+			</tr>
+			<tr>
+				<td>global_solvecount_SOLVETYPE</td>
+				<td>This is a global count of the number of solves of type SOLVETYPE.</td>
 			</tr>
 		</table>
 	</body>

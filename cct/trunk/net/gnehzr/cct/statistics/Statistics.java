@@ -3,6 +3,7 @@ package net.gnehzr.cct.statistics;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -41,15 +42,15 @@ public class Statistics implements ConfigurationChangeListener {
 			newTime = newValue;
 		}
 		int row = -1;
-		private SolveTime.SolveType oldType, newType;
-		public StatisticsEdit(int row, SolveTime.SolveType oldType, SolveTime.SolveType newType) {
+		private ArrayList<SolveType> oldTypes, newTypes;
+		public StatisticsEdit(int row, ArrayList<SolveType> oldTypes, ArrayList<SolveType> newTypes) {
 			this.row = row;
-			this.oldType = oldType;
-			this.newType = newType;
+			this.oldTypes = oldTypes;
+			this.newTypes = newTypes;
 		}
 		public void doEdit() {
 			if(row != -1) { //changed type
-				times.get(row).setType(newType);
+				times.get(row).setTypes(newTypes);
 				refresh();
 			} else { //time added/removed/changed
 				editActions.setEnabled(false);
@@ -65,7 +66,7 @@ public class Statistics implements ConfigurationChangeListener {
 		}
 		public void undoEdit() {
 			if(row != -1) { //changed type
-				times.get(row).setType(oldType);
+				times.get(row).setTypes(oldTypes);
 				refresh();
 			} else { //time added/removed/changed
 				editActions.setEnabled(false);
@@ -125,7 +126,7 @@ public class Statistics implements ConfigurationChangeListener {
 	private double runningSquareTotal;
 	private	double curSessionSD;
 	
-	private int[] solveCounter;
+	private HashMap<SolveType, Integer> solveCounter;
 
 	private int[] curRASize;
 	private boolean[] curRATrimmed;
@@ -159,7 +160,7 @@ public class Statistics implements ConfigurationChangeListener {
 			sortsds[i] = new ArrayList<Double>();
 		}
 		
-		solveCounter = new int[SolveType.values().length];
+		solveCounter = new HashMap<SolveType, Integer>();
 		
 		times = new ArrayList<SolveTime>();
 		sorttimes = new ArrayList<SolveTime>();
@@ -189,10 +190,8 @@ public class Statistics implements ConfigurationChangeListener {
 		curSessionAvg = 0;
 		curSessionSD = Double.POSITIVE_INFINITY;
 		
-		//zero out numPops, numDNFs, numPlus2s
-		for(int ch = 0; ch < solveCounter.length; ch++) {
-			solveCounter[ch] = 0;
-		}
+		//zero out solvetype counter
+		solveCounter.clear();
 	}
 
 	
@@ -274,11 +273,11 @@ public class Statistics implements ConfigurationChangeListener {
 		refresh();
 	}
 	
-	public void setSolveType(int row, SolveType newType) {
+	public void setSolveTypes(int row, ArrayList<SolveType> newTypes) {
 		SolveTime selectedSolve = times.get(row);
-		SolveTime.SolveType oldType = selectedSolve.getType();
-		selectedSolve.setType(newType);
-		editActions.add(new StatisticsEdit(row, oldType, newType));
+		ArrayList<SolveType> oldTypes = selectedSolve.getTypes();
+		selectedSolve.setTypes(newTypes);
+		editActions.add(new StatisticsEdit(row, oldTypes, newTypes));
 		refresh();
 	}
 	
@@ -308,9 +307,14 @@ public class Statistics implements ConfigurationChangeListener {
 			if(times.size() >= curRASize[k])
 				calculateCurrentAverage(k);
 
-		solveCounter[s.getType().ordinal()]++;
-		int numPOPs = solveCounter[SolveTime.SolveType.POP.ordinal()];
-		int numDNFs = solveCounter[SolveTime.SolveType.DNF.ordinal()];
+		for(SolveType t : s.getTypes()) {
+			Integer count = solveCounter.get(t);
+			if(count == null)
+				count = 0;
+			count++;
+			solveCounter.put(t, count);
+		}
+		Integer numDNFs = getSolveTypeCount(SolveType.DNF);
 		if(!s.isInfiniteTime()) {
 			double t = s.secondsValue();
 			runningTotal += t;
@@ -318,7 +322,7 @@ public class Statistics implements ConfigurationChangeListener {
 			sessionavgs.add(curSessionAvg);
 			runningSquareTotal += t * t;
 			curSessionSD = Math.sqrt(runningSquareTotal
-					/ (times.size() - numPOPs - numDNFs) - curSessionAvg
+					/ (times.size() - numDNFs) - curSessionAvg
 					* curSessionAvg);
 			sessionsds.add(curSessionSD);
 		}
@@ -672,30 +676,20 @@ public class Statistics implements ConfigurationChangeListener {
 		return curSessionSD;
 	}
 
-//	public int getPOPCount() {
-//		return solveCounter[SolveType.POP.ordinal()];
-//	}
-//	public int getPlus2Count() {
-//		return solveCounter[SolveType.PLUS_TWO.ordinal()];
-//	}
-//	public int getDNFCount() {
-//		return solveCounter[SolveType.DNF.ordinal()];
-//	}
-//	public int getNormalSolveCount() {
-//		return solveCounter[SolveType.NORMAL.ordinal()];
-//	}
 	public int getSolveCount() {
 		int unsolved = 0;
-		for(SolveType t : SolveType.values())
+		for(SolveType t : solveCounter.keySet())
 			if(!t.isSolved())
-				unsolved += solveCounter[t.ordinal()];
+				unsolved += solveCounter.get(t);
 		return times.size() - unsolved;
 	}
 	public int getAttemptCount() {
 		return times.size();
 	}
 	public int getSolveTypeCount(SolveType t) {
-		return solveCounter[t.ordinal()];
+		Integer c = solveCounter.get(t);
+		if(c == null) c = 0;
+		return c;
 	}
 
 	public double getTime(int n) {
