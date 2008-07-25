@@ -145,11 +145,7 @@ public class CubeScramble extends Scramble {
 				if(face / 6 != 0) move += "w";
 			}
 			else{
-				if(face >= FACES.length()) { //wtf?? -Jeremy
-					if(face / 6 != 0) face += 6;
-					move += FACES.charAt(face % 12);
-				} else
-					move += FACES.charAt(face);
+				move += FACES.charAt(face);
 			}
 		}
 		else{
@@ -226,6 +222,7 @@ public class CubeScramble extends Scramble {
 				}
 				if(cstrs[i].indexOf("w") >= 0) face += 6;
 				int slice = face / 6;
+				face %= 6;
 				int dir = 0;
 
 				if(slice1 != null)
