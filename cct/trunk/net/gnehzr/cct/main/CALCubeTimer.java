@@ -663,6 +663,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 			//update new scramble generator
 			generator.setText(scramblesList.getScrambleCustomization().getGenerator());
+			generator.setVisible(scramblesList.getScrambleCustomization().getScramblePlugin().isGeneratorEnabled());
 			
 			createScrambleAttributes();
 			updateScramble();

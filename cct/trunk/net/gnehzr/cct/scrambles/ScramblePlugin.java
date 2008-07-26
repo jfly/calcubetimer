@@ -473,6 +473,10 @@ public class ScramblePlugin {
 		return DEFAULT_GENERATORS[c];
 	}
 	
+	public boolean isGeneratorEnabled() {
+		return DEFAULT_GENERATORS != null;
+	}
+	
 	private int getIndexOfVariation(ScrambleVariation var) {
 		int c;
 		for(c = 0; c < VARIATIONS.length; c++)
