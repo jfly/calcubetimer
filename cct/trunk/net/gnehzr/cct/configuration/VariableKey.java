@@ -82,6 +82,9 @@ public class VariableKey<H> {
 	public static final VariableKey<String> METRONOME_CLICK_FILE = new VariableKey<String>("Misc_Metronome_clickFile"); //$NON-NLS-1$
 	public static final VariableKey<String> XML_LAYOUT = new VariableKey<String>("GUI_xmlLayout_file"); //$NON-NLS-1$
 	public static final VariableKey<String> DEFAULT_SCRAMBLE_CUSTOMIZATION = new VariableKey<String>("Scramble_Default_scrambleCustomization"); //$NON-NLS-1$
+	public static final VariableKey<String> SCRAMBLE_GENERATOR(ScrambleCustomization sc) {
+		return new VariableKey<String>("Puzzle_ScrambleGenerator_" + sc.toString()); //$NON-NLS-1$
+	}
 
 	public static final VariableKey<String[]> SOLVE_TAGS = new VariableKey<String[]>("Misc_solveTags"); //$NON-NLS-1$
 	public static final VariableKey<String[]> IMPORT_URLS = new VariableKey<String[]>("Misc_scrambleURLs"); //$NON-NLS-1$

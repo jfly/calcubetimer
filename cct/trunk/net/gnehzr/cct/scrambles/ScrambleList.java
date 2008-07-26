@@ -56,6 +56,12 @@ public class ScrambleList {
 			removeLatestAndFutureScrambles();
 		}
 	}
+
+	public void updateGeneratorGroup(String group) {
+		custom.setGenerator(group);
+		custom.saveGeneratorToConfiguration();
+		removeLatestAndFutureScrambles();
+	}
 	public void clear() {
 		scrambleNumber = 0;
 		scrambles.clear();

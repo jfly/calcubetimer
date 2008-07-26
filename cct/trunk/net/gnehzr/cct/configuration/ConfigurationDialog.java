@@ -1147,6 +1147,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 
 		Configuration.setStringArray(VariableKey.SCRAMBLE_CUSTOMIZATIONS, puzzlesModel.getContents().toArray(new ScrambleCustomization[0]));
 		ScramblePlugin.saveLengthsToConfiguration();
+		for(ScrambleCustomization sc : puzzlesModel.getContents())
+			sc.saveGeneratorToConfiguration();
 
 		profilesModel.commitChanges();
 		Configuration.setProfileOrdering(profilesModel.getContents());

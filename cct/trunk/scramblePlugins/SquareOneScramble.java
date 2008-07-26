@@ -28,22 +28,25 @@ public class SquareOneScramble extends Scramble {
 	private static final int DEFAULT_UNIT_SIZE = 32;
 	private static final Pattern TOKEN_REGEX = Pattern.compile("^(\\( *-?\\d+ *, *-?\\d+ *\\)|/)(.*)$");
 	private static final String[] ATTRIBUTES = new String[] { "%%slashes%%" };
+	private static final String[] DEFAULT_GENERATORS = new String[] { "(x, x) /" };
 	
 	private int twistCount = 0; //this will tell us the state of the middle pieces
 	private int[] state, turns;
 	private boolean slashes;
 
 	public SquareOneScramble(String variation, int length, String generatorGroup, String... attrs) {
-		this(length, attrs);
+		this(length, generatorGroup, attrs);
 	}
 
-	private SquareOneScramble(int length, String... attrs) {
+	private SquareOneScramble(int length, String generatorGroup, String... attrs) {
 		this.length = length;
+		setGenerator(generatorGroup);
 		setAttributes(attrs);
 	}
 
 	public SquareOneScramble(String variation, String s, String generatorGroup, String... attrs) throws InvalidScrambleException {
 		super(s);
+		setGenerator(generatorGroup);
 		if(!setAttributes(attrs))
 			throw new InvalidScrambleException(s);
 	}
@@ -60,6 +63,18 @@ public class SquareOneScramble extends Scramble {
 		scramble = "";
 		generateScramble();
 		return true;
+	}
+	
+	private static final Pattern GENERATOR = Pattern.compile("\\( *(.+), *(.+) *\\)");
+	private boolean turnTop, turnBottom;
+	private void setGenerator(String generator) {
+		turnTop = turnBottom = true;
+		if(generator == null) return;
+		Matcher m = GENERATOR.matcher(generator);
+		if(m.find()) {
+			turnTop = !m.group(1).equals("0");
+			turnBottom = !m.group(2).equals("0");
+		}
 	}
 
 	//Ported from http://www.worldcubeassociation.org/regulations/scrambles/scramble_square1.htm by Jeremy Fleischman
@@ -84,7 +99,9 @@ public class SquareOneScramble extends Scramble {
 				} else {
 					move=random(23)-11;
 				}
-			} while( (twistCount>1 && move>=-6 && move<0) || domove(i, move));
+				//we don't want to apply to restriction to the bottom if we're no allowed to turn the top
+				//if we did, we might loop forever making scrambles for a bandaged square 1
+			} while( (turnTop && twistCount>1 && move>=-6 && move<0) || domove(i, move));
 			if(move>0) ls=1;
 			else if(move<0) ls=2;
 			else { ls=0; }
@@ -121,14 +138,15 @@ public class SquareOneScramble extends Scramble {
 	private boolean domove(int index, int m) {
 		int i,c,f=m;
 		//do move f
-		if(f == 0) {
+		if(f == 0) { //slash
 			for(i = 0; i < 6; i++){
 				c=state[i+12];
 				state[i+12]=state[i+6];
 				state[i+6]=c;
 			}
 			twistCount++;
-		} else if(f>0) {
+		} else if(f > 0) { //turn the top
+			if(!turnTop) return true;
 			f=modulo(12-f, 12);
 			if( state[f]==state[f-1] ) return true;
 			if( f<6 && state[f+6]==state[f+5] ) return true;
@@ -141,7 +159,8 @@ public class SquareOneScramble extends Scramble {
 				state[i] = t[c];
 				if(c == 11)c=0; else c++;
 			}
-		} else if(f < 0) {
+		} else if(f < 0) { //turn the bottom
+			if(!turnBottom) return true;
 			f=modulo(-f, 12);
 			if( state[f+12]==state[f+11] ) return true;
 			if( f<6 && state[f+18]==state[f+17] ) return true;

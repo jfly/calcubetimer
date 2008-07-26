@@ -13,6 +13,7 @@ public class ScrambleCustomization {
 		this.variation = variation;
 		this.plugin = variation.getScramblePlugin();
 		this.customization = customization;
+		generator = loadGeneratorFromConfig(false);
 	}
 	
 	public void setRA(int index, int newra, boolean trimmed) {
@@ -42,6 +43,18 @@ public class ScrambleCustomization {
 
 	public void setGenerator(String generator) {
 		this.generator = generator;
+	}
+	private String loadGeneratorFromConfig(boolean defaults) {
+		String gen = Configuration.getString(VariableKey.SCRAMBLE_GENERATOR(this), defaults);
+		if(gen == null)
+			gen = plugin.getDefaultGeneratorGroup(variation);
+		return gen;
+	}
+	public void saveGeneratorToConfiguration() {
+		Configuration.setString(VariableKey.SCRAMBLE_GENERATOR(this), generator == null ? "" : generator);
+	}
+	public String getGenerator() {
+		return generator;
 	}
 	
 	public ScramblePlugin getScramblePlugin() {

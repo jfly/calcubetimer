@@ -20,6 +20,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
@@ -65,6 +67,7 @@ import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
@@ -164,6 +167,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	ScrambleArea scrambleArea = null;
 	private ScrambleChooserComboBox scrambleChooser = null;
 	private JPanel scrambleAttributes = null;
+	private JTextField generator;
 	JSpinner scrambleNumber;
 	private JSpinner scrambleLength = null;
 	private DateTimeLabel currentTimeLabel = null;
@@ -403,7 +407,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 		});
 	}
-
+	
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if(e.getActionCommand().equals(SCRAMBLE_ATTRIBUTE_CHANGED)) {
@@ -478,6 +482,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scrambleLength.addChangeListener(this);
 
 		scrambleAttributes = new JPanel();
+		generator = new GeneratorTextField();
 
 		scramblePopup = new ScrambleFrame(this, actionMap.get("togglescramblepopup"), false); //$NON-NLS-1$
 		scramblePopup.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
@@ -552,6 +557,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		persistentComponents.put("scramblenumber", scrambleNumber);
 		persistentComponents.put("scramblelength", scrambleLength);
 		persistentComponents.put("scrambleattributes", scrambleAttributes);
+		persistentComponents.put("scramblegenerator", generator);
 		persistentComponents.put("stackmatstatuslabel", onLabel);
 		persistentComponents.put("scramblearea", scrambleArea);
 		persistentComponents.put("timerdisplay", timeLabel);
@@ -561,6 +567,37 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		persistentComponents.put("profilecombobox", profiles);
 		persistentComponents.put("sessionslist", sessionsScroller);
 		persistentComponents.put("clock", currentTimeLabel);
+	}
+	
+	private class GeneratorTextField extends JTextField implements FocusListener, ActionListener {
+		public GeneratorTextField() {
+			addFocusListener(this);
+			addActionListener(this);
+			setColumns(10);
+			putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
+			setToolTipText("Type new generator group and press enter"); //TODO - i18n
+		}
+		public void actionPerformed(ActionEvent e) {
+			setText(getText());
+		}
+		private String oldText;
+		public void setText(String t) {
+			setVisible(t != null);
+
+			if(t != null && !t.equals(oldText)) {
+				scramblesList.updateGeneratorGroup(t);
+				updateScramble();
+			}
+			oldText = t;
+			
+			super.setText(t);
+		}
+		public void focusGained(FocusEvent e) {
+			oldText = getText();
+		}
+		public void focusLost(FocusEvent e) {
+			setText(oldText);
+		}
 	}
 
 	void refreshCustomGUIMenu() {
@@ -624,6 +661,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			if(statsModel.getCurrentSession() != null) {
 				statsModel.getCurrentSession().setCustomization(scramblesList.getScrambleCustomization().toString());
 			}
+			//update new scramble generator
+			generator.setText(scramblesList.getScrambleCustomization().getGenerator());
+			
 			createScrambleAttributes();
 			updateScramble();
 		} else if(source == profiles) {

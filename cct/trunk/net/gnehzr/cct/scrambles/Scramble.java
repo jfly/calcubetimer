@@ -34,7 +34,7 @@ public class Scramble {
 
 	/******** Required fields, methods, and constructors **********/
 	
-	//public static final String PUZZLE_NAME - cannot contain the character ":"
+	//private static final String PUZZLE_NAME - cannot contain the character ":"
 
 	//public Constructor(String variation, int length, String generatorGroup, String... attrs)
 	
@@ -44,28 +44,32 @@ public class Scramble {
 	
 	/******** Optional fields and methods **********/
 	
-	//public static final String[] VARIATIONS; //This is so one class can handle 3x3x3-11x11x11, variations cannot contain the character ":" //$NON-NLS-1$
+	//private static final String[] VARIATIONS; //This is so one class can handle 3x3x3-11x11x11, variations cannot contain the character ":" //$NON-NLS-1$
 	
 	//HIGHLY RECOMMENDED, defines default lengths for each element of VARIATIONS (make it a one element array unless you defined VARIATIONS)
-	//public static final int[] DEFAULT_LENGTHS;
+	//private static final int[] DEFAULT_LENGTHS;
 	
 	//As of now, there is support for named booleans to affect scrambles (attributes).
 	//This was introduced as a way of adding a multi-slice option for cubes.
-	//public static final String[] ATTRIBUTES; //This may come in useful for other puzzles.
-	//public static final String[] DEFAULT_ATTRIBUTES; //This is an array of the default attributes for a puzzle
+	//private static final String[] ATTRIBUTES; //This may come in useful for other puzzles.
+	//private static final String[] DEFAULT_ATTRIBUTES; //This is an array of the default attributes for a puzzle
 	
 	//public static final htmlify(String scramble); //This adds html formatting to a scramble for display purposes
 	
 	//Provides support for incremental scrambles, the Pattern should match 2 groups
 	//group 1: the next unit
 	//group 2: the rest of the scramble
-	//public static final Pattern TOKEN_REGEX;
+	//private static final Pattern TOKEN_REGEX;
+	
+	//Defines a default generator group for each scramble variation (make it a one element array if you didn't define VARIATIONS)
+	//If you define this field, remember to parse the generator string passed into the two constructors.
+	//private static final String[] DEFAULT_GENERATORS;
 	
 	
 	/******** These must be defined to display your scrambles & allow a customizable color scheme **********/
 	
-	//public static final String[][] FACE_NAMES_COLORS; //Two dimensional array of names and colors
-	//public static final int DEFAULT_UNIT_SIZE; //Gives the default unit size for a scrambleview
+	//private static final String[][] FACE_NAMES_COLORS; //Two dimensional array of names and colors
+	//private static final int DEFAULT_UNIT_SIZE; //Gives the default unit size for a scrambleview
 	
 	//public static int getNewUnitSize(int width, int height, int gap, String variation); //Returns the best fit unit size for this width and height
 	//public static Dimension getImageSize(int gap, int unitSize, String variation); //Returns the size of the scramble image

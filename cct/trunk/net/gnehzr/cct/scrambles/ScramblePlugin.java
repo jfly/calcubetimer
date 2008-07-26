@@ -361,8 +361,14 @@ public class ScramblePlugin {
 				
 			}
 			
-			//TODO - add this functionality to scramble
-			DEFAULT_GENERATORS = new String[VARIATIONS.length];
+			try {
+				f = getPrivateStaticField(pluginClass, "DEFAULT_GENERATORS"); //$NON-NLS-1$
+				DEFAULT_GENERATORS = (String[]) f.get(null);
+				if(DEFAULT_GENERATORS.length != VARIATIONS.length)
+					throw new ArrayIndexOutOfBoundsException("DEFAULT_GENERATORS.length (" + DEFAULT_GENERATORS.length + ") != VARIATIONS.length (" + VARIATIONS.length + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			} catch(NoSuchFieldException e) {
+				
+			}
 		} catch(NoClassDefFoundError e) {
 			if(e.getCause() != null)
 				e.getCause().printStackTrace();
@@ -462,7 +468,7 @@ public class ScramblePlugin {
 	}
 	public String getDefaultGeneratorGroup(ScrambleVariation var) {
 		int c = getIndexOfVariation(var);
-		if(c == -1)
+		if(c == -1 || DEFAULT_GENERATORS == null)
 			return null;
 		return DEFAULT_GENERATORS[c];
 	}

@@ -19,6 +19,7 @@
 								<component type="scrambleLength"/>
 								<component type="scrambleNumber"/>
 								<component type="scrambleAttributes"/>
+								<component type="scrambleGenerator"/>
 							</panel>
 						</scrollpane>
 						<panel layout="border">
