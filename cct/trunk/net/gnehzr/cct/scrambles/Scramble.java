@@ -26,9 +26,9 @@ public class Scramble {
 	}
 	//assumes m > 0
 	protected static final int modulo(int x, int m) {
-		if(x > 0)
-			return x % m;
-		return (m * (-x/m + 1) + x) % m;
+		int y = x % m;
+		if(y >= 0) return y;
+		return y + m;
 	}
 	
 
