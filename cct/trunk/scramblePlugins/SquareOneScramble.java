@@ -137,7 +137,6 @@ public class SquareOneScramble extends Scramble {
 	//returns true if invalid, false if valid
 	private boolean domove(int index, int m) {
 		int i,c,f=m;
-		f = modulo(-f, 12);
 		//do move f
 		if(f == 0) { //slash
 			for(i = 0; i < 6; i++){
@@ -148,6 +147,7 @@ public class SquareOneScramble extends Scramble {
 			twistCount++;
 		} else if(f > 0) { //turn the top
 			if(!turnTop) return true;
+			f=modulo(12-f, 12);
 			if( state[f]==state[f-1] ) return true;
 			if( f<6 && state[f+6]==state[f+5] ) return true;
 			if( f>6 && state[f-6]==state[f-7] ) return true;
@@ -161,6 +161,7 @@ public class SquareOneScramble extends Scramble {
 			}
 		} else if(f < 0) { //turn the bottom
 			if(!turnBottom) return true;
+			f=modulo(-f, 12);
 			if( state[f+12]==state[f+11] ) return true;
 			if( f<6 && state[f+18]==state[f+17] ) return true;
 			if( f>6 && state[f+6]==state[f+5] ) return true;
@@ -200,8 +201,8 @@ public class SquareOneScramble extends Scramble {
 			} else if((match = regexp.matcher(trns[ch])).matches()) {
 				int top = Integer.parseInt(match.group(1));
 				int bot = Integer.parseInt(match.group(2));
-				if(top < 0) top += 12;
-				if(bot < 0) bot += 12;
+				top = modulo(top, 12);
+				bot = modulo(bot, 12);
 				if(top != 0 && domove(length++, top))
 					return false;
 				if(bot != 0 && domove(length++, bot-12))
