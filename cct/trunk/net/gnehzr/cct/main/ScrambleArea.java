@@ -159,7 +159,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		while((m = regex.matcher(s)).matches()){
 			String str = m.group(1).trim();
 			plainScramble += " " + str; //$NON-NLS-1$
-			description = num + " " + plainScramble; //$NON-NLS-1$
+			description = num + plainScramble; //$NON-NLS-1$ //there already is a space at the beginning of plainScramble
 			part3 += "<a id='" + num + "' href=\"" + description + "\"><span>" + currentCustomization.getScramblePlugin().htmlify(" " + str) + "</span></a>"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 			s = m.group(2).trim();
 			num++;
@@ -184,6 +184,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 				moveNum = Integer.parseInt(moveAndScramble[0]);
 				incrScramble = moveAndScramble[1];
 			}
+			System.out.println("HYPER:" + incrScramble);
 			updateScramblePane();
 			Scramble s = null;
 			try {

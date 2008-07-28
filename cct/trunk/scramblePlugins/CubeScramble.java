@@ -29,7 +29,9 @@ public class CubeScramble extends Scramble {
 	private static final Pattern TOKEN_REGEX = Pattern.compile("^((?:\\d+)?[LDBRUFldbruf](?:\\(\\d+\\))?w?[2']?)(.*)$");
 	
 	private static final String FACES = "LDBRUFldbruf";
-	private static final boolean danCohenNotation = true;
+	private static final boolean shortNotation = true;
+	private boolean multislice;
+	private boolean wideNotation;
 	private int size;
 	private int[][][] image;
 
@@ -54,8 +56,6 @@ public class CubeScramble extends Scramble {
 			throw new InvalidScrambleException(s);
 	}
 
-	private boolean multislice;
-	private boolean wideNotation;
 	private boolean setAttributes(String... attributes) {
 		multislice = false;
 		wideNotation = false;
@@ -74,6 +74,7 @@ public class CubeScramble extends Scramble {
 
 	private void generateScramble(){
 		scramble = "";
+		StringBuilder scram = new StringBuilder();
 		int lastAxis = -1;
 		int axis = 0;
 		int slices = size - ((multislice || size % 2 != 0) ? 1 : 0);
@@ -117,7 +118,9 @@ public class CubeScramble extends Scramble {
 					}
 
 					int n = ((slice * 6 + face) * 4 + direction);
-					scramble += " " + moveString(n);
+					scram.append(" ");
+					scram.append(moveString(n));
+
 					do{
 						slice(face, slice, direction);
 						slice--;
@@ -126,8 +129,8 @@ public class CubeScramble extends Scramble {
 			}
 			lastAxis = axis;
 		}
-		if(!scramble.isEmpty())
-			scramble = scramble.substring(1);
+		if(scram.length() > 0)
+			scramble = scram.substring(1);
 	}
 	
 	public static String htmlify(String formatMe) {
@@ -153,7 +156,7 @@ public class CubeScramble extends Scramble {
 			if(face / 6 == 0) {
 				move += f;
 			} else {
-				if(danCohenNotation) {
+				if(shortNotation) {
 					move += (face / 6 + 1) + f;
 				} else {
 					move += f + "(" + (face / 6 + 1) + ")";
@@ -164,75 +167,67 @@ public class CubeScramble extends Scramble {
 
 		return move;
 	}
-	private final static String regexp23 = "^[LDBRUF][2']?$";
-	private final static String regexp45 = "^(?:[LDBRUF]w?|[ldbruf])[2']?$";
-	private final static String regexp = "^(\\d+)?[LDBRUF](?:\\(\\d+\\))?[2']?$";
-	private final static Pattern cohen = Pattern.compile("^(\\d+)?([LDBRUF])(?:\\((\\d+)\\))?[2']?$");
+
+	private final static String regexp2 = "^[LDBRUF][2']?$";
+	private final static String regexp345 = "^(?:[LDBRUF]w?|[ldbruf])[2']?$";
+	private final static String regexp = "^(\\d+)?([LDBRUF])(?:\\((\\d+)\\))?[2']?$";
+	private final static Pattern shortPattern = Pattern.compile(regexp);
 	private boolean validateScramble(){
-		String[] strs = scramble.split(" ");
+		String[] strs = scramble.split("\\s+");
 		length = strs.length;
 
-		int c = 0;
-		for(int i = 0; i < strs.length; i++){
-			if(strs[i].length() > 0) c++;
+		if(size < 2) return false;
+		else if(size == 2){
+			for(int i = 0; i < strs.length; i++){
+				if(!strs[i].matches(regexp2)) return false;
+			}
+		}
+		else if(size <= 5){
+			for(int i = 0; i < strs.length; i++){
+				if(!strs[i].matches(regexp345)) return false;
+			}
+		}
+		else{
+			for(int i = 0; i < strs.length; i++){
+				if(!strs[i].matches(regexp)) return false;
+			}
 		}
 
-		String[] cstrs = new String[c];
-		c = 0;
-		for(int i = 0; c < cstrs.length; i++){
-			if(strs[i].length() > 0) cstrs[c++] = strs[i];
-		}
-
-		if(size == 2 || size == 3){
-			for(int i = 0; i < cstrs.length; i++){
-				if(!cstrs[i].matches(regexp23)) return false;
-			}
-		}
-		else if(size == 4 || size == 5){
-			for(int i = 0; i < cstrs.length; i++){
-				if(!cstrs[i].matches(regexp45)) return false;
-			}
-		}
-		else if(size > 5){
-			for(int i = 0; i < cstrs.length; i++){
-				if(!cstrs[i].matches(regexp)) return false;
-			}
-		}
-		else return false;
-		String newScram = "";
+		StringBuilder newScram = new StringBuilder();
 		try{
-			for(int i = 0; i < cstrs.length; i++){
+			for(int i = 0; i < strs.length; i++){
 				int face;
 				String slice1 = null;
 				if(size > 5) {
-					Matcher m = cohen.matcher(cstrs[i]);
+					Matcher m = shortPattern.matcher(strs[i]);
 					if(!m.matches()) {
 						return false;
 					}
 					slice1 = m.group(1);
 					String slice2 = m.group(3);
-					if(slice1 != null && slice2 != null) { //only dan cohen's notation or the old style is allowed, not both
+					if(slice1 != null && slice2 != null) { //only short notation or long notation is allowed, not both
 						return false;
 					}
 					if(slice1 == null)
 						slice1 = slice2;
 					face = FACES.indexOf(m.group(2));
 				} else {
-					face = FACES.indexOf(cstrs[i].charAt(0) + "");
+					face = FACES.indexOf(strs[i].charAt(0) + "");
 				}
-				if(cstrs[i].indexOf("w") >= 0) face += 6;
+
 				int slice = face / 6;
 				face %= 6;
-				int dir = 0;
-
-				if(slice1 != null)
+				if(strs[i].indexOf("w") >= 0) slice++;
+				else if(slice1 != null)
 					slice = Integer.parseInt(slice1) - 1;
 
-				dir = " 2'".indexOf(cstrs[i].charAt(cstrs[i].length() - 1) + "");
+				int dir = " 2'".indexOf(strs[i].charAt(strs[i].length() - 1) + "");
 				if(dir < 0) dir = 0;
 				
 				int n = ((slice * 6 + face) * 4 + dir);
-				newScram += " " + moveString(n);
+				newScram.append(" ");
+				newScram.append(moveString(n));
+
 				do{
 					slice(face, slice, dir);
 					slice--;
@@ -242,9 +237,10 @@ public class CubeScramble extends Scramble {
 			e.printStackTrace();
 			return false;
 		}
-		if(!newScram.isEmpty())
-			newScram = newScram.substring(1);
-		scramble = newScram; //we do this to force notation update when an attribute changes
+
+		if(newScram.length() > 0)
+			scramble = newScram.substring(1); //we do this to force notation update when an attribute changes
+		else scramble = newScram.toString();
 		return true;
 	}
 	private void initializeImage(){
