@@ -60,7 +60,6 @@ public class SquareOneScramble extends Scramble {
 		if(scramble != null) {
 			return validateScramble();
 		}
-		scramble = "";
 		generateScramble();
 		return true;
 	}
@@ -110,28 +109,31 @@ public class SquareOneScramble extends Scramble {
 	}
 
 	private void finalizeScrambleString() {
+		scramble = "";
+		StringBuilder scram = new StringBuilder();
 		int l=-1;
 		for(int i=0; i < turns.length; i++) {
 			int k=turns[i];
 			if(k==0) {
-				if(l==-1) scramble += " (0,0)";
-				if(l==1) scramble += "0)";
-				if(l==2) scramble += ")";
+				if(l==-1) scram.append(" (0,0)");
+				if(l==1) scram.append("0)");
+				if(l==2) scram.append(")");
 				if(l != 0 && slashes)
-					scramble += " /";
+					scram.append(" /");
 				l=0;
 			}else if(k>0) {
-				scramble += " (" + (k > 6 ? k-12 : k)+",";
+				scram.append(" (").append(k > 6 ? k-12 : k).append(",");
 				l=1;
 			}else if(k<0) {
-				if(l<=0) scramble += " (0,";
-				scramble += (k <= -6 ? k+12 : k);
+				if(l<=0) scram.append(" (0,");
+				scram.append(k <= -6 ? k+12 : k);
 				l=2;
 			}
 		}
-		if(l==1) scramble += "0";
-		if(l!=0) scramble += ")";
-		scramble = scramble.substring(1);
+		if(l==1) scram.append("0");
+		if(l!=0) scram.append(")");
+		if(scram.length() > 0)
+			scramble = scram.substring(1);
 	}
 	
 	//returns true if invalid, false if valid
