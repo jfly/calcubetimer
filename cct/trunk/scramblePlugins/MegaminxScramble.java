@@ -48,7 +48,6 @@ public class MegaminxScramble extends Scramble {
 		if(scramble != null) {
 			return validateScramble();
 		}
-		scramble = "";
 		generateScramble();
 		return true;
 	}
@@ -65,39 +64,27 @@ public class MegaminxScramble extends Scramble {
 	private static String regexp = "^[A-Fa-f][234]?$";
 	private static String regexp1 = "^(?:[RDY]([+-])\\1|U'?)$";
 	private boolean validateScramble() {
-		String[] strs = scramble.split(" ");
+		String[] strs = scramble.split("\\s+");
+		length = strs.length;
 
-		int c = 0;
 		for(int i = 0; i < strs.length; i++){
-			if(strs[i].length() > 0) c++;
+			if(!strs[i].matches(regexp1) && !strs[i].matches(regexp)) return false;
 		}
-
-		String[] cstrs = new String[c];
-		c = 0;
-		for(int i = 0; c < cstrs.length; i++){
-			if(strs[i].length() > 0) cstrs[c++] = strs[i];
-		}
-
-		for(int i = 0; i < cstrs.length; i++){
-			if(!cstrs[i].matches(regexp1) && !cstrs[i].matches(regexp)) return false;
-		}
-
-		length = cstrs.length;
 
 		try{
-			for(int i = 0; i < cstrs.length; i++){
-				if(cstrs[i].matches(regexp1)){
-					if(cstrs[i].charAt(0) == 'U'){
+			for(int i = 0; i < strs.length; i++){
+				if(strs[i].matches(regexp1)){
+					if(strs[i].charAt(0) == 'U'){
 						int dir = 1;
-						if(cstrs[i].length() > 1) dir = 4;
+						if(strs[i].length() > 1) dir = 4;
 						turn(0, dir);
 					}
 					else{
-						int dir = cstrs[i].charAt(1) == '+' ? 2 : 3;
-						if(cstrs[i].charAt(0) == 'R'){
+						int dir = strs[i].charAt(1) == '+' ? 2 : 3;
+						if(strs[i].charAt(0) == 'R'){
 							bigTurn(0, dir);
 						}
-						else if(cstrs[i].charAt(0) == 'D'){
+						else if(strs[i].charAt(0) == 'D'){
 							bigTurn(1, dir);
 						}
 						else{
@@ -109,13 +96,13 @@ public class MegaminxScramble extends Scramble {
 				else{
 					int face = -1;
 					for(int ch = 0; ch < FACE_NAMES_COLORS[0].length; ch++) {
-						if(FACE_NAMES_COLORS[0][ch].equals(""+cstrs[i].charAt(0))) {
+						if(FACE_NAMES_COLORS[0][ch].equals(""+strs[i].charAt(0))) {
 							face = ch;
 							break;
 						}
 					}
 					if(face == -1) return false;
-					int dir = (cstrs[i].length() == 1 ? 1 : Integer.parseInt(cstrs[i].substring(1)));
+					int dir = (strs[i].length() == 1 ? 1 : Integer.parseInt(strs[i].substring(1)));
 					turn(face, dir);
 				}
 			}
@@ -142,6 +129,8 @@ public class MegaminxScramble extends Scramble {
 		{0,0,0,0,0,0, 0,0,0,0,0,1}};
 
 	private void generateScramble(){
+		scramble = "";
+		StringBuilder scram = new StringBuilder();
 		if(!pochmann){
 			int last = -1;
 			for(int i = 0; i < length; i++){
@@ -151,7 +140,8 @@ public class MegaminxScramble extends Scramble {
 				} while(last >= 0 && comm[side][last] != 0);
 				last = side;
 				int dir = random(4) + 1;
-				scramble += " " + FACE_NAMES_COLORS[0][side] + (dir != 1 ? dir : "");
+				scram.append(" ").append(FACE_NAMES_COLORS[0][side]);
+				if(dir != 1) scram.append(dir);
 
 				turn(side, dir);
 			}
@@ -162,21 +152,22 @@ public class MegaminxScramble extends Scramble {
 				for(int j = 0; i < length && j < 10; i++, j++){
 					int side = j % 2;
 					dir = random(2);
-					scramble += " " + ((side == 0) ? "R" : "D") + ((dir == 0) ? "++" : "--");
+					scram.append(" ").append((side == 0) ? "R" : "D").append((dir == 0) ? "++" : "--");
 					bigTurn(side, (dir == 0) ? 2 : 3);
 				}
 				dir = random(2);
 				/*
-				scramble += "Y" + ((dir == 0) ? "++ " : "-- ");
+				scram.append(" Y").append((dir == 0) ? "++" : "--");
 				bigTurn(1, (dir == 0) ? 2 : 3);
 				turn(0, (dir == 0) ? 3 : 2);
 				*/
-				scramble += " U" + ((dir == 0) ? "" : "'");
+				scram.append(" U");
+				if(dir != 0) scram.append("'");
 				turn(0, (dir == 0) ? 1 : 4);
 			}
 		}
-		if(!scramble.isEmpty())
-			scramble = scramble.substring(1);
+		if(scram.length() > 0)
+			scramble = scram.substring(1);
 	}
 
 	private void turn(int side, int dir){
