@@ -112,7 +112,7 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 	private String incrScramble;
 	private Scramble fullScramble;
 	private ScrambleCustomization currentCustomization;
-	private String part1, part2, part3;
+	private StringBuilder part1, part2, part3;
 	private int moveNum;
 	private String backgroundColor;
 	private static final Pattern NULL_SCRAMBLE_REGEX = Pattern.compile("^(.+)()$");
@@ -127,45 +127,44 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		}
 
 		Font font = Configuration.getFont(VariableKey.SCRAMBLE_FONT, false);
-		String fontStyle = ""; //$NON-NLS-1$
+		StringBuilder fontStyle = new StringBuilder(); //$NON-NLS-1$
 		if(font.isItalic())
-			fontStyle += "font-style: italic; "; //$NON-NLS-1$
+			fontStyle.append("font-style: italic; "); //$NON-NLS-1$
 		else if(font.isPlain())
-			fontStyle += "font-style: normal; "; //$NON-NLS-1$
+			fontStyle.append("font-style: normal; "); //$NON-NLS-1$
 		if(font.isBold())
-			fontStyle += "font-weight: bold; "; //$NON-NLS-1$
+			fontStyle.append("font-weight: bold; "); //$NON-NLS-1$
 		else
-			fontStyle += "font-weight: normal; "; //$NON-NLS-1$
+			fontStyle.append("font-weight: normal; "); //$NON-NLS-1$
 		
 		String selected = Utils.colorToString(Configuration.getColor(VariableKey.SCRAMBLE_SELECTED, false));
 		String unselected = Utils.colorToString(Configuration.getColor(VariableKey.SCRAMBLE_UNSELECTED, false));
-		part1 = "<html><head><style type=\"text/css\">" + //$NON-NLS-1$
-			"a { color: #" + unselected + "; text-decoration: none; }" + //$NON-NLS-1$
-			"a#"; //$NON-NLS-1$
-		part2 = " { color: #" + selected + "; }" + //$NON-NLS-1$
-			"span { font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "; " + fontStyle + "; }" + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			"sub { font-size: " + (font.getSize() / 2 + 1) + "; }" + //$NON-NLS-1$ //$NON-NLS-2$
-			"</style></head>"; //$NON-NLS-1$
-		part3 = "";
+		part1 = new StringBuilder("<html><head><style type=\"text/css\">") //$NON-NLS-1$
+			.append("a { color: #").append(unselected).append("; text-decoration: none; }") //$NON-NLS-1$ //$NON-NLS-2$
+			.append("a#"); //$NON-NLS-1$
+		part2 = new StringBuilder(" { color: #").append(selected).append("; }") //$NON-NLS-1$ //$NON-NLS-2$
+			.append("span { font-family: ").append(font.getFamily()).append("; font-size: ").append(font.getSize()).append("; ").append(fontStyle).append("; }") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			.append("sub { font-size: ").append(font.getSize() / 2 + 1).append("; }") //$NON-NLS-1$ //$NON-NLS-2$
+			.append("</style></head>"); //$NON-NLS-1$
+		part3 = new StringBuilder();
 		String s = currentScramble;
-		String plainScramble = ""; //$NON-NLS-1$
+		StringBuilder plainScramble = new StringBuilder();
 		Matcher m;
 		int num = 0;
 		Pattern regex = currentCustomization.getScramblePlugin().getTokenRegex();
 		if(regex == null || fullScramble == null)
 			regex = NULL_SCRAMBLE_REGEX;
 		
-		String description = ""; //$NON-NLS-1$
 		while((m = regex.matcher(s)).matches()){
 			String str = m.group(1).trim();
-			plainScramble += " " + str; //$NON-NLS-1$
-			description = num + plainScramble; //$NON-NLS-1$ //there already is a space at the beginning of plainScramble
-			part3 += "<a id='" + num + "' href=\"" + description + "\"><span>" + currentCustomization.getScramblePlugin().htmlify(" " + str) + "</span></a>"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+			plainScramble.append(" ").append(str); //$NON-NLS-1$
+			part3.append("<a id='").append(num).append("' href=\"").append(num).append(plainScramble).append("\"><span>").append(currentCustomization.getScramblePlugin().htmlify(" " + str)).append("</span></a>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 			s = m.group(2).trim();
 			num++;
 		}
-		part3 += "</body></html>"; //$NON-NLS-1$
+		part3.append("</body></html>"); //$NON-NLS-1$
 		scramblePane.setCaretPosition(0);
+		String description = (num - 1) + plainScramble.toString();
 		hyperlinkUpdate(new HyperlinkEvent(scramblePane, HyperlinkEvent.EventType.ACTIVATED, null, description));
 		setProperSize();
 		Container par = getParent();
@@ -184,7 +183,6 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 				moveNum = Integer.parseInt(moveAndScramble[0]);
 				incrScramble = moveAndScramble[1];
 			}
-			System.out.println("HYPER:" + incrScramble);
 			updateScramblePane();
 			Scramble s = null;
 			try {
@@ -206,7 +204,11 @@ public class ScrambleArea extends JScrollPane implements ComponentListener, Hype
 		String bgColor = "";
 		if(backgroundColor != null)
 			bgColor = " bgcolor='" + backgroundColor + "'";
-		scramblePane.setText(part1 + moveNum + part2 + "<body" + bgColor + ">" + part3);
+		StringBuilder temp = new StringBuilder();
+		temp.append(part1).append(moveNum).append(part2);
+		temp.append("<body").append(bgColor).append(">").append(part3); //$NON-NLS-1$ //$NON-NLS-2$
+
+		scramblePane.setText(temp.toString());
 		scramblePane.setCaretPosition(caretPos);
 	}
 
