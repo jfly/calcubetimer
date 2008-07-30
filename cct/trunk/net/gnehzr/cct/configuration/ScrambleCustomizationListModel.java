@@ -167,7 +167,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	private JPanel getGeneratorPanel(ScrambleCustomization sc) {
 		JPanel temp = new JPanel();
 		temp.setLayout(new BoxLayout(temp, BoxLayout.LINE_AXIS));
-		temp.add(generator = new JTextField(sc.getGenerator()));
+		temp.add(generator = new JTextField(sc.getGenerator(), 6));
 		generator.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 		disabledComponents = new ArrayList<Component>();
 		listenToContainer(temp);
