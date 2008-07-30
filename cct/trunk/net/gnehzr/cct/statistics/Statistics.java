@@ -518,12 +518,12 @@ public class Statistics implements ConfigurationChangeListener {
 		return true;
 	}
 
-	private ListIterator<SolveTime> getSublist(int a, int b) {
+	private List<SolveTime> getSublist(int a, int b) {
 		if(b > times.size())
 			b = times.size();
 		else if(b < 0)
 			b = 0;
-		return times.subList(a, b).listIterator();
+		return times.subList(a, b);
 	}
 
 	private List<SolveTime> getSublist(AverageType type, int num) {
@@ -558,9 +558,7 @@ public class Statistics implements ConfigurationChangeListener {
 	public SolveTime[] getBestAndWorstTimes(int a, int b) {
 		SolveTime best = SolveTime.WORST;
 		SolveTime worst = SolveTime.BEST;
-		ListIterator<SolveTime> iter = getSublist(a, b);
-		while(iter.hasNext()) {
-			SolveTime time = iter.next();
+		for(SolveTime time : getSublist(a, b)){
 			if(best.compareTo(time) >= 0)
 				best = time;
 			// the following should not be an else
@@ -588,28 +586,31 @@ public class Statistics implements ConfigurationChangeListener {
 		SolveTime[] bestAndWorst = ((type == AverageType.SESSION) ? new SolveTime[] {
 				null, null }
 				: getBestAndWorstTimes(type, num));
-		return toStatsStringHelper(getSublist(type, num).listIterator(), bestAndWorst[0],
+		return toStatsStringHelper(getSublist(type, num), bestAndWorst[0],
 				bestAndWorst[1], showSplits);
 	}
 
-	private String toStatsStringHelper(ListIterator<SolveTime> times,
+	private String toStatsStringHelper(List<SolveTime> times,
 			SolveTime best, SolveTime worst, boolean showSplits) {
-		if(!times.hasNext())
-			return ""; //$NON-NLS-1$
-		SolveTime next = times.next();
-		String comment = next.getComment();
-		if(!comment.isEmpty())
-			comment = "\t" + comment; //$NON-NLS-1$
-		boolean parens = false;
-		if(next == best || next == worst)
-			parens = true;
-		return times.nextIndex() + ".\t" + (parens ? "(" : "") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				+ next.toString() + (parens ? ")" : "") + "\t" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				+ next.getScramble()
-				+ (showSplits ? StringAccessor.getString("Statistics.splits") + next.toSplitsString() : "") //$NON-NLS-1$ //$NON-NLS-2$
-				+ comment
-				+ "\n" //$NON-NLS-1$
-				+ toStatsStringHelper(times, best, worst, showSplits);
+		StringBuilder ret = new StringBuilder();
+		int i = 0;
+		for(SolveTime next : times){
+			String comment = next.getComment();
+			if(!comment.isEmpty())
+				comment = "\t" + comment; //$NON-NLS-1$
+			boolean parens = next == best || next == worst;
+
+			ret.append(++i).append(".\t"); //$NON-NLS-1$
+			if(parens) ret.append("("); //$NON-NLS-1$
+			ret.append(next.toString());
+			if(parens) ret.append(")\t"); //$NON-NLS-1$
+			else ret.append("\t"); //$NON-NLS-1$
+			ret.append(next.getScramble());
+			if(showSplits) ret.append(StringAccessor.getString("Statistics.splits")).append(next.toSplitsString()); //$NON-NLS-1$
+			ret.append(comment);
+			ret.append("\n"); //$NON-NLS-1$
+		}
+		return ret.toString();
 	}
 
 	public String toTerseString(int n, int num) {
@@ -617,9 +618,9 @@ public class Statistics implements ConfigurationChangeListener {
 		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		SolveTime[] bestAndWorst = getBestAndWorstTimes(n, n + curRASize[num]);
-		ListIterator<SolveTime> list = getSublist(n, n + curRASize[num]);
-		if(!list.hasNext())
-			return "N/A";
+		List<SolveTime> list = getSublist(n, n + curRASize[num]);
+		if(list.size() == 0)
+			return "N/A"; //$NON-NLS-1$
 		
 		return toTerseStringHelper(list, bestAndWorst[0], bestAndWorst[1]);
 	}
@@ -632,16 +633,22 @@ public class Statistics implements ConfigurationChangeListener {
 		List<SolveTime> list = getSublist(type, num);
 		if(list.size() != curRASize[num])
 			return "N/A"; //$NON-NLS-1$
-		return toTerseStringHelper(list.listIterator(), bestAndWorst[0], bestAndWorst[1]);
+		return toTerseStringHelper(list, bestAndWorst[0], bestAndWorst[1]);
 	}
 
-	private String toTerseStringHelper(ListIterator<SolveTime> printMe,
+	private String toTerseStringHelper(List<SolveTime> printMe,
 			SolveTime best, SolveTime worst) {
-		SolveTime next = printMe.next();
-		return ((next == best || next == worst) ? "(" + next.toString() + ")" //$NON-NLS-1$ //$NON-NLS-2$
-				: next.toString())
-				+ (printMe.hasNext() ? ", " //$NON-NLS-1$
-						+ toTerseStringHelper(printMe, best, worst) : ""); //$NON-NLS-1$
+		StringBuilder ret = new StringBuilder();
+		String nextAppend = ""; //$NON-NLS-1$
+		for(SolveTime next : printMe){
+			ret.append(nextAppend);
+			boolean parens = next == best || next == worst;
+			if(parens) ret.append("("); //$NON-NLS-1$
+			ret.append(next.toString());
+			if(parens) ret.append(")"); //$NON-NLS-1$
+			nextAppend = ", "; //$NON-NLS-1$
+		}
+		return ret.toString();
 	}
 
 	public SolveTime standardDeviation(AverageType type, int num) {
