@@ -165,14 +165,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		tab = makeSundaySetupPanel();
 		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.sundaycontest/email"), tab); //$NON-NLS-1$
 
-		tab = makeSessionSetupPanel();
-		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.sessionstats"), tab); //$NON-NLS-1$
-
-		tab = makeBestRASetupPanel();
-		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.bestrastats"), tab); //$NON-NLS-1$
-
-		tab = makeCurrentAverageSetupPanel();
-		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.currrastats"), tab); //$NON-NLS-1$
+		tab = makeStatisticsPanels();
+		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.statistics"), tab); //$NON-NLS-1$
 		
 		tab = makePuzzleColorsPanel();
 		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.colors"), tab); //$NON-NLS-1$
@@ -834,6 +828,23 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			Utils.showErrorDialog(this, error.toString());
 		}
 	}
+	
+	private JPanel makeStatisticsPanels() {
+		JTabbedPane t = new JTabbedPane();
+		JComponent tab = makeSessionSetupPanel();
+		t.addTab(StringAccessor.getString("ConfigurationDialog.sessionstats"), tab); //$NON-NLS-1$
+		
+		tab = makeBestRASetupPanel();
+		t.addTab(StringAccessor.getString("ConfigurationDialog.bestrastats"), tab); //$NON-NLS-1$
+		
+		tab = makeCurrentAverageSetupPanel();
+		t.addTab(StringAccessor.getString("ConfigurationDialog.currrastats"), tab); //$NON-NLS-1$
+		
+		JPanel c = new JPanel(new BorderLayout());
+		c.add(t, BorderLayout.CENTER);
+		return c;
+	}
+	
 	
 	JTextAreaWithHistory sessionStats = null;
 	private JPanel makeSessionSetupPanel() {
