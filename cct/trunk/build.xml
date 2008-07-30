@@ -28,7 +28,13 @@
 		</delete>
 
 		<mkdir dir="${dist}"/>
-		<jar jarfile="${dist}/CALCubeTimer.jar" manifest="manifests/cct.mf" basedir="." includes="*.class">
+		<jar jarfile="${dist}/CALCubeTimer.jar" basedir="." includes="*.class">
+			<manifest>
+				<attribute name="Class-path" value="."/>
+				<attribute name="Sealed" value="true"/>
+				<attribute name="SplashScreen-Image" value="net/gnehzr/cct/main/battle.jpg"/>
+				<attribute name="Main-Class" value="net.gnehzr.cct.main.CALCubeTimer"/>
+			</manifest>
 			<fileset dir="." includes="net/**, say/**"/>
 			<zipfileset src="mailapi.jar" excludes="META-INF/MANIFEST.MF, META-INF/SUN_MICR.RSA, META-INF/SUN_MICR.SF"/>
 			<zipfileset src="smtp.jar" excludes="META-INF/MANIFEST.MF, META-INF/SUN_MICR.RSA, META-INF/SUN_MICR.SF"/>
