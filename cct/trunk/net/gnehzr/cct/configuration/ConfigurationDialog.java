@@ -272,6 +272,14 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		refreshDesktops = new JButton(StringAccessor.getString("ConfigurationDialog.refresh")); //$NON-NLS-1$
 		refreshDesktops.addActionListener(this);
 
+		DraggableJTable profilesTable = new DraggableJTable(true, false);
+		profilesTable.refreshStrings(StringAccessor.getString("ConfigurationDialog.addprofile")); //$NON-NLS-1$
+		profilesTable.getTableHeader().setReorderingAllowed(false);
+		profilesTable.setModel(profilesModel);
+		profilesTable.setDefaultEditor(Profile.class, new ProfileEditor(StringAccessor.getString("ConfigurationDialog.newprofile"), profilesModel)); //$NON-NLS-1$
+		JScrollPane profileScroller = new JScrollPane(profilesTable);
+		profileScroller.setPreferredSize(new Dimension(150, 0));
+		
 		DraggableJTable tagsTable = new DraggableJTable(true, false);
 		tagsTable.getTableHeader().setReorderingAllowed(false);
 		tagsModel = new SolveTypeTagEditorTableModel(tagsTable);
@@ -279,7 +287,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		tagsTable.setDefaultEditor(TypeAndName.class, tagsModel.editor);
 		tagsTable.setModel(tagsModel);
 		JScrollPane tagScroller = new JScrollPane(tagsTable);
-		tagScroller.setPreferredSize(new Dimension(0, 100));
+		tagScroller.setPreferredSize(new Dimension(100, 100));
 		
 		SyncGUIListener al = new SyncGUIListener() {
 			public void syncGUIWithConfig(boolean defaults) {
@@ -310,7 +318,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		return sideBySide(BoxLayout.PAGE_AXIS,
 				Box.createVerticalGlue(),
 				options,
-				sideBySide(BoxLayout.LINE_AXIS, desktopPanel, tagScroller, Box.createHorizontalGlue(), reset),
+				sideBySide(BoxLayout.LINE_AXIS, desktopPanel, profileScroller, tagScroller, Box.createHorizontalGlue(), reset),
 				Box.createVerticalGlue());
 	}
 
@@ -447,12 +455,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private JPanel makeScrambleTypeOptionsPanel() {
 		JPanel panel = new JPanel(new BorderLayout(10, 10));
 
-		DraggableJTable profilesTable = new DraggableJTable(true, false);
-		profilesTable.refreshStrings(StringAccessor.getString("ConfigurationDialog.addprofile")); //$NON-NLS-1$
-		profilesTable.getTableHeader().setReorderingAllowed(false);
-		profilesTable.setModel(profilesModel);
-		profilesTable.setDefaultEditor(Profile.class, new ProfileEditor(StringAccessor.getString("ConfigurationDialog.newprofile"), profilesModel)); //$NON-NLS-1$
-
 		DraggableJTable scramTable = new DraggableJTable(true, false);
 		scramTable.refreshStrings(StringAccessor.getString("ConfigurationDialog.addpuzzle")); //$NON-NLS-1$
 		scramTable.getTableHeader().setReorderingAllowed(false);
@@ -464,10 +466,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		scramTable.setDefaultEditor(String.class, puzzlesModel);
 		scramTable.setModel(puzzlesModel);
 
-		JScrollPane jsp = new JScrollPane(profilesTable);
-		jsp.setPreferredSize(new Dimension(150, 0));
-		panel.add(jsp, BorderLayout.LINE_START);
-		jsp = new JScrollPane(scramTable);
+		JScrollPane jsp = new JScrollPane(scramTable);
 		jsp.setPreferredSize(new Dimension(300, 0));
 		panel.add(jsp, BorderLayout.CENTER);
 		
