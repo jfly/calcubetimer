@@ -78,7 +78,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 	}
 	
 	public String getToolTipText(MouseEvent event) {
-		return model.getToolTip(convertRowIndexToModel(rowAtPoint(event.getPoint())));
+		return model.getToolTip(convertRowIndexToModel(rowAtPoint(event.getPoint())), convertColumnIndexToModel(columnAtPoint(event.getPoint())));
 	}
 
 	//this will refresh any draggablejtable specific strings
@@ -162,10 +162,10 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		public void insertValueAt(Object value, int rowIndex) {
 			wrapped.insertValueAt(value, rowIndex);
 		}
-		public String getToolTip(int rowIndex) {
+		public String getToolTip(int rowIndex, int columnIndex) {
 			if(rowIndex == wrapped.getRowCount())
 				return null;
-			return wrapped.getToolTip(rowIndex);
+			return wrapped.getToolTip(rowIndex, columnIndex);
 		}
 	}
 
@@ -311,7 +311,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			model = (DraggableJTableModel) tableModel;
 			model = new JTableModelWrapper(model);
 			super.setModel(model);
-			computePreferredSizes();
+			computePreferredSizes(null);
 			cols = new Vector<HideableTableColumn>();
 			for(int ch = 0; ch < getColumnCount(); ch++) {
 				cols.add(new HideableTableColumn(getColumnModel().getColumn(ch), true, ch, ch));
@@ -320,11 +320,11 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			super.setModel(tableModel);
 	}
 	
-	public void computePreferredSizes() {
+	public void computePreferredSizes(String value) {
 		TableColumnModel columns = this.getColumnModel();
 		if(addText == null) {
 			for(int ch = 0; ch < columns.getColumnCount(); ch++) {
-				columns.getColumn(ch).setPreferredWidth(getRendererPreferredSize(null, ch).width);
+				columns.getColumn(ch).setPreferredWidth(getRendererPreferredSize(value, ch).width);
 			}
 			return;
 		}

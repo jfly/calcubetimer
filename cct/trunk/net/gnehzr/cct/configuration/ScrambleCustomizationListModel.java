@@ -111,9 +111,6 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		}
 	}
 	public void showPopup(MouseEvent e, DraggableJTable source, Component prevFocusOwner) {}
-	public String getToolTip(int rowIndex) {
-		return null;
-	}
 
 	//******* Start of renderer/editor stuff ****************//
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {

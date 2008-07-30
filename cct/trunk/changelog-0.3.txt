@@ -228,6 +228,8 @@ changes:
 TODO:
 
 for release:
+-add profile chooser to bottom of configdialog
+-eclipse code formatting
 -generator groups for scramble plugins
 -multiple timers?
 -saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files?

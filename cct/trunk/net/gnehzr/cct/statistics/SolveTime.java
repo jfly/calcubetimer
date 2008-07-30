@@ -195,6 +195,9 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 				return t.toString();
 		return Utils.formatTime(secondsValue()) + (isType(SolveType.PLUS_TWO) ? "+" : "");
 	}
+	public String toUSString() {
+		return toUSFormatting(toString());
+	}
 	//this is for use by the database, and will save the raw time if the solve was a POP or DNF
 	public String toExternalizableString() {
 		String time = "" + (value() / 100.); //this must work for +2 and DNF

@@ -189,7 +189,7 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 	public void removeRows(int[] indices) {
 		deleteRows(indices);
 	}
-	public String getToolTip(int rowIndex) {
+	public String getToolTip(int rowIndex, int columnIndex) {
 		String t = getNthSession(rowIndex).getComment();
 		return t.isEmpty() ? null : t;
 	}

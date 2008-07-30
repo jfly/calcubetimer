@@ -120,7 +120,7 @@ public class StatisticsTableModel extends DraggableJTableModel implements Action
 	public void removeRows(int[] indices) {
 		deleteRows(indices);
 	}
-	public String getToolTip(int rowIndex) {
+	public String getToolTip(int rowIndex, int columnIndex) {
 		String t = stats.get(rowIndex).getComment();
 		return t.isEmpty() ? null : t;
 	}

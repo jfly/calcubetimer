@@ -42,9 +42,12 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
 
 import net.gnehzr.cct.misc.Utils;
+import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
+import net.gnehzr.cct.statistics.SolveTime;
+import net.gnehzr.cct.umts.cctbot.CCTUser;
 
 import org.jibble.pircbot.User;
 import org.jvnet.lafwidget.LafWidget;
@@ -55,11 +58,11 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	private static final boolean wrap = true;
 
 	private JEditorPane messagePane;
-	private JTable usersTable;
+	private DraggableJTable usersTable;
 	private CCTUserTableModel usersTableModel;
 	JTextField chatField;
 	private Element msgs;
-	private HTMLDocument doc;
+	HTMLDocument doc;
 	JScrollPane msgScroller;
 	private Font mono;
 	public MessageFrame(boolean userTable, boolean closeable, Icon icon) {
@@ -81,7 +84,11 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		
 		if(userTable) {
 			usersTableModel = new CCTUserTableModel();
-			usersTable = new JTable(usersTableModel);
+			usersTable = new DraggableJTable(false, true);
+			usersTable.setAutoCreateRowSorter(true);
+			usersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			usersTable.setModel(usersTableModel);
+			usersTable.computePreferredSizes(new SolveTime(60, null).toString());
 			usersTable.setFocusable(false);
 			JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, msgScroller, new JScrollPane(usersTable));
 			split.setResizeWeight(.8);
@@ -114,8 +121,17 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		});
 	}
 
-	public void setUsers(User[] users) {
+	public User[] getIRCUsers() {
+		return usersTableModel.getIRCUsers();
+	}
+	public void setIRCUsers(User[] users) {
 		usersTableModel.setIRCUsers(users);
+	}
+	public void setCCTUsers(CCTUser[] users) {
+		usersTableModel.setCCTUsers(users);
+	}
+	public void userUpdated() {
+		usersTableModel.mergeUserLists();
 	}
 	
 	public void keyPressed(KeyEvent e) {
@@ -402,6 +418,7 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	}
 	public void setConnectedToChannel(boolean isConnectedChan) {
 		this.isConnectedChan = isConnectedChan;
+		usersTable.setEnabled(isConnectedChan);
 	}
 	
 	public void resetMessagePane() {

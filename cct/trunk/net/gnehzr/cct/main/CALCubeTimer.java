@@ -137,6 +137,7 @@ import net.gnehzr.cct.statistics.StatisticsTableModel;
 import net.gnehzr.cct.statistics.UndoRedoListener;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
+import net.gnehzr.cct.umts.cctbot.CCTUser;
 import net.gnehzr.cct.umts.ircclient.IRCClientGUI;
 
 import org.jvnet.lafwidget.LafWidget;
@@ -645,6 +646,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			scramblesList.addScramble(stats.get(ch).getScramble());
 		scramblesList.setScrambleNumber(scramblesList.size() + 1);
 		scrambleChooser.setSelectedItem(s.getCustomization()); //this will update the scramble
+		sendUserstate();
 	}
 
 	public void sessionsDeleted() {
@@ -657,10 +659,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		Object source = e.getSource();
 		if(source == scrambleChooser && e.getStateChange() == ItemEvent.SELECTED) {
 			scramblesList.setScrambleCustomization((ScrambleCustomization) scrambleChooser.getSelectedItem());
+			//send current customization to irc, if connected
+			sendUserstate();
+			
 			//change current session's scramble customization
-			if(statsModel.getCurrentSession() != null) {
+			if(statsModel.getCurrentSession() != null)
 				statsModel.getCurrentSession().setCustomization(scramblesList.getScrambleCustomization().toString());
-			}
+			
 			//update new scramble generator
 			generator.setText(scramblesList.getScrambleCustomization().getGenerator());
 			generator.setVisible(scramblesList.getScrambleCustomization().getScramblePlugin().isGeneratorEnabled());
@@ -1272,8 +1277,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	private void repaintTimes() {
 		Statistics stats = statsModel.getCurrentStatistics();
-		sendAverage(stats.average(AverageType.CURRENT, 0).toString());
-		sendBestAverage(stats.average(AverageType.RA, 0).toString());
+		sendUserstate();
 		actionMap.get("currentaverage0").setEnabled(stats.isValid(AverageType.CURRENT, 0));
 		actionMap.get("bestaverage0").setEnabled(stats.isValid(AverageType.RA, 0));
 		actionMap.get("currentaverage1").setEnabled(stats.isValid(AverageType.CURRENT, 1));
@@ -1482,7 +1486,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	public void tableChanged(TableModelEvent e) {
 		final SolveTime latestTime = statsModel.getCurrentStatistics().get(-1);
 		if(latestTime != null)
-			sendTime(latestTime);
+			sendUserstate();
 		if(e != null && e.getType() == TableModelEvent.INSERT) {
 			ScrambleString curr = scramblesList.getCurrent();
 			latestTime.setScramble(curr.getScramble());
@@ -1513,28 +1517,44 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		repaintTimes();
 	}
 
-	private void sendCurrentTime(String s){
-		if(client != null && client.isConnected()){
-//			client.sendCurrentTime(s);
+	private boolean userStateDirty = false;
+	private Timer sendStateTimer = new Timer(1000, new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			if(!userStateDirty) return;
+			CCTUser myself = client.getMyUserstate();
+			myself.setCustomization(scrambleChooser.getSelectedItem().toString());
+			
+			myself.setLatestTime(statsModel.getCurrentStatistics().get(-1));
+			
+			String state;
+			if(isInspecting())
+				state = "Inspecting";
+			else if(timing)
+				state = timeLabel.getText();
+			else
+				state = "";
+			myself.setTimingState(state);
+			
+			Statistics stats = statsModel.getCurrentStatistics();
+			myself.setCurrentRA(stats.average(AverageType.CURRENT, 0), stats.toTerseString(AverageType.CURRENT, 0));
+			myself.setBestRA(stats.average(AverageType.RA, 0), stats.toTerseString(AverageType.RA, 0));
+			myself.setSessionAverage(new SolveTime(stats.getSessionAvg(), null));
+			
+			myself.setSolvesAttempts(stats.getSolveCount(), stats.getAttemptCount());
+			
+			myself.setRASize(stats.getRASize(0));
+			
+			client.broadcastUserstate();
+			userStateDirty = false;
 		}
-	}
-
-	private void sendTime(SolveTime s){
-		if(client != null && client.isConnected()){
-//			client.sendTime(s);
+	});
+	private void sendUserstate() {
+		if(client == null || !client.isConnected()) {
+			sendStateTimer.stop();
+			return;
 		}
-	}
-
-	private void sendAverage(String s) {
-		if(client != null && client.isConnected()) {
-//			client.sendAverage(s, statsModel.getCurrentStatistics());
-		}
-	}
-
-	private void sendBestAverage(String s) {
-		if(client != null && client.isConnected()) {
-//			client.sendBestAverage(s, statsModel.getCurrentStatistics());
-		}
+		if(!sendStateTimer.isRunning()) sendStateTimer.start();
+		userStateDirty = true;
 	}
 
 	private void loadXMLGUI() {
@@ -1592,7 +1612,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		actionMap.get("togglehidescrambles").putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false));
 		actionMap.get("togglespacebarstartstimer").putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false));
 		actionMap.get("togglefullscreen").putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false));
-		profiles.setModel(new DefaultComboBoxModel(Configuration.getProfiles().toArray(new Profile[0])));
+		DefaultComboBoxModel profs = new DefaultComboBoxModel(Configuration.getProfiles().toArray(new Profile[0]));
+		profs.addElement("Edit profiles");
+		profiles.setModel(profs);
 		safeSelectItem(profiles, Configuration.getSelectedProfile());
 		languages.setSelectedItem(Configuration.getDefaultLocale()); //this will force an update of the xml gui
 		updateWatermark();
@@ -1812,6 +1834,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	public void inspectionStarted() {
 		inspectionStart = System.currentTimeMillis();
 		updateInspectionTimer.start();
+		sendUserstate();
 	}
 	private void stopInspection() {
 		inspectionStart = 0;
@@ -1848,15 +1871,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if(!isInspecting()) {
 			timeLabel.setTime(newTime);
 			bigTimersDisplay.setTime(newTime);
-//			boolean reset = false;
-//			if(!reset) //TODO - test out on server!
-			sendCurrentTime(newTime.toString());
+			sendUserstate();
 		}
 	}
 
 	//I guess we could add an option to prompt the user to see if they want to keep this time
 	public void timerAccidentlyReset(TimerState lastTimeRead) {
 		penalty = null;
+		timing = false;
+		sendUserstate();
 	}
 
 	public void refreshDisplay(TimerState currTime) {
@@ -1867,20 +1890,25 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		addSplit(newSplit);
 	}
 
+	private boolean timing = false;
 	public void timerStarted() {
+		timing = true;
 		stopInspection();
 		if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false))
 			setFullScreen(true);
 		if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false))
 			startMetronome();
+		sendUserstate();
 	}
 
 	public void timerStopped(TimerState newTime) {
+		timing = false;
 		addTime(newTime);
 		if(Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false))
 			setFullScreen(false);
 		if(Configuration.getBoolean(VariableKey.METRONOME_ENABLED, false))
 			stopMetronome();
+		sendUserstate();
 	}
 
 	public void stackmatOn(boolean on) {
