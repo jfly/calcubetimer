@@ -103,18 +103,20 @@ public class CCTUser {
 	}
 	
 	private String solveTimeToString(SolveTime t) {
-		if(t == null) return "";
-		return t.toUSString();
+		return t == null ? "" : t.toUSString();
+	}
+	private String stringToString(String c) {
+		return c == null ? "": c;
 	}
 	public String getUserState() {
 		return solveTimeToString(lastTime) + USERSTATE_DELIMETER +
 				solveTimeToString(seshAverage) + USERSTATE_DELIMETER + 
 				solveTimeToString(currRA) + USERSTATE_DELIMETER + 
 				solveTimeToString(bestRA) + USERSTATE_DELIMETER + 
-				timingState + USERSTATE_DELIMETER +
+				stringToString(timingState) + USERSTATE_DELIMETER +
 				solves + USERSTATE_DELIMETER +
 				attempts + USERSTATE_DELIMETER +
-				customization + USERSTATE_DELIMETER +
+				stringToString(customization) + USERSTATE_DELIMETER +
 				raSize;
 	}
 	
