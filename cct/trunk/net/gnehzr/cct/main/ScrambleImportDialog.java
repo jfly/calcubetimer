@@ -182,39 +182,36 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 			fontStyle += "font-weight: bold; "; //$NON-NLS-1$
 		else
 			fontStyle += "font-weight: normal; "; //$NON-NLS-1$
-		String validationString = "<html><head><style type=\"text/css\">" + //$NON-NLS-1$
-			"span {text-align: center; font-family: " + font.getFamily() + "; font-size: " + font.getSize() + "; " + fontStyle + ";}" + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			"span#green {color: green;}" + //$NON-NLS-1$
-			"span#red {color: red;}" + //$NON-NLS-1$
-			"</style></head><body>"; //$NON-NLS-1$
+		StringBuilder validationString = new StringBuilder("<html><head><style type=\"text/css\">") //$NON-NLS-1$
+			.append("span {text-align: center; font-family: ").append(font.getFamily()).append("; font-size: ").append(font.getSize()).append("; ") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			.append(fontStyle).append(";}") //$NON-NLS-1$
+			.append("span.green {color: green;}") //$NON-NLS-1$
+			.append("span.red {color: red;}") //$NON-NLS-1$
+			.append("</style></head><body>"); //$NON-NLS-1$
 		String[] importedScrams = scrambles.getText().split("\n", -1); //-1 allows for trailing \n //$NON-NLS-1$
 		boolean perfect = true;
 		boolean empty = true;
 		int scramNumber = 1;
 		scrams.clear();
 		for(int ch = 0; ch < importedScrams.length; ch++) {
-			boolean valid = false;
 			if(!importedScrams[ch].trim().isEmpty()) {
 				empty = false;
 				try {
 					scrams.add(sc.generateScramble(importedScrams[ch]));
-					valid = true;
-				} catch (InvalidScrambleException e) {}
-				perfect = perfect && valid;
-				if(valid) {
-					validationString += "<span id=\"green\">O";				 //$NON-NLS-1$
-				} else {
-					validationString += "<span id=\"red\">X"; //$NON-NLS-1$
+					validationString.append("<span class=\"green\">O"); //$NON-NLS-1$
+				} catch (InvalidScrambleException e) {
+					perfect = false;
+					validationString.append("<span class=\"red\">X"); //$NON-NLS-1$
 				}
-				validationString += " " + scramNumber + ". "; //$NON-NLS-1$ //$NON-NLS-2$
+				validationString.append(" ").append(scramNumber).append(". "); //$NON-NLS-1$ //$NON-NLS-2$
 				scramNumber++;
 			} else {
-				validationString += "<span>"; //$NON-NLS-1$
+				validationString.append("<span>"); //$NON-NLS-1$
 			}
-			validationString += "<br></span>"; //$NON-NLS-1$
+			validationString.append("<br></span>"); //$NON-NLS-1$
 		}
-		validationString += "</body></html>"; //$NON-NLS-1$
-		qualityControl.setText(validationString);
+		validationString.append("</body></html>"); //$NON-NLS-1$
+		qualityControl.setText(validationString.toString());
 		importButton.setEnabled(perfect && !empty);
 		validate();
 	}
