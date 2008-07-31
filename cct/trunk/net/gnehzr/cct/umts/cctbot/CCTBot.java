@@ -3,6 +3,7 @@ package net.gnehzr.cct.umts.cctbot;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
@@ -16,6 +17,7 @@ public class CCTBot extends PircBot {
 	//TODO - some way to get the bot to join other channels? easy, but risky...
 	//TODO - query for scrambles
 	//TODO - add generator support
+	//TODO - refresh scramble plugins
 	public CCTBot() {}
 	
 	//max message length: 470 characters
@@ -29,12 +31,12 @@ public class CCTBot extends PircBot {
 					count = Integer.parseInt(varAndCount[1]);
 				} catch(NumberFormatException e) {}
 			}
-			
+
 			ScrambleVariation variation = ScramblePlugin.getBestMatchVariation(varAndCount[0]);
 			if(variation != null) {
 				while(count-- > 0) {
 					String msg = variation.generateScramble().toString().trim();
-					String prefix = "cct://#" + count + ":" + variation.toString() + ":";;
+					String prefix = "cct://#" + count + ":" + variation.toString() + ":";
 					String fragmentation = "cct://*#" + count + ":" + variation.toString() + ":";
 					while(msg.length() > 0) {
 						int length = Math.min(msg.length(), MAX_MESSAGE - prefix.length());
@@ -44,7 +46,8 @@ public class CCTBot extends PircBot {
 					}
 				}
 			} else
-				sendMessage(channel, "Couldn't find scramble variation corresponding to: " + variation);
+				sendMessage(channel, "Couldn't find scramble variation corresponding to: " + varAndCount[0] + ". " +
+						"Available variations: " + Arrays.toString(ScramblePlugin.getScrambleVariations()));
 		}
 	}
 	
