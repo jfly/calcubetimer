@@ -61,6 +61,7 @@ import net.gnehzr.cct.umts.cctbot.CCTUser.InvalidUserStateException;
 import net.gnehzr.cct.umts.ircclient.MessageFrame.CommandListener;
 
 import org.jibble.pircbot.PircBot;
+import org.jibble.pircbot.ReplyConstants;
 import org.jibble.pircbot.User;
 import org.jvnet.substance.SubstanceLookAndFeel;
 
@@ -825,6 +826,22 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		}
 	}
 	private HashMap<String, CCTChannel> channelMap = new HashMap<String, CCTChannel>();
+	
+	protected void onServerResponse(int code, String response) {
+		if(code == ReplyConstants.ERR_CANNOTSENDTOCHAN) {
+			final String[] nick_chan_msg = response.split(" ", 3);
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					if(!channelMap.get(nick_chan_msg[1]).isCommChannel()) {
+						//this means we've been silenced on a comm channel,
+						//we'll have to try to connect to a differenct channel
+						partChannel(nick_chan_msg[1]);
+					} else
+						channelFrames.get(nick_chan_msg[1]).appendError(nick_chan_msg[2]);
+				}
+			});
+		}
+	}
 	
 	//TODO - deal w/ getting silenced
 	private void joinedChannel(String chan) {
