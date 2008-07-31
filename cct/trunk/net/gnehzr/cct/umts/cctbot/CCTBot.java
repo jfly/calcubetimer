@@ -1,6 +1,8 @@
 package net.gnehzr.cct.umts.cctbot;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
@@ -9,7 +11,9 @@ import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
 import org.jibble.pircbot.PircBot;
 
-public class CCTBot extends PircBot {	
+public class CCTBot extends PircBot {
+	//TODO - some sort of logging mechanism might be nice here - log4j?
+	//TODO - some way to get the bot to join other channels? easy, but risky...
 	public CCTBot() {}
 	
 	//max message length: 470 characters
@@ -42,6 +46,10 @@ public class CCTBot extends PircBot {
 		}
 	}
 	
+	public void log(String line) {
+		System.out.println(line);
+	}
+	
 	protected void onDisconnect() {
 		while(!isConnected()) {
 		    try {
@@ -56,15 +64,41 @@ public class CCTBot extends PircBot {
 		}
 	}
 
+	private static void printUsage() {
+		System.out.println("USAGE: CCTBot irc://servername.tld(:port)#channel");
+	}
+	
 	public static void main(String[] args) {
+		if(args.length != 1) {
+			printUsage();
+			return;
+		}
+		URI u = null;
+		try {
+			u = new URI(args[0]);
+		} catch(URISyntaxException e1) {
+			System.out.println("Invalid URI");
+			printUsage();
+			e1.printStackTrace();
+			return;
+		}
+		if(u.getFragment() == null) {
+			System.out.println("No channel specified");
+			printUsage();
+			return;
+		}
+		
 		CCTBot cctbot = new CCTBot();
 		cctbot.setLogin("cctbot");
 		cctbot.setName("cctbot");
 		cctbot.setAutoNickChange(true);
 		cctbot.setVersion("CCTBot version " + VERSION);
 		try {
-			cctbot.connect("localhost", 6667);
-			cctbot.joinChannel("#hiya");
+			if(u.getPort() == -1)
+				cctbot.connect(u.getHost());
+			else
+				cctbot.connect(u.getHost(), u.getPort());
+			cctbot.joinChannel("#" + u.getFragment());
 		} catch (NickAlreadyInUseException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
