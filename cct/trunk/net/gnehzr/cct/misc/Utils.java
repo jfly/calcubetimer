@@ -3,6 +3,9 @@ package net.gnehzr.cct.misc;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Window;
+import java.io.CharArrayWriter;
+import java.io.PrintWriter;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
@@ -104,9 +107,27 @@ public class Utils {
 		String[] ok = new String[] { StringAccessor.getString("Utils.ok") };
 		return JOptionPane.showOptionDialog(c, message, StringAccessor.getString("Utils.warning"), JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE, null, ok, ok[0]);
 	}
-	public static int showErrorDialog(Component c, String message) {
-		String[] ok = new String[] { StringAccessor.getString("Utils.ok") };
-		return JOptionPane.showOptionDialog(c, message, StringAccessor.getString("Utils.error"), JOptionPane.OK_OPTION, JOptionPane.ERROR_MESSAGE, null, ok, ok[0]);
+
+	public static void showErrorDialog(Window c, String s) {
+		showErrorDialog(c, null, s);
+	}
+	public static void showErrorDialog(Window c, Throwable e) {
+		showErrorDialog(c, e, null);
+	}
+	public static void showErrorDialog(Window w, Throwable e, String message) {
+		//		String[] ok = new String[] { StringAccessor.getString("Utils.ok") };
+		StringBuilder msg = new StringBuilder();
+		if(message != null)
+			msg.append(message).append("\n");
+		if(e != null) {
+			CharArrayWriter caw = new CharArrayWriter();
+			e.printStackTrace(new PrintWriter(caw));
+			msg.append(caw.toString());
+		}
+		new DialogWithDetails(w, StringAccessor.getString("Utils.error"), message, msg.toString()).setVisible(true);
+		//		return JOptionPane.showOptionDialog(w, msg, StringAccessor.getString("Utils.error"), JOptionPane.OK_OPTION,
+		//				JOptionPane.ERROR_MESSAGE, null,
+		//				ok, ok[0]);
 	}
 	public static int showYesNoDialog(Component c, String message) {
 		String[] yesNo = new String[] { StringAccessor.getString("Utils.yes"), StringAccessor.getString("Utils.no") };

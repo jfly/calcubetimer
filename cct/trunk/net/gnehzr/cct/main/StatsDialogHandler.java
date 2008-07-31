@@ -147,7 +147,7 @@ public class StatsDialogHandler extends JDialog implements ActionListener, Chang
 						StringAccessor.getString("StatsDialogHandler.successmessage") + //$NON-NLS-1$
 						outputFile.getAbsolutePath());
 			} catch(Exception e) {
-				Utils.showErrorDialog(this, e.getMessage());
+				Utils.showErrorDialog(this, e);
 			} finally {
 				out.close();
 			}

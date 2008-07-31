@@ -127,7 +127,7 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 			try {
 				url = new URI(urlField.getSelectedItem().toString()).toURL();
 			} catch(Exception ee) {
-				Utils.showErrorDialog(this, ee.getMessage() + "\n" + StringAccessor.getString("ScrambleImportDialog.badname")); //$NON-NLS-1$ //$NON-NLS-2$
+				Utils.showErrorDialog(this, ee, StringAccessor.getString("ScrambleImportDialog.badname")); //$NON-NLS-1$ //$NON-NLS-2$
 				return;
 			}
 			try {
@@ -140,12 +140,12 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 				in.close();
 				urlField.commitCurrentItem();
 			} catch(ConnectException ee) {
-				Utils.showErrorDialog(this, StringAccessor.getString("ScrambleImportDialog.connectionrefused"));
+				Utils.showErrorDialog(this, ee, StringAccessor.getString("ScrambleImportDialog.connectionrefused"));
 			} catch(FileNotFoundException ee) {
-				Utils.showErrorDialog(this, url + "\n" + StringAccessor.getString("ScrambleImportDialog.notfound"));
+				Utils.showErrorDialog(this, ee, url + "\n" + StringAccessor.getString("ScrambleImportDialog.notfound"));
 			} catch(Exception ee) {
 				ee.printStackTrace();
-				Utils.showErrorDialog(this, ee.toString());
+				Utils.showErrorDialog(this, ee);
 			}
 		} else if(source == importButton) {
 			cct.importScrambles(getSelectedCustomization(), scrams);

@@ -1671,7 +1671,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			URI uri = Configuration.documentationFile.toURI();
 			Desktop.getDesktop().browse(uri);
 		} catch(Exception error) {
-			Utils.showErrorDialog(this, error.toString());
+			Utils.showErrorDialog(this, error);
 		}
 	}
 

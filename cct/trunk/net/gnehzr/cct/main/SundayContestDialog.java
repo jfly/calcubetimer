@@ -265,7 +265,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 				DialogWithDetails dwd = new DialogWithDetails(this, StringAccessor.getString("SundayContestDialog.serverresponse") + ": " + url, "<html>" + result[0] + "</html>", result[1]);
 				dwd.setVisible(true);
 			} catch (IOException e1) {
-				Utils.showErrorDialog(this, e1.getLocalizedMessage());
+				Utils.showErrorDialog(this, e1);
 				e1.printStackTrace();
 			}
 		} else if(source == doneButton) {

@@ -1,11 +1,12 @@
 package net.gnehzr.cct.misc;
 
 import java.awt.BorderLayout;
-import java.awt.Dialog;
+import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -13,50 +14,56 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import net.gnehzr.cct.i18n.StringAccessor;
+import net.gnehzr.cct.main.CALCubeTimer;
+
 import org.jvnet.lafwidget.LafWidget;
+import org.jvnet.substance.SubstanceLookAndFeel;
 
 public class DialogWithDetails extends JDialog implements ActionListener {
-	private JButton detailsButton;
+	private JButton copy, ok;
 	private JScrollPane detailsPane;
-	private boolean detailed = false;
-	public DialogWithDetails(Dialog d, String title, String message, String details) {
-		super(d, title, true);
+	private String details;
+
+	public DialogWithDetails(Window w, String title, String message, String details) {
+		super(w, title, ModalityType.DOCUMENT_MODAL);
+		initializeGUI(message, details);
+	}
+
+	private void initializeGUI(String message, String details) {
+		this.details = details;
 		JPanel pane = new JPanel(new BorderLayout());
 		setContentPane(pane);
 		
-		JPanel t = new JPanel();
-		t.setLayout(new BoxLayout(t, BoxLayout.LINE_AXIS));
-		JLabel msg = new JLabel(message);
-		msg.setAlignmentY(1.0f);
-		detailsButton = new JButton();
-		detailsButton.addActionListener(this);
-		detailsButton.setAlignmentY(1.0f);
-		t.add(msg);
-		t.add(detailsButton);
-		pane.add(t, BorderLayout.PAGE_START);
-		
-		JTextArea detailsArea = new JTextArea(details, 15, 30);
+		JTextArea detailsArea = new JTextArea(CALCubeTimer.CCT_VERSION + "\n" + details, 15, 30);
 		detailsArea.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
+		detailsArea.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.FALSE);
 //		detailsArea.setLineWrap(true);
 		detailsPane = new JScrollPane(detailsArea);
 		detailsArea.setEditable(false);
 		
-		refresh();
+		copy = new JButton(StringAccessor.getString("Utils.copy"));
+		copy.addActionListener(this);
+		ok = new JButton(StringAccessor.getString("Utils.ok"));
+		ok.addActionListener(this);
+		JPanel copy_ok = new JPanel();
+		copy_ok.add(copy);
+		copy_ok.add(ok);
+		
+		pane.add(new JLabel(message), BorderLayout.PAGE_START);
+		pane.add(detailsPane, BorderLayout.CENTER);
+		pane.add(copy_ok, BorderLayout.PAGE_END);
+		
 		pack();
-		setLocationRelativeTo(d);
+		setLocationRelativeTo(getOwner());
 	}
+
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == detailsButton) {
-			detailed = !detailed;
-			refresh();
-		}
-	}
-	private void refresh() {
-		detailsButton.setText("Details " + (detailed ? "<<" : ">>"));
-		if(detailed)
-			getContentPane().add(detailsPane, BorderLayout.CENTER);
-		else
-			getContentPane().remove(detailsPane);
-		pack();
+		Object source = e.getSource();
+		if(source == copy) {
+			StringSelection ss = new StringSelection(details);
+			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(ss, null);
+		} else if(source == ok)
+			setVisible(false);
 	}
 }

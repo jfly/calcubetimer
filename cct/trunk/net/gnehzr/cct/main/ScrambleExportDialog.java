@@ -99,7 +99,7 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 			try {
 				file = new URI(urlField.getText()).toURL();
 			} catch (Exception e1) {
-				Utils.showErrorDialog(this, e1.getMessage() + "\n" + StringAccessor.getString("ScrambleExportDialog.badfilename"));
+				Utils.showErrorDialog(this, e1, StringAccessor.getString("ScrambleExportDialog.badfilename"));
 				return;
 			}
 			if(exportScramblesToHTML(file, getNumberOfScrambles(), getVariation()))
@@ -109,7 +109,7 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 			try {
 				file = new URI(urlField.getText()).toURL();
 			} catch (Exception e1) {
-				Utils.showErrorDialog(this, e1.getMessage() + "\n" + StringAccessor.getString("ScrambleExportDialog.badfilename"));
+				Utils.showErrorDialog(this, e1, StringAccessor.getString("ScrambleExportDialog.badfilename"));
 				return;
 			}
 			if(exportScrambles(file, getNumberOfScrambles(), getVariation()))
@@ -141,7 +141,7 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 			out.close();
 			Utils.showConfirmDialog(this, StringAccessor.getString("ScrambleExportDialog.successmessage") + "\n" + outputFile.getPath());
 		} catch(Exception e) {
-			Utils.showErrorDialog(this, e.toString());
+			Utils.showErrorDialog(this, e);
 			return false;
 		}
 		return true;
@@ -153,7 +153,7 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 			htmlFile = new File(outputFile.toURI());
 		} catch (URISyntaxException e1) {
 			e1.printStackTrace();
-			Utils.showErrorDialog(this, e1.toString());
+			Utils.showErrorDialog(this, e1);
 			return false;
 		}
 		File imageDir = new File(htmlFile.getParentFile(), htmlFile.getName() + ".files");
@@ -189,7 +189,7 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 			Utils.showConfirmDialog(this, StringAccessor.getString("ScrambleExportDialog.successmessage") + "\n" + outputFile.getPath());
 		} catch(Exception e) {
 			e.printStackTrace();
-			Utils.showErrorDialog(this, e.toString());
+			Utils.showErrorDialog(this, e);
 			return false;
 		}
 		return true;
