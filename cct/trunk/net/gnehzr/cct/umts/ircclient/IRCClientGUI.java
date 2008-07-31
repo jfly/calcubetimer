@@ -693,19 +693,25 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			}
 		});
 	}
-	protected void onPart(final String channel, final String sender, String login, String hostname) {
+	protected void onPart(String channel, String sender, String login, String hostname) {
+		generalizedLeftChannel(channel, sender, false);
+	}
+	protected void onKick(String channel, String kickerNick, String kickerLogin, String kickerHostname, String recipientNick, String reason) {
+		generalizedLeftChannel(channel, recipientNick, true);
+	}
+	private void generalizedLeftChannel(final String channel, final String user, final boolean kicked) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				MessageFrame f = channelFrames.get(channel);
-				if(sender.equals(getNick())) {
+				if(user.equals(getNick())) {
 					leftChannel(channel);
 					if(f == null) return; //this happens when the users clicks the close button
-					f.appendInformation("You have left " + channel);
+					f.appendInformation(kicked ? "You have been kicked from " + channel : "You have left " + channel);
 					f.setConnectedToChannel(false);
 				} else {
-					userLeft(channel, sender);
+					userLeft(channel, user);
 					if(f != null) {
-						f.appendInformation(sender + " has left " + channel);
+						f.appendInformation(kicked ? user + " has been kicked from " + channel : user + " has left " + channel);
 						f.setIRCUsers(getUsers(channel));
 					}
 				}
@@ -843,13 +849,13 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		}
 	}
 	
-	//TODO - deal w/ getting silenced
 	private void joinedChannel(String chan) {
 		CCTChannel otherChannel = channelMap.get(chan);
 		if(otherChannel == null) {
 			CCTChannel channel = new CCTChannel(chan, false);
 			otherChannel = new CCTChannel(chan + "-cct", true);
 			joinChannel(otherChannel.getChannel());
+			verifyCommChannels.start(); //this will check in 1 second to see if we've connected to the channel
 			channelMap.put(channel.getChannel(), otherChannel);
 			channelMap.put(otherChannel.getChannel(), channel);
 		} else if(!otherChannel.isCommChannel()) {
@@ -865,11 +871,12 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	//this timer will check every 1 second for unconnected comm channels
 	private Timer verifyCommChannels = new Timer(1000, new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
+			boolean alliswell = true;
 			for(CCTChannel chatChannel : new ArrayList<CCTChannel>(channelMap.values())) {
 				if(!chatChannel.isCommChannel()) {
 					CCTChannel commChannel = channelMap.get(chatChannel.getChannel());
 					if(commChannel != null && !isConnectedToChannel(commChannel.getChannel())) {
-						
+						alliswell = false;
 						channelMap.remove(commChannel.getChannel());
 						commChannel.addAttempt();
 						chatChannel.users.clear(); //need to force the cctusers list to update
@@ -879,13 +886,17 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 					}
 				}
 			}
+			if(alliswell)
+				verifyCommChannels.stop();
 		}
 	});
-	{verifyCommChannels.start();} //TODO - come up with better start/stop times
-	
 	private void leftChannel(String chan) {
 		CCTChannel otherChannel = channelMap.get(chan);
-		if(otherChannel != null) {
+		
+		if(otherChannel == null) {
+		} else if(!otherChannel.isCommChannel()) { //this means we parted/kicked from a comm channel
+			verifyCommChannels.start();
+		} else { //otherchannel is a comm channel
 			channelMap.remove(chan);
 			channelMap.remove(otherChannel);
 			if(otherChannel.isCommChannel()) {
