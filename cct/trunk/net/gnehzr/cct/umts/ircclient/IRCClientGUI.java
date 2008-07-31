@@ -25,6 +25,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
@@ -843,7 +844,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			return users == null;
 		}
 		public int hashCode() {
-			return channelName.hashCode();
+			return getChannel().hashCode();
 		}
 		public boolean equals(Object obj) {
 			if(obj instanceof CCTChannel) {
@@ -851,6 +852,9 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 				return getChannel().equals(o.getChannel());
 			}
 			return false;
+		}
+		public String toString() {
+			return getChannel();
 		}
 	}
 	private HashMap<String, CCTChannel> channelMap = new HashMap<String, CCTChannel>();
@@ -920,7 +924,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			verifyCommChannels.start();
 		} else { //otherchannel is a comm channel
 			channelMap.remove(chan);
-			channelMap.remove(otherChannel);
+			channelMap.remove(otherChannel.getChannel());
 			if(otherChannel.isCommChannel()) {
 				partChannel(otherChannel.getChannel(), "Also left " + chan);
 			}
