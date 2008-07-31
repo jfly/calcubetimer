@@ -115,7 +115,6 @@ public class Utils {
 		showErrorDialog(c, e, null);
 	}
 	public static void showErrorDialog(Window w, Throwable e, String message) {
-		//		String[] ok = new String[] { StringAccessor.getString("Utils.ok") };
 		StringBuilder msg = new StringBuilder();
 		if(message != null)
 			msg.append(message).append("\n");
@@ -125,9 +124,6 @@ public class Utils {
 			msg.append(caw.toString());
 		}
 		new DialogWithDetails(w, StringAccessor.getString("Utils.error"), message, msg.toString()).setVisible(true);
-		//		return JOptionPane.showOptionDialog(w, msg, StringAccessor.getString("Utils.error"), JOptionPane.OK_OPTION,
-		//				JOptionPane.ERROR_MESSAGE, null,
-		//				ok, ok[0]);
 	}
 	public static int showYesNoDialog(Component c, String message) {
 		String[] yesNo = new String[] { StringAccessor.getString("Utils.yes"), StringAccessor.getString("Utils.no") };

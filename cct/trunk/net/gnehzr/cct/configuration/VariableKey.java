@@ -58,7 +58,6 @@ public class VariableKey<H> {
 	}
 	
 	public static final VariableKey<String> IRC_NAME = new VariableKey<String>("IRC_name"); //$NON-NLS-1$
-	public static final VariableKey<String> IRC_EMAIL = new VariableKey<String>("IRC_email"); //$NON-NLS-1$
 	public static final VariableKey<String> IRC_NICK = new VariableKey<String>("IRC_nick"); //$NON-NLS-1$
 	public static final VariableKey<String> LANGUAGE = new VariableKey<String>("GUI_I18N_language"); //$NON-NLS-1$
 	public static final VariableKey<String> REGION = new VariableKey<String>("GUI_I18N_region"); //$NON-NLS-1$

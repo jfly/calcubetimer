@@ -574,7 +574,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	JPasswordField password = null;
 	JCheckBox useSMTPServer;
 	JCheckBox showEmail = null;
-	JTextField ircname, ircemail, ircnick;
+	JTextField ircname, ircnick;
 	private JPanel emailOptions;
 	private JPanel makeSundaySetupPanel() {
 		JPanel sundayOptions = new JPanel(new GridBagLayout());
@@ -646,7 +646,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.ipady = 5;
 		
 		ircname = new JTextField(18);
-		ircemail = new JTextField(18);
 		ircnick = new JTextField(18);
 		
 		c.weightx = 0;
@@ -657,15 +656,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridx = 1;
 		c.gridy = 0;
 		ircOptions.add(ircname, c);
-
-		c.weightx = 0;
-		c.gridx = 0;
-		c.gridy = 1;
-		ircOptions.add(new JLabel(StringAccessor.getString("ConfigurationDialog.ircemail")), c);
-		c.weightx = 1;
-		c.gridx = 1;
-		c.gridy = 1;
-		ircOptions.add(ircemail, c);
 
 		c.weightx = 0;
 		c.gridx = 0;
@@ -779,7 +769,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 				password.setText(Configuration.getString(VariableKey.SMTP_PASSWORD, defaults));
 				password.setEnabled(SMTPauth.isSelected());
 				showEmail.setSelected(Configuration.getBoolean(VariableKey.SHOW_EMAIL, defaults));
-				ircemail.setText(Configuration.getString(VariableKey.IRC_EMAIL, defaults));
 				ircname.setText(Configuration.getString(VariableKey.IRC_NAME, defaults));
 				ircnick.setText(Configuration.getString(VariableKey.IRC_NICK, defaults));
 			}
@@ -1156,7 +1145,6 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		Configuration.setBoolean(VariableKey.SMTP_ENABLED, useSMTPServer.isSelected());
 		Configuration.setString(VariableKey.SMTP_FROM_ADDRESS, smtpEmailAddress.getText());
 		
-		Configuration.setString(VariableKey.IRC_EMAIL, ircemail.getText());
 		Configuration.setString(VariableKey.IRC_NAME, ircname.getText());
 		Configuration.setString(VariableKey.IRC_NICK, ircnick.getText());
 

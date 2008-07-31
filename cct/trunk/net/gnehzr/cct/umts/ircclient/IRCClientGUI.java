@@ -79,8 +79,6 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	// TODO - save gui state to configuration
 	// TODO - how to save state of the user tables for each message frame?
 	// synchronize them somehow?
-	// TODO - is it ok to remove irc email stuff?
-	// TODO - don't log privmsgs?
 
 	JDesktopPane desk;
 	JInternalFrame login;
@@ -432,7 +430,6 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	}
 
 	JTextField name;
-	private JTextField email;
 	JTextField nick;
 	URLHistoryBox server;
 	JButton connect;
@@ -452,15 +449,6 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		c.gridy = 0;
 		c.weightx = 1;
 		login.add(name = new JTextField(Configuration.getString(VariableKey.IRC_NAME, false), 20), c);
-
-		c.gridx = 0;
-		c.gridy = 1;
-		c.weightx = 0;
-		login.add(new JLabel("Email"), c);
-		c.gridx = 1;
-		c.gridy = 1;
-		c.weightx = 1;
-		login.add(email = new JTextField(Configuration.getString(VariableKey.IRC_EMAIL, false)), c);
 
 		c.gridx = 0;
 		c.gridy = 2;
