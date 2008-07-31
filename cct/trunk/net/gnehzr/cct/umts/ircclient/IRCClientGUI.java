@@ -24,6 +24,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -78,6 +79,8 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	// TODO - save gui state to configuration
 	// TODO - how to save state of the user tables for each message frame?
 	// synchronize them somehow?
+	// TODO - is it ok to remove irc email stuff?
+	// TODO - don't log privmsgs?
 
 	JDesktopPane desk;
 	JInternalFrame login;
@@ -288,8 +291,12 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			updateButton();
 		}
 
+		private static final int MAX_BUTTON_LENGTH = 30;
 		private void updateButton() {
 			String title = f.getTitle();
+			setToolTipText(title.isEmpty() ? null : title);
+			if(title.length() > MAX_BUTTON_LENGTH)
+				title = title.substring(0, MAX_BUTTON_LENGTH) + "...";
 			setText(title.isEmpty() ? "Untitled" : title);
 			setSelected(f.isVisible() && f.isSelected());
 		}
@@ -425,8 +432,9 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	}
 
 	JTextField name;
-	private JTextField email, nick;
-	private URLHistoryBox server;
+	private JTextField email;
+	JTextField nick;
+	URLHistoryBox server;
 	JButton connect;
 
 	private JPanel getLoginPanel() {
@@ -695,11 +703,6 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		sendMessage(nick, msg);
 	}
 
-	// protected void onServerResponse(int code, String response) {
-	// if(code == ReplyConstants.ERR_NOSUCHNICK) {
-	// serverFrame.appendError("No such nick: " + response);
-	// }
-	// }
 	private static final String PM_FRAME = "pm";
 
 	protected void onPrivateMessage(final String sender, String login, String hostname, final String message) {
@@ -772,9 +775,8 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 						f.setVisible(true);
 						desk.add(f);
 					}
-					f.setConnectedToChannel(true);
+					f.setConnectedToChannel(true, channel);
 					f.appendInformation("Connected to " + channel);
-					f.setTitle(channel);
 					try {
 						f.setSelected(true);
 					} catch(PropertyVetoException e) {
@@ -840,7 +842,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 						return; // this happens when the users clicks the close
 					// button
 					f.appendInformation(kicked ? "You have been kicked from " + channel : "You have left " + channel);
-					f.setConnectedToChannel(false);
+					f.setConnectedToChannel(false, channel);
 				} else {
 					userLeft(channel, user);
 					if(f != null) {
@@ -867,9 +869,18 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		});
 	}
 
+	
 	protected void onConnect() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				server.commitCurrentItem(); //current server was successful, so remember it
+				//if we hadn't set a nick and namme before, we'll do so now
+				String c;
+				if((c = Configuration.getString(VariableKey.IRC_NAME, false)) == null || c.isEmpty())
+					Configuration.setString(VariableKey.IRC_NAME, name.getText());
+				if((c = Configuration.getString(VariableKey.IRC_NICK, false)) == null || c.isEmpty())
+					Configuration.setString(VariableKey.IRC_NICK, nick.getText());
+				
 				login.setVisible(false);
 				desk.remove(login);
 				serverFrame.setTitle("Connected to " + getInetAddress().getHostName() + ":" + getPort());
@@ -878,12 +889,20 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			}
 		});
 	}
+	protected void onTopic(final String channel, final String topic, final String setBy, final long date, boolean changed) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				if(channelFrames.containsKey(channel))
+					channelFrames.get(channel).setTopic(topic + " set on " + new Date(date) + " by " + setBy);
+			}
+		});
+	}
 
 	protected void onDisconnect() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				for(MessageFrame f : channelFrames.values()) {
-					f.setConnectedToChannel(false);
+					f.setConnectedToChannel(false, f.getName());
 					f.appendInformation("Disconnected");
 				}
 				serverFrame.setTitle("Unconnected");

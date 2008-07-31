@@ -41,7 +41,6 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
 
-import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
@@ -57,6 +56,8 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	private static final Timer messageAppender = new Timer(30, null);
 	private static final boolean wrap = true;
 
+	// TODO - disable ctrl+backspace doesn't work
+	
 	private JEditorPane messagePane;
 	private DraggableJTable usersTable;
 	private CCTUserTableModel usersTableModel;
@@ -170,7 +171,6 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 					Desktop.getDesktop().browse(e.getURL().toURI());
 				} catch(Exception error) {
 					error.printStackTrace();
-					Utils.showErrorDialog(this, error.toString());
 				}
 			} else {
 				//TODO - prompt user if they want just this scramble, or all of them
@@ -414,12 +414,19 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	}
 	
 	private boolean isConnectedChan = false;
+	private String channel, topic;
 	public boolean isConnectedToChannel() {
 		return isConnectedChan;
 	}
-	public void setConnectedToChannel(boolean isConnectedChan) {
+	public void setConnectedToChannel(boolean isConnectedChan, String channel) {
 		this.isConnectedChan = isConnectedChan;
+		this.channel = channel;
+		setTitle(channel);
 		usersTable.setEnabled(isConnectedChan);
+	}
+	public void setTopic(String topic) {
+		this.topic = topic;
+		setTitle(channel + ": " + topic);
 	}
 	
 	public void resetMessagePane() {

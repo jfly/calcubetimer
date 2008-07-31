@@ -14,6 +14,8 @@ import org.jibble.pircbot.PircBot;
 public class CCTBot extends PircBot {
 	//TODO - some sort of logging mechanism might be nice here - log4j?
 	//TODO - some way to get the bot to join other channels? easy, but risky...
+	//TODO - query for scrambles
+	//TODO - add generator support
 	public CCTBot() {}
 	
 	//max message length: 470 characters
