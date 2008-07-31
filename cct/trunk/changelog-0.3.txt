@@ -231,7 +231,6 @@ for release:
 -add profile chooser to bottom of configdialog
 -eclipse code formatting
 -generator groups for scramble plugins
--multiple timers?
 -saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files?
 -dynamic string multiple argument format
 -open source sourceforge!
@@ -239,18 +238,16 @@ for release:
 -create license, give credit where credit is due
 -create small diagnostic problem that will dump relevant info to a file (java version, os, etc.)
 -write scramble plugin tutorial
++irc stuff done!
+	-cleanup remaining todos in irc files
 
 misc:
 -java webstart? applet?
+-multiple timers?
+-copy shortcuts for mac?
 
 cleanup:
--copy shortcuts for mac?
 -"Options" menu is getting cut to "Op" when the gui is made small
--generalize XML syntax (get rid of Dynamic... classes) UPDATE: no idea how to do this...???
-
-IRC stuff:
--make the fragmentation stuff more strict
--implement cctbot!
 
 possible puzzles:
 pyraminx
