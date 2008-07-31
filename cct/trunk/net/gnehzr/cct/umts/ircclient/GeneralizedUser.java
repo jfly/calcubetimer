@@ -5,21 +5,24 @@ import net.gnehzr.cct.umts.cctbot.CCTUser;
 import org.jibble.pircbot.User;
 
 public class GeneralizedUser implements Comparable<GeneralizedUser> {
+	private String prefix;
 	private String nick, lowerNick;
 	private User irc;
 	private CCTUser cct;
 	private boolean isCCT;
 	public GeneralizedUser(User irc) {
-		this(irc.getNick());
+		this(irc.getPrefix(), irc.getNick());
 		this.irc = irc;
 		isCCT = false;
 	}
 	public GeneralizedUser(CCTUser cct) {
-		this(cct.getNick());
+		//TODO - get the prefixes right for cctusers
+		this("", cct.getNick());
 		this.cct = cct;
 		isCCT = true;
 	}
-	private GeneralizedUser(String nick) {
+	private GeneralizedUser(String prefix, String nick) {
+		this.prefix = prefix;
 		this.nick = nick;
 		lowerNick = nick.toLowerCase();
 	}
@@ -39,7 +42,7 @@ public class GeneralizedUser implements Comparable<GeneralizedUser> {
 		return false;
 	}
 	public String toString() {
-		String c = nick;
+		String c = prefix + nick;
 		if(isCCT)
 			c = "<html><b>" + nick + "</b></html>";
 		return c;

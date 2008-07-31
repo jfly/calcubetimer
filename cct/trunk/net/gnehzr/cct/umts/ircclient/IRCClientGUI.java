@@ -479,6 +479,8 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	private static final String CMD_PART = "/part";	{ cmdHelp.put(CMD_PART, "/part (CHANNEL)"); }
 	private static final String CMD_NICK = "/nick";	{ cmdHelp.put(CMD_NICK, "/nick NEWNICK"); }
 	private static final String CMD_CLEAR = "/clear";	{ cmdHelp.put(CMD_CLEAR, "/clear"); }
+	private static final String CMD_WHOIS = "/whois";	{ cmdHelp.put(CMD_WHOIS, "/whois NICK"); }
+	private static final String CMD_ME = "/me";	{ cmdHelp.put(CMD_ME, "/me ACTION"); }
 	private static final String CMD_HELP = "/help";	{ cmdHelp.put(CMD_HELP, "/help (COMMAND)"); }
 	public void commandEntered(MessageFrame src, String cmd) {
 		if(cmd.startsWith("//"))
@@ -544,6 +546,16 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			} else if(command.equalsIgnoreCase(CMD_CLEAR)) {
 				src.resetMessagePane();
 				return;
+			} else if(command.equalsIgnoreCase(CMD_WHOIS)) {
+				if(arg != null) {
+					sendRawLineViaQueue("WHOIS " + arg);
+					return;
+				}
+			} else if(command.equalsIgnoreCase(CMD_ME)) {
+				if(arg != null) {
+					sendAction(getNick(), arg);
+					return;
+				}
 			}
 			String usage = cmdHelp.get(command);
 			src.appendInformation(usage == null ? "Unrecognized command: " + command : "USAGE: " + usage);
@@ -628,6 +640,16 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	HashMap<String, MessageFrame> channelFrames = new HashMap<String, MessageFrame>();
 	protected void onMessage(String channel, String sender, String login, String hostname, String message) {
 		messageReceived(sender, message, channel);
+	}
+	protected void onAction(final String sender, String login, String hostname, String target, final String action) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				for(MessageFrame f : channelFrames.values()) {
+					f.appendInformation("* " + sender + " " + action);
+					f.setIRCUsers(getUsers(f.getName()));
+				}
+			}
+		});
 	}
 	protected void onJoin(final String channel, final String sender, String login, String hostname) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -719,15 +741,15 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		});
 	}
 	protected void onNickChange(final String oldNick, String login, String hostname, final String newNick) {
-		for(MessageFrame f : channelFrames.values()) {
-			f.appendInformation(oldNick + " is now known as " + newNick);
-			f.setIRCUsers(getUsers(f.getName()));
-		}
-		if(newNick.equals(getNick())) {
-			serverFrame.appendInformation(oldNick + " is now known as " + newNick);
-		}
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				for(MessageFrame f : channelFrames.values()) {
+					f.appendInformation(oldNick + " is now known as " + newNick);
+					f.setIRCUsers(getUsers(f.getName()));
+				}
+				if(newNick.equals(getNick())) {
+					serverFrame.appendInformation(oldNick + " is now known as " + newNick);
+				}
 				cctNickChanged(oldNick, newNick);
 			}
 		});
@@ -930,6 +952,11 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 				});
 			}
 		}
+	}
+	protected void onMode(String channel, String sourceNick, String sourceLogin, String sourceHostname, String mode) {
+		MessageFrame f = channelFrames.get(channel);
+		if(f != null)
+			f.setIRCUsers(getUsers(channel));
 	}
 	private void userJoined(String channel, String nick) {
 		CCTChannel other = channelMap.get(channel);
