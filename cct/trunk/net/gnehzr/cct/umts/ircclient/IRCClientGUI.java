@@ -69,7 +69,7 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 public class IRCClientGUI extends PircBot implements CommandListener, ActionListener, DesktopManager, KeyEventPostProcessor {
 	private static final String VERSION = "0.1";
 	private static final String SERVER_FRAME = "serverframe";
-	
+
 	// TODO - disable ctrl+tab for swing components
 	// TODO - click and drag buttons
 	// TODO - internationalize? urrghhh....
@@ -77,7 +77,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	// TODO - how to save state of the user tables for each message frame?
 	// synchronize them somehow?
 	// TODO - make a better irc icon
-	
+
 	JDesktopPane desk;
 	JInternalFrame login;
 	MessageFrame serverFrame;
@@ -86,6 +86,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	JLabel statusBar;
 	private DesktopManager dm;
 	CALCubeTimer cct;
+
 	public IRCClientGUI(CALCubeTimer cct, final ActionListener closeListener) {
 		this.cct = cct;
 
@@ -101,6 +102,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 
 		desk = new JDesktopPane() {
 			private HashMap<JInternalFrame, MinimizedInternalFrameButton> buttons = new HashMap<JInternalFrame, MinimizedInternalFrameButton>();
+
 			public Component add(Component c) {
 				if(buttons.containsKey(c))
 					return c;
@@ -139,6 +141,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 				windows.revalidate();
 				return super.add(c);
 			}
+
 			public void remove(Component c) {
 				windows.remove(buttons.remove(c));
 				windows.repaint();
@@ -146,17 +149,17 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 				super.remove(c);
 			}
 		};
-		
+
 		dm = desk.getDesktopManager();
 		desk.setDesktopManager(this);
-		
+
 		JPanel pane = new JPanel(new BorderLayout());
 		pane.add(desk, BorderLayout.CENTER);
 		pane.add(windows, BorderLayout.PAGE_START);
 		statusBar = new JLabel() {
 			public void setText(String text) {
 				super.setText("CCT/IRC Status: " + text);
-			} 
+			}
 		};
 		statusBar.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 		pane.add(statusBar, BorderLayout.PAGE_END);
@@ -182,19 +185,19 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		serverFrame.addCommandListener(this);
 		serverFrame.pack();
 		desk.add(serverFrame);
-		
+
 		clientFrame.pack();
 		onDisconnect(); // this will add and set login visible & the title of
-						// serverFrame
+		// serverFrame
 	}
-	
+
 	private void setConnectDefault() {
 		login.getRootPane().setDefaultButton(connect); // apparently this
-														// setting gets lost
-														// when the dialog is
-														// removed
+		// setting gets lost
+		// when the dialog is
+		// removed
 	}
-	
+
 	public void setVisible(boolean visible) {
 		clientFrame.setVisible(visible);
 		if(visible && !isConnected()) {
@@ -226,10 +229,11 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		if(!next.f.isSelected() || !next.f.isVisible())
 			next.doClick();
 	}
-	
+
 	private static class MinimizedInternalFrameButton extends JButton implements MouseListener, Icon, PropertyChangeListener, ComponentListener {
 		public JInternalFrame f;
 		private JPopupMenu preview;
+
 		public MinimizedInternalFrameButton(JInternalFrame f) {
 			setIcon(f.getFrameIcon());
 			this.f = f;
@@ -240,6 +244,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 				public void internalFrameActivated(InternalFrameEvent e) {
 					setForeground(Color.BLACK);
 				}
+
 				// using this event to indicate that text was appended when the
 				// frame wasn't selecteds
 				public void internalFrameClosed(InternalFrameEvent e) {
@@ -258,33 +263,41 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			addMouseListener(this);
 			preview = new JPopupMenu();
 			preview.setFocusable(false);
-            preview.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.TRUE);
+			preview.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.TRUE);
 			preview.add(new JLabel(this));
 			preview.pack();
 		}
+
 		public void propertyChange(PropertyChangeEvent evt) {
 			updateButton();
 		}
+
 		private void updateButton() {
 			String title = f.getTitle();
 			setText(title.isEmpty() ? "Untitled" : title);
 			setSelected(f.isVisible() && f.isSelected());
 		}
+
 		public void mouseEntered(MouseEvent e) {
 			updatePreview();
 		}
+
 		public void mouseExited(MouseEvent e) {
 			updatePreview();
 		}
+
 		public void mouseClicked(MouseEvent e) {
 			updatePreview();
 		}
+
 		public void mousePressed(MouseEvent e) {
 			updatePreview();
 		}
+
 		public void mouseReleased(MouseEvent e) {
 			updatePreview();
 		}
+
 		private void updatePreview() {
 			if(getMousePosition() == null)
 				preview.setVisible(false);
@@ -295,91 +308,111 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		}
 
 		private static final double SCALE = .5;
+
 		public int getIconHeight() {
 			return (int) (f.getHeight() * SCALE);
 		}
+
 		public int getIconWidth() {
 			return (int) (f.getWidth() * SCALE);
 		}
-		
+
 		public void paintIcon(Component c, Graphics g, int x, int y) {
 			Graphics2D g2d = (Graphics2D) g;
 			g2d.scale(SCALE, SCALE);
 			f.printAll(g2d);
 		}
-		
+
 		public void componentHidden(ComponentEvent e) {
 			updateButton();
 		}
+
 		public void componentMoved(ComponentEvent e) {
 			updateButton();
 		}
+
 		public void componentResized(ComponentEvent e) {
 			updateButton();
 		}
+
 		public void componentShown(ComponentEvent e) {
 			updateButton();
 		}
 	}
+
 	public void deiconifyFrame(JInternalFrame f) {
 		// dm.deiconifyFrame(f);
 		f.setVisible(true);
 	}
+
 	public void iconifyFrame(JInternalFrame f) {
 		// dm.iconifyFrame(f);
 		try {
 			f.setIcon(false); // by now, the frame has had setIcon(true) called,
-								// we want to undo the effects of this
+			// we want to undo the effects of this
 		} catch(PropertyVetoException e) {
 			e.printStackTrace();
 		}
 		f.setVisible(false);
 	}
-	
+
 	public void activateFrame(JInternalFrame f) {
 		dm.activateFrame(f);
 	}
+
 	public void beginDraggingFrame(JComponent f) {
 		dm.beginDraggingFrame(f);
 	}
+
 	public void beginResizingFrame(JComponent f, int direction) {
 		dm.beginResizingFrame(f, direction);
 	}
+
 	public void closeFrame(JInternalFrame f) {
 		dm.closeFrame(f);
 	}
+
 	public void deactivateFrame(JInternalFrame f) {
 		dm.deactivateFrame(f);
 	}
+
 	public void dragFrame(JComponent f, int newX, int newY) {
 		dm.dragFrame(f, newX, newY);
 	}
+
 	public void endDraggingFrame(JComponent f) {
 		dm.endDraggingFrame(f);
 	}
+
 	public void endResizingFrame(JComponent f) {
 		dm.endResizingFrame(f);
 	}
+
 	public void maximizeFrame(JInternalFrame f) {
 		dm.maximizeFrame(f);
 	}
+
 	public void minimizeFrame(JInternalFrame f) {
 		dm.minimizeFrame(f);
 	}
+
 	public void openFrame(JInternalFrame f) {
 		dm.openFrame(f);
 	}
+
 	public void resizeFrame(JComponent f, int newX, int newY, int newWidth, int newHeight) {
 		dm.resizeFrame(f, newX, newY, newWidth, newHeight);
 	}
+
 	public void setBoundsForFrame(JComponent f, int newX, int newY, int newWidth, int newHeight) {
 		dm.setBoundsForFrame(f, newX, newY, newWidth, newHeight);
 	}
-	
+
 	JTextField name;
 	private JTextField email, nick;
 	private URLHistoryBox server;
 	JButton connect;
+
 	private JPanel getLoginPanel() {
 		JPanel login = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
@@ -404,7 +437,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		c.gridy = 1;
 		c.weightx = 1;
 		login.add(email = new JTextField(Configuration.getString(VariableKey.IRC_EMAIL, false)), c);
-		
+
 		c.gridx = 0;
 		c.gridy = 2;
 		c.weightx = 0;
@@ -413,7 +446,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		c.gridy = 2;
 		c.weightx = 1;
 		login.add(nick = new JTextField(Configuration.getString(VariableKey.IRC_NICK, false)), c);
-		
+
 		c.gridx = 0;
 		c.gridy = 3;
 		c.weightx = 0;
@@ -422,7 +455,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		c.gridy = 3;
 		c.weightx = 1;
 		login.add(server = new URLHistoryBox(VariableKey.IRC_SERVERS), c);
-		
+
 		c.gridx = 0;
 		c.gridy = 4;
 		c.weightx = 1;
@@ -470,6 +503,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			}
 		}
 	}
+
 	public void windowClosed(MessageFrame src) {
 		if(src.getName().startsWith(PM_FRAME)) {
 			pmFrames.remove(src.getName().substring(PM_FRAME.length()));
@@ -479,7 +513,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 				partChannel(src.getName());
 		}
 	}
-	
+
 	private static HashMap<String, String> cmdHelp = new HashMap<String, String>();
 	private static final String CMD_JOIN = "/join";
 	{
@@ -521,6 +555,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	{
 		cmdHelp.put(CMD_HELP, "/help (COMMAND)");
 	}
+
 	public void commandEntered(MessageFrame src, String cmd) {
 		if(cmd.startsWith("//"))
 			cmd = cmd.substring(1);
@@ -620,11 +655,11 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				clientFrame.toFront(); // this is to keep the scramble frame
-										// from stealing focus
+				// from stealing focus
 			}
 		});
 	}
-	
+
 	private void messageReceived(final String nick, final String msg, final String channel) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -637,6 +672,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			}
 		});
 	}
+
 	private void privateMessage(String nick, String msg) {
 		MessageFrame f = getPMFrame(nick);
 		f.appendMessage(getNick(), msg);
@@ -649,6 +685,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	// }
 	// }
 	private static final String PM_FRAME = "pm";
+
 	protected void onPrivateMessage(final String sender, String login, String hostname, final String message) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -665,6 +702,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			}
 		});
 	}
+
 	MessageFrame getPMFrame(String nick) {
 		MessageFrame f = pmFrames.get(nick);
 		if(f == null) {
@@ -677,11 +715,14 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		}
 		return f;
 	}
+
 	HashMap<String, MessageFrame> pmFrames = new HashMap<String, MessageFrame>();
 	HashMap<String, MessageFrame> channelFrames = new HashMap<String, MessageFrame>();
+
 	protected void onMessage(String channel, String sender, String login, String hostname, String message) {
 		messageReceived(sender, message, channel);
 	}
+
 	protected void onAction(final String sender, String login, String hostname, String target, final String action) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -692,6 +733,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			}
 		});
 	}
+
 	protected void onJoin(final String channel, final String sender, String login, String hostname) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -700,8 +742,8 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 					joinedChannel(channel);
 					CCTChannel c = channelMap.get(channel);
 					if(c != null && !c.isCommChannel()) // don't want to create
-														// a jinternalframe for
-														// a cct comm channel
+						// a jinternalframe for
+						// a cct comm channel
 						return;
 					if(f == null) {
 						f = new MessageFrame(true, true, null);
@@ -710,7 +752,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 						f.setName(channel);
 						f.pack();
 						f.setLocation(20, 20); // this may help make it easier
-												// to see the new window
+						// to see the new window
 						f.setVisible(true);
 						desk.add(f);
 					}
@@ -725,7 +767,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 				} else {
 					userJoined(channel, sender);
 					if(f != null) // the frame will not exist if this is a comm
-									// channel
+						// channel
 						f.appendInformation(sender + " has joined " + channel);
 				}
 				if(f != null)
@@ -733,6 +775,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			}
 		});
 	}
+
 	protected void onUserList(final String channel, final User[] users) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -742,6 +785,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			}
 		});
 	}
+
 	protected void onQuit(final String sourceNick, String sourceLogin, String sourceHostname, final String reason) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -761,12 +805,15 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			}
 		});
 	}
+
 	protected void onPart(String channel, String sender, String login, String hostname) {
 		generalizedLeftChannel(channel, sender, false);
 	}
+
 	protected void onKick(String channel, String kickerNick, String kickerLogin, String kickerHostname, String recipientNick, String reason) {
 		generalizedLeftChannel(channel, recipientNick, true);
 	}
+
 	private void generalizedLeftChannel(final String channel, final String user, final boolean kicked) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -775,7 +822,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 					leftChannel(channel);
 					if(f == null)
 						return; // this happens when the users clicks the close
-								// button
+					// button
 					f.appendInformation(kicked ? "You have been kicked from " + channel : "You have left " + channel);
 					f.setConnectedToChannel(false);
 				} else {
@@ -788,6 +835,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			}
 		});
 	}
+
 	protected void onNickChange(final String oldNick, String login, String hostname, final String newNick) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -802,13 +850,14 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			}
 		});
 	}
+
 	protected void onConnect() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				login.setVisible(false);
 				desk.remove(login);
 				serverFrame.setTitle("Connected to " + getInetAddress().getHostName() + ":" + getPort());
-				
+
 				statusBar.setText("Not connected to any channels.");
 			}
 		});
@@ -825,7 +874,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 				statusBar.setText("Unconnected");
 				connect.setText("Connect");
 				connect.setEnabled(true);
-				
+
 				login.setVisible(true);
 				desk.add(login);
 				login.pack();
@@ -839,12 +888,13 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			}
 		});
 	}
-	
+
 	public void log(String line) {
 		serverFrame.appendInformation(line);
 	}
-	
+
 	private Thread connectThread;
+
 	private void forkConnect(String hostname) {
 		final String[] urlAndPort = hostname.split(":");
 		final int port = urlAndPort.length == 2 ? Integer.parseInt(urlAndPort[1]) : 6667;
@@ -869,33 +919,39 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		};
 		connectThread.start();
 	}
-	
+
 	/***
 	 * What follows is code to connect to a secondary channel for CCT status
 	 * messages
 	 ***/
-	
+
 	private static class CCTChannel {
 		private String channelName;
 		public HashMap<String, CCTUser> users;
 		private int attempts = 0;
+
 		public CCTChannel(String channel, boolean isCommChannel) {
 			this.channelName = channel;
 			if(!isCommChannel)
 				users = new HashMap<String, CCTUser>();
 		}
+
 		public void addAttempt() {
 			attempts++;
 		}
+
 		public String getChannel() {
 			return channelName + (attempts == 0 ? "" : attempts);
 		}
+
 		public boolean isCommChannel() {
 			return users == null;
 		}
+
 		public int hashCode() {
 			return getChannel().hashCode();
 		}
+
 		public boolean equals(Object obj) {
 			if(obj instanceof CCTChannel) {
 				CCTChannel o = (CCTChannel) obj;
@@ -903,12 +959,14 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			}
 			return false;
 		}
+
 		public String toString() {
 			return getChannel();
 		}
 	}
+
 	private HashMap<String, CCTChannel> channelMap = new HashMap<String, CCTChannel>();
-	
+
 	protected void onServerResponse(int code, String response) {
 		if(code == ReplyConstants.ERR_CANNOTSENDTOCHAN) {
 			final String[] nick_chan_msg = response.split(" ", 3);
@@ -924,7 +982,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			});
 		}
 	}
-	
+
 	private void joinedChannel(String chan) {
 		CCTChannel otherChannel = channelMap.get(chan);
 		if(otherChannel == null) {
@@ -932,7 +990,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			otherChannel = new CCTChannel(chan + "-cct", true);
 			joinChannel(otherChannel.getChannel());
 			verifyCommChannels.start(); // this will check in 1 second to see if
-										// we've connected to the channel
+			// we've connected to the channel
 			channelMap.put(channel.getChannel(), otherChannel);
 			channelMap.put(otherChannel.getChannel(), channel);
 		} else if(!otherChannel.isCommChannel()) {
@@ -942,7 +1000,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 				otherChannel.users.put(u.getNick(), new CCTUser(u.getNick()));
 			channelFrames.get(otherChannel.getChannel()).setCCTUsers(otherChannel.users.values().toArray(new CCTUser[0]));
 			sendUserstate(chan); // let everyone on the commChannel know our
-									// userstate
+			// userstate
 		}
 		updateStatusBar();
 	}
@@ -959,7 +1017,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 						channelMap.remove(commChannel.getChannel());
 						commChannel.addAttempt();
 						chatChannel.users.clear(); // need to force the cctusers
-													// list to update
+						// list to update
 						joinChannel(commChannel.getChannel());
 						channelMap.put(chatChannel.getChannel(), commChannel);
 						channelMap.put(commChannel.getChannel(), chatChannel);
@@ -970,19 +1028,11 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 				verifyCommChannels.stop();
 		}
 	});
+
 	private void leftChannel(String chan) {
 		CCTChannel otherChannel = channelMap.get(chan);
-		
-		if(otherChannel == null) {} else if(!otherChannel.isCommChannel()) { // this
-																				// means
-																				// we
-																				// parted
-																				// /
-																				// kicked
-																				// from
-																				// a
-																				// comm
-																				// channel
+
+		if(otherChannel == null) {} else if(!otherChannel.isCommChannel()) { // this means we parted/kicked from a comm channel
 			verifyCommChannels.start();
 		} else { // otherchannel is a comm channel
 			channelMap.remove(chan);
@@ -993,6 +1043,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		}
 		updateStatusBar();
 	}
+
 	private void cctStatusUpdate(final String nick, final String msg, final CCTChannel chatChannel) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -1007,6 +1058,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			}
 		});
 	}
+
 	private void cctNickChanged(String oldNick, String newNick) {
 		for(final CCTChannel chan : channelMap.values()) {
 			if(!chan.isCommChannel() && chan.users.containsKey(oldNick)) {
@@ -1019,20 +1071,22 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			}
 		}
 	}
+
 	protected void onMode(String channel, String sourceNick, String sourceLogin, String sourceHostname, String mode) {
 		MessageFrame f = channelFrames.get(channel);
 		if(f != null)
 			f.setIRCUsers(getUsers(channel));
 	}
+
 	private void userJoined(String channel, String nick) {
 		CCTChannel other = channelMap.get(channel);
 		if(other != null && !other.isCommChannel()) {
 			other.users.put(nick, new CCTUser(nick));
 			channelFrames.get(other.getChannel()).setCCTUsers(other.users.values().toArray(new CCTUser[0]));
-			sendUserstate(channel); // this will let the new guy on the
-									// commchannel know our state
+			sendUserstate(channel); // this will let the new guy on the commchannel know our state
 		}
 	}
+
 	private void userLeft(String channel, String nick) {
 		CCTChannel other = channelMap.get(channel);
 		if(other != null && !other.isCommChannel()) {
@@ -1040,12 +1094,14 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			channelFrames.get(other.getChannel()).setCCTUsers(other.users.values().toArray(new CCTUser[0]));
 		}
 	}
+
 	private boolean isConnectedToChannel(String channel) {
 		for(String c : getChannels())
 			if(c.equals(channel))
 				return true;
 		return false;
 	}
+
 	private void updateStatusBar() {
 		StringBuilder status = new StringBuilder();
 		for(CCTChannel channel : channelMap.values()) {
@@ -1061,16 +1117,19 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		else
 			statusBar.setText(status.substring(2));
 	}
-	
+
 	private CCTUser myself = new CCTUser(null); // nick doesn't matter here
+
 	public CCTUser getMyUserstate() {
 		return myself;
 	}
+
 	private void sendUserstate(String commChannel) {
 		String msg = IRCUtils.createMessage(IRCUtils.CLIENT_USERSTATE, myself.getUserState());
 		sendMessage(commChannel, msg);
 		cctStatusUpdate(getNick(), msg, channelMap.get(commChannel));
 	}
+
 	public void broadcastUserstate() {
 		for(CCTChannel channel : channelMap.values())
 			if(channel.isCommChannel())
