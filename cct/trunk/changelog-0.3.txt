@@ -224,11 +224,11 @@ changes:
 +tags for solves? possibly by expanding functionality of pop/dnf/+2?
 	+add draggable jtable to config dialog
 	+add column to timestable?
++add profile chooser to bottom of configdialog
 
 TODO:
 
 for release:
--add profile chooser to bottom of configdialog
 -eclipse code formatting
 -generator groups for scramble plugins
 -saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files?

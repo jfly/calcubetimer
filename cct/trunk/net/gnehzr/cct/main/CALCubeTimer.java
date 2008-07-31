@@ -1612,9 +1612,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		actionMap.get("togglehidescrambles").putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false));
 		actionMap.get("togglespacebarstartstimer").putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false));
 		actionMap.get("togglefullscreen").putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false));
-		DefaultComboBoxModel profs = new DefaultComboBoxModel(Configuration.getProfiles().toArray(new Profile[0]));
-		profs.addElement("Edit profiles");
-		profiles.setModel(profs);
+		profiles.setModel(new DefaultComboBoxModel(Configuration.getProfiles().toArray()));
 		safeSelectItem(profiles, Configuration.getSelectedProfile());
 		languages.setSelectedItem(Configuration.getDefaultLocale()); //this will force an update of the xml gui
 		updateWatermark();

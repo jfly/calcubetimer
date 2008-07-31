@@ -29,6 +29,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
@@ -136,6 +137,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private JButton applyButton, saveButton = null;
 	private JButton cancelButton = null;
 	private JButton resetAllButton = null;
+	private JComboBox profiles = null;
 	private void createGUI() {
 		JPanel pane = new JPanel(new BorderLayout());
 		setContentPane(pane);
@@ -186,8 +188,12 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		resetAllButton = new JButton(StringAccessor.getString("ConfigurationDialog.resetall")); //$NON-NLS-1$
 		resetAllButton.setMnemonic(KeyEvent.VK_R);
 		resetAllButton.addActionListener(this);
+		
+		profiles = new JComboBox();
+		profiles.addItemListener(this);
 
-		pane.add(sideBySide(BoxLayout.LINE_AXIS, Box.createHorizontalGlue(), resetAllButton, Box.createRigidArea(new Dimension(30, 0)), applyButton, saveButton, cancelButton, Box.createHorizontalGlue()), BorderLayout.PAGE_END);
+		pane.add(sideBySide(BoxLayout.LINE_AXIS, profiles, Box.createHorizontalGlue(), resetAllButton, Box.createRigidArea(new Dimension(30, 0)), applyButton,
+				saveButton, cancelButton, Box.createHorizontalGlue()), BorderLayout.PAGE_END);
 
 		setResizable(false);
 		pack();
@@ -801,6 +807,32 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 			password.setEnabled(useSMTP && SMTPauth.isSelected());
 		} else if(source == inspectionCountdown) {
 			speakInspection.setEnabled(inspectionCountdown.isSelected());
+		} else if(e.getStateChange() == ItemEvent.SELECTED && source == profiles && !profiles.getSelectedItem().equals(Configuration.getSelectedProfile())) {
+			int choice = Utils.showYesNoCancelDialog(this, "Do you want to save the current profile's configuration before switching?"); //TODO - i18n
+			if(choice == JOptionPane.YES_OPTION) {
+				applyAndSave();
+			} else if(choice == JOptionPane.NO_OPTION) {
+			} else {
+				profiles.setSelectedItem(Configuration.getSelectedProfile());
+				return;
+			}
+			Profile p = (Profile) profiles.getSelectedItem();
+			try {
+				p.saveDatabase();
+			} catch(Exception e1) {
+				e1.printStackTrace();
+			}
+			Configuration.setSelectedProfile(p);
+			if(!p.loadDatabase()) {
+				//the user will be notified of this in the profiles combobox
+			}
+			try {
+				Configuration.loadConfiguration(p.getConfigurationFile());
+				Configuration.apply();
+			} catch(IOException err) {
+				err.printStackTrace();
+			}
+			syncGUIwithConfig(false);
 		}
 	}
 
@@ -1067,6 +1099,8 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	
 	public void syncGUIwithConfig(boolean defaults) {
 		setTitle(StringAccessor.getString("ConfigurationDialog.cctoptions") + " " + Configuration.getSelectedProfile().getName()); //$NON-NLS-1$ //$NON-NLS-2$
+		profiles.setModel(new DefaultComboBoxModel(Configuration.getProfiles().toArray()));
+		profiles.setSelectedItem(Configuration.getSelectedProfile());
 		for(SyncGUIListener sl : resetListeners)
 			sl.syncGUIWithConfig(defaults);
 	}
