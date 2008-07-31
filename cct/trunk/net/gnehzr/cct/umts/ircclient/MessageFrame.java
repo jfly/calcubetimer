@@ -81,6 +81,7 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		messagePane.addHyperlinkListener(this);
 		resetMessagePane();
 		msgScroller = new JScrollPane(messagePane);
+		messagePane.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, IRCClientGUI.WATERMARK);
 		
 		if(userTable) {
 			usersTableModel = new CCTUserTableModel();
@@ -98,7 +99,7 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		
 
 		chatField = new JTextField();
-		chatField.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.FALSE);
+		chatField.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, IRCClientGUI.WATERMARK);
 		chatField.setFont(mono);
 		chatField.addActionListener(this);
 		chatField.addKeyListener(this);

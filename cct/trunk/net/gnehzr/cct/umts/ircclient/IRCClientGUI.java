@@ -51,6 +51,7 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
 import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.configuration.VariableKey;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.main.URLHistoryBox;
@@ -66,7 +67,8 @@ import org.jibble.pircbot.ReplyConstants;
 import org.jibble.pircbot.User;
 import org.jvnet.substance.SubstanceLookAndFeel;
 
-public class IRCClientGUI extends PircBot implements CommandListener, ActionListener, DesktopManager, KeyEventPostProcessor {
+public class IRCClientGUI extends PircBot implements CommandListener, ActionListener, DesktopManager, KeyEventPostProcessor, ConfigurationChangeListener {
+	public static final Boolean WATERMARK = false;
 	private static final String VERSION = "0.1";
 	private static final String SERVER_FRAME = "serverframe";
 
@@ -76,7 +78,6 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	// TODO - save gui state to configuration
 	// TODO - how to save state of the user tables for each message frame?
 	// synchronize them somehow?
-	// TODO - make a better irc icon
 
 	JDesktopPane desk;
 	JInternalFrame login;
@@ -91,6 +92,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		this.cct = cct;
 
 		login = new JInternalFrame("Connect", false, false, false, true);
+		login.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, IRCClientGUI.WATERMARK);
 		login.addInternalFrameListener(new InternalFrameAdapter() {
 			public void internalFrameActivated(InternalFrameEvent e) {
 				setConnectDefault();
@@ -154,6 +156,9 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		desk.setDesktopManager(this);
 
 		JPanel pane = new JPanel(new BorderLayout());
+		pane.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, IRCClientGUI.WATERMARK);
+		desk.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, IRCClientGUI.WATERMARK);
+		windows.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, IRCClientGUI.WATERMARK);
 		pane.add(desk, BorderLayout.CENTER);
 		pane.add(windows, BorderLayout.PAGE_START);
 		statusBar = new JLabel() {
@@ -187,8 +192,20 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		desk.add(serverFrame);
 
 		clientFrame.pack();
-		onDisconnect(); // this will add and set login visible & the title of
-		// serverFrame
+		onDisconnect(); // this will add and set login visible & the title of serverFrame
+		Configuration.addConfigurationChangeListener(this);
+		configurationChanged();
+	}
+
+	public void configurationChanged() {
+		try {
+			clientFrame.setSize(Configuration.getDimension(VariableKey.IRC_FRAME_DIMENSION, false));
+			clientFrame.setLocation(Configuration.getPoint(VariableKey.IRC_FRAME_LOCATION, false));
+		} catch(NullPointerException e) {} //we don't really care if the variables were undefined, things should still work
+	}
+	public void saveToConfiguration() {
+		Configuration.setDimension(VariableKey.IRC_FRAME_DIMENSION, clientFrame.getSize());
+		Configuration.setPoint(VariableKey.IRC_FRAME_LOCATION, clientFrame.getLocation());
 	}
 
 	private void setConnectDefault() {
@@ -263,7 +280,6 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			addMouseListener(this);
 			preview = new JPopupMenu();
 			preview.setFocusable(false);
-			preview.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.TRUE);
 			preview.add(new JLabel(this));
 			preview.pack();
 		}
