@@ -113,7 +113,7 @@ public class Utils {
 		return JOptionPane.showOptionDialog(c, message, StringAccessor.getString("Utils.confirm"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, yesNo, yesNo[0]);
 	}
 	public static int showYesNoCancelDialog(Component c, String message) {
-		String[] yesNo = new String[] { StringAccessor.getString("Utils.yes"), StringAccessor.getString("Utils.no"), "Cancel" }; //TODO - i18n
+		String[] yesNo = new String[] { StringAccessor.getString("Utils.yes"), StringAccessor.getString("Utils.no"), StringAccessor.getString("Utils.cancel") };
 		return JOptionPane.showOptionDialog(c, message, StringAccessor.getString("Utils.confirm"), JOptionPane.YES_NO_CANCEL_OPTION,
 				JOptionPane.QUESTION_MESSAGE,
 				null, yesNo, yesNo[0]);

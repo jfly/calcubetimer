@@ -146,9 +146,11 @@ public class VariableKey<H> {
 	public static final VariableKey<Dimension> STATS_DIALOG_DIMENSION = new VariableKey<Dimension>("GUI_StatsDialog_dimension"); //$NON-NLS-1$
 	public static final VariableKey<Dimension> MAIN_FRAME_DIMENSION = new VariableKey<Dimension>("GUI_MainFrame_dimension"); //$NON-NLS-1$
 	public static final VariableKey<Dimension> KEYBOARD_TIMER_DIMENSION = new VariableKey<Dimension>("GUI_KeyboardTimer_dimension"); //$NON-NLS-1$
+	public static final VariableKey<Dimension> IRC_FRAME_DIMENSION = new VariableKey<Dimension>("GUI_IRCFrame_dimension"); //$NON-NLS-1$
 
 	public static final VariableKey<Point> SCRAMBLE_VIEW_LOCATION = new VariableKey<Point>("GUI_ScrambleView_location"); //$NON-NLS-1$
 	public static final VariableKey<Point> MAIN_FRAME_LOCATION = new VariableKey<Point>("GUI_MainFrame_location"); //$NON-NLS-1$
+	public static final VariableKey<Point> IRC_FRAME_LOCATION = new VariableKey<Point>("GUI_IRCFrame_location"); //$NON-NLS-1$
 
 	public static final VariableKey<Color> TIMER_BG = new VariableKey<Color>("GUI_Timer_Color_background"); //$NON-NLS-1$
 	public static final VariableKey<Color> TIMER_FG = new VariableKey<Color>("GUI_Timer_Color_foreground"); //$NON-NLS-1$

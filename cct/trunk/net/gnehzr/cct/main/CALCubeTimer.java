@@ -576,7 +576,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			addActionListener(this);
 			setColumns(10);
 			putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
-			setToolTipText("Type new generator group and press enter"); //TODO - i18n
+			setToolTipText(StringAccessor.getString("CALCubeTimer.generatorgroup"));
 		}
 		public void actionPerformed(ActionEvent e) {
 			setText(getText());
@@ -1455,6 +1455,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		Configuration.setPoint(VariableKey.SCRAMBLE_VIEW_LOCATION, scramblePopup.getLocation());
 		Configuration.setDimension(VariableKey.MAIN_FRAME_DIMENSION, this.getSize());
 		Configuration.setPoint(VariableKey.MAIN_FRAME_LOCATION, this.getLocation());
+		if(client != null)
+			client.saveToConfiguration();
 
 		for(JSplitPane jsp : splitPanes)
 			Configuration.setInt(VariableKey.JCOMPONENT_VALUE(jsp.getName(), true), jsp.getDividerLocation());

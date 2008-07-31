@@ -217,7 +217,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	private JPanel desktopPanel;
 	private JButton refreshDesktops;
 	JComboBox voices;
-	private SolveTypeTagEditorTableModel tagsModel;
+	SolveTypeTagEditorTableModel tagsModel;
 	private JPanel makeStandardOptionsPanel1() {
 		JPanel options = new JPanel();
 		JPanel colorPanel = new JPanel(new GridLayout(0, 1, 0, 5));
@@ -808,7 +808,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		} else if(source == inspectionCountdown) {
 			speakInspection.setEnabled(inspectionCountdown.isSelected());
 		} else if(e.getStateChange() == ItemEvent.SELECTED && source == profiles && !profiles.getSelectedItem().equals(Configuration.getSelectedProfile())) {
-			int choice = Utils.showYesNoCancelDialog(this, "Do you want to save the current profile's configuration before switching?"); //TODO - i18n
+			int choice = Utils.showYesNoCancelDialog(this, StringAccessor.getString("ConfigurationDialog.saveprofile"));
 			if(choice == JOptionPane.YES_OPTION) {
 				applyAndSave();
 			} else if(choice == JOptionPane.NO_OPTION) {
