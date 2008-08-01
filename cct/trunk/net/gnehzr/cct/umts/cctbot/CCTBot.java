@@ -52,7 +52,7 @@ public class CCTBot extends PircBot {
 	
 	public void log(String line) {
 		if(!isConnected())
-			System.out.println(line);
+			println(line);
 	}
 
 	private boolean shuttingdown = false;
@@ -71,35 +71,30 @@ public class CCTBot extends PircBot {
 		}
 	}
 
-	private void printPrompt() {
-		System.out.print("cctbot: ");
-	}
-
 	protected void onKick(String channel, String kickerNick, String kickerLogin, String kickerHostname, String recipientNick, String reason) {
 		if(recipientNick.equals(getNick())) {
-			System.out.println("You have been kicked from " + channel + " by " + kickerNick);
+			println("You have been kicked from " + channel + " by " + kickerNick);
 			printPrompt();
 		}
 	}
 
 	protected void onPart(String channel, String sender, String login, String hostname) {
 		if(sender.equals(getNick())) {
-			System.out.println("You have parted " + channel);
-			printPrompt();
+			println("You have parted " + channel);
 			printPrompt();
 		}
 	}
 
 	protected void onJoin(String channel, String sender, String login, String hostname) {
 		if(sender.equals(getNick())) {
-			System.out.println("You have joined " + channel);
+			println("You have joined " + channel);
 			printPrompt();
 		}
 	}
 
 	protected void onNickChange(String oldNick, String login, String hostname, String newNick) {
 		if(newNick.equals(getNick())) {
-			System.out.println("You (formerly: " + oldNick + ") are now known as " + newNick);
+			println("You (formerly: " + oldNick + ") are now known as " + newNick);
 			printPrompt();
 		}
 	}
@@ -153,7 +148,7 @@ public class CCTBot extends PircBot {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private static final HashMap<String, String> commands = new HashMap<String, String>();
 	private static final String CMD_RELOAD = "reload";
 	{
@@ -187,25 +182,20 @@ public class CCTBot extends PircBot {
 	{
 		commands.put(CMD_HELP, "help (COMMAND)\n\tPrints available variations");
 	}
-	public void readEvalPrint() {
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+	
+	private void printPrompt() {
+		System.out.print("cctbot: ");
+	}
+	private void println(String s) {
+		System.out.println(s);
+	}
 
+	private BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+	public void readEvalPrint() throws IOException {
 		while(true) {
-			try {
-				if(!in.ready())
-					continue;
-			} catch(IOException e2) {
-				e2.printStackTrace();
-				continue;
-			}
 			printPrompt();
-			String line = null;
-			try {
-				line = in.readLine();
-			} catch(Exception e) {
-				e.printStackTrace();
-				continue;
-			}
+			while(!in.ready());
+			String line = in.readLine();
 			
 			String[] commandAndArg = line.trim().split(" +", 2);
 			String command = commandAndArg[0];
@@ -213,32 +203,32 @@ public class CCTBot extends PircBot {
 			if(command.equalsIgnoreCase(CMD_HELP)) {
 				if(arg != null) {
 					String usage = commands.get(arg);
-					System.out.println(usage == null ? "Command " + arg + " not found." : "USAGE: " + usage);
+					println(usage == null ? "Command " + arg + " not found." : "USAGE: " + usage);
 				}
 				if(arg == null) {
 					StringBuilder cmds = new StringBuilder();
 					for(String c : commands.keySet())
 						cmds.append(", ").append(c);
-					System.out.println("Available commands:\n\t" + cmds.substring(2));
+					println("Available commands:\n\t" + cmds.substring(2));
 				}
 				continue;
 			} else if(command.equalsIgnoreCase(CMD_RELOAD)) {
-				System.out.println("Reloading scramble plugins...");
+				println("Reloading scramble plugins...");
 				ScramblePlugin.clearScramblePlugins();
-				System.out.println(getAvailableVariations());
+				println(getAvailableVariations());
 				continue;
 			} else if(command.equalsIgnoreCase(CMD_CHANNELS)) {
-				System.out.println("Connected to: " + Arrays.toString(getChannels()));
+				println("Connected to: " + Arrays.toString(getChannels()));
 				continue;
 			} else if(command.equalsIgnoreCase(CMD_JOIN)) {
 				if(arg != null && arg.startsWith("#")) {
-					System.out.println("Attempting to join " + arg);
+					println("Attempting to join " + arg);
 					joinChannel(arg);
 					continue;
 				}
 			} else if(command.equalsIgnoreCase(CMD_PART)) {
 				if(arg != null && arg.startsWith("#")) {
-					System.out.println("Leaving " + arg);
+					println("Leaving " + arg);
 					partChannel(arg);
 					continue;
 				}
@@ -248,18 +238,18 @@ public class CCTBot extends PircBot {
 					continue;
 				}
 			} else if(command.equalsIgnoreCase(CMD_LSVARIATIONS)) {
-				System.out.println(getAvailableVariations());
+				println(getAvailableVariations());
 				continue;
 			} else if(command.equalsIgnoreCase(CMD_QUIT)) {
 				shuttingdown = true;
 				quitServer();
-				System.out.println("Exiting cctbot");
+				println("Exiting cctbot");
 				System.exit(0);
 				continue;
 			}
 			
 			String usage = commands.get(command);
-			System.out.println(usage == null ? "Unrecognized command: " + command + ". Try help." : "USAGE: " + usage);
+			println(usage == null ? "Unrecognized command: " + command + ". Try help." : "USAGE: " + usage);
 		}
 	}
 }
