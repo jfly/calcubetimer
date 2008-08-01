@@ -77,7 +77,6 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	// TODO - disable ctrl+tab for swing components
 	// TODO - click and drag buttons
 	// TODO - internationalize? urrghhh....
-	// TODO - save gui state to configuration
 	// TODO - how to save state of the user tables for each message frame?
 	// synchronize them somehow?
 
@@ -161,6 +160,8 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		pane.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, IRCClientGUI.WATERMARK);
 		desk.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, IRCClientGUI.WATERMARK);
 		windows.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, IRCClientGUI.WATERMARK);
+		windows.setRollover(false);
+		windows.setFloatable(false);
 		pane.add(desk, BorderLayout.CENTER);
 		pane.add(windows, BorderLayout.PAGE_START);
 		statusBar = new JLabel() {
@@ -170,7 +171,6 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		};
 		statusBar.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 		pane.add(statusBar, BorderLayout.PAGE_END);
-		windows.setRollover(false);
 
 		clientFrame = new JFrame("Client") {
 			public void dispose() {
@@ -527,6 +527,8 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		}
 	}
 
+	//TODO - abbreviations
+	//TODO - join w/o number sign
 	private static HashMap<String, String> cmdHelp = new HashMap<String, String>();
 	private static final String CMD_JOIN = "/join";
 	{
@@ -536,9 +538,9 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	{
 		cmdHelp.put(CMD_QUIT, "/quit (REASON)");
 	}
-	private static final String CMD_SERVER = "/server";
+	private static final String CMD_CONNECT = "/connect";
 	{
-		cmdHelp.put(CMD_SERVER, "/server (SERVER)");
+		cmdHelp.put(CMD_CONNECT, "/server (SERVER)");
 	}
 	private static final String CMD_MESSAGE = "/msg";
 	{
@@ -612,7 +614,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 				else
 					quitServer(arg);
 				return;
-			} else if(command.equalsIgnoreCase(CMD_SERVER)) {
+			} else if(command.equalsIgnoreCase(CMD_CONNECT)) {
 				if(arg != null)
 					server.setSelectedItem(arg);
 				if(isConnected())
@@ -942,12 +944,19 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 
 	private void forkConnect(String hostname) {
 		final String[] urlAndPort = hostname.split(":");
-		final int port = urlAndPort.length == 2 ? Integer.parseInt(urlAndPort[1]) : 6667;
+		int port = -1;
+		try {
+			port = Integer.parseInt(urlAndPort[1]);
+		} catch(Exception e) {}
+		final int PORT = port;
 		serverFrame.setTitle("Connecting to " + urlAndPort[0] + ":" + port);
 		connectThread = new Thread() {
 			public void run() {
 				try {
-					connect(urlAndPort[0], port);
+					if(PORT != -1)
+						connect(urlAndPort[0], PORT);
+					else
+						connect(urlAndPort[0]);
 				} catch(final Exception e) {
 					e.printStackTrace();
 					if(isConnected())

@@ -213,6 +213,8 @@ changes:
 +restore focus to timer after right clicking time
 +fixed sunday contest, added javascript validation (emailed jon morris 7/14/08)
 	+added "details" button to the server response dialog
+	
+undocumented:
 +copy by double click for scramble field
 +improvaed shutdown of cct, test command q with os x (dan cohen)
 +split screen scramble (accessible via right click or configdialog)
