@@ -26,6 +26,7 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.swing.BorderFactory;
@@ -164,7 +165,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		pane.add(windows, BorderLayout.PAGE_START);
 		statusBar = new JLabel() {
 			public void setText(String text) {
-				super.setText("CCT/IRC Status: " + text);
+				super.setText("<html>" + "CCT/IRC Status: " + text + "</html>");
 			}
 		};
 		statusBar.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
@@ -529,7 +530,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	private static HashMap<String, String> cmdHelp = new HashMap<String, String>();
 	private static final String CMD_JOIN = "/join";
 	{
-		cmdHelp.put(CMD_JOIN, "/join CHANNEL");
+		cmdHelp.put(CMD_JOIN, "/join #CHANNEL");
 	}
 	private static final String CMD_QUIT = "/quit";
 	{
@@ -545,7 +546,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	}
 	private static final String CMD_PART = "/part";
 	{
-		cmdHelp.put(CMD_PART, "/part (CHANNEL)");
+		cmdHelp.put(CMD_PART, "/part (#CHANNEL)");
 	}
 	private static final String CMD_NICK = "/nick";
 	{
@@ -562,6 +563,16 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	private static final String CMD_ME = "/me";
 	{
 		cmdHelp.put(CMD_ME, "/me ACTION");
+	}
+	private static final String CMD_CHANNELS = "/channels";
+	{
+		cmdHelp.put(CMD_CHANNELS, "/channels");
+	}
+	private static final String CMD_CCTSTATS = "/cctstats";
+	{
+		cmdHelp.put(CMD_CCTSTATS, "/cctstats #COMMCHANNEL" + "\n\t" + "Sets the channel used for communication of CCT status between CCT users. "
+				+ "Only use this if the default channel isn't working, perhaps because everyone else is connected to a different channel. "
+				+ "You must type this command from channel which you want to display everyone's CCT status.");
 	}
 	private static final String CMD_HELP = "/help";
 	{
@@ -591,7 +602,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 				}
 				return;
 			} else if(command.equalsIgnoreCase(CMD_JOIN)) {
-				if(arg != null) {
+				if(arg != null && arg.startsWith("#")) {
 					joinChannel(arg);
 					return;
 				}
@@ -618,9 +629,11 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 				}
 			} else if(command.equalsIgnoreCase(CMD_PART)) {
 				if(arg != null) {
-					partChannel(arg);
-					return;
-				} else if(src != serverFrame) {
+					if(arg.startsWith("#")) {
+						partChannel(arg);
+						return;
+					}
+				} else if(src.getName().startsWith("#")) {
 					partChannel(src.getName());
 					return;
 				}
@@ -642,6 +655,15 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 					sendAction(getNick(), arg);
 					return;
 				}
+			} else if(command.equalsIgnoreCase(CMD_CCTSTATS)) {
+				if(arg != null && arg.startsWith("#") && src.getName().startsWith("#")) {
+					CCTChannel chatChannel = channelMap.get(channelMap.get(src.getName()).getChannel());
+					setCommChannel(chatChannel, arg);
+					return;
+				}
+			} else if(command.equalsIgnoreCase(CMD_CHANNELS)) {
+				src.appendInformation("Connected to: " + Arrays.toString(getChannels()));
+				return;
 			}
 			String usage = cmdHelp.get(command);
 			src.appendInformation(usage == null ? "Unrecognized command: " + command : "USAGE: " + usage);
@@ -943,11 +965,9 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		connectThread.start();
 	}
 
-	/***
-	 * What follows is code to connect to a secondary channel for CCT status
-	 * messages
-	 ***/
+	/*** What follows is code to connect to a secondary channel for CCT status messages ***/
 
+	//TODO - if this got separated into CCTChatChannel and CCTCommChannel, things would probably be a lot more manageable
 	private static class CCTChannel {
 		private String channelName;
 		public HashMap<String, CCTUser> users;
@@ -1009,25 +1029,38 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	private void joinedChannel(String chan) {
 		CCTChannel otherChannel = channelMap.get(chan);
 		if(otherChannel == null) {
-			CCTChannel channel = new CCTChannel(chan, false);
-			otherChannel = new CCTChannel(chan + "-cct", true);
-			joinChannel(otherChannel.getChannel());
-			verifyCommChannels.start(); // this will check in 1 second to see if
-			// we've connected to the channel
-			channelMap.put(channel.getChannel(), otherChannel);
-			channelMap.put(otherChannel.getChannel(), channel);
+			setCommChannel(new CCTChannel(chan, false), chan + "-cct");
 		} else if(!otherChannel.isCommChannel()) {
-			// this means we just joined a commChannel, so we're going to
-			// populate our CCTUser list
+			// this means we just joined a commChannel, so we're going to populate our CCTUser list
 			for(User u : getUsers(chan))
 				otherChannel.users.put(u.getNick(), new CCTUser(u.getNick()));
 			channelFrames.get(otherChannel.getChannel()).setCCTUsers(otherChannel.users.values().toArray(new CCTUser[0]));
-			sendUserstate(chan); // let everyone on the commChannel know our
-			// userstate
+			sendUserstate(chan); // let everyone on the commChannel know our userstate
 		}
 		updateStatusBar();
 	}
-
+	
+	//if newCommChannel == null, we'll just add an attempt and try again
+	//otherwise, we'll use newCommChannel as the new comm channel
+	private void setCommChannel(CCTChannel chatChannel, String newCommChannel) {
+		CCTChannel commChannel = channelMap.get(chatChannel.channelName);
+		if(commChannel != null) { //it'll be null if we've never connected to a commchannel for the chat channel before
+			channelMap.remove(commChannel.getChannel());
+			if(isConnectedToChannel(commChannel.getChannel()))
+				partChannel(commChannel.getChannel());
+		}
+		if(newCommChannel == null && commChannel != null)
+			commChannel.addAttempt();
+		else
+			commChannel = new CCTChannel(newCommChannel, true);
+		
+		chatChannel.users.clear(); // need to force the cctusers list to update
+		joinChannel(commChannel.getChannel());
+		channelMap.put(chatChannel.getChannel(), commChannel);
+		channelMap.put(commChannel.getChannel(), chatChannel);
+		verifyCommChannels.start();
+	}
+	
 	// this timer will check every 1 second for unconnected comm channels
 	private Timer verifyCommChannels = new Timer(1000, new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -1037,13 +1070,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 					CCTChannel commChannel = channelMap.get(chatChannel.getChannel());
 					if(commChannel != null && !isConnectedToChannel(commChannel.getChannel())) {
 						alliswell = false;
-						channelMap.remove(commChannel.getChannel());
-						commChannel.addAttempt();
-						chatChannel.users.clear(); // need to force the cctusers
-						// list to update
-						joinChannel(commChannel.getChannel());
-						channelMap.put(chatChannel.getChannel(), commChannel);
-						channelMap.put(commChannel.getChannel(), chatChannel);
+						setCommChannel(chatChannel, null);
 					}
 				}
 			}
@@ -1131,8 +1158,12 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			if(!channel.isCommChannel()) {
 				status.append(", ").append(channel.getChannel()).append("->");
 				CCTChannel c = channelMap.get(channel.getChannel());
-				if(c != null && isConnectedToChannel(c.getChannel()))
-					status.append(c.getChannel());
+				if(c != null) {
+					String commChan = c.getChannel();
+					if(!isConnectedToChannel(c.getChannel()))
+						commChan = "<strike>" + commChan + "</strike>";
+					status.append(commChan);
+				}
 			}
 		}
 		if(status.length() == 0)
