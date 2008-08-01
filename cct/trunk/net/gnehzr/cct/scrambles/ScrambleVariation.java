@@ -55,6 +55,10 @@ public class ScrambleVariation {
 	public Scramble generateScramble() {
 		return scramblePlugin.newScramble(variation, length, scramblePlugin.getDefaultGeneratorGroup(this), scramblePlugin.getEnabledPuzzleAttributes());
 	}
+	
+	public Scramble generateScrambleFromGroup(String generatorGroup) {
+		return scramblePlugin.newScramble(variation, length, generatorGroup, scramblePlugin.getEnabledPuzzleAttributes());
+	}
 
 	public Scramble generateScramble(String scramble) throws InvalidScrambleException {
 		return scramblePlugin.importScramble(variation, scramble, scramblePlugin.getDefaultGeneratorGroup(this), scramblePlugin.getEnabledPuzzleAttributes());

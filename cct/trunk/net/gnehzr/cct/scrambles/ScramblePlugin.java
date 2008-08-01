@@ -97,6 +97,8 @@ public class ScramblePlugin {
 	}
 	
 	public static ScrambleCustomization getCustomizationFromVariation(ScrambleVariation sv) {
+		if(sv == null)
+			return null;
 		return getCustomizationFromString(sv.toString());
 	}
 	public static ScrambleCustomization getCustomizationFromString(String customName) {
