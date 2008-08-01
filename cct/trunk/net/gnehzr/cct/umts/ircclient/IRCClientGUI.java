@@ -230,11 +230,36 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	}
 
 	public boolean postProcessKeyEvent(KeyEvent e) {
-		if(e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_TAB && !e.isAltDown() && !e.isMetaDown() && e.isControlDown()) {
-			switchToNextFrame(!e.isShiftDown());
-			return true;
+		int keycode = e.getKeyCode();
+		if(e.getID() == KeyEvent.KEY_PRESSED){
+			if(keycode == KeyEvent.VK_TAB && !e.isAltDown() && !e.isMetaDown() && e.isControlDown()) {
+				switchToNextFrame(!e.isShiftDown());
+				return true;
+			}
+			if((keycode == KeyEvent.VK_LEFT || keycode == KeyEvent.VK_RIGHT) && e.isAltDown() && !e.isMetaDown() && !e.isControlDown()) {
+				switchToNextFrame(keycode == KeyEvent.VK_RIGHT);
+				return true;
+			}
+			if((keycode == KeyEvent.VK_N || keycode == KeyEvent.VK_P) && !e.isAltDown() && !e.isMetaDown() && e.isControlDown()) {
+				switchToNextFrame(keycode == KeyEvent.VK_N);
+				return true;
+			}
+			if((KeyEvent.VK_0 <= keycode && keycode <= KeyEvent.VK_9) && (e.isAltDown() || e.isMetaDown()) && !e.isShiftDown() && !e.isControlDown()) {
+				int n = keycode - KeyEvent.VK_0 - 1;
+				if(keycode < 0) n = 9;
+				switchToFrame(n);
+			}
 		}
 		return false;
+	}
+
+	private void switchToFrame(int n) {
+		Component[] buttons = windows.getComponents();
+		if(0 <= n && n < buttons.length){
+			MinimizedInternalFrameButton next = (MinimizedInternalFrameButton) buttons[n];
+			if(!next.f.isSelected() || !next.f.isVisible())
+				next.doClick();
+		}
 	}
 
 	private void switchToNextFrame(boolean forward) {

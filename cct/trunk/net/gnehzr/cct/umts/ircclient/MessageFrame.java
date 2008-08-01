@@ -142,6 +142,16 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	
 	public void keyPressed(KeyEvent e) {
 		switch(e.getKeyCode()) {
+			/*
+			case KeyEvent.VK_P:
+				if(e.isAltDown())
+					messagePane.dispatchEvent(new KeyEvent(this, 0, 0, 0, KeyEvent.VK_PAGE_UP, KeyEvent.CHAR_UNDEFINED));
+				break;
+			case KeyEvent.VK_N:
+				if(e.isAltDown())
+					messagePane.dispatchEvent(new KeyEvent(this, 0, 0, 0, KeyEvent.VK_PAGE_DOWN, KeyEvent.CHAR_UNDEFINED));
+				break;
+				*/
 			case KeyEvent.VK_PAGE_UP:
 			case KeyEvent.VK_PAGE_DOWN:
 				messagePane.dispatchEvent(e);
@@ -156,6 +166,7 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 					nthCommand++;
 				synchChatField();
 				break;
+			case KeyEvent.VK_W:
 			case KeyEvent.VK_BACK_SPACE: //these two needed to be added because substance is stupid
 				if(e.isControlDown())
 					chatField.getActionMap().get(DefaultEditorKit.deletePrevWordAction).actionPerformed(new ActionEvent(chatField, 0, ""));
@@ -164,6 +175,16 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 				if(e.isControlDown())
 					chatField.getActionMap().get(DefaultEditorKit.deleteNextWordAction).actionPerformed(new ActionEvent(chatField, 0, ""));
 				break;
+				/*
+			case KeyEvent.VK_A:
+				if(e.isControlDown())
+					messagePane.dispatchEvent(new KeyEvent(this, 0, 0, 0, KeyEvent.VK_HOME, KeyEvent.CHAR_UNDEFINED));
+				break;
+			case KeyEvent.VK_E:
+				if(e.isControlDown())
+					messagePane.dispatchEvent(new KeyEvent(this, 0, 0, 0, KeyEvent.VK_END, KeyEvent.CHAR_UNDEFINED));
+				break;
+				*/
 			case KeyEvent.VK_HOME:
 			case KeyEvent.VK_END:
 				if(e.isControlDown())
