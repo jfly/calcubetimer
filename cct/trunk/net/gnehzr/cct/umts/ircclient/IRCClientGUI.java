@@ -528,11 +528,10 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	}
 
 	//TODO - abbreviations
-	//TODO - join w/o number sign
-	private static HashMap<String, String> cmdHelp = new HashMap<String, String>();
+	public static final HashMap<String, String> cmdHelp = new HashMap<String, String>();
 	private static final String CMD_JOIN = "/join";
 	{
-		cmdHelp.put(CMD_JOIN, "/join #CHANNEL");
+		cmdHelp.put(CMD_JOIN, "/join #CHANNEL" + "\nJoins #CHANNEL on the current server. The # sign is optional.");
 	}
 	private static final String CMD_QUIT = "/quit";
 	{
@@ -548,7 +547,9 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	}
 	private static final String CMD_PART = "/part";
 	{
-		cmdHelp.put(CMD_PART, "/part (#CHANNEL)");
+		cmdHelp.put(CMD_PART, "/part (#CHANNEL) (REASON)" + "\nLeaves #CHANNEL (optional if you're typing " +
+				"the message from the channel you wish to part). The # sign is required. You may also " +
+				"specify a REASON for people to see when you leave." );
 	}
 	private static final String CMD_NICK = "/nick";
 	{
@@ -604,7 +605,9 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 				}
 				return;
 			} else if(command.equalsIgnoreCase(CMD_JOIN)) {
-				if(arg != null && arg.startsWith("#")) {
+				if(arg != null) {
+					if(!arg.startsWith("#"))
+						arg = "#" + arg;
 					joinChannel(arg);
 					return;
 				}
@@ -630,13 +633,26 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 					}
 				}
 			} else if(command.equalsIgnoreCase(CMD_PART)) {
+				String channel = null, reason = null;
+				if(src.getName().startsWith("#"))
+					channel = src.getName();
 				if(arg != null) {
-					if(arg.startsWith("#")) {
-						partChannel(arg);
-						return;
+					String[] chan_reason = arg.split(" +", 2);
+					if(chan_reason.length == 2) {
+						channel = chan_reason[0];
+						reason = chan_reason[1];
+					} else { //length == 1
+						if(chan_reason[0].startsWith("#"))
+							channel = chan_reason[0];
+						else
+							reason = chan_reason[0];
 					}
-				} else if(src.getName().startsWith("#")) {
-					partChannel(src.getName());
+				}
+				if(channel != null) {
+					if(reason == null)
+						partChannel(channel);
+					else
+						partChannel(channel, reason);
 					return;
 				}
 			} else if(command.equalsIgnoreCase(CMD_NICK)) {

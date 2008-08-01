@@ -29,6 +29,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.event.InternalFrameAdapter;
@@ -54,7 +56,7 @@ import org.jibble.pircbot.User;
 import org.jvnet.lafwidget.LafWidget;
 import org.jvnet.substance.SubstanceLookAndFeel;
 
-public class MessageFrame extends JInternalFrame implements ActionListener, HyperlinkListener, KeyListener {
+public class MessageFrame extends JInternalFrame implements ActionListener, HyperlinkListener, KeyListener, DocumentListener {
 	private static final Timer messageAppender = new Timer(30, null);
 	private static final boolean wrap = true;
 
@@ -100,6 +102,8 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		
 
 		chatField = new JTextField();
+		chatField.getDocument().addDocumentListener(this);
+		chatField.setFocusTraversalKeysEnabled(false);
 		chatField.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, IRCClientGUI.WATERMARK);
 		chatField.setFont(mono);
 		chatField.addActionListener(this);
@@ -165,8 +169,48 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 				if(e.isControlDown())
 					messagePane.dispatchEvent(e);
 				break;
+			case KeyEvent.VK_TAB:
+				if(e.isControlDown()) {
+					//we need to pass this on to the desktop manager
+					messagePane.dispatchEvent(e);
+				} else {
+					ignoreUpdate = true;
+					chatField.setText(getNextString(!e.isShiftDown()));
+					ignoreUpdate = false;
+				}
+				break;
+			case KeyEvent.VK_ESCAPE:
+				chatField.setText("");
+				break;
 		}
 	}
+	private boolean ignoreUpdate = false;
+	public void changedUpdate(DocumentEvent e) {}
+
+	public void insertUpdate(DocumentEvent e) {
+		if(!ignoreUpdate)
+			incomplete = null;
+	}
+
+	public void removeUpdate(DocumentEvent e) {
+		if(!ignoreUpdate)
+			incomplete = null;
+	}
+	private String incomplete;
+	private String getNextString(boolean forward) {
+		if(incomplete == null)
+			incomplete = chatField.getText().toLowerCase();
+		
+		ArrayList<String> options = new ArrayList<String>();
+		for(String cmd : IRCClientGUI.cmdHelp.keySet())
+			if(cmd.toLowerCase().startsWith(incomplete))
+				options.add(cmd);
+		if(options.isEmpty())
+			return chatField.getText();
+
+		return options.get((options.indexOf(chatField.getText().toLowerCase()) + (forward ? 1 : options.size() - 1)) % options.size());
+	}
+	
 	private void synchChatField() {
 		chatField.setText(nthCommand < commands.size() ? commands.get(nthCommand) : "");
 	}
