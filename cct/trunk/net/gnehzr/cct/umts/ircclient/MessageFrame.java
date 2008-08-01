@@ -25,6 +25,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
@@ -56,8 +57,6 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	private static final Timer messageAppender = new Timer(30, null);
 	private static final boolean wrap = true;
 
-	// TODO - disable ctrl+backspace doesn't work
-	
 	private JEditorPane messagePane;
 	private DraggableJTable usersTable;
 	private CCTUserTableModel usersTableModel;
@@ -81,7 +80,7 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		messagePane.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 		messagePane.addHyperlinkListener(this);
 		resetMessagePane();
-		msgScroller = new JScrollPane(messagePane);
+		msgScroller = new JScrollPane(messagePane, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		messagePane.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, IRCClientGUI.WATERMARK);
 		
 		if(userTable) {
@@ -115,7 +114,7 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		} catch (PropertyVetoException e) {
 			e.printStackTrace();
 		}
-		setPreferredSize(new Dimension(400, 300));
+		setPreferredSize(new Dimension(450, 300));
 		this.addInternalFrameListener(new InternalFrameAdapter() {
 			public void internalFrameActivated(InternalFrameEvent e) {
 				chatField.requestFocusInWindow();
@@ -138,20 +137,25 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	
 	public void keyPressed(KeyEvent e) {
 		switch(e.getKeyCode()) {
-		case KeyEvent.VK_PAGE_UP:
-		case KeyEvent.VK_PAGE_DOWN:
-			messagePane.dispatchEvent(e);
-			break;
-		case KeyEvent.VK_UP:
-			if(nthCommand > 0)
-				nthCommand--;
-			synchChatField();
-			break;
-		case KeyEvent.VK_DOWN:
-			if(nthCommand < commands.size())
-				nthCommand++;
-			synchChatField();
-			break;
+			case KeyEvent.VK_PAGE_UP:
+			case KeyEvent.VK_PAGE_DOWN:
+				messagePane.dispatchEvent(e);
+				break;
+			case KeyEvent.VK_UP:
+				if(nthCommand > 0)
+					nthCommand--;
+				synchChatField();
+				break;
+			case KeyEvent.VK_DOWN:
+				if(nthCommand < commands.size())
+					nthCommand++;
+				synchChatField();
+				break;
+			case KeyEvent.VK_HOME:
+			case KeyEvent.VK_END:
+				if(e.isControlDown())
+					messagePane.dispatchEvent(e);
+				break;
 		}
 	}
 	private void synchChatField() {
@@ -435,8 +439,9 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		doc.setParser(new ParserDelegator());
 		messagePane.setDocument(doc);
 		messagePane.setText("<html><head><style>" +
-				"a { text-decoration: underline; color: red;} " + 
-				"p { margin-top: 0; white-space: " + (wrap ? "normal" : "nowrap") + "; font-family: " + mono.getFamily() + "; }" +
+				"a { text-decoration: underline; color: red;} " +
+				"p { margin-top: 0; white-space: "
+				+ (wrap ? "normal" : "nowrap") + "; font-family: " + mono.getFamily() + "; }" +
 				"</style></head><body><p id='msgs'></p></body></html>");
 		msgs = doc.getElement("msgs");
 	}
