@@ -120,6 +120,7 @@ import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.scrambles.ScrambleList;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
+import net.gnehzr.cct.scrambles.ScrambleSecurityManager;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 import net.gnehzr.cct.scrambles.TimeoutJob;
 import net.gnehzr.cct.scrambles.ScrambleList.ScrambleString;
@@ -1286,6 +1287,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	static CALCubeTimer cct; //need this instance to be able to easily set the waiting cursor
+	private static ScrambleSecurityManager security;
 	public static void main(String[] args) {
 		//The error messages are not internationalized because I want people to
 		//be able to google the following messages
@@ -1303,7 +1305,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			}
 		}
 
-		System.setSecurityManager(new CCTSecurityManager(TimeoutJob.PLUGIN_LOADER));
+		System.setSecurityManager(security = new ScrambleSecurityManager(TimeoutJob.PLUGIN_LOADER));
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -1608,6 +1610,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	public void configurationChanged() {
+		//we need to notify the security manager ourself, because it may not have any reference to
+		//Configuration for the cctbot to work.
+		security.configurationChanged();
+		
 		boolean stackmatEnabled = Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
 		actionMap.get("keyboardtiming").putValue(Action.SELECTED_KEY, !stackmatEnabled);
 		actionMap.get("togglelessannoyingdisplay").putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.LESS_ANNOYING_DISPLAY, false));

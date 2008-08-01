@@ -9,7 +9,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import net.gnehzr.cct.scrambles.ScramblePlugin;
+import net.gnehzr.cct.scrambles.ScrambleSecurityManager;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
+import net.gnehzr.cct.scrambles.TimeoutJob;
 
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
@@ -29,7 +31,7 @@ public class CCTBot extends PircBot {
 					count = Integer.parseInt(varAndCount[1]);
 				} catch(NumberFormatException e) {}
 			}
-
+try{
 			ScrambleVariation sv = ScramblePlugin.getBestMatchVariation(varAndCount[0]);
 			if(sv != null) {
 				while(count-- > 0) {
@@ -47,6 +49,9 @@ public class CCTBot extends PircBot {
 			} else
 				sendMessage(channel, "Couldn't find scramble variation corresponding to: " + varAndCount[0] + ". " +
 						getAvailableVariations());
+			} catch(Throwable t) {
+				t.printStackTrace();
+			}
 		}
 	}
 	
@@ -108,6 +113,8 @@ public class CCTBot extends PircBot {
 	}
 
 	public static void main(String[] args) {
+		System.setSecurityManager(new ScrambleSecurityManager(TimeoutJob.PLUGIN_LOADER));
+		
 		System.out.println("CCTBot " + CCTBot.class.getPackage().getImplementationVersion());
 		if(args.length != 1) {
 			printUsage();

@@ -25,20 +25,20 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.UIDefaults;
 import javax.swing.plaf.FontUIResource;
 
-import org.jvnet.substance.SubstanceLookAndFeel;
-import org.jvnet.substance.fonts.FontPolicy;
-import org.jvnet.substance.fonts.FontSet;
-
 import net.gnehzr.cct.i18n.LocaleAndIcon;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.statistics.Profile;
 
+import org.jvnet.substance.SubstanceLookAndFeel;
+import org.jvnet.substance.fonts.FontPolicy;
+import org.jvnet.substance.fonts.FontSet;
+
 public final class Configuration {
 	public static final File documentationFile = new File(getRootDirectory(), "documentation/readme.html");
 	public static final File dynamicStringsFile = new File(getRootDirectory(), "documentation/dynamicstrings.html");
 	public static final File profilesFolder = new File(getRootDirectory(), "profiles/"); //$NON-NLS-1$
-	public static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/"); //$NON-NLS-1$
+
 	public static final File voicesFolder = new File(getRootDirectory(), "voices/"); //$NON-NLS-1$
 	public static final File databaseDTD = new File(profilesFolder, "database.dtd"); //$NON-NLS-1$
 	private static final File guiLayoutsFolder = new File(getRootDirectory(), "guiLayouts/"); //$NON-NLS-1$

@@ -23,7 +23,7 @@ public class ScrambleVariation {
 	public Icon getImage() {
 		if(image == null) {
 			try {
-				image = new ImageIcon(new File(Configuration.scramblePluginsFolder, variation + ".png").toURI().toURL()); //$NON-NLS-1$
+				image = new ImageIcon(new File(ScramblePlugin.scramblePluginsFolder, variation + ".png").toURI().toURL()); //$NON-NLS-1$
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 				image = new ImageIcon();
@@ -35,7 +35,7 @@ public class ScrambleVariation {
 	public int getScrambleLength(boolean defaultValue) {
 		try {
 			return Configuration.getInt(VariableKey.SCRAMBLE_LENGTH(this), defaultValue);
-		} catch (Exception e) {}
+		} catch(Throwable e) {} //we don't want things to break even if configuration.class doesn't exists
 		return scramblePlugin.getDefaultScrambleLength(this);
 	}
 

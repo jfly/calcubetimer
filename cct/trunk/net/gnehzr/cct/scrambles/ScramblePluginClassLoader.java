@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
-import net.gnehzr.cct.configuration.Configuration;
-
 public class ScramblePluginClassLoader extends ClassLoader {
 	private HashMap<String, Class<?>> classMap = new HashMap<String, Class<?>>();
 	protected synchronized Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
@@ -35,7 +33,7 @@ public class ScramblePluginClassLoader extends ClassLoader {
 			return null;
 		FileInputStream fi = null;
 		try {
-			fi = new FileInputStream(new File(Configuration.getRootDirectory(), className.replaceAll(Pattern.quote("."), "/") + ".class"));
+			fi = new FileInputStream(new File(ScramblePlugin.getRootDirectory(), className.replaceAll(Pattern.quote("."), "/") + ".class"));
 			byte[] result = new byte[fi.available()];
 			fi.read(result);
 			return defineClass(className, result, 0, result.length, null);

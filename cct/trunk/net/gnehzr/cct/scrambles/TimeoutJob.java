@@ -31,7 +31,10 @@ public final class TimeoutJob {
 		ThreadJob<T> t = new ThreadJob<T>(callMe);
 		t.setContextClassLoader(PLUGIN_LOADER);
 		t.start();
-		Integer timeout = Configuration.getInt(VariableKey.SCRAMBLE_PLUGIN_TIMEOUT, false);
+		Integer timeout = null;
+		try {
+			timeout = Configuration.getInt(VariableKey.SCRAMBLE_PLUGIN_TIMEOUT, false);
+		} catch(Throwable c) {} //we want to be able to handle no configuration at all
 		if(timeout == null)
 			timeout = 1000;
 		try {

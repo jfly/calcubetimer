@@ -21,7 +21,7 @@
 	
 	<property name="dist" location="dist"/>
 	<property name="dist.cct" location="${dist}/cct ${version.cct}/"/>
-	<property name="dist.diagnostics" location="${dist}/diagnostics ${version.diagnostics}/"/>
+	<property name="dist.diagnostics" location="${dist}/cct-diagnostics ${version.diagnostics}/"/>
 	<property name="dist.cctbot" location="${dist}/cctbot ${version.cctbot}/"/>
 	<target name="dist" depends="compile, emptydist, diagnostics, cct, cctbot" description="Main distribution">
 		<echo>Building everything!</echo>
@@ -75,9 +75,15 @@
 					<attribute name="Implementation-Version" value="${version.cctbot}"/>
 				</section>
 			</manifest>
-			<fileset dir="." includes="net/gnehzr/cct/umts/cctbot/**, net/gnehzr/cct/umts/*"/>
+			<fileset dir="." includes="net/gnehzr/cct/umts/cctbot/**, net/gnehzr/cct/umts/*, net/gnehzr/cct/scrambles/**"/>
 			<zipfileset src="pircbot.jar"/>
 		</jar>
+		<copy todir="${dist.cctbot}">
+			<fileset dir=".">
+				<include name="scramblePlugins/*.class"/>
+				<include name="scramblePlugin.policy"/>
+			</fileset>
+		</copy>
 	</target>
 	
 	<target name="cct" depends="compile, emptydist" description="Compresses CCT main executable and dependencies.">

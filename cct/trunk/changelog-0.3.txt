@@ -227,6 +227,8 @@ undocumented:
 	+add draggable jtable to config dialog
 	+add column to timestable?
 +add profile chooser to bottom of configdialog
++java -cp CALCubeTimer.jar net.gnehzr.cct.umts.cctbot.CCTBot irc://localhost#hiya
+	-get cctbot to run w/o configuration
 
 TODO:
 

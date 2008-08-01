@@ -11,6 +11,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
@@ -24,20 +25,34 @@ public class ScramblePlugin {
 	public static final ScrambleCustomization NULL_SCRAMBLE_CUSTOMIZATION = new ScrambleCustomization(new ScrambleVariation(new ScramblePlugin("X"), ""), null);
 	public static final String SCRAMBLE_PLUGIN_PACKAGE = "scramblePlugins."; //$NON-NLS-1$
 	private static final String PLUGIN_EXTENSION = ".class"; //$NON-NLS-1$
+	public static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/"); //$NON-NLS-1$
+	public static File getRootDirectory() { //this is duplicated from configuration
+		File root = null;
+		try {
+			root = new File(ScramblePlugin.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+			if(root.isFile())
+				root = root.getParentFile();
+		} catch(URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return root;
+	}
+	
 	
 	private static ArrayList<ScramblePlugin> scramblePlugins;
 	public static ArrayList<ScramblePlugin> getScramblePlugins() {
-		File pluginFolder = Configuration.scramblePluginsFolder;
-		if(scramblePlugins == null && pluginFolder.isDirectory()) {
+		if(scramblePlugins == null) {
 			scramblePlugins = new ArrayList<ScramblePlugin>();
-			for(File plugin : pluginFolder.listFiles()) {
-				if(!plugin.getName().endsWith(".class") || plugin.getName().indexOf('$') != -1) //$NON-NLS-1$
-					continue;
-				try {
-					scramblePlugins.add(new ScramblePlugin(plugin));
-				} catch(Exception ee) {
-					System.err.println("Failed to load: " + plugin);
-					ee.printStackTrace();
+			if(scramblePluginsFolder.isDirectory()) {
+				for(File plugin : scramblePluginsFolder.listFiles()) {
+					if(!plugin.getName().endsWith(".class") || plugin.getName().indexOf('$') != -1) //$NON-NLS-1$
+						continue;
+					try {
+						scramblePlugins.add(new ScramblePlugin(plugin));
+					} catch(Exception ee) {
+						System.err.println("Failed to load: " + plugin);
+						ee.printStackTrace();
+					}
 				}
 			}
 		}
@@ -166,7 +181,9 @@ public class ScramblePlugin {
 	}
 	public String[] getEnabledPuzzleAttributes() {
 		if(attributes == null) {
-			attributes = Configuration.getStringArray(VariableKey.PUZZLE_ATTRIBUTES(this), false);
+			try {
+				attributes = Configuration.getStringArray(VariableKey.PUZZLE_ATTRIBUTES(this), false);
+			} catch(Throwable t) {} //we want this to work, even if there's no configuration
 			if(attributes == null)
 				attributes = DEFAULT_ATTRIBUTES;
 		}
