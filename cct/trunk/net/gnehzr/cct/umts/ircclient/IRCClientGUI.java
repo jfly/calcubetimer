@@ -71,7 +71,6 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 
 public class IRCClientGUI extends PircBot implements CommandListener, ActionListener, DesktopManager, KeyEventPostProcessor, ConfigurationChangeListener {
 	public static final Boolean WATERMARK = false;
-	private static final String VERSION = "0.1";
 	private static final String SERVER_FRAME = "serverframe";
 
 	// TODO - disable ctrl+tab for swing components
@@ -172,7 +171,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		statusBar.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 		pane.add(statusBar, BorderLayout.PAGE_END);
 
-		clientFrame = new JFrame("Client") {
+		clientFrame = new JFrame("CCT/IRC Client " + IRCClientGUI.class.getPackage().getImplementationVersion()) {
 			public void dispose() {
 				IRCClientGUI.this.disconnect();
 				if(IRCClientGUI.this.cct == null)

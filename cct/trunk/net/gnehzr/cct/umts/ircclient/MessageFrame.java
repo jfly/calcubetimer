@@ -142,16 +142,18 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	
 	public void keyPressed(KeyEvent e) {
 		switch(e.getKeyCode()) {
-			/*
 			case KeyEvent.VK_P:
-				if(e.isAltDown())
-					messagePane.dispatchEvent(new KeyEvent(this, 0, 0, 0, KeyEvent.VK_PAGE_UP, KeyEvent.CHAR_UNDEFINED));
+				if(e.isAltDown() || e.isControlDown())
+					messagePane.dispatchEvent(new KeyEvent(messagePane, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_PAGE_UP,
+							KeyEvent.CHAR_UNDEFINED,
+							KeyEvent.KEY_LOCATION_STANDARD));
 				break;
 			case KeyEvent.VK_N:
-				if(e.isAltDown())
-					messagePane.dispatchEvent(new KeyEvent(this, 0, 0, 0, KeyEvent.VK_PAGE_DOWN, KeyEvent.CHAR_UNDEFINED));
+				if(e.isAltDown() || e.isControlDown())
+					messagePane.dispatchEvent(new KeyEvent(messagePane, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_PAGE_DOWN,
+							KeyEvent.CHAR_UNDEFINED,
+							KeyEvent.KEY_LOCATION_STANDARD));
 				break;
-				*/
 			case KeyEvent.VK_PAGE_UP:
 			case KeyEvent.VK_PAGE_DOWN:
 				messagePane.dispatchEvent(e);
@@ -175,20 +177,15 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 				if(e.isControlDown())
 					chatField.getActionMap().get(DefaultEditorKit.deleteNextWordAction).actionPerformed(new ActionEvent(chatField, 0, ""));
 				break;
-				/*
 			case KeyEvent.VK_A:
+			case KeyEvent.VK_HOME:
 				if(e.isControlDown())
-					messagePane.dispatchEvent(new KeyEvent(this, 0, 0, 0, KeyEvent.VK_HOME, KeyEvent.CHAR_UNDEFINED));
+					scrollToTop();
 				break;
 			case KeyEvent.VK_E:
-				if(e.isControlDown())
-					messagePane.dispatchEvent(new KeyEvent(this, 0, 0, 0, KeyEvent.VK_END, KeyEvent.CHAR_UNDEFINED));
-				break;
-				*/
-			case KeyEvent.VK_HOME:
 			case KeyEvent.VK_END:
 				if(e.isControlDown())
-					messagePane.dispatchEvent(e);
+					scrollToBottom();
 				break;
 			case KeyEvent.VK_TAB:
 				if(e.isControlDown()) {
@@ -485,6 +482,10 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	private boolean isAtBottom() {
 		JScrollBar vertScroller = msgScroller.getVerticalScrollBar();
 		return vertScroller.getValue() + vertScroller.getVisibleAmount() == vertScroller.getMaximum();
+	}
+	void scrollToTop() {
+		JScrollBar vertScroller = msgScroller.getVerticalScrollBar();
+		vertScroller.setValue(vertScroller.getMinimum());
 	}
 	void scrollToBottom() {
 		JScrollBar vertScroller = msgScroller.getVerticalScrollBar();

@@ -1,5 +1,13 @@
-package net.gnehzr.cct.diagnostics;
-import javax.sound.sampled.*;
+package net.gnehzr.notcct.diagnostics;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Date;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.TargetDataLine;
 
 public class RawAudio implements Runnable{
 	private final static int samplingRate = 44100;
@@ -18,7 +26,7 @@ public class RawAudio implements Runnable{
 	}
 
 	public void run(){
-		int currentSample = 0;
+		int currentSample = 0, lastSample = 0;
 		byte[] buffer = new byte[bytesPerSample * frames];
 
 		int max = Integer.MIN_VALUE, min = Integer.MAX_VALUE;
@@ -34,16 +42,36 @@ public class RawAudio implements Runnable{
 					currentSample |= buffer[bytesPerSample*c+i] << (i * 8); //we don't mask with 255 so we don't lost the sign
 					if(currentSample < min) min = currentSample;
 					if(currentSample > max) max = currentSample;
-					if(c % 2 == 0) //this masks out one channel entirely
-						System.out.println(currentSample);// + "\t" + min + "\t" + max + "\t" + (max - min));
+					if(c % 2 == 0) { //this masks out one channel entirely
+						try {
+							out.write(lastSample + "\t" + currentSample + "\r\n"); // + "\t" + min + "\t" + max + "\t" + (max - min));
+						} catch(IOException e) {
+							e.printStackTrace();
+						}
+					}
+					lastSample = currentSample;
 				}
 			}
 		}
 	}
 
-	public static void main(String[] args) throws Exception{
+	private static FileWriter out;
+	public static void main(String[] args) throws Exception {
+		int attempt = 0;
+		File f;
+		while((f = new File("cct" + (attempt++) + ".stats")).exists());
+		out = new FileWriter(f);
+
+		out.write(new Date().toString() + "\r\n");
+		out.write("RawAudio version: " + RawAudio.class.getPackage().getImplementationVersion() + "\r\n");
+		out.write(System.getProperty("java.version") + "\t" + System.getProperty("java.vendor") + "\t" + System.getProperty("os.name") + "\t"
+				+ System.getProperty("os.arch") + "\t" + System.getProperty("os.version") + "\r\n");
+		
 		RawAudio s = new RawAudio();
 		Thread t = new Thread(s);
 		t.start();
+		Thread.sleep(500);
+		t.stop();
+		out.close();
 	}
 }

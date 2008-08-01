@@ -155,7 +155,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import sun.awt.AppContext;
 
 public class CALCubeTimer extends JFrame implements ActionListener, TableModelListener, ChangeListener, ConfigurationChangeListener, ItemListener, SessionListener, TimingListener {
-	public static final String CCT_VERSION = "b377"; //$NON-NLS-1$
+	public static final String CCT_VERSION = CALCubeTimer.class.getPackage().getImplementationVersion(); //$NON-NLS-1$
 	public static final ImageIcon cubeIcon = new ImageIcon(CALCubeTimer.class.getResource("cube.png")); //$NON-NLS-1$
 
 	public final static StatisticsTableModel statsModel = new StatisticsTableModel(); //used in ProfileDatabase

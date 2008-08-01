@@ -1,4 +1,4 @@
-package net.gnehzr.cct.statistics.databasepatcher;
+package net.gnehzr.notcct.statistics.databasepatcher;
 
 import java.io.BufferedReader;
 import java.io.File;

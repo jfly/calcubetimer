@@ -231,6 +231,7 @@ undocumented:
 TODO:
 
 for release:
+-create dist target for cctbot
 -eclipse code formatting
 -generator groups for scramble plugins
 -saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files?

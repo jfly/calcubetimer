@@ -1,4 +1,4 @@
-package net.gnehzr.cct.diagnostics;
+package net.gnehzr.notcct.diagnostics;
 import javax.sound.sampled.*;
 
 public class RawAudioOld implements Runnable{

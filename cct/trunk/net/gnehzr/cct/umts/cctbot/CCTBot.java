@@ -113,6 +113,7 @@ public class CCTBot extends PircBot {
 	}
 
 	public static void main(String[] args) {
+		System.out.println("CCTBot " + CCTBot.class.getPackage().getImplementationVersion());
 		if(args.length != 1) {
 			printUsage();
 			return;
@@ -136,7 +137,7 @@ public class CCTBot extends PircBot {
 		cctbot.setLogin("cctbot");
 		cctbot.setName("cctbot");
 		cctbot.setAutoNickChange(true);
-		cctbot.setVersion("CCTBot version " + VERSION);
+		cctbot.setVersion("CCTBot version " + CCTBot.class.getPackage().getImplementationVersion());
 		try {
 			if(u.getPort() == -1)
 				cctbot.connect(u.getHost());
