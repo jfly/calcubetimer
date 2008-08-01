@@ -1,7 +1,14 @@
 <?xml version="1.0"?>
 <project default="dist">
 	<exec outputproperty="revision" executable="svnversion">
-		<arg line="-n" />
+		<arg line="-n"/>
+		<redirector>
+			<outputfilterchain>
+				<tokenfilter>
+					<replaceregex pattern="^[0-9]*:?" replace="" flags="g"/>
+				</tokenfilter>
+			</outputfilterchain>
+		</redirector>
 	</exec>
 	
 	<property name="version.cct" value="v1.0-r${revision}"/>
