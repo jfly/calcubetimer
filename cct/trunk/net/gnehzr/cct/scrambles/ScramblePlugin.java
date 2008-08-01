@@ -43,6 +43,12 @@ public class ScramblePlugin {
 		}
 		return scramblePlugins;
 	}
+	//this has the potential to break a lot of things in cct,
+	//it's only used by cctbot right now
+	public static void clearScramblePlugins() {
+		scramblePlugins = null;
+		scrambleVariations = null;
+	}
 
 	public static void saveLengthsToConfiguration() {
 		for(ScrambleVariation variation : getScrambleVariations())
