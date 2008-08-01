@@ -35,6 +35,7 @@ import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.HyperlinkEvent.EventType;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.html.HTML;
@@ -150,6 +151,14 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 				if(nthCommand < commands.size())
 					nthCommand++;
 				synchChatField();
+				break;
+			case KeyEvent.VK_BACK_SPACE: //these two needed to be added because substance is stupid
+				if(e.isControlDown())
+					chatField.getActionMap().get(DefaultEditorKit.deletePrevWordAction).actionPerformed(new ActionEvent(chatField, 0, ""));
+				break;
+			case KeyEvent.VK_DELETE:
+				if(e.isControlDown())
+					chatField.getActionMap().get(DefaultEditorKit.deleteNextWordAction).actionPerformed(new ActionEvent(chatField, 0, ""));
 				break;
 			case KeyEvent.VK_HOME:
 			case KeyEvent.VK_END:
