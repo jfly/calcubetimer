@@ -4,9 +4,6 @@
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 		<title>CCT Readme</title>
 		<style type="text/css">
-			td {
-				padding: 0px 5px 2px 5px;
-			}
 			hr {
 				color: black;
 			}
@@ -22,6 +19,19 @@
 			}
 			del {
 				text-decoration: line-through;
+			}
+			table {
+				border: 1px #000000 solid;
+				border-collapse: collapse;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			td {
+				border: 1px #000000 solid;
+			}
+			td.title {
+				font-weight: bold;
+				border: 5px #000000 solid;
 			}
 		</style>
 	</head>
@@ -48,16 +58,24 @@
 			<li><a href="#faq">Frequently Asked Questions</a></li>
 			<li><a href="#java">Getting it running</a></li>
 			<li><a href="#setup">Setting up the Stackmat</a></li>
-			<li><a href="#stats">How the statistics work</a></li>
-			<li><a href="#gui">User Interface</a></li>
+			<li><a href="#gui">User Interface</a>
+				<ul><li><a href="#timestable">Times Table</a>
+				<ul><li><a href="#tags">Solve Tags</a></li></ul></li></ul>
+				<ul><li><a href="#sessionstable">Sessions Table</a></li></ul>
+			</li>
 			<li><a href="#sc">Sunday Contest</a></li>
 			<li><a href="#email">Email</a></li>
-			<li><a href="#umts">Connecting to a Server</a></li>
+			<li><a href="#umts">UMTS</a>
+				<ul><li><a href="#cctbot">CCTBot</a></li></ul>
+			</li>
 			<li><a href="#config">How do I customize my settings?</a></li>
 			<li><a href="#profiling">What is a profile?</a>
 				<ul><li><a href="#backup">How do I back up my profile?</a></li></ul>
 			</li>
-			<li><a href="#plugins">Scramble Plugins</a></li>
+			<li><a href="#customizations">Scramble Customizations</a></li>
+			<li><a href="#plugins">Scramble Plugins</a>
+				<ul><li><a href="#scramblearea">Scramble Area</a></li></ul>
+			</li>
 			<li><a href="#i18n">How can I get CCT in my own language?</a></li>
 			<li><a href="#releases">Release history</a></li>
 			<li><a href="#bugs">I found a bug, help!</a></li>
@@ -132,6 +150,17 @@
 			for CCT to read the current time from the display. The lower the sampling rate, the less processing power CCT will use. Sampling rates as low
 			as 8000 Hz have successfully been tested.</p>
 
+			<p><a name="diagnostics">Q: I've played with the stackmat value, sampling rate, and I've tried inverting my signal,
+			and I still can't get my stackmat to work!</a><br>
+			A: It is our goal to get CCT to work with every stackmat on every computer. We know that there are certain
+			combinations of OS and soundcard that have failed to work with CCT. If you have had no luck setting up CCT,
+			download CCT-Diagnostics.jar from <a href="http://gnehzr.net/cct/">here</a>. Plug in your stackmat and turn it on.
+			Then run CCT-Diagnostics.jar. It should run for about one second, then close down. It will create a file
+			called cct0.stats (or cct1.stats if it exists). Open this file up with a text editor. If it contains two columns of
+			numbers, then please email it to <a href="mailto:cubetimer@gmail.com">cubetimer@gmail.com</a> with a description of 
+			your problem. Also contact us if you have any trouble with the diagnostics program. With your help, hopefully
+			we will get CCT working on your computer.</p>
+			
 			<h2><a name="java">Java 1.6</a></h2>
 			<p>You need the latest version of Java (SE 6) to run CCT.
 			Here's what you need to do to get the right version for your OS.</p>
@@ -177,24 +206,7 @@
 
 			<p>You should be able to get these from a local electronics shop, or online.
 			Here's a picture of our setup.</p>
-			<img id="centered" src="stackmat.jpg" alt="stackmat cable connection">
-
-			<h2><a name="stats">Rolling Averages</a></h2>
-			<p>CCT provides you with complete control over times. If you accidentally 
-			enter an incorrect time, you can discard it, or simply change it to whatever
-			you meant for it. All these features can be accessed by right clicking on the 
-			time in question. Furthermore, you can scroll through all the scrambles
-			you've imported or done.</p>
-			<p>CCT does some automatic highlighting of your times according to two
-			categories. Times in the current average recieve one color, while times
-			in the best rolling average get another. These colors are fully configurable,
-			as is the color for any overlapping between the two.
-			<p>Under File > Configuration > Options, you can even specify the length of your
-			rolling average.</p>
-			<p>Finally, the details for Session Averages and Rolling/Current Averages can
-			be customized under File > Configuration, <del>where there is a simple syntax for getting
-			just what you want out of CCT.</del> <ins>See <a href="dynamicstrings.html">here</a> to 
-			modify the formatting of these statistics.</ins></p>
+			<img src="stackmat.jpg" alt="stackmat cable connection">
 
 			<h2><a name="gui">User Interface</a></h2>
 			<p>In CCT 1.0, we've made the GUI completely customizable via xml files. In your CCT directory, there should
@@ -206,7 +218,9 @@
 			There are also a number of <a href="persistentcomponents.html">Persistent Components</a> that are built into CCT.
 			Persistent components provide the underlying functionalities of CCT that can't be represented simply
 			by an action attribute.
-			Look at cct.xml to learn how to create your own layout. Feel free to improve upon the default layout!
+			Look at cct.xml to learn how to create your own layout. Feel free to improve upon the default layout! If you've done something
+			particularly cool, let us know and we may put it up for download alongside CCT. If there are any features you feel are missing,
+			contact us, and we'll try to add them.
 			
 			<p>Some of the interface options from CCT v0.2 have been removed, others have been tweaked.</p>
 			<ul>
@@ -234,6 +248,23 @@
 				enabled (which is the default), then "r" means turn the outer 2 layers. If multi-slice is disabled, then "r" means
 				turn only the inside slice.</del> <ins>Scrambles obey the <a href="http://worldcubeassociation.org/regulations/#notation">2008 WCA regulations</a>.</ins></li>
 			</ul>
+			
+			<h3><a name="timestable">Times Table</a></h3>
+			<p>All of your times for a particular session are added to a table on the right hand side of the gui. This table can 
+			display your rolling average 0 (RA 0), RA 1, comment, and tags for a particular solve. Just right click on the header
+			towards the top of the table to control which columns are visible.</p>
+			
+			<h4><a name="tags">Solve Tags</a></h4>
+			<p>For each solve, you can apply either of two penalties: a two second penalty (+2), or a DNF. Of course, you may
+			choose to have no penalty. In addition to these two penalties, CCT allows you to define your own tags and apply them to solves.
+			Tags can be anything you might find useful to know, such as POP, PLL skip, or OLL skip. The really cool part of custom tags is that
+			CCT will keep statistics for each tag you've defined, such as total number of solves with that tag, or percentage of all solves with
+			that tag. See <a href="dynamicstrings.html#tags">Dynamic Strings</a> to find out how to access these tag statistics.</p>
+			
+			<h3><a name="sessionstable">Sessions Table</a></h3>
+			<p>The sessions table allows access to every session you've ever done with CCT (if you're using a profile with logging
+			enabled). The current session is highlighted in green. By right clicking on the table header, you may choose to see the customization, session average, best RA 0, best RA 1,
+			best time, standard deviation, solve count, and comment for each session. You can even sort the table by these attributes.</p>
 
 			<h2><a name="sc">Sunday Contest</a></h2>
 			<p>Not only is there support for importing scrambles from file,
@@ -246,22 +277,176 @@
 			emailing of times. This may not work if your ISP blocks port 25. If you choose not to set up an SMTP server, CCT will attempt to use your
 			default mailto: handler.</p>
 
-			<h2><a name="umts">UMTS</a></h2> <p>A server can be created to
-			which you can start up and multiple people can connect to
-			remotely. You can see everybody's times, and people can choose
-			to have the same scrambles. In addition, if you have multiple
-			soundcards (usb or otherwise) then you can start up multiple
-			instances of CCT and run them all with different stackmats on
-			the same computer!</p> <p>When connected to a server, type in
-			"/help" for an explanation of the commands available.</p> <p>By
-			typing "/#", where # is a number between 2 and 11 (inclusive), megaminx or square1, a
-			client can request scrambles from a server.  This feature is
-			new in CCTServer v0.2.</p> <p>Under File > Configuration >
-			Options (cont.), there is an option to enable flashing of the
-			chat window when a message is recieved. This causes your
-			window's title to flicker between caps and lowercase until you
-			check the window.  <p>The server can be downloaded as an
-			additional executable jar file.</p>
+			<h2><a name="umts">UMTS</a></h2>
+			<p>The old client/server stuff from CCT 0.1 and 0.2 has been replaced with an IRC client. Just connect to any IRC server,
+			and /join a channel. You can chat will regular IRC users, but you can also see the statistics of other CCT/IRC users in the
+			channel with you!</p>
+			<p>It works by simply connecting to an auxiliary channel behind the scenes for each channel you connect
+			to for chatting. CCT uses that auxiliary channel for tranmitting userstates between CCT/IRC users. For example, if you
+			type "/join #hiya", CCT will also connect to #hiya-cct to communicate status updates with other CCT users on #hiya. If
+			there are any problems with #hiya-cct (such as a password or getting kicked), CCT will automatically fall back to
+			#hiya-cct1, #hiya-cct2,... until it finds a working channel. You can see the chat channels and auxiliary channels you're
+			connected to at the bottom of the CCT/IRC client gui. If you find that someone is on the same chat channel as you, but a
+			different auxiliary channel, you will not be able to see their times. If you want to change your auxiliary channel for 
+			a particular chat channel, just type "/cctstats #AUXILIARYCHANNEL" into that chat channel.</p>
+			<p>You can get a full list of available IRC commands by timing "/help" into any chat field. There are also a few keyboard 
+			shortcuts you can use to make your IRC usage more fluid. NOTE: c is control, a is alt, s is shift, # is a number key</p>
+			<table>
+				<tr>
+					<td class="title">Shortcut</td>
+					<td class="title">Alternative 1</td>
+					<td class="title">Alternative 2</td>
+					<td class="title">Action</td>
+				</tr>
+				<tr>
+					<td>c-tab</td>
+					<td>c-n</td>
+					<td>a-right</td>
+					<td>Go to next tab</td>
+				</tr>
+				<tr>
+					<td>c-s-tab</td>
+					<td>c-p</td>
+					<td>a-left</td>
+					<td>Go to previous tab</td>
+				</tr>
+				<tr>
+					<td>c-#</td>
+					<td>a-#</td>
+					<td></td>
+					<td>Go to nth tab</td>
+				</tr>
+				<tr>
+					<td>c-m</td>
+					<td></td>
+					<td></td>
+					<td>Maximize/restore current tab</td>
+				</tr>
+				<tr>
+					<td>c-q</td>
+					<td></td>
+					<td></td>
+					<td>Close current tab</td>
+				</tr>
+				<tr>
+					<td>page up</td>
+					<td>a-p</td>
+					<td></td>
+					<td>Scroll up message pane</td>
+				</tr>
+				<tr>
+					<td>page down</td>
+					<td>a-n</td>
+					<td></td>
+					<td>Scroll down message pane</td>
+				</tr>
+				<tr>
+					<td>up</td>
+					<td></td>
+					<td></td>
+					<td>Go back in chat field history</td>
+				</tr>
+				<tr>
+					<td>down</td>
+					<td></td>
+					<td></td>
+					<td>Go forward in chat field history</td>
+				</tr>
+				<tr>
+					<td>c-backspace</td>
+					<td>c-w</td>
+					<td></td>
+					<td>Delete previous word</td>
+				</tr>
+				<tr>
+					<td>c-delete</td>
+					<td></td>
+					<td></td>
+					<td>Delete next word</td>
+				</tr>
+				<tr>
+					<td>c-h</td>
+					<td></td>
+					<td></td>
+					<td>Delete previous character</td>
+				</tr>
+				<tr>
+					<td>c-left</td>
+					<td></td>
+					<td></td>
+					<td>Go to next word</td>
+				</tr>
+				<tr>
+					<td>c-right</td>
+					<td></td>
+					<td></td>
+					<td>Go to previous word</td>
+				</tr>
+				<tr>
+					<td>escape</td>
+					<td></td>
+					<td></td>
+					<td>Clear chat pane</td>
+				</tr>
+				<tr>
+					<td>c-c</td>
+					<td></td>
+					<td></td>
+					<td>Copy the selection from the chat field</td>
+				</tr>
+				<tr>
+					<td>c-x</td>
+					<td>c-u</td>
+					<td></td>
+					<td>Cut the selection from the chat field</td>
+				</tr>
+				<tr>
+					<td>c-v</td>
+					<td>c-y</td>
+					<td>s-insert</td>
+					<td>Paste into the chat field</td>
+				</tr>
+				<tr>
+					<td>c-home</td>
+					<td></td>
+					<td></td>
+					<td>Go to top of message pane</td>
+				</tr>
+				<tr>
+					<td>c-end</td>
+					<td></td>
+					<td></td>
+					<td>Go to bottom of message pane</td>
+				</tr>
+				<tr>
+					<td>tab</td>
+					<td></td>
+					<td></td>
+					<td>Find next auto completion for command</td>
+				</tr>
+				<tr>
+					<td>s-tab</td>
+					<td></td>
+					<td></td>
+					<td>Find previous auto completion for command</td>
+				</tr>
+			</table>
+
+			<h3><a name="cctbot">CCTBot</a></h3>
+			<p>There is also an IRC bot called cctbot that will provide scrambles in a URL-like format when asked.
+			cctbot will respond to any message beginning with an exclamation mark (!). CCTBot uses the same scramble
+			plugins that CCT uses to generate scrambles. Just type !3 to request a single 3x3x3 scramble. You can also
+			type something like !3*12 to request twelve 3x3x3 scrambles, perfect for racing someone online! By clicking
+			on any of those tweleve scrambles, CCT will automatically import all of them. Just wait for cctbot to
+			finish sending them before you try to import them.</p>
+			<p>Running your own cctbot requires just a little command line experience. Just download CCTBot and run the included jar file.
+			Make sure you have some scramble plugins available in a "scramblePlugins" folder, otherwise your cctbot will be
+			rather useless. The bot is command line driven, so just double clicking on the jar file won't work.
+			Instead, you'll have to type "java -jar CCTBot.jar" on the command line. CCTBot will then print out instructions for using it.
+			Once CCTBot is running, you can type in commands on the "cctbot: " prompt it gives you. Just type "help" for more
+			detailed instructions on maintaining your cctbot.</p>
+			<p>If you already have CALCubeTimer.jar on your computer, then you can run CCTBot by typing 
+			"java -cp CALCubeTimer.jar net.gnehzr.cct.umts.cctbot.CCTBot", instead of downloading CCTBot.jar.
 
 			<h2><a name="config">Configuration</a></h2>
 			<p>For version 0.2 of CCT, we overhauled the configuration system to make use of 
@@ -299,6 +484,20 @@
 			"profiles" folder in your CCT directory. There is no need to backup the entire "profiles" folder, just the 
 			sub folders of interest. You can simply move these folders from your old CCT into your new
 			CCT profiles folder. We will try to refrain from changing CCT's directory structure drastically in future releases.</p>
+
+			<h2><a name="customizations">Scramble Customizations</a></h2>
+			<p>Since CCT keeps track of sessions by date and scramble customization, there is no way that
+			you could mix up your 3x3x3 times with your 4x4x4 times. But what if you want to do 3x3x3 blindfolded (BLD)?
+			Or one handed? Or one handed and blindfolded?! Clearly there are too many possiblities for them to be
+			hardcoded into CCT. Instead, under Configuration > Scramble Customizations, you can create your own scramble
+			customizations. Scroll down to the bottom, and double click on "Add new customization...". Choose the 
+			type of scrambles you want for the new customization (choose X for puzzles that do not require scrambles,
+			such as Magic), and give it a short, descriptive name in the text box (such as BLD or OH). Once you've saved your configuration,
+			you can choose the new scramble customization, and begin recording your times!</p>
+			<p>CCT will also show two different types of rolling averages up to a certain point in your session in your
+			table of times. The sizes of these two rolling averages can be specified on a per-scramble customization basis.
+			That way, when you're doing Square-1, you may see untrimmed averages of 3 (as per WCA regulations), and when you're doing
+			3x3x3 speedsolve, you can see trimmed averages of 5.</p>
 			
 			<h2><a name="plugins">Scramble Plugins</a></h2>
 			<p>Inside the scramblePlugins folder are various *.class files. Each of these class
@@ -312,15 +511,14 @@
 			<p>A lot of time has been put into ensuring that it is not possible for scramble plugins to harm your
 			computer or freeze CCT, but care should always be exercised when running a scramble plugin from
 			an unknown or untrusted source.</p>
-
-			<p>Since CCT keeps track of sessions by date and scramble customization, there is no way that
-			you could mix up your 3x3x3 times with your 4x4x4 times. But what if you want to do 3x3x3 blindfolded (BLD)?
-			Or one handed? Or one handed and blindfolded?! Clearly there are too many possiblities for them to be
-			hardcoded into CCT. Instead, under Configuration > Profile Settings, you can create your own scramble
-			customizations. Scroll down to the bottom, and double click on "Add new customization...". Choose the 
-			type of scrambles you want for the new customization (choose X for puzzles that do not require scrambles,
-			such as Magic), and give it a short, descriptive name in the text box (such as BLD or OH). Once you've saved your configuration,
-			you can choose the new scramble customization, and begin recording your times!</p>
+			
+			<h3><a name="scramblearea">Scramble Area</a></h3>
+			<p>CCT supports incremental scramble display. If you want to know what the puzzle looks like
+			partway through a scramble, just click on the last move you want to see. The displayed turn will be colored red.
+			There is also an options to display the current state of the puzzle side by side with the final state of the puzzle.
+			Just right click on the scramble image to enable it.
+			You can also copy the current scramble simply by double clicking on the scramble area. The scramble will be copied to
+			the system clipboard in plaintext.</p>
 
 			<h2><a name="i18n">CCT in another language</a></h2>
 			<p>We want to provide CCT as many languages as possible. If you use CCT and speak another language
@@ -373,6 +571,8 @@
 			
 			2008 ?????? - Version 1.0
 			<ul>
+				<li>Client/Server system <a href="#umts">replaced</a></li>
+				<li>Support for solve tags</li>
 				<li>Support for multiple languages</li>
 				<li>Scramble plugins created (Square One scrambles added)</li>
 				<li>Customizable XML GUI</li>

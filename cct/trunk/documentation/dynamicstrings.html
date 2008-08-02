@@ -35,8 +35,8 @@
 		<p>All of the text in CCT is formatted as dynamic strings. Dynamic strings can be used as
 		plaintext, but can also access statistics that CCT keeps track of. Using dynamic strings,
 		you can get CCT to display just the information that you are interested in.
-		<p>Here's a simple example: "Your best time: $$besttime$$". If your best time is 15.12 seconds, this
-		will be formatted by CCT as "Your best time: 15.12". However, to make it easy to translate your xml layout,
+		<p>Here's a simple example: "Your best time: $$besttime$$". If your best time is 15.77 seconds, this
+		will be formatted by CCT as "Your best time: 15.77". However, to make it easy to translate your xml layout,
 		you can externalize the "Your best time" string as well. The dynamic string would then become "%%besttimemessage%%: $$besttime$$.
 		If your layout is called "My Awesome Layout.xml", then you must also create "My Awesome Layout.properties" containing this line:
 		"besttimemessage=Your best time". NOTE: This will not work if your xml layout file contains more than one period.
@@ -255,17 +255,17 @@
 			</tr>
 			
 			<tr>
-				<td class="title"></td>
-				<td class="title">Solve types and counts. SOLVETYPE can be any of SOLVED, ATTEMPT, POP, DNF, PLUS_TWO, 
-				or any scramble type defined within CCT.</td>
+				<td class="title"><a name="tags" /></td>
+				<td class="title">Solve tags and counts. SOLVETAG can be any of SOLVED, ATTEMPT, POP, DNF, +2, 
+				or any solve tags defined within CCT. See the <a href="readme.html#tags>Readme</a> for more details.</td>
 			</tr>
 			<tr>
-				<td>solvecount_SOLVETYPE</td>
-				<td>This is a count of the number of solves of type SOLVETYPE in the current session.</td>
+				<td>solvecount_SOLVETAG</td>
+				<td>This is a count of the number of solves of type SOLVETAG in the current session.</td>
 			</tr>
 			<tr>
-				<td>global_solvecount_SOLVETYPE</td>
-				<td>This is a global count of the number of solves of type SOLVETYPE.</td>
+				<td>global_solvecount_SOLVETAG</td>
+				<td>This is a global count of the number of solves of type SOLVETAG.</td>
 			</tr>
 		</table>
 	</body>
