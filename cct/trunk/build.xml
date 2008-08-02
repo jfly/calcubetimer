@@ -80,7 +80,6 @@
 		<copy todir="${dist.cctbot}">
 			<fileset dir=".">
 				<include name="scramblePlugins/*.class"/>
-				<include name="scramblePlugin.policy"/>
 			</fileset>
 		</copy>
 	</target>
@@ -118,7 +117,6 @@
 				<include name="scramblePlugins/*.class"/>
 				<include name="scramblePlugins/*.png"/>
 				<include name="scramblePlugins/*.properties"/>
-				<include name="scramblePlugin.policy"/>
 				<include name="profiles/defaults.properties"/>
 				<include name="profiles/database.dtd"/>
 				<include name="documentation/*"/>
