@@ -5,12 +5,11 @@
 		<redirector>
 			<outputfilterchain>
 				<tokenfilter>
-					<replaceregex pattern="^[0-9]*:?" replace="" flags="g"/>
+					<replaceregex pattern="^(.*:)?([0-9]+.)$" replace="\2"/>
 				</tokenfilter>
 			</outputfilterchain>
 		</redirector>
 	</exec>
-	
 	<property name="version.cct" value="v1.0-r${revision}"/>
 	<property name="version.cctbot" value="v0.1-r${revision}"/>
 	<property name="version.ircclient" value="v0.1-r${revision}"/>
@@ -20,9 +19,9 @@
 	</tstamp>
 	
 	<property name="dist" location="dist"/>
-	<property name="dist.cct" location="${dist}/cct ${version.cct}/"/>
-	<property name="dist.diagnostics" location="${dist}/cct-diagnostics ${version.diagnostics}/"/>
-	<property name="dist.cctbot" location="${dist}/cctbot ${version.cctbot}/"/>
+	<property name="dist.cct" location="${dist}/cct-${version.cct}/"/>
+	<property name="dist.diagnostics" location="${dist}/cct-diagnostics-${version.diagnostics}/"/>
+	<property name="dist.cctbot" location="${dist}/cctbot-${version.cctbot}/"/>
 	<target name="dist" depends="compile, emptydist, diagnostics, cct, cctbot" description="Main distribution">
 		<echo>Building everything!</echo>
 	</target>

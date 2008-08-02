@@ -228,20 +228,20 @@ undocumented:
 	+add column to timestable?
 +add profile chooser to bottom of configdialog
 +java -cp CALCubeTimer.jar net.gnehzr.cct.umts.cctbot.CCTBot irc://localhost#hiya
-	-get cctbot to run w/o configuration
+	+get cctbot to run w/o configuration
++create dist target for cctbot
++create small diagnostic problem that will dump relevant info to a file (java version, os, etc.) = cct-diagnostics.jar
 
 TODO:
 
 for release:
--create dist target for cctbot
 -eclipse code formatting
--generator groups for scramble plugins
+-generator groups for scramble plugins (w/ cctbot too)
 -saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files?
 -dynamic string multiple argument format
 -open source sourceforge!
 -about.html: add a blurb for version 1.0
 -create license, give credit where credit is due
--create small diagnostic problem that will dump relevant info to a file (java version, os, etc.)
 -write scramble plugin tutorial
 +irc stuff done!
 	-cleanup remaining todos in irc files
