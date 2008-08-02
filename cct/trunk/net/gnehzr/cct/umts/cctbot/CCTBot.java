@@ -18,7 +18,7 @@ import org.jibble.pircbot.NickAlreadyInUseException;
 import org.jibble.pircbot.PircBot;
 
 public class CCTBot extends PircBot {
-	//TODO - reasonable scramble request limit
+	private int MAX_SCRAMBLES = 12;
 	public CCTBot() {}
 	//max message length: 470 characters
 	private static final int MAX_MESSAGE = 470;
@@ -28,7 +28,7 @@ public class CCTBot extends PircBot {
 			int count = 1;
 			if(varAndCount.length == 2) {
 				try {
-					count = Integer.parseInt(varAndCount[1]);
+					count = Math.min(Integer.parseInt(varAndCount[1]), MAX_SCRAMBLES);
 				} catch(NumberFormatException e) {}
 			}
 
@@ -182,6 +182,10 @@ public class CCTBot extends PircBot {
 	{
 		commands.put(CMD_QUIT, "Disconnects from server and shuts down cctbot.");
 	}
+	private static final String CMD_MAX_SCRAMBLES = "maxscrambles";
+	{
+		commands.put(CMD_MAX_SCRAMBLES, "maxscrambles COUNT\n\tSets the maximum number of scrambles cctbot will give at a time.");
+	}
 	private static final String CMD_HELP = "help";
 	{
 		commands.put(CMD_HELP, "help (COMMAND)\n\tPrints available variations");
@@ -250,6 +254,13 @@ public class CCTBot extends PircBot {
 				println("Exiting cctbot");
 				System.exit(0);
 				continue;
+			} else if(command.equalsIgnoreCase(CMD_MAX_SCRAMBLES)) {
+				if(arg != null) {
+					try {
+						MAX_SCRAMBLES = Integer.parseInt(arg);
+						continue;
+					} catch(NumberFormatException e) {}
+				}
 			}
 			
 			String usage = commands.get(command);
