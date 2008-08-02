@@ -159,7 +159,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.moreoptions"), tab); //$NON-NLS-1$
 
 		tab = makeScrambleTypeOptionsPanel();
-		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.profilesettings"), tab); //$NON-NLS-1$
+		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.scramcustomizations"), tab); //$NON-NLS-1$
 
 		tab = makeStackmatOptionsPanel();
 		tabbedPane.addTab(StringAccessor.getString("ConfigurationDialog.stackmatsettings"), tab); //$NON-NLS-1$

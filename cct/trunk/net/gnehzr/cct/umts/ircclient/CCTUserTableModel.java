@@ -37,7 +37,6 @@ public class CCTUserTableModel extends DraggableJTableModel {
 		fireTableDataChanged();
 	}
 	
-	//TODO - i18n
 	private static final String[] COLUMN_NAME = { "CCTUserTableModel.nick", "CCTUserTableModel.lasttime", "CCTUserTableModel.state",
 			"CCTUserTableModel.customization", "CCTUserTableModel.solves/attempts", "CCTUserTableModel.bestRA", "CCTUserTableModel.currRA",
 			"CCTUserTableModel.seshAve", "CCTUserTableModel.raSize" };
