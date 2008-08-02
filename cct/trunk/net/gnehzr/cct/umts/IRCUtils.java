@@ -3,8 +3,6 @@ package net.gnehzr.cct.umts;
 
 public class IRCUtils {
 	private IRCUtils() {}
-	public static final String VERSION = "0.1";
-	
 	public static final String CLIENT_USERSTATE = "USERSTATE";
 	
 	private static final String MSGTYPE_DELIMETER = " ";
