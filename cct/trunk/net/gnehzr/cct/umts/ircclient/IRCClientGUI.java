@@ -890,14 +890,14 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	}
 
 	protected void onPart(String channel, String sender, String login, String hostname) {
-		generalizedLeftChannel(channel, sender, false);
+		generalizedLeftChannel(channel, sender, null);
 	}
 
 	protected void onKick(String channel, String kickerNick, String kickerLogin, String kickerHostname, String recipientNick, String reason) {
-		generalizedLeftChannel(channel, recipientNick, true);
+		generalizedLeftChannel(channel, recipientNick, kickerNick);
 	}
 
-	private void generalizedLeftChannel(final String channel, final String user, final boolean kicked) {
+	private void generalizedLeftChannel(final String channel, final String user, final String kicker) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				MessageFrame f = channelFrames.get(channel);
@@ -905,12 +905,13 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 					leftChannel(channel);
 					if(f == null)
 						return; // this happens when the users clicks the close button
-					f.appendInformation(StringAccessor.format(kicked ? "IRCClientGUI.youkicked" : "IRCClientGUI.youleft", channel));
+					f.appendInformation(StringAccessor.format(kicker != null ? "IRCClientGUI.youkicked" : "IRCClientGUI.youleft", channel, kicker));
 					f.setConnectedToChannel(false, channel);
 				} else {
 					userLeft(channel, user);
 					if(f != null) {
-						f.appendInformation(StringAccessor.format(kicked ? "IRCClientGUI.someonekicked" : "IRCClientGUI.someoneleft", channel, user));
+						f.appendInformation(StringAccessor.format(kicker != null ? "IRCClientGUI.someonekicked" : "IRCClientGUI.someoneleft", channel, user,
+								kicker));
 						f.setIRCUsers(getUsers(channel));
 					}
 				}
