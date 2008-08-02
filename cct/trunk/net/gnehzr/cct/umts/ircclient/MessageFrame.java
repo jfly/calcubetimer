@@ -68,8 +68,10 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	HTMLDocument doc;
 	JScrollPane msgScroller;
 	private Font mono;
-	public MessageFrame(boolean userTable, boolean closeable, Icon icon) {
+	IRCClientGUI gui;
+	public MessageFrame(IRCClientGUI gui, boolean userTable, boolean closeable, Icon icon) {
 		super("", true, closeable, true, true);
+		this.gui = gui;
 		setFrameIcon(icon);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		JPanel pane = new JPanel(new BorderLayout());
@@ -190,7 +192,7 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 			case KeyEvent.VK_TAB:
 				if(e.isControlDown()) {
 					//we need to pass this on to the desktop manager
-					messagePane.dispatchEvent(e);
+					gui.postProcessKeyEvent(e);
 				} else {
 					ignoreUpdate = true;
 					chatField.setText(getNextString(!e.isShiftDown()));

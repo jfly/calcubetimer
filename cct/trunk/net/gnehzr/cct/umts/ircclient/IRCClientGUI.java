@@ -79,7 +79,9 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 
 	// TODO - disable ctrl+tab for swing components
 	// TODO - how to save state of the user tables for each message frame? synchronize them somehow?
-
+	// TODO - shorcuts for maximize, restore, close window
+	// TODO - /list, find out where people are
+	
 	JDesktopPane desk;
 	JInternalFrame login;
 	MessageFrame serverFrame;
@@ -183,7 +185,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		clientFrame.setContentPane(pane);
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventPostProcessor(this);
 
-		serverFrame = new MessageFrame(false, false, null);
+		serverFrame = new MessageFrame(this, false, false, null);
 		serverFrame.setName(SERVER_FRAME);
 		serverFrame.addCommandListener(this);
 		serverFrame.pack();
@@ -196,15 +198,15 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		updateStrings();
 	}
 	
-	public void updateStrings() { //TODO - i18n
-		login.setTitle("Connect");
-		nameLabel.setText("Name");
+	public void updateStrings() {
+		login.setTitle(StringAccessor.getString("IRCClientGUI.connect"));
+		nameLabel.setText(StringAccessor.getString("IRCClientGUI.name"));
 		nameField.setText(Configuration.getString(VariableKey.IRC_NAME, false));
-		nickLabel.setText("Nick");
+		nickLabel.setText(StringAccessor.getString("IRCClientGUI.nick"));
 		nickField.setText(Configuration.getString(VariableKey.IRC_NICK, false));
-		serverLabel.setText("Server");
+		serverLabel.setText(StringAccessor.getString("IRCClientGUI.server"));
 		
-		clientFrame.setTitle("CCT/IRC Client " + IRCClientGUI.class.getPackage().getImplementationVersion());
+		clientFrame.setTitle(StringAccessor.getString("IRCClientGUI.title") + " " + IRCClientGUI.class.getPackage().getImplementationVersion());
 		updateStatusBar();
 		
 		for(MessageFrame f : pmFrames.values())
@@ -611,7 +613,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	{
 		cmdHelp.put(CMD_CCTSTATS, "/cctstats #COMMCHANNEL" + "\n\t" + "Sets the channel used for communication of CCT status between CCT users. "
 				+ "Only use this if the default channel isn't working, perhaps because everyone else is connected to a different channel. "
-				+ "You must type this command from channel which you want to display everyone's CCT status.");
+				+ "You must type this command from a channel which you want to display everyone's CCT status.");
 	}
 	private static final String CMD_HELP = "/help";
 	{
@@ -794,7 +796,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	MessageFrame getPMFrame(String nick) {
 		MessageFrame f = pmFrames.get(nick);
 		if(f == null) {
-			f = new MessageFrame(false, true, null);
+			f = new MessageFrame(this, false, true, null);
 			f.setName(PM_FRAME + nick);
 			setPMFrameTitle(f);
 			f.addCommandListener(this);
@@ -832,7 +834,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 					if(c != null && !c.isCommChannel()) // don't want to create a jinternalframe for a cct comm channel
 						return;
 					if(f == null) {
-						f = new MessageFrame(true, true, null);
+						f = new MessageFrame(IRCClientGUI.this, true, true, null);
 						channelFrames.put(channel, f);
 						f.addCommandListener(IRCClientGUI.this);
 						f.setName(channel);
@@ -874,16 +876,20 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			public void run() {
 				for(String channel : getChannels()) {
 					MessageFrame f = channelFrames.get(channel);
-					if(f == null)
-						continue; // if channel is a comm channel
-					for(User u : f.getIRCUsers()) {
-						if(u.getNick().equals(sourceNick)) {
-							f.appendInformation(StringAccessor.format("IRCClientGUI.quit", sourceNick, reason));
-							userLeft(channel, sourceNick);
-							break;
+					if(f == null) { // if channel is a comm channel
+						CCTChannel chatChannel = channelMap.get(channel);
+						chatChannel.users.remove(sourceNick);
+						channelFrames.get(chatChannel.getChannel()).setCCTUsers(chatChannel.users.values().toArray(new CCTUser[0]));
+					} else {
+						for(User u : f.getIRCUsers()) {
+							if(u.getNick().equals(sourceNick)) {
+								f.appendInformation(StringAccessor.format("IRCClientGUI.quit", sourceNick, reason));
+								userLeft(channel, sourceNick);
+								break;
+							}
 						}
+						f.setIRCUsers(getUsers(channel));
 					}
-					f.setIRCUsers(getUsers(channel));
 				}
 			}
 		});
