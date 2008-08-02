@@ -50,6 +50,8 @@ import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -71,7 +73,8 @@ import org.jibble.pircbot.ReplyConstants;
 import org.jibble.pircbot.User;
 import org.jvnet.substance.SubstanceLookAndFeel;
 
-public class IRCClientGUI extends PircBot implements CommandListener, ActionListener, DesktopManager, KeyEventPostProcessor, ConfigurationChangeListener {
+public class IRCClientGUI extends PircBot implements CommandListener, ActionListener, DesktopManager, KeyEventPostProcessor, ConfigurationChangeListener,
+		DocumentListener {
 	public static final Boolean WATERMARK = false;
 	private static final String SERVER_FRAME = "serverframe";
 	private static final String PM_FRAME = "pm";
@@ -97,6 +100,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		login.addInternalFrameListener(new InternalFrameAdapter() {
 			public void internalFrameActivated(InternalFrameEvent e) {
 				setConnectDefault();
+				loginChanged();
 			}
 		});
 		login.setFrameIcon(null);
@@ -536,14 +540,32 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 		c.gridy = 3;
 		c.weightx = 1;
 		login.add(server = new URLHistoryBox(VariableKey.IRC_SERVERS), c);
-
+		
 		c.gridx = 0;
 		c.gridy = 4;
 		c.weightx = 1;
 		c.gridwidth = 2;
 		login.add(connect = new JButton(), c);
 		connect.addActionListener(this);
+		
+		nickField.getDocument().addDocumentListener(this);
+		nameField.getDocument().addDocumentListener(this);
+		loginChanged();
 		return login;
+	}
+
+	public void changedUpdate(DocumentEvent e) {}
+
+	public void insertUpdate(DocumentEvent e) {
+		loginChanged();
+	}
+
+	public void removeUpdate(DocumentEvent e) {
+		loginChanged();
+	}
+
+	private void loginChanged() {
+		connect.setEnabled(!nickField.getText().isEmpty() && !nameField.getText().isEmpty());
 	}
 
 	public static void main(String[] args) throws UnsupportedLookAndFeelException, IOException {
