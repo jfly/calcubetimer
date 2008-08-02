@@ -234,6 +234,10 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	}
 	public void keyReleased(KeyEvent e) {}
 	public void keyTyped(KeyEvent e) {}
+	
+	public void updateStrings() {
+		usersTable.refreshColumnNames();
+	}
 
 	private static String[] splitURL(String url) {
 		return url.split("://", 2);
@@ -248,8 +252,8 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 					error.printStackTrace();
 				}
 			} else {
-				//TODO - prompt user if they want just this scramble, or all of them
-				Scramble clickedScramble = getScrambleFromElement(e.getSourceElement());
+				//				//TODO - prompt user if they want just this scramble, or all of them
+				//				Scramble clickedScramble = getScrambleFromElement(e.getSourceElement());
 
 				SimpleAttributeSet sas = (SimpleAttributeSet) e.getSourceElement().getAttributes().getAttribute(HTML.Tag.A);
 				String[] id = ((String) sas.getAttribute(HTML.Attribute.ID)).split(" ", 3);
@@ -493,7 +497,7 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	}
 	
 	private boolean isConnectedChan = false;
-	private String channel, topic;
+	private String channel;
 	public boolean isConnectedToChannel() {
 		return isConnectedChan;
 	}
@@ -504,7 +508,6 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		usersTable.setEnabled(isConnectedChan);
 	}
 	public void setTopic(String topic) {
-		this.topic = topic;
 		setTitle(channel + ": " + topic);
 	}
 	

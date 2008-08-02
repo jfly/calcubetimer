@@ -1,5 +1,6 @@
 package net.gnehzr.cct.i18n;
 
+import java.text.MessageFormat;
 import java.util.Enumeration;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -25,6 +26,9 @@ public class StringAccessor {
 			}
 		}
 		return cctStrings.getString(key);
+	}
+	public static String format(String formatKey, Object... values) {
+		return MessageFormat.format(StringAccessor.getString(formatKey), values);
 	}
 	public static void clearResources() {
 		cctStrings = null;

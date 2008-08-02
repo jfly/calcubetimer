@@ -2,6 +2,7 @@ package net.gnehzr.cct.umts.ircclient;
 
 import java.util.TreeSet;
 
+import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.statistics.SolveTime;
 import net.gnehzr.cct.umts.cctbot.CCTUser;
@@ -36,13 +37,16 @@ public class CCTUserTableModel extends DraggableJTableModel {
 		fireTableDataChanged();
 	}
 	
-	private static final String[] COLUMN_NAME = { "Nick", "Last Time", "State", "Customization", "Solves/Attempts", "Best RA", "Current RA", "Session Average", "RA Size" };
+	//TODO - i18n
+	private static final String[] COLUMN_NAME = { "CCTUserTableModel.nick", "CCTUserTableModel.lasttime", "CCTUserTableModel.state",
+			"CCTUserTableModel.customization", "CCTUserTableModel.solves/attempts", "CCTUserTableModel.bestRA", "CCTUserTableModel.currRA",
+			"CCTUserTableModel.seshAve", "CCTUserTableModel.raSize" };
 	private static final Class<?>[] COLUMN_CLASS = { String.class, SolveTime.class, String.class, String.class, String.class, SolveTime.class, SolveTime.class, SolveTime.class, Integer.class };
 	public int getColumnCount() {
 		return COLUMN_NAME.length;
 	}
 	public String getColumnName(int column) {
-		return COLUMN_NAME[column];
+		return StringAccessor.getString(COLUMN_NAME[column]);
 	}
 	public Class<?> getColumnClass(int columnIndex) {
 		return COLUMN_CLASS[columnIndex];
