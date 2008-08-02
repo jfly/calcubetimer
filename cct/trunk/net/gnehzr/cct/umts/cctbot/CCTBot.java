@@ -18,8 +18,8 @@ import org.jibble.pircbot.NickAlreadyInUseException;
 import org.jibble.pircbot.PircBot;
 
 public class CCTBot extends PircBot {
+	//TODO - reasonable scramble request limit
 	public CCTBot() {}
-	
 	//max message length: 470 characters
 	private static final int MAX_MESSAGE = 470;
 	protected void onMessage(String channel, String sender, String login, String hostname, String message) {
@@ -31,7 +31,7 @@ public class CCTBot extends PircBot {
 					count = Integer.parseInt(varAndCount[1]);
 				} catch(NumberFormatException e) {}
 			}
-try{
+
 			ScrambleVariation sv = ScramblePlugin.getBestMatchVariation(varAndCount[0]);
 			if(sv != null) {
 				while(count-- > 0) {
@@ -49,9 +49,6 @@ try{
 			} else
 				sendMessage(channel, "Couldn't find scramble variation corresponding to: " + varAndCount[0] + ". " +
 						getAvailableVariations());
-			} catch(Throwable t) {
-				t.printStackTrace();
-			}
 		}
 	}
 	
