@@ -79,8 +79,6 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 
 	// TODO - disable ctrl+tab for swing components
 	// TODO - how to save state of the user tables for each message frame? synchronize them somehow?
-	// TODO - shorcuts for maximize, restore, close window
-	// TODO - /list, find out where people are
 	
 	JDesktopPane desk;
 	JInternalFrame login;
@@ -257,6 +255,28 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 				switchToNextFrame(keycode == KeyEvent.VK_N);
 				return true;
 			}
+			if((keycode == KeyEvent.VK_M) && !e.isAltDown() && !e.isMetaDown() && e.isControlDown()) {
+				JInternalFrame f = getNthButton(getIndexOfSelectedFrame()).f;
+				if(f == null || !f.isMaximizable())
+					return false;
+				try {
+					f.setMaximum(!f.isMaximum());
+				} catch(PropertyVetoException e1) {
+					e1.printStackTrace();
+				}
+				return true;
+			}
+			if((keycode == KeyEvent.VK_Q) && !e.isAltDown() && !e.isMetaDown() && e.isControlDown()) {
+				JInternalFrame f = getNthButton(getIndexOfSelectedFrame()).f;
+				if(f == null || !f.isClosable())
+					return false;
+				try {
+					f.setClosed(true);
+				} catch(PropertyVetoException e1) {
+					e1.printStackTrace();
+				}
+				return true;
+			}
 			if((KeyEvent.VK_0 <= keycode && keycode <= KeyEvent.VK_9) && (e.isAltDown() || e.isMetaDown()) && !e.isShiftDown() && !e.isControlDown()) {
 				int n = keycode - KeyEvent.VK_0 - 1;
 				if(keycode < 0) n = 9;
@@ -268,21 +288,32 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 	}
 
 	private void switchToFrame(int n) {
-		Component[] buttons = windows.getComponents();
-		if(0 <= n && n < buttons.length){
-			MinimizedInternalFrameButton next = (MinimizedInternalFrameButton) buttons[n];
+		if(0 <= n && n < getFrameCount()) {
+			MinimizedInternalFrameButton next = getNthButton(n);
 			if(!next.f.isSelected() || !next.f.isVisible())
 				next.doClick();
 		}
 	}
-
+	private int getIndexOfSelectedFrame() {
+		int c;
+		for(c = 0; c < getFrameCount(); c++)
+			if(getNthButton(c).isSelected())
+				break;
+		return c;
+	}
+	private int getFrameCount() {
+		return windows.getComponents().length;
+	}
+	private MinimizedInternalFrameButton getNthButton(int index) {
+		try {
+			return (MinimizedInternalFrameButton) windows.getComponents()[index];
+		} catch(Exception e) {
+			return null;
+		}
+	}
 	private void switchToNextFrame(boolean forward) {
 		Component[] buttons = windows.getComponents();
-		int c;
-		for(c = 0; c < buttons.length; c++)
-			if(((MinimizedInternalFrameButton) buttons[c]).isSelected())
-				break;
-		c = (buttons.length + c + (forward ? 1 : -1)) % buttons.length;
+		int c = (buttons.length + getIndexOfSelectedFrame() + (forward ? 1 : -1)) % buttons.length;
 		MinimizedInternalFrameButton next = (MinimizedInternalFrameButton) buttons[c];
 		if(!next.f.isSelected() || !next.f.isVisible())
 			next.doClick();
@@ -735,7 +766,7 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 			String channel = src.getName();
 			sendMessage(channel, cmd);
 		} else {
-			src.appendError("You must be connected to a channel to chat"); //TODO - i18n
+			src.appendError(StringAccessor.getString("IRCClientGUI.connecttochannel"));
 		}
 	}
 
