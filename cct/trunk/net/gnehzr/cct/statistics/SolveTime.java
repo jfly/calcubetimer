@@ -34,11 +34,17 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 			String[] tags = Configuration.getStringArray(VariableKey.SOLVE_TAGS, defaults);
 			for(int c = tags.length - 1; c >= 0; c--) {
 				String tag = tags[c];
-				for(int ch = 0; ch < types.size(); ch++) {
+				int ch;
+				for(ch = 0; ch < types.size(); ch++) {
 					if(types.get(ch).desc.equalsIgnoreCase(tag)) {
 						types.add(0, types.remove(ch));
 						break;
 					}
+				}
+				if(ch == types.size()) { //we didn't find the tag, so we'll have to create it
+					try {
+						types.add(createSolveType(tag));
+					} catch(Exception e) {}
 				}
 			}
 			return types;
