@@ -256,28 +256,28 @@ public class IRCClientGUI extends PircBot implements CommandListener, ActionList
 				return true;
 			}
 			if((keycode == KeyEvent.VK_M) && !e.isAltDown() && !e.isMetaDown() && e.isControlDown()) {
-				JInternalFrame f = getNthButton(getIndexOfSelectedFrame()).f;
-				if(f == null || !f.isMaximizable())
+				MinimizedInternalFrameButton b = getNthButton(getIndexOfSelectedFrame());
+				if(b == null || !b.f.isMaximizable())
 					return false;
 				try {
-					f.setMaximum(!f.isMaximum());
+					b.f.setMaximum(!b.f.isMaximum());
 				} catch(PropertyVetoException e1) {
 					e1.printStackTrace();
 				}
 				return true;
 			}
 			if((keycode == KeyEvent.VK_Q) && !e.isAltDown() && !e.isMetaDown() && e.isControlDown()) {
-				JInternalFrame f = getNthButton(getIndexOfSelectedFrame()).f;
-				if(f == null || !f.isClosable())
+				MinimizedInternalFrameButton b = getNthButton(getIndexOfSelectedFrame());
+				if(b == null || !b.f.isClosable())
 					return false;
 				try {
-					f.setClosed(true);
+					b.f.setClosed(true);
 				} catch(PropertyVetoException e1) {
 					e1.printStackTrace();
 				}
 				return true;
 			}
-			if((KeyEvent.VK_0 <= keycode && keycode <= KeyEvent.VK_9) && (e.isAltDown() || e.isMetaDown()) && !e.isShiftDown() && !e.isControlDown()) {
+			if((KeyEvent.VK_0 <= keycode && keycode <= KeyEvent.VK_9) && (e.isAltDown() || e.isMetaDown() || e.isControlDown()) && !e.isShiftDown()) {
 				int n = keycode - KeyEvent.VK_0 - 1;
 				if(keycode < 0) n = 9;
 				switchToFrame(n);
