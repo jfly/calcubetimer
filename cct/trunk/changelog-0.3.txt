@@ -213,8 +213,6 @@ changes:
 +restore focus to timer after right clicking time
 +fixed sunday contest, added javascript validation (emailed jon morris 7/14/08)
 	+added "details" button to the server response dialog
-	
-undocumented:
 +copy by double click for scramble field
 +improvaed shutdown of cct, test command q with os x (dan cohen)
 +split screen scramble (accessible via right click or configdialog)
@@ -231,11 +229,12 @@ undocumented:
 	+get cctbot to run w/o configuration
 +create dist target for cctbot
 +create small diagnostic problem that will dump relevant info to a file (java version, os, etc.) = cct-diagnostics.jar
++irc stuff done!
+	+cleanup remaining todos in irc files
 
 TODO:
 
 for release:
--eclipse code formatting
 -generator groups for scramble plugins (w/ cctbot too)
 -saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files?
 -dynamic string multiple argument format
@@ -243,8 +242,6 @@ for release:
 -about.html: add a blurb for version 1.0
 -create license, give credit where credit is due
 -write scramble plugin tutorial
-+irc stuff done!
-	-cleanup remaining todos in irc files
 
 misc:
 -java webstart? applet?
@@ -252,6 +249,7 @@ misc:
 -copy shortcuts for mac?
 
 cleanup:
+-eclipse code formatting
 -"Options" menu is getting cut to "Op" when the gui is made small
 
 possible puzzles:
