@@ -145,13 +145,13 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	public void keyPressed(KeyEvent e) {
 		switch(e.getKeyCode()) {
 			case KeyEvent.VK_P:
-				if(e.isAltDown() || e.isControlDown())
+				if(e.isAltDown())
 					messagePane.dispatchEvent(new KeyEvent(messagePane, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_PAGE_UP,
 							KeyEvent.CHAR_UNDEFINED,
 							KeyEvent.KEY_LOCATION_STANDARD));
 				break;
 			case KeyEvent.VK_N:
-				if(e.isAltDown() || e.isControlDown())
+				if(e.isAltDown())
 					messagePane.dispatchEvent(new KeyEvent(messagePane, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_PAGE_DOWN,
 							KeyEvent.CHAR_UNDEFINED,
 							KeyEvent.KEY_LOCATION_STANDARD));
@@ -180,11 +180,33 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 					chatField.getActionMap().get(DefaultEditorKit.deleteNextWordAction).actionPerformed(new ActionEvent(chatField, 0, ""));
 				break;
 			case KeyEvent.VK_A:
+				if(e.isControlDown())
+					chatField.dispatchEvent(new KeyEvent(chatField, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_HOME,
+							KeyEvent.CHAR_UNDEFINED,
+							KeyEvent.KEY_LOCATION_STANDARD));
+				break;
+			case KeyEvent.VK_E:
+				if(e.isControlDown())
+					chatField.dispatchEvent(new KeyEvent(chatField, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_END,
+							KeyEvent.CHAR_UNDEFINED,
+							KeyEvent.KEY_LOCATION_STANDARD));
+				break;
+			case KeyEvent.VK_U:
+				if(e.isControlDown())
+					chatField.cut();
+				break;
+			case KeyEvent.VK_INSERT:
+				if(e.isShiftDown())
+					chatField.paste();
+				break;
+			case KeyEvent.VK_Y:
+				if(e.isControlDown())
+					chatField.paste();
+				break;
 			case KeyEvent.VK_HOME:
 				if(e.isControlDown())
 					scrollToTop();
 				break;
-			case KeyEvent.VK_E:
 			case KeyEvent.VK_END:
 				if(e.isControlDown())
 					scrollToBottom();
