@@ -5,15 +5,15 @@
 		<redirector>
 			<outputfilterchain>
 				<tokenfilter>
-					<replaceregex pattern="^(.*:)?([0-9]+.)$" replace="\2"/>
+					<replaceregex pattern="^(.*:)?(\d+.)$" replace="\2"/>
 				</tokenfilter>
 			</outputfilterchain>
 		</redirector>
 	</exec>
-	<property name="version.cct" value="v1.0-r${revision}"/>
-	<property name="version.cctbot" value="v0.1-r${revision}"/>
-	<property name="version.ircclient" value="v0.1-r${revision}"/>
-	<property name="version.diagnostics" value="v0.1-r${revision}"/>
+	<property name="version.cct" value="1.0.0"/>
+	<property name="version.cctbot" value="0.1.0.${revision}"/>
+	<property name="version.ircclient" value="0.1.0.${revision}"/>
+	<property name="version.diagnostics" value="0.1.0.${revision}"/>
 	<tstamp>
 		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
 	</tstamp>
@@ -85,7 +85,10 @@
 		</copy>
 	</target>
 	
+	<property name="about.html" value="net/gnehzr/cct/main/about.html"/>
 	<target name="cct" depends="compile, emptydist" description="Compresses CCT main executable and dependencies.">
+		<copy tofile="${about.html}.old" file="${about.html}"/>
+		<replace file="${about.html}" token="${CCTVERSION}" value="${version.cct}.${revision}"/>
 		<jar jarfile="${dist.cct}/CALCubeTimer.jar">
 			<manifest>
 				<attribute name="Class-path" value="."/>
@@ -123,6 +126,9 @@
 				<include name="languages/**"/>
 			</fileset>
 		</copy>
+		<delete file="${about.html}"/>
+		<move file="${about.html}.old" tofile="${about.html}"/>
+		<replace file="${dist.cct}/profiles/defaults.properties" token="${CCTVERSION}" value="${version.cct}.${revision}"/>
 	</target>
 
 	<target name="clean" description="Clean">
