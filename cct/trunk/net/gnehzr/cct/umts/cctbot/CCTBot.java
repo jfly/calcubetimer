@@ -7,7 +7,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
+import net.gnehzr.cct.logging.CCTLog;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleSecurityManager;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
@@ -53,15 +55,16 @@ public class CCTBot extends PircBot {
 	}
 	
 	public void log(String line) {
-		if(!isConnected())
-			println(line);
+		logger.fine(line);
 	}
 
 	private boolean shuttingdown = false;
 
 	protected void onDisconnect() {
+		logger.info("Disconnected from " + getServer());
 		while(!isConnected() && !shuttingdown) {
 			try {
+				logger.info("Attempting to reconnect to " + getServer());
 				reconnect();
 			} catch(Exception e) {
 				// Couldn't reconnect!
@@ -75,28 +78,28 @@ public class CCTBot extends PircBot {
 
 	protected void onKick(String channel, String kickerNick, String kickerLogin, String kickerHostname, String recipientNick, String reason) {
 		if(recipientNick.equals(getNick())) {
-			println("You have been kicked from " + channel + " by " + kickerNick);
+			logger.info("You have been kicked from " + channel + " by " + kickerNick);
 			printPrompt();
 		}
 	}
 
 	protected void onPart(String channel, String sender, String login, String hostname) {
 		if(sender.equals(getNick())) {
-			println("You have parted " + channel);
+			logger.info("You have parted " + channel);
 			printPrompt();
 		}
 	}
 
 	protected void onJoin(String channel, String sender, String login, String hostname) {
 		if(sender.equals(getNick())) {
-			println("You have joined " + channel);
+			logger.info("You have joined " + channel);
 			printPrompt();
 		}
 	}
 
 	protected void onNickChange(String oldNick, String login, String hostname, String newNick) {
 		if(newNick.equals(getNick())) {
-			println("You (formerly: " + oldNick + ") are now known as " + newNick);
+			logger.info("You (formerly: " + oldNick + ") are now known as " + newNick);
 			printPrompt();
 		}
 	}
@@ -109,10 +112,17 @@ public class CCTBot extends PircBot {
 		System.out.println("USAGE: CCTBot irc://servername.tld(:port)#channel");
 	}
 
+	static Logger logger = CCTLog.getLogger("net.gnehzr.cct.umts.cctbot.CCTBot");
 	public static void main(String[] args) {
-		System.setSecurityManager(new ScrambleSecurityManager(TimeoutJob.PLUGIN_LOADER));
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				logger.info("Shutting down");
+			}
+		});
 		
-		System.out.println("CCTBot " + CCTBot.class.getPackage().getImplementationVersion());
+		logger.info("CCTBot " + CCTBot.class.getPackage().getImplementationVersion());
+		logger.info("Arguments " + Arrays.toString(args));
+		logger.info("Running on " + System.getProperty("java.version"));
 		if(args.length != 1) {
 			printUsage();
 			return;
@@ -121,27 +131,34 @@ public class CCTBot extends PircBot {
 		try {
 			u = new URI(args[0]);
 		} catch(URISyntaxException e1) {
-			System.out.println("Invalid URI");
+			logger.info("Invalid URI");
 			printUsage();
 			e1.printStackTrace();
 			return;
 		}
 		if(u.getFragment() == null) {
-			System.out.println("No channel specified");
+			logger.info("No channel specified");
 			printUsage();
 			return;
 		}
+		
+		logger.info("Setting security manager");
+		System.setSecurityManager(new ScrambleSecurityManager(TimeoutJob.PLUGIN_LOADER));
 
 		CCTBot cctbot = new CCTBot();
 		cctbot.setLogin("cctbot");
 		cctbot.setName("cctbot");
 		cctbot.setAutoNickChange(true);
 		cctbot.setVersion("CCTBot version " + CCTBot.class.getPackage().getImplementationVersion());
+		logger.info("CCTBot name: " + cctbot.getName());
+		logger.info("CCTBot nick: " + cctbot.getNick());
+		logger.info("CCTBot version: " + cctbot.getVersion());
 		try {
 			if(u.getPort() == -1)
 				cctbot.connect(u.getHost());
 			else
 				cctbot.connect(u.getHost(), u.getPort());
+			logger.info("Attempting to join #" + u.getFragment());
 			cctbot.joinChannel("#" + u.getFragment());
 			cctbot.readEvalPrint();
 		} catch(NickAlreadyInUseException e) {
@@ -151,6 +168,13 @@ public class CCTBot extends PircBot {
 		} catch(IrcException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	protected void onConnect() {
+		logger.info("Connected to " + getServer());
+		logger.info("CCTBot name: " + getName());
+		logger.info("CCTBot nick: " + getNick());
+		logger.info("CCTBot version: " + getVersion());
 	}
 
 	private static final HashMap<String, String> commands = new HashMap<String, String>();
@@ -193,9 +217,7 @@ public class CCTBot extends PircBot {
 	
 	private void printPrompt() {
 		System.out.print("cctbot: ");
-	}
-	private void println(String s) {
-		System.out.println(s);
+		System.out.flush();
 	}
 
 	private BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -211,60 +233,62 @@ public class CCTBot extends PircBot {
 			if(command.equalsIgnoreCase(CMD_HELP)) {
 				if(arg != null) {
 					String usage = commands.get(arg);
-					println(usage == null ? "Command " + arg + " not found." : "USAGE: " + usage);
+					System.out.println(usage == null ? "Command " + arg + " not found." : "USAGE: " + usage);
 				}
 				if(arg == null) {
 					StringBuilder cmds = new StringBuilder();
 					for(String c : commands.keySet())
 						cmds.append(", ").append(c);
-					println("Available commands:\n\t" + cmds.substring(2));
+					System.out.println("Available commands:\n\t" + cmds.substring(2));
 				}
 				continue;
 			} else if(command.equalsIgnoreCase(CMD_RELOAD)) {
-				println("Reloading scramble plugins...");
+				logger.info("Reloading scramble plugins...");
 				ScramblePlugin.clearScramblePlugins();
-				println(getAvailableVariations());
+				logger.info(getAvailableVariations());
 				continue;
 			} else if(command.equalsIgnoreCase(CMD_CHANNELS)) {
-				println("Connected to: " + Arrays.toString(getChannels()));
+				logger.info("Connected to: " + Arrays.toString(getChannels()));
 				continue;
 			} else if(command.equalsIgnoreCase(CMD_JOIN)) {
 				if(arg != null && arg.startsWith("#")) {
-					println("Attempting to join " + arg);
+					logger.info("Attempting to join " + arg);
 					joinChannel(arg);
 					continue;
 				}
 			} else if(command.equalsIgnoreCase(CMD_PART)) {
 				if(arg != null && arg.startsWith("#")) {
-					println("Leaving " + arg);
+					logger.info("Leaving " + arg);
 					partChannel(arg);
 					continue;
 				}
 			} else if(command.equalsIgnoreCase(CMD_NICK)) {
 				if(arg != null) {
+					logger.info("/nick " + arg);
 					changeNick(arg);
 					continue;
 				}
 			} else if(command.equalsIgnoreCase(CMD_LSVARIATIONS)) {
-				println(getAvailableVariations());
+				logger.info(getAvailableVariations());
 				continue;
 			} else if(command.equalsIgnoreCase(CMD_QUIT)) {
 				shuttingdown = true;
 				quitServer();
-				println("Exiting cctbot");
+				logger.info("Exiting cctbot");
 				System.exit(0);
 				continue;
 			} else if(command.equalsIgnoreCase(CMD_MAX_SCRAMBLES)) {
 				if(arg != null) {
 					try {
 						MAX_SCRAMBLES = Integer.parseInt(arg);
+						logger.info("Max scrambles set to " + MAX_SCRAMBLES);
 						continue;
 					} catch(NumberFormatException e) {}
 				}
 			}
 			
 			String usage = commands.get(command);
-			println(usage == null ? "Unrecognized command: " + command + ". Try help." : "USAGE: " + usage);
+			System.out.println(usage == null ? "Unrecognized command: " + command + ". Try help." : "USAGE: " + usage);
 		}
 	}
 }
