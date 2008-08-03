@@ -10,10 +10,10 @@
 			</outputfilterchain>
 		</redirector>
 	</exec>
-	<property name="version.cct" value="1.0.0"/>
-	<property name="version.cctbot" value="0.1.0.${revision}"/>
-	<property name="version.ircclient" value="0.1.0.${revision}"/>
-	<property name="version.diagnostics" value="0.1.0.${revision}"/>
+	<property name="version.cct" value="1.0.${revision}"/>
+	<property name="version.cctbot" value="0.1.${revision}"/>
+	<property name="version.ircclient" value="0.1.${revision}"/>
+	<property name="version.diagnostics" value="0.1.${revision}"/>
 	<tstamp>
 		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
 	</tstamp>
@@ -74,7 +74,7 @@
 					<attribute name="Implementation-Version" value="${version.cctbot}"/>
 				</section>
 			</manifest>
-			<fileset dir="." includes="net/gnehzr/cct/umts/cctbot/**, net/gnehzr/cct/umts/*, net/gnehzr/cct/scrambles/**"/>
+			<fileset dir="." includes="net/gnehzr/cct/umts/cctbot/**, net/gnehzr/cct/umts/*, net/gnehzr/cct/scrambles/**, net/gnehzr/cct/logging/**"/>
 			<zipfileset src="pircbot.jar"/>
 		</jar>
 		<copy todir="${dist.cctbot}">
@@ -133,6 +133,7 @@
 		<delete>
 			<fileset dir="." includes="**/*.class"/>
 		</delete>
+		<delete file="cctbot0.log"/>
 		<delete dir="${dist}"/>
 		<delete dir="profiles/Guest"/>
 		<echo file="profiles/startup">Guest${line.separator}Guest</echo>
