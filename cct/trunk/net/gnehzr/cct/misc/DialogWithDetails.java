@@ -6,6 +6,7 @@ import java.awt.Window;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -35,7 +36,7 @@ public class DialogWithDetails extends JDialog implements ActionListener {
 		JPanel pane = new JPanel(new BorderLayout());
 		setContentPane(pane);
 		
-		JTextArea detailsArea = new JTextArea(CALCubeTimer.CCT_VERSION + "\n" + details, 15, 30);
+		JTextArea detailsArea = new JTextArea(CALCubeTimer.CCT_VERSION + " " + new Date() + "\n" + details, 15, 30);
 		detailsArea.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 		detailsArea.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.FALSE);
 //		detailsArea.setLineWrap(true);
