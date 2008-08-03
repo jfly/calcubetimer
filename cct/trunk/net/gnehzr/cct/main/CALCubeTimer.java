@@ -747,7 +747,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scrambleLength.setToolTipText(StringAccessor.getString("CALCubeTimer.scramblelength")); //$NON-NLS-1$
 		scrambleArea.updateStrings();
 
-		stackmatOn(false);
+		stackmatOn(false); //force the stackmat label to refresh
 		timesTable.refreshColumnNames();
 		sessionsTable.refreshColumnNames();
 
@@ -1268,7 +1268,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 
 		public void error(SAXParseException e) throws SAXParseException {
-			throw e;
+			warning(e); //I figure that anyone messing around with xml guis will have to be proficient enough to handle the command line
 		}
 
 		public void warning(SAXParseException e) throws SAXParseException {
@@ -1628,6 +1628,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		ScramblePlugin.reloadLengthsFromConfiguration(false);
 		ScrambleCustomization newCustom = ScramblePlugin.getCurrentScrambleCustomization();
 		scrambleChooser.setSelectedItem(newCustom);
+		
+		stackmatOn(false); //force the stackmat label to refresh
 	}
 
 	// Actions section {{{
