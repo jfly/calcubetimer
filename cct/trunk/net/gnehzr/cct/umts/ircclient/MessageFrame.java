@@ -22,8 +22,6 @@ import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -45,15 +43,11 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
 
-import net.gnehzr.cct.misc.customJTable.DraggableJTable;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
-import net.gnehzr.cct.statistics.SolveTime;
-import net.gnehzr.cct.umts.cctbot.CCTUser;
+import net.gnehzr.cct.umts.IRCUtils;
 
-import org.jibble.pircbot.User;
-import org.jvnet.lafwidget.LafWidget;
 import org.jvnet.substance.SubstanceLookAndFeel;
 
 public class MessageFrame extends JInternalFrame implements ActionListener, HyperlinkListener, KeyListener, DocumentListener {
@@ -61,47 +55,27 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	private static final boolean wrap = true;
 
 	private JEditorPane messagePane;
-	private DraggableJTable usersTable;
-	private CCTUserTableModel usersTableModel;
-	JTextField chatField;
+	private JTextField chatField;
 	private Element msgs;
-	HTMLDocument doc;
-	JScrollPane msgScroller;
+	private HTMLDocument doc;
+	protected JScrollPane msgScroller;
 	private Font mono;
-	IRCClientGUI gui;
-	public MessageFrame(IRCClientGUI gui, boolean userTable, boolean closeable, Icon icon) {
+	private MinimizableDesktop desk;
+
+	public MessageFrame(MinimizableDesktop desk, boolean closeable, Icon icon) {
 		super("", true, closeable, true, true);
-		this.gui = gui;
+		this.desk = desk;
 		setFrameIcon(icon);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		JPanel pane = new JPanel(new BorderLayout());
-		setContentPane(pane);
 		
 		mono = new Font("Monospaced", Font.PLAIN, 12);
 
-		messagePane = new JEditorPane();
-//		messagePane.setFocusable(false);
-		messagePane.setEditable(false);
-		messagePane.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
+		messagePane = new UnfocusableEditorPane();
 		messagePane.addHyperlinkListener(this);
+		
 		resetMessagePane();
 		msgScroller = new JScrollPane(messagePane, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		messagePane.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, IRCClientGUI.WATERMARK);
-		
-		if(userTable) {
-			usersTableModel = new CCTUserTableModel();
-			usersTable = new DraggableJTable(false, true);
-			usersTable.setAutoCreateRowSorter(true);
-			usersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-			usersTable.setModel(usersTableModel);
-			usersTable.computePreferredSizes(new SolveTime(60, null).toString());
-			usersTable.setFocusable(false);
-			JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, msgScroller, new JScrollPane(usersTable));
-			split.setResizeWeight(.8);
-			pane.add(split, BorderLayout.CENTER);
-		} else
-			pane.add(msgScroller, BorderLayout.CENTER);
-		
 
 		chatField = new JTextField();
 		chatField.getDocument().addDocumentListener(this);
@@ -110,6 +84,10 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		chatField.setFont(mono);
 		chatField.addActionListener(this);
 		chatField.addKeyListener(this);
+		
+		JPanel pane = new JPanel(new BorderLayout());
+		setContentPane(pane);
+		pane.add(msgScroller, BorderLayout.CENTER);
 		pane.add(chatField, BorderLayout.PAGE_END);
 
 		messageAppender.addActionListener(this);
@@ -118,28 +96,20 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		
 		try {
 			setIcon(true);
-		} catch (PropertyVetoException e) {
-			e.printStackTrace();
-		}
+		} catch(PropertyVetoException e) {}
 		setPreferredSize(new Dimension(450, 300));
 		this.addInternalFrameListener(new InternalFrameAdapter() {
 			public void internalFrameActivated(InternalFrameEvent e) {
 				chatField.requestFocusInWindow();
 			}
 		});
+		pack();
 	}
-
-	public User[] getIRCUsers() {
-		return usersTableModel.getIRCUsers();
-	}
-	public void setIRCUsers(User[] users) {
-		usersTableModel.setIRCUsers(users);
-	}
-	public void setCCTUsers(CCTUser[] users) {
-		usersTableModel.setCCTUsers(users);
-	}
-	public void userUpdated() {
-		usersTableModel.mergeUserLists();
+	
+	public void setVisible(boolean visible) {
+		super.setVisible(visible);
+		if(visible)
+			chatField.requestFocusInWindow();
 	}
 	
 	public void keyPressed(KeyEvent e) {
@@ -214,7 +184,9 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 			case KeyEvent.VK_TAB:
 				if(e.isControlDown()) {
 					//we need to pass this on to the desktop manager
-					gui.postProcessKeyEvent(e);
+					//because ctrl+tab is a next focus shortcut
+					if(!e.isShiftDown())
+						desk.postProcessKeyEvent(e);
 				} else {
 					ignoreUpdate = true;
 					chatField.setText(getNextString(!e.isShiftDown()));
@@ -258,10 +230,6 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	}
 	public void keyReleased(KeyEvent e) {}
 	public void keyTyped(KeyEvent e) {}
-	
-	public void updateStrings() {
-		usersTable.refreshColumnNames();
-	}
 
 	private static String[] splitURL(String url) {
 		return url.split("://", 2);
@@ -341,13 +309,13 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	}
 	
 	public void appendInformation(String info) {
-		appendHTML(null, "<font color='green'>" + escapeHTML(info) + "</font>");
+		appendHTML(null, "<font color='green'>" + IRCUtils.escapeHTML(info) + "</font>");
 	}
 	public void appendMessage(String nick, String message) {
-		appendHTML(nick, escapeHTML(message));
+		appendHTML(nick, IRCUtils.escapeHTML(message));
 	}
 	public void appendError(String error) {
-		appendHTML(null, "<font color='red'>" + escapeHTML(error) + "</font>");
+		appendHTML(null, "<font color='red'>" + IRCUtils.escapeHTML(error) + "</font>");
 	}
 
 	private HashMap<String, int[]> userScrambles = new HashMap<String, int[]>();
@@ -408,7 +376,7 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		}
 		m.appendTail(msg);
 		if(msg.length() != 0) {
-			msg.insert(0, "<br>" + (nick == null ? "" : escapeHTML("<" + nick + "> ")));
+			msg.insert(0, "<br>" + (nick == null ? "" : IRCUtils.escapeHTML("<" + nick + "> ")));
 			buffer.append(msg);
 		}
 	}
@@ -431,15 +399,6 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 				e.printStackTrace();
 			}
 		}
-	}
-
-	private String escapeHTML(String s){
-		s = s.replaceAll("&", "&amp;");
-		s = s.replaceAll("<", "&lt;");
-		s = s.replaceAll(">", "&gt;");
-		s = s.replaceAll("  ", " &nbsp;");
-		s = s.replaceAll("\n", "<br>");
-		return s;
 	}
 
 	//this will leave the scrollbar fully scrolled if approriate when resizing
@@ -511,28 +470,13 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		JScrollBar vertScroller = msgScroller.getVerticalScrollBar();
 		return vertScroller.getValue() + vertScroller.getVisibleAmount() == vertScroller.getMaximum();
 	}
-	void scrollToTop() {
+	private void scrollToTop() {
 		JScrollBar vertScroller = msgScroller.getVerticalScrollBar();
 		vertScroller.setValue(vertScroller.getMinimum());
 	}
-	void scrollToBottom() {
+	private void scrollToBottom() {
 		JScrollBar vertScroller = msgScroller.getVerticalScrollBar();
 		vertScroller.setValue(vertScroller.getMaximum());
-	}
-	
-	private boolean isConnectedChan = false;
-	private String channel;
-	public boolean isConnectedToChannel() {
-		return isConnectedChan;
-	}
-	public void setConnectedToChannel(boolean isConnectedChan, String channel) {
-		this.isConnectedChan = isConnectedChan;
-		this.channel = channel;
-		setTitle(channel);
-		usersTable.setEnabled(isConnectedChan);
-	}
-	public void setTopic(String topic) {
-		setTitle(channel + ": " + topic);
 	}
 	
 	public void resetMessagePane() {

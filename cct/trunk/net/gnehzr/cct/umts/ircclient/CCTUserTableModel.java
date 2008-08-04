@@ -25,7 +25,7 @@ public class CCTUserTableModel extends DraggableJTableModel {
 	}
 	//this will hold instances of User or CCTUser
 	private GeneralizedUser[] users = null;
-	public void mergeUserLists() {
+	private void mergeUserLists() {
 		TreeSet<GeneralizedUser> userSet = new TreeSet<GeneralizedUser>();
 		if(cctUsers != null)
 			for(CCTUser u : cctUsers)

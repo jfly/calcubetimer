@@ -1,5 +1,8 @@
 package net.gnehzr.cct.umts;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class IRCUtils {
 	private IRCUtils() {}
@@ -20,5 +23,37 @@ public class IRCUtils {
 	}
 	public static String createMessage(String type, String message) {
 		return type + MSGTYPE_DELIMETER + message;
+	}
+	
+	public static String escapeHTML(String s) {
+		s = s.replaceAll("\n", "<br>");
+		s = s.replaceAll("&", "&amp;");
+		s = s.replaceAll("<", "&lt;");
+		s = s.replaceAll(">", "&gt;");
+		s = s.replaceAll("  ", " &nbsp;");
+		return s;
+	}
+
+	//this is used for copying from the pane
+	private static final Pattern ESCAPE_PATTERN = Pattern.compile("&#(\\d{1,3});");
+	public static String unescapeHTML(String s) {
+		s = s.replaceAll("&amp;", "&");
+		s = s.replaceAll("&lt;", "<");
+		s = s.replaceAll("&gt;", ">");
+		s = s.replaceAll("&nbsp;", " ");
+		
+		StringBuffer b = new StringBuffer();
+		Matcher m = ESCAPE_PATTERN.matcher(s);
+		while(m.find()) {
+			try {
+				int i = Integer.parseInt(m.group(1));
+				m.appendReplacement(b, "" + (char) i);
+			} catch(NumberFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		m.appendTail(b);
+		
+		return b.toString();
 	}
 }

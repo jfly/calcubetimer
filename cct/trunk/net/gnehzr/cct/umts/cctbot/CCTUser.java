@@ -2,11 +2,22 @@ package net.gnehzr.cct.umts.cctbot;
 
 import net.gnehzr.cct.statistics.SolveTime;
 
+import org.jibble.pircbot.User;
+
 public class CCTUser {
+	private String prefix;
 	private String nick;
 
-	public CCTUser(String nick) {
+	public CCTUser(User u, String nick) {
+		if(u != null) {
+			setPrefix(u.getPrefix());
+			assert u.getNick().equals(nick) : u.getNick() + "=" + nick;
+		}
 		setNick(nick);
+	}
+	
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
 	}
 
 	public CCTUser setNick(String nick) {
@@ -14,6 +25,10 @@ public class CCTUser {
 		return this;
 	}
 
+	public String getPrefix() {
+		return prefix;
+	}
+	
 	public String getNick() {
 		return nick;
 	}
@@ -123,22 +138,22 @@ public class CCTUser {
 		raSize = toInt(split[8]);
 	}
 
-	private String solveTimeToString(SolveTime t) {
-		return t == null ? "" : t.toUSString();
-	}
-
-	private String stringToString(String c) {
-		return c == null ? "" : c;
-	}
-
 	public String getUserState() {
 		return solveTimeToString(lastTime) + USERSTATE_DELIMETER + solveTimeToString(seshAverage) + USERSTATE_DELIMETER + solveTimeToString(currRA)
 				+ USERSTATE_DELIMETER + solveTimeToString(bestRA) + USERSTATE_DELIMETER + stringToString(timingState) + USERSTATE_DELIMETER + solves
 				+ USERSTATE_DELIMETER + attempts + USERSTATE_DELIMETER + stringToString(customization) + USERSTATE_DELIMETER + raSize;
 	}
+	
+	private String solveTimeToString(SolveTime t) {
+		return t == null ? "" : t.toUSString();
+	}
+	
+	private String stringToString(String c) {
+		return c == null ? "" : c;
+	}
 
 	public String toString() {
-		return nick;
+		return prefix + nick;
 	}
 
 	public static class InvalidUserStateException extends Exception {

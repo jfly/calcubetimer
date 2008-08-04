@@ -231,12 +231,13 @@ changes:
 +create small diagnostic problem that will dump relevant info to a file (java version, os, etc.) = cct-diagnostics.jar
 +irc stuff done!
 	+cleanup remaining todos in irc files
++saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files? changed to system.err
++fixed bug where changing the profile wouldn't update the stackmat onlabel
 
 TODO:
 
 for release:
 -generator groups for scramble plugins (w/ cctbot too)
--saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files?
 -dynamic string multiple argument format
 -open source sourceforge!
 -about.html: add a blurb for version 1.0
