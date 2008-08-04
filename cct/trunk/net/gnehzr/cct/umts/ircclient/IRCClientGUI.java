@@ -716,7 +716,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				if(channelFrames.containsKey(channel))
-					channelFrames.get(channel).setTopic(topic + " - " + setBy + "(" + new Date(date) + ")");
+					channelFrames.get(channel).setTopic(topic + " - " + setBy + " (" + new Date(date) + ")");
 			}
 		});
 	}
