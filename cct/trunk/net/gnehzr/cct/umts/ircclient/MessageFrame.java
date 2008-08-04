@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.beans.PropertyVetoException;
@@ -150,16 +151,25 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 					chatField.getActionMap().get(DefaultEditorKit.deleteNextWordAction).actionPerformed(new ActionEvent(chatField, 0, ""));
 				break;
 			case KeyEvent.VK_A:
-				if(e.isControlDown())
-					chatField.dispatchEvent(new KeyEvent(chatField, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_HOME,
-							KeyEvent.CHAR_UNDEFINED,
-							KeyEvent.KEY_LOCATION_STANDARD));
+				if(e.isControlDown()) {
+					final int modifiers = e.getModifiersEx();
+					//we need to invoke this later because swing will select all the text after this,
+					//ctrl+a is normally select all
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							chatField.dispatchEvent(new KeyEvent(chatField, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), modifiers & InputEvent.SHIFT_DOWN_MASK, KeyEvent.VK_HOME,
+									KeyEvent.CHAR_UNDEFINED,
+									KeyEvent.KEY_LOCATION_STANDARD));
+						}
+					});
+				}
 				break;
 			case KeyEvent.VK_E:
-				if(e.isControlDown())
-					chatField.dispatchEvent(new KeyEvent(chatField, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_END,
+				if(e.isControlDown()) {
+					chatField.dispatchEvent(new KeyEvent(chatField, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), e.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK, KeyEvent.VK_END,
 							KeyEvent.CHAR_UNDEFINED,
 							KeyEvent.KEY_LOCATION_STANDARD));
+				}
 				break;
 			case KeyEvent.VK_U:
 				if(e.isControlDown())
