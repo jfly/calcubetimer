@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Pre417To417 {
+	private static String newline = System.getProperty("line.separator");
 	public static void main(String[] args) throws IOException {
 		if(args.length != 1) {
 			System.out.println("This updates CCT databases from before revision 417 " +
@@ -27,7 +28,7 @@ public class Pre417To417 {
 		StringBuffer file = new StringBuffer();
 		String line;
 		while((line = in.readLine()) != null)
-			file.append(line).append("\n");
+			file.append(line).append(newline);
 		
 		System.out.print("Finished, now updating...");
 		StringBuffer b = new StringBuffer();
