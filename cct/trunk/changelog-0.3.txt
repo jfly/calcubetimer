@@ -238,6 +238,7 @@ changes:
 TODO:
 
 for release:
+-search as you type functionality for URLHistoryBox (substance removed it)
 -generator groups for scramble plugins (w/ cctbot too)
 -dynamic string multiple argument format
 -open source sourceforge!

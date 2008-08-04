@@ -70,7 +70,13 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 		this.cct = cct;
 		bot = new KillablePircBot(this);
 
-		login = new JInternalFrame("", false, false, false, true);
+		login = new JInternalFrame("", false, false, false, true) {
+			public void setVisible(boolean visible) {
+				if(visible)
+					setConnectDefault();
+				super.setVisible(visible);
+			}
+		};
 		login.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, IRCClientGUI.WATERMARK);
 		login.addInternalFrameListener(new InternalFrameAdapter() {
 			public void internalFrameActivated(InternalFrameEvent e) {
@@ -96,6 +102,8 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 			public void dispose() {
 				if(connecting)
 					cancelConnecting();
+				if(isConnected())
+					forkDisconnect();
 				if(IRCClientGUI.this.cct == null)
 					System.exit(0);
 				closeListener.actionPerformed(null);
