@@ -10,10 +10,11 @@
 			</outputfilterchain>
 		</redirector>
 	</exec>
-	<property name="version.cct" value="1.0.${revision}"/>
-	<property name="version.cctbot" value="0.1.${revision}"/>
-	<property name="version.ircclient" value="0.1.${revision}"/>
-	<property name="version.diagnostics" value="0.1.${revision}"/>
+	
+	<property name="version.cct" value="1.0.0"/>
+	<property name="version.cctbot" value="0.1.0"/>
+	<property name="version.ircclient" value="0.1.0"/>
+	<property name="version.diagnostics" value="0.1.0"/>
 	<tstamp>
 		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
 	</tstamp>
