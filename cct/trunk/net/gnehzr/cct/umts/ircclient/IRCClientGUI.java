@@ -286,8 +286,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 		}
 	}
 
-	//TODO - abbreviations
-	//TODO - i18n
+	//This is going to just stay in English
 	public static final HashMap<String, String> cmdHelp = new HashMap<String, String>();
 	private static final String CMD_JOIN = "/join";
 	{
