@@ -23,6 +23,7 @@
 	<property name="dist.cct" location="${dist}/cct-${version.cct}/"/>
 	<property name="dist.diagnostics" location="${dist}/cct-diagnostics-${version.diagnostics}/"/>
 	<property name="dist.cctbot" location="${dist}/cctbot-${version.cctbot}/"/>
+	<property name="dist.dbpatcher" location="${dist}/dbpatcher/"/>
 	<target name="dist" depends="compile, emptydist, diagnostics, cct, cctbot" description="Main distribution">
 		<echo>Building everything!</echo>
 	</target>
@@ -54,13 +55,15 @@
 	</target>
 	
 	<target name="pre417patcher" depends="compile" description="Creates database patcher">
-		<jar jarfile="${dist}/CCT-Pre417DBPatcher.jar">
+		<mkdir dir="${dist.dbpatcher}"/>
+		<jar jarfile="${dist.dbpatcher}/CCT-Pre417DBPatcher.jar">
 			<manifest>
 				<attribute name="Main-Class" value="net.gnehzr.notcct.statistics.databasepatcher.Pre417To417"/>
 				<attribute name="Built-Date" value="${TODAY}"/>
 			</manifest>
 			<fileset dir="." includes="net/gnehzr/notcct/statistics/databasepatcher/**"/>
 		</jar>
+		<echo file="${dist.dbpatcher}/CCT-Pre417DBPatcher.bat">::Set the current path to the directory of the batch file${line.separator}${line.separator}cd /d %~dp0${line.separator}java -jar CCT-Pre417DBPatcher.jar %*${line.separator}pause</echo>
 	</target>
 	
 	<target name="diagnostics" depends="compile, emptydist" description="Compresses RawAudio diagnostic tool into a handy jar file.">
