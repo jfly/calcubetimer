@@ -283,6 +283,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 			channelFrames.remove(channelFrame.getChannel());
 			if(channelFrame.isConnected())
 				bot.partChannel(channelFrame.getChannel());
+			updateStatusBar();
 		}
 	}
 
@@ -902,19 +903,20 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 		return false;
 	}
 
+	private String getHTMLForChannel(String channel) {
+		if(isConnectedToChannel(channel))
+			return channel;
+		
+		return "<strike>" + channel + "</strike>";
+	}
 	private void updateStatusBar() {
 		String text;
 		if(!bot.isConnected())
 			text = StringAccessor.getString("IRCClientGUI.disconnected");
 		else {
 			StringBuilder status = new StringBuilder();
-			for(ChatMessageFrame chatChannel : channelFrames.values()) {
-				status.append(", ").append(chatChannel.getChannel()).append("->");
-				String commChannel = chatChannel.getCommChannel().getChannel();
-				if(!isConnectedToChannel(commChannel))
-					commChannel = "<strike>" + commChannel + "</strike>";
-				status.append(commChannel);
-			}
+			for(ChatMessageFrame chatChannel : channelFrames.values())
+				status.append(", ").append(getHTMLForChannel(chatChannel.getChannel())).append("->").append(getHTMLForChannel(chatChannel.getCommChannel().getChannel()));
 			if(status.length() == 0)
 				text = StringAccessor.getString("IRCClientGUI.nochannels");
 			else
