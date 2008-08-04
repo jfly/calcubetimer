@@ -233,11 +233,11 @@ changes:
 	+cleanup remaining todos in irc files
 +saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files? changed to system.err
 +fixed bug where changing the profile wouldn't update the stackmat onlabel
++remove non-nls stuff
 
 TODO:
 
 for release:
--remove non-nls stuff
 -generator groups for scramble plugins (w/ cctbot too)
 -dynamic string multiple argument format
 -open source sourceforge!
