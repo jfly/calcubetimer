@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.KeyboardFocusManager;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -39,12 +40,9 @@ import net.gnehzr.cct.misc.Utils;
 
 public class DraggableJTable extends JTable implements MouseListener, MouseMotionListener, KeyListener, ActionListener {
 	String addText;
-	private boolean columnChooser;
-
 	//You must set any editors or renderers before setting this table's model
 	//because the preferred size is computed inside setModel()
-	public DraggableJTable(boolean draggable, boolean columnChooser) {
-		this.columnChooser = columnChooser;
+	public DraggableJTable(boolean draggable, final boolean columnChooser) {
 		this.addMouseListener(this);
 		if(draggable) {
 			setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -53,7 +51,17 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		this.addKeyListener(this);
 		this.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE); //$NON-NLS-1$
 		this.putClientProperty("JTable.autoStartsEdit", Boolean.FALSE); //$NON-NLS-1$
-		headers = getTableHeader();
+//		headers = getTableHeader();
+		headers = new JTableHeader() {
+			public String getToolTipText(MouseEvent event) {
+				int col = convertColumnIndexToModel(columnAtPoint(event.getPoint()));
+				String tip = getColumnName(col);
+				if(columnChooser)
+					tip += "<br>" + StringAccessor.getString("DraggableJTable.columntooltip");
+				return "<html>" + tip + "</html>";
+			}
+		};
+		setTableHeader(headers);
 		if(columnChooser) {
 			headers.addMouseListener(this);
 			//need to override the DefaultTableColumnModel's moveColumn()
@@ -84,8 +92,6 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 	//this will refresh any draggablejtable specific strings
 	//and the addtext for the editable row at bottom
 	public void refreshStrings(String addText) {
-		if(columnChooser)
-			headers.setToolTipText(StringAccessor.getString("DraggableJTable.columntooltip"));
 		this.addText = addText;
 	}
 	
@@ -421,6 +427,10 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		return 0;
 	}
 	public void tableChanged(TableModelEvent e) {
+		Point p = getMousePosition(true);
+		if(p != null) //this should force the tooltip to refresh
+			dispatchEvent(new MouseEvent(this, MouseEvent.MOUSE_MOVED, 0, 0, p.x, p.y, 0, 0, 0, false, MouseEvent.NOBUTTON));
+		
 		List<? extends SortKey> sorts = null;
 		if(getRowSorter() != null) {
 			sorts = getRowSorter().getSortKeys();
