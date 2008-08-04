@@ -154,10 +154,13 @@ public class CCTBot extends PircBot {
 		logger.info("CCTBot nick: " + cctbot.getNick());
 		logger.info("CCTBot version: " + cctbot.getVersion());
 		try {
+			logger.info("Connecting to " + u.getHost());
 			if(u.getPort() == -1)
 				cctbot.connect(u.getHost());
-			else
+			else {
+				logger.info("On port " + u.getPort());
 				cctbot.connect(u.getHost(), u.getPort());
+			}
 			logger.info("Attempting to join #" + u.getFragment());
 			cctbot.joinChannel("#" + u.getFragment());
 			cctbot.readEvalPrint();
