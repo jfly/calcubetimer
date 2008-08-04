@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
@@ -636,7 +635,7 @@ public class Statistics implements ConfigurationChangeListener {
 		return toTerseStringHelper(list, bestAndWorst[0], bestAndWorst[1]);
 	}
 
-	private String toTerseStringHelper(List<SolveTime> printMe,
+	private static String toTerseStringHelper(List<SolveTime> printMe,
 			SolveTime best, SolveTime worst) {
 		StringBuilder ret = new StringBuilder();
 		String nextAppend = ""; //$NON-NLS-1$
