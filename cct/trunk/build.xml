@@ -52,6 +52,16 @@
 		<mkdir dir="${dist.diagnostics}"/>
 	</target>
 	
+	<target name="pre417patcher" depends="compile" description="Creates database patcher">
+		<jar jarfile="${dist}/CCT-Pre417DBPatcher.jar">
+			<manifest>
+				<attribute name="Main-Class" value="net.gnehzr.notcct.statistics.databasepatcher.Pre417To417"/>
+				<attribute name="Built-Date" value="${TODAY}"/>
+			</manifest>
+			<fileset dir="." includes="net/gnehzr/notcct/statistics/databasepatcher/**"/>
+		</jar>
+	</target>
+	
 	<target name="diagnostics" depends="compile, emptydist" description="Compresses RawAudio diagnostic tool into a handy jar file.">
 		<jar jarfile="${dist.diagnostics}/CCT-Diagnostics.jar">
 			<manifest>
