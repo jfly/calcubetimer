@@ -16,6 +16,13 @@ public class URLHistoryBox extends JComboBox {
 		super(values == null ? new String[0] : values);
 	}
 	
+	public Object getSelectedItem() {
+		Object o = super.getSelectedItem();
+		if(o == null)
+			return "";
+		return o;
+	}
+	
 	public void commitCurrentItem() {
 		String newItem = getSelectedItem().toString();
 		if(!containsItem(newItem)) {
