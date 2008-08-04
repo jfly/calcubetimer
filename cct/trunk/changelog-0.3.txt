@@ -237,6 +237,7 @@ changes:
 TODO:
 
 for release:
+-remove non-nls stuff
 -generator groups for scramble plugins (w/ cctbot too)
 -dynamic string multiple argument format
 -open source sourceforge!

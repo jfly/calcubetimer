@@ -44,7 +44,6 @@ import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
 import net.gnehzr.cct.umts.IRCUtils;
 import net.gnehzr.cct.umts.cctbot.CCTUser;
-import net.gnehzr.cct.umts.cctbot.CCTUser.InvalidUserStateException;
 import net.gnehzr.cct.umts.ircclient.MessageFrame.CommandListener;
 
 import org.jibble.pircbot.ReplyConstants;
@@ -858,20 +857,18 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 	});
 
 	private void cctStatusUpdate(String nick, String msg, CCTCommChannel commChannel) {
-		try {
-			String[] type_msg = IRCUtils.splitMessage(msg);
-			if(type_msg[0].equals(IRCUtils.CLIENT_USERSTATE)) {
-				ChatMessageFrame chatChannel = commChannel.getChatFrame();
-				CCTUser c = chatChannel.getCCTUser(nick);
-				if(c == null)
-					c = chatChannel.addCCTUser(getUser(chatChannel.getChannel(), nick), nick);
+		String[] type_msg = IRCUtils.splitMessage(msg);
+		if(type_msg[0].equals(IRCUtils.CLIENT_USERSTATE)) {
+			ChatMessageFrame chatChannel = commChannel.getChatFrame();
+			CCTUser c = chatChannel.getCCTUser(nick);
+			if(c == null)
+				c = chatChannel.addCCTUser(getUser(chatChannel.getChannel(), nick), nick);
 
-				c.setUserState(type_msg[1]);
-				chatChannel.usersListChanged();
-			}
-		} catch(InvalidUserStateException e) {}
+			c.setUserState(type_msg[1]);
+			chatChannel.usersListChanged();
+		}
 	}
-	
+
 	private void updateCCTUserModes(ChatMessageFrame c) {
 		for(User u : bot.getUsers(c.getChannel())) {
 			CCTUser cct = c.getCCTUser(u.getNick());

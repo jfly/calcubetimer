@@ -1,5 +1,9 @@
 package net.gnehzr.cct.umts.cctbot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import net.gnehzr.cct.statistics.SolveTime;
 
 import org.jibble.pircbot.User;
@@ -33,20 +37,40 @@ public class CCTUser {
 		return nick;
 	}
 
+	private static SolveTime denullify(SolveTime t) {
+		return t == null ? SolveTime.NA : t;
+	}
+	private static String denullify(String c) {
+		return c == null ? "" : c;
+	}
+	private static SolveTime toSolveTime(String time) {
+		try {
+			return new SolveTime(time, null);
+		} catch(Exception e) {
+			return SolveTime.NA;
+		}
+	}
+	private static int toInt(String num) {
+		try {
+			return Integer.parseInt(num);
+		} catch(NumberFormatException e) {
+			return 0;
+		}
+	}
 	private static final String USERSTATE_DELIMETER = ";";
+	
 	private int solves, attempts, raSize;
 	private SolveTime seshAverage, currRA, bestRA, lastTime;
+	private String bestRASolves, currRASolves;
 	private String customization, timingState;
-
+	
 	public void setSolvesAttempts(int solves, int attempts) {
 		this.solves = solves;
 		this.attempts = attempts;
 	}
-
 	public int getSolves() {
 		return solves;
 	}
-
 	public int getAttempts() {
 		return attempts;
 	}
@@ -54,111 +78,94 @@ public class CCTUser {
 	public void setLatestTime(SolveTime time) {
 		lastTime = time;
 	}
-
 	public SolveTime getLastTime() {
-		return lastTime;
+		return denullify(lastTime);
 	}
-
+	
 	public void setCustomization(String customization) {
 		this.customization = customization;
 	}
-
 	public String getCustomization() {
-		return customization;
+		return denullify(customization);
 	}
 
 	public void setTimingState(String timingState) {
 		this.timingState = timingState;
 	}
-
 	public String getTimingState() {
-		return timingState;
+		return denullify(timingState);
 	}
 
-	public void setCurrentRA(SolveTime average, String times) {
+	public void setCurrentRA(SolveTime average, String terseTimes) {
 		currRA = average;
+		currRASolves = terseTimes;
 	}
-
 	public SolveTime getCurrentRA() {
-		return currRA;
+		return denullify(currRA);
 	}
-
-	public void setBestRA(SolveTime average, String times) {
+	public String getCurrRASolves() {
+		return denullify(currRASolves);
+	}
+	
+	public void setBestRA(SolveTime average, String terseTimes) {
 		bestRA = average;
+		bestRASolves = terseTimes;
 	}
-
 	public SolveTime getBestRA() {
-		return bestRA;
+		return denullify(bestRA);
+	}
+	public String getBestRASolves() {
+		return denullify(bestRASolves);
 	}
 
 	public void setSessionAverage(SolveTime average) {
 		seshAverage = average;
 	}
-
 	public SolveTime getSessionAverage() {
-		return seshAverage;
+		return denullify(seshAverage);
 	}
 
 	public void setRASize(int raSize) {
 		this.raSize = raSize;
 	}
-
 	public int getRASize() {
 		return raSize;
 	}
 
-	private SolveTime toSolveTime(String time) {
+	public void setUserState(String state) {
 		try {
-			return new SolveTime(time, null);
-		} catch(Exception e) {
-			return new SolveTime();
+			List<String> split = new ArrayList<String>(Arrays.asList(state.split(USERSTATE_DELIMETER)));
+			lastTime = toSolveTime(split.remove(0));
+			seshAverage = toSolveTime(split.remove(0));
+			currRA = toSolveTime(split.remove(0));
+			currRASolves = split.remove(0);
+			bestRA = toSolveTime(split.remove(0));
+			bestRASolves = split.remove(0);
+			timingState = split.remove(0);
+			solves = toInt(split.remove(0));
+			attempts = toInt(split.remove(0));
+			customization = split.remove(0);
+			raSize = toInt(split.remove(0));
+		} catch(IndexOutOfBoundsException e) {
+			//this means the userstate didn't contain everything we were
+			//looking for, oh well
 		}
 	}
-
-	private int toInt(String num) {
-		try {
-			return Integer.parseInt(num);
-		} catch(NumberFormatException e) {
-			return 0;
-		}
-	}
-
-	public void setUserState(String state) throws InvalidUserStateException {
-		String[] split = state.split(USERSTATE_DELIMETER);
-		if(split.length != 9)
-			throw new InvalidUserStateException("State can't be empty!");
-		lastTime = toSolveTime(split[0]);
-		seshAverage = toSolveTime(split[1]);
-		currRA = toSolveTime(split[2]);
-		bestRA = toSolveTime(split[3]);
-		timingState = split[4];
-		solves = toInt(split[5]);
-		attempts = toInt(split[6]);
-		customization = split[7];
-		raSize = toInt(split[8]);
-	}
-
 	public String getUserState() {
-		return solveTimeToString(lastTime) + USERSTATE_DELIMETER + solveTimeToString(seshAverage) + USERSTATE_DELIMETER + solveTimeToString(currRA)
-				+ USERSTATE_DELIMETER + solveTimeToString(bestRA) + USERSTATE_DELIMETER + stringToString(timingState) + USERSTATE_DELIMETER + solves
-				+ USERSTATE_DELIMETER + attempts + USERSTATE_DELIMETER + stringToString(customization) + USERSTATE_DELIMETER + raSize;
-	}
-	
-	private String solveTimeToString(SolveTime t) {
-		return t == null ? "" : t.toUSString();
-	}
-	
-	private String stringToString(String c) {
-		return c == null ? "" : c;
+		return getLastTime() + USERSTATE_DELIMETER +
+		getSessionAverage() + USERSTATE_DELIMETER +
+		getCurrentRA() + USERSTATE_DELIMETER +
+		getCurrRASolves() + USERSTATE_DELIMETER +
+		getBestRA() + USERSTATE_DELIMETER +
+		getBestRASolves() + USERSTATE_DELIMETER +
+		getTimingState() + USERSTATE_DELIMETER + 
+		getSolves() + USERSTATE_DELIMETER +
+		getAttempts() + USERSTATE_DELIMETER +
+		getCustomization() + USERSTATE_DELIMETER +
+		getRASize();
 	}
 
 	public String toString() {
 		return prefix + nick;
-	}
-
-	public static class InvalidUserStateException extends Exception {
-		public InvalidUserStateException(String reason) {
-			super(reason);
-		}
 	}
 }

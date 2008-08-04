@@ -13,8 +13,13 @@ import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.stackmatInterpreter.TimerState;
 
 public class SolveTime extends Commentable implements Comparable<SolveTime> {
-	public static final SolveTime BEST = new SolveTime(0, null);
-	public static final SolveTime WORST = new SolveTime();
+	public static final SolveTime BEST = new SolveTime(0, null) {
+		public void setTime(String toParse, boolean importing) throws Exception { throw new AssertionError(); };
+	};
+	public static final SolveTime WORST = new SolveTime() {
+		public void setTime(String toParse, boolean importing) throws Exception { throw new AssertionError(); };
+	};
+	public static final SolveTime NA = WORST;
 
 	private HashSet<SolveType> types = new HashSet<SolveType>();
 	public static class SolveType {
@@ -127,7 +132,7 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 		setTime(toParse, true);
 	}
 
-	private void setTime(String toParse, boolean importing) throws Exception {
+	protected void setTime(String toParse, boolean importing) throws Exception {
 		hundredths = 0; //don't remove this
 		toParse = toParse.trim();
 		if(toParse.isEmpty())
