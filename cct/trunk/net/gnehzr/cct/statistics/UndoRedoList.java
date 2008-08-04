@@ -11,12 +11,12 @@ public class UndoRedoList<E> {
 		}
 		private String toLeftString() {
 			if(value == null) {
-				return "[ "; //$NON-NLS-1$
+				return "[ ";
 			}
-			return ((previous.value == null) ? "[" : previous.toLeftString()) + " " + (value == null ? "" : value.toString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			return ((previous.value == null) ? "[" : previous.toLeftString()) + " " + (value == null ? "" : value.toString());
 		}
 		private String toRightString() {
-			return (value == null ? "" : value.toString())+ " " + ((next == null) ? "]" : next.toRightString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			return (value == null ? "" : value.toString())+ " " + ((next == null) ? "]" : next.toRightString());
 		}
 		public String toString() {
 			return toLeftString() + toRightString();

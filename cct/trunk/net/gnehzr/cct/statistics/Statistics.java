@@ -18,15 +18,15 @@ public class Statistics implements ConfigurationChangeListener {
 	public static enum AverageType {
 		CURRENT {
 			public String toString() {
-				return StringAccessor.getString("Statistics.currentaverage"); //$NON-NLS-1$
+				return StringAccessor.getString("Statistics.currentaverage");
 			}
 		}, RA {
 			public String toString() {
-				return StringAccessor.getString("Statistics.bestRA"); //$NON-NLS-1$
+				return StringAccessor.getString("Statistics.bestRA");
 			}
 		}, SESSION {
 			public String toString() {
-				return StringAccessor.getString("Statistics.sessionAverage"); //$NON-NLS-1$
+				return StringAccessor.getString("Statistics.sessionAverage");
 			}
 		}
 	}
@@ -86,11 +86,11 @@ public class Statistics implements ConfigurationChangeListener {
 		}
 		public String toString() {
 			if(oldTimes == null) { //add newTime
-				return "added"+newTime; //$NON-NLS-1$
+				return "added"+newTime;
 			} else if(newTime == null) { //remove oldTime
-				return "removed"+Arrays.toString(oldTimes); //$NON-NLS-1$
+				return "removed"+Arrays.toString(oldTimes);
 			} else { //change oldTime to newTime
-				return "changed"+oldTimes[0]+"->"+newTime; //$NON-NLS-1$ //$NON-NLS-2$
+				return "changed"+oldTimes[0]+"->"+newTime;
 			}
 		}
 	}
@@ -596,18 +596,18 @@ public class Statistics implements ConfigurationChangeListener {
 		for(SolveTime next : times){
 			String comment = next.getComment();
 			if(!comment.isEmpty())
-				comment = "\t" + comment; //$NON-NLS-1$
+				comment = "\t" + comment;
 			boolean parens = next == best || next == worst;
 
-			ret.append(++i).append(".\t"); //$NON-NLS-1$
-			if(parens) ret.append("("); //$NON-NLS-1$
+			ret.append(++i).append(".\t");
+			if(parens) ret.append("(");
 			ret.append(next.toString());
-			if(parens) ret.append(")\t"); //$NON-NLS-1$
-			else ret.append("\t"); //$NON-NLS-1$
+			if(parens) ret.append(")\t");
+			else ret.append("\t");
 			ret.append(next.getScramble());
-			if(showSplits) ret.append(StringAccessor.getString("Statistics.splits")).append(next.toSplitsString()); //$NON-NLS-1$
+			if(showSplits) ret.append(StringAccessor.getString("Statistics.splits")).append(next.toSplitsString());
 			ret.append(comment);
-			ret.append("\n"); //$NON-NLS-1$
+			ret.append("\n");
 		}
 		return ret.toString();
 	}
@@ -619,7 +619,7 @@ public class Statistics implements ConfigurationChangeListener {
 		SolveTime[] bestAndWorst = getBestAndWorstTimes(n, n + curRASize[num]);
 		List<SolveTime> list = getSublist(n, n + curRASize[num]);
 		if(list.size() == 0)
-			return "N/A"; //$NON-NLS-1$
+			return "N/A";
 		
 		return toTerseStringHelper(list, bestAndWorst[0], bestAndWorst[1]);
 	}
@@ -631,21 +631,21 @@ public class Statistics implements ConfigurationChangeListener {
 		SolveTime[] bestAndWorst = getBestAndWorstTimes(type, num);
 		List<SolveTime> list = getSublist(type, num);
 		if(list.size() != curRASize[num])
-			return "N/A"; //$NON-NLS-1$
+			return "N/A";
 		return toTerseStringHelper(list, bestAndWorst[0], bestAndWorst[1]);
 	}
 
 	private static String toTerseStringHelper(List<SolveTime> printMe,
 			SolveTime best, SolveTime worst) {
 		StringBuilder ret = new StringBuilder();
-		String nextAppend = ""; //$NON-NLS-1$
+		String nextAppend = "";
 		for(SolveTime next : printMe){
 			ret.append(nextAppend);
 			boolean parens = next == best || next == worst;
-			if(parens) ret.append("("); //$NON-NLS-1$
+			if(parens) ret.append("(");
 			ret.append(next.toString());
-			if(parens) ret.append(")"); //$NON-NLS-1$
-			nextAppend = ", "; //$NON-NLS-1$
+			if(parens) ret.append(")");
+			nextAppend = ", ";
 		}
 		return ret.toString();
 	}

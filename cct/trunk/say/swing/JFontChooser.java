@@ -55,10 +55,10 @@ import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
 
-import org.jvnet.substance.SubstanceLookAndFeel;
-
 import net.gnehzr.cct.configuration.JColorComponent;
 import net.gnehzr.cct.i18n.StringAccessor;
+
+import org.jvnet.substance.SubstanceLookAndFeel;
 
 /**
 * The <code>JFontChooser</code> class is a swing component 
@@ -271,7 +271,7 @@ public class JFontChooser extends JComponent implements MouseListener {
 					getFontSizeTextField().setText(maxSize.toString());
 				} else if(fontSize == 0) {
 					fontSize = 1;
-					getFontSizeTextField().setText("1"); //$NON-NLS-1$
+					getFontSizeTextField().setText("1");
 				}
 				break;
 			} catch (NumberFormatException e) {
@@ -448,7 +448,7 @@ public class JFontChooser extends JComponent implements MouseListener {
 		}
 
 		private void update(DocumentEvent event) {
-			String newValue = ""; //$NON-NLS-1$
+			String newValue = "";
 			try {
 				Document doc = event.getDocument();
 				newValue = doc.getText(0, doc.getLength());
@@ -491,8 +491,8 @@ public class JFontChooser extends JComponent implements MouseListener {
 
 		protected DialogOKAction(JDialog dialog) {
 			this.dialog = dialog;
-			putValue(Action.DEFAULT, "OK"); //$NON-NLS-1$
-			putValue(Action.NAME, StringAccessor.getString("JFontChooser.OK")); //$NON-NLS-1$
+			putValue(Action.DEFAULT, "OK");
+			putValue(Action.NAME, StringAccessor.getString("JFontChooser.OK"));
 		}
 
 		public void actionPerformed(ActionEvent e) {
@@ -506,8 +506,8 @@ public class JFontChooser extends JComponent implements MouseListener {
 
 		protected DialogCancelAction(JDialog dialog) {
 			this.dialog = dialog;
-			putValue(Action.DEFAULT, "Cancel"); //$NON-NLS-1$
-			putValue(Action.NAME, StringAccessor.getString("JFontChooser.Cancel")); //$NON-NLS-1$
+			putValue(Action.DEFAULT, "Cancel");
+			putValue(Action.NAME, StringAccessor.getString("JFontChooser.Cancel"));
 		}
 
 		public void actionPerformed(ActionEvent e) {
@@ -518,8 +518,8 @@ public class JFontChooser extends JComponent implements MouseListener {
 	
 	protected class DialogResetAction extends AbstractAction {
 		protected DialogResetAction() {
-			putValue(Action.DEFAULT, "Reset"); //$NON-NLS-1$
-			putValue(Action.NAME, StringAccessor.getString("JFontChooser.Reset")); //$NON-NLS-1$
+			putValue(Action.DEFAULT, "Reset");
+			putValue(Action.NAME, StringAccessor.getString("JFontChooser.Reset"));
 		}
 
 		public void actionPerformed(ActionEvent e) {
@@ -537,7 +537,7 @@ public class JFontChooser extends JComponent implements MouseListener {
 		Frame frame = parent instanceof Frame ? (Frame) parent
 				: (Frame) SwingUtilities
 						.getAncestorOfClass(Frame.class, parent);
-		JDialog dialog = new JDialog(frame, StringAccessor.getString("JFontChooser.SelectFont"), true); //$NON-NLS-1$
+		JDialog dialog = new JDialog(frame, StringAccessor.getString("JFontChooser.SelectFont"), true);
 
 		Action okAction = new DialogOKAction(dialog);
 		Action cancelAction = new DialogCancelAction(dialog);
@@ -571,9 +571,9 @@ public class JFontChooser extends JComponent implements MouseListener {
 		actionMap.put(okAction.getValue(Action.DEFAULT), okAction);
 		InputMap inputMap = buttonsPanel
 				.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-		inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), cancelAction //$NON-NLS-1$
+		inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), cancelAction
 				.getValue(Action.DEFAULT));
-		inputMap.put(KeyStroke.getKeyStroke("ENTER"), okAction //$NON-NLS-1$
+		inputMap.put(KeyStroke.getKeyStroke("ENTER"), okAction
 				.getValue(Action.DEFAULT));
 
 		JPanel dialogEastPanel = new JPanel();
@@ -610,7 +610,7 @@ public class JFontChooser extends JComponent implements MouseListener {
 			p.add(getFontFamilyTextField(), BorderLayout.NORTH);
 			p.add(scrollPane, BorderLayout.CENTER);
 
-			JLabel label = new JLabel(StringAccessor.getString("JFontChooser.FontName")); //$NON-NLS-1$
+			JLabel label = new JLabel(StringAccessor.getString("JFontChooser.FontName"));
 			label.setHorizontalAlignment(SwingConstants.LEFT);
 			label.setHorizontalTextPosition(SwingConstants.LEFT);
 			label.setLabelFor(getFontFamilyTextField());
@@ -639,7 +639,7 @@ public class JFontChooser extends JComponent implements MouseListener {
 			p.add(getFontStyleTextField(), BorderLayout.NORTH);
 			p.add(scrollPane, BorderLayout.CENTER);
 
-			JLabel label = new JLabel(StringAccessor.getString("JFontChooser.FontStyle")); //$NON-NLS-1$
+			JLabel label = new JLabel(StringAccessor.getString("JFontChooser.FontStyle"));
 			label.setHorizontalAlignment(SwingConstants.LEFT);
 			label.setHorizontalTextPosition(SwingConstants.LEFT);
 			label.setLabelFor(getFontStyleTextField());
@@ -667,7 +667,7 @@ public class JFontChooser extends JComponent implements MouseListener {
 			p.add(getFontSizeTextField(), BorderLayout.NORTH);
 			p.add(scrollPane, BorderLayout.CENTER);
 
-			JLabel label = new JLabel(StringAccessor.getString("JFontChooser.FontSize")); //$NON-NLS-1$
+			JLabel label = new JLabel(StringAccessor.getString("JFontChooser.FontSize"));
 			label.setHorizontalAlignment(SwingConstants.LEFT);
 			label.setHorizontalTextPosition(SwingConstants.LEFT);
 			label.setLabelFor(getFontSizeTextField());
@@ -682,7 +682,7 @@ public class JFontChooser extends JComponent implements MouseListener {
 	protected JPanel getSamplePanel() {
 		if (samplePanel == null) {
 			Border titledBorder = BorderFactory.createTitledBorder(
-					BorderFactory.createEtchedBorder(), StringAccessor.getString("JFontChooser.Sample")); //$NON-NLS-1$
+					BorderFactory.createEtchedBorder(), StringAccessor.getString("JFontChooser.Sample"));
 			Border empty = BorderFactory.createEmptyBorder(5, 10, 10, 10);
 			Border border = BorderFactory.createCompoundBorder(titledBorder,
 					empty);
@@ -698,7 +698,7 @@ public class JFontChooser extends JComponent implements MouseListener {
 
 	protected JColorComponent getSampleTextField() {
 		if (sampleText == null) {
-			sampleText = new JColorComponent((toDisplay == null) ? StringAccessor.getString("JFontChooser.SampleString") : toDisplay); //$NON-NLS-1$
+			sampleText = new JColorComponent((toDisplay == null) ? StringAccessor.getString("JFontChooser.SampleString") : toDisplay);
 			sampleText.setPreferredSize(new Dimension(300, 100));
 		}
 		return sampleText;
@@ -717,10 +717,10 @@ public class JFontChooser extends JComponent implements MouseListener {
 		if(fontStyleNames == null) {
 			int i = 0;
 			fontStyleNames = new String[4];
-			fontStyleNames[i++] = StringAccessor.getString("JFontChooser.Plain"); //$NON-NLS-1$
-			fontStyleNames[i++] = StringAccessor.getString("JFontChooser.Bold"); //$NON-NLS-1$
-			fontStyleNames[i++] = StringAccessor.getString("JFontChooser.Italic"); //$NON-NLS-1$
-			fontStyleNames[i++] = StringAccessor.getString("JFontChooser.BoldItalic"); //$NON-NLS-1$
+			fontStyleNames[i++] = StringAccessor.getString("JFontChooser.Plain");
+			fontStyleNames[i++] = StringAccessor.getString("JFontChooser.Bold");
+			fontStyleNames[i++] = StringAccessor.getString("JFontChooser.Italic");
+			fontStyleNames[i++] = StringAccessor.getString("JFontChooser.BoldItalic");
 		}
 		return fontStyleNames;
 	}
@@ -729,7 +729,7 @@ public class JFontChooser extends JComponent implements MouseListener {
 		Object source = e.getSource();
 		if(source instanceof JColorComponent) {
 			JColorComponent label = (JColorComponent) source;
-			Color selected = JColorChooser.showDialog(this, StringAccessor.getString("ConfigurationDialog.choosecolor"), label.getBackground()); //$NON-NLS-1$
+			Color selected = JColorChooser.showDialog(this, StringAccessor.getString("ConfigurationDialog.choosecolor"), label.getBackground());
 			if(selected != null)
 				label.setBackground(selected);
 		}

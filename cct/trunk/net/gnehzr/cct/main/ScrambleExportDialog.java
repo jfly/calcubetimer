@@ -37,10 +37,10 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 	private JSpinnerWithText scrambleLength, numberOfScrambles;
 	private JButton htmlExportButton, exportButton, cancelButton;
 	public ScrambleExportDialog(JFrame owner, ScrambleVariation selected) {
-		super(owner, StringAccessor.getString("ScrambleExportDialog.exportscrambles"), true); //$NON-NLS-1$
+		super(owner, StringAccessor.getString("ScrambleExportDialog.exportscrambles"), true); 
 		urlField = new JTextField(40);
-		urlField.setToolTipText(StringAccessor.getString("ScrambleExportDialog.choosefile")); //$NON-NLS-1$
-		browse = new JButton(StringAccessor.getString("ScrambleExportDialog.browse")); //$NON-NLS-1$
+		urlField.setToolTipText(StringAccessor.getString("ScrambleExportDialog.choosefile")); 
+		browse = new JButton(StringAccessor.getString("ScrambleExportDialog.browse")); 
 		browse.addActionListener(this);
 
 		scrambleChooser = new ScrambleChooserComboBox(false, false);
@@ -58,16 +58,16 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 		subPanel.add(sideBySide);
 		subPanel.add(scrambleChooser);
 
-		scrambleLength = new JSpinnerWithText(selected.getLength(), 1, StringAccessor.getString("ScrambleExportDialog.lengthscrambles")); //$NON-NLS-1$
-		numberOfScrambles = new JSpinnerWithText(ScramblePlugin.getCustomizationFromVariation(selected).getRASize(0), 1, StringAccessor.getString("ScrambleExportDialog.numberscrambles")); //$NON-NLS-1$
+		scrambleLength = new JSpinnerWithText(selected.getLength(), 1, StringAccessor.getString("ScrambleExportDialog.lengthscrambles")); 
+		numberOfScrambles = new JSpinnerWithText(ScramblePlugin.getCustomizationFromVariation(selected).getRASize(0), 1, StringAccessor.getString("ScrambleExportDialog.numberscrambles")); 
 		subPanel.add(scrambleLength);
 		subPanel.add(numberOfScrambles);
 		
-		exportButton = new JButton(StringAccessor.getString("ScrambleExportDialog.export")); //$NON-NLS-1$
+		exportButton = new JButton(StringAccessor.getString("ScrambleExportDialog.export")); 
 		exportButton.addActionListener(this);
-		htmlExportButton = new JButton(StringAccessor.getString("ScrambleExportDialog.htmlexport")); //$NON-NLS-1$
+		htmlExportButton = new JButton(StringAccessor.getString("ScrambleExportDialog.htmlexport")); 
 		htmlExportButton.addActionListener(this);
-		cancelButton = new JButton(StringAccessor.getString("ScrambleExportDialog.cancel")); //$NON-NLS-1$
+		cancelButton = new JButton(StringAccessor.getString("ScrambleExportDialog.cancel")); 
 		cancelButton.addActionListener(this);
 		sideBySide = new JPanel();
 		sideBySide.add(exportButton);
@@ -85,8 +85,8 @@ public class ScrambleExportDialog extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if(source == browse) {
-			JFileChooser fc = new JFileChooser("."); //$NON-NLS-1$
-			if(fc.showDialog(this, StringAccessor.getString("ScrambleExportDialog.save")) == JFileChooser.APPROVE_OPTION) { //$NON-NLS-1$
+			JFileChooser fc = new JFileChooser("."); 
+			if(fc.showDialog(this, StringAccessor.getString("ScrambleExportDialog.save")) == JFileChooser.APPROVE_OPTION) { 
 				File selectedFile = fc.getSelectedFile();
 				urlField.setText(selectedFile.toURI().toString());
 			}

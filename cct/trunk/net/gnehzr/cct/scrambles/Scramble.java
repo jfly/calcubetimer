@@ -44,7 +44,7 @@ public class Scramble {
 	
 	/******** Optional fields and methods **********/
 	
-	//private static final String[] VARIATIONS; //This is so one class can handle 3x3x3-11x11x11, variations cannot contain the character ":" //$NON-NLS-1$
+	//private static final String[] VARIATIONS; //This is so one class can handle 3x3x3-11x11x11, variations cannot contain the character ":"
 	
 	//HIGHLY RECOMMENDED, defines default lengths for each element of VARIATIONS (make it a one element array unless you defined VARIATIONS)
 	//private static final int[] DEFAULT_LENGTHS;

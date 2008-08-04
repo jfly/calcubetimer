@@ -58,8 +58,8 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	public Class<?> getColumnClass(int columnIndex) {
 		return ScrambleCustomization.class;
 	}
-	private String[] columnNames = new String[]{ StringAccessor.getString("ScrambleCustomizationListModel.scramblecustomization"), //$NON-NLS-1$
-			StringAccessor.getString("ScrambleCustomizationListModel.length"), //$NON-NLS-1$
+	private String[] columnNames = new String[]{ StringAccessor.getString("ScrambleCustomizationListModel.scramblecustomization"),
+			StringAccessor.getString("ScrambleCustomizationListModel.length"),
 			StringAccessor.getString("ScrambleCustomizationListModel.generatorgroup"),
 			"RA 0", "RA 1"};
 	public int getColumnCount() {
@@ -114,7 +114,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 
 	//******* Start of renderer/editor stuff ****************//
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		String val = value == null ? "" : value.toString(); //$NON-NLS-1$
+		String val = value == null ? "" : value.toString();
 		if(value instanceof ScrambleCustomization) {
 			ScrambleCustomization customization = (ScrambleCustomization) value;
 			ScrambleVariation v = customization.getScrambleVariation();
@@ -122,12 +122,12 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 				String bolded = v.getVariation();
 				if(bolded.isEmpty())
 					bolded = customization.getScramblePlugin().getPuzzleName();
-				val = "<html><b>" + bolded + "</b>"; //$NON-NLS-1$ //$NON-NLS-2$
+				val = "<html><b>" + bolded + "</b>";
 				if(customization.getCustomization() != null)
-					val += ":" + customization.getCustomization(); //$NON-NLS-1$
-				val += "<html>"; //$NON-NLS-1$
+					val += ":" + customization.getCustomization();
+				val += "<html>";
 			} else if(column == 1) { //scramble length
-				val = "" + v.getLength(); //$NON-NLS-1$
+				val = "" + v.getLength();
 			} else if(column == 2) { //generator group
 				val = customization.getGenerator();
 			} else if(column == 3) { //ra 0
@@ -144,7 +144,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		if(value instanceof ScrambleCustomization)
 			customization = (ScrambleCustomization) value;
 		else
-			customization = new ScrambleCustomization(ScramblePlugin.getCurrentScrambleCustomization().getScrambleVariation(), ""); //$NON-NLS-1$
+			customization = new ScrambleCustomization(ScramblePlugin.getCurrentScrambleCustomization().getScrambleVariation(), "");
 		editingColumn = column;
 		if(column == 0) //customization
 			return getCustomizationPanel(customization);
@@ -177,7 +177,7 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 	private JPanel getRAPanel(final int index, final ScrambleCustomization sc) {
 		raIndex = index;
 		raSize = new JSpinner(new SpinnerNumberModel(sc.getRASize(index), 0, null, 1));
-		raSize.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.specifylength")); //$NON-NLS-1$
+		raSize.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.specifylength"));
 		((JSpinner.DefaultEditor) raSize.getEditor()).getTextField().setColumns(3);
 		JPanel temp = new JPanel();
 		temp.setLayout(new BoxLayout(temp, BoxLayout.LINE_AXIS));
@@ -216,15 +216,15 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 						customization.setScrambleVariation((ScrambleVariation) scrambleVariations.getSelectedItem());
 				}
 			});
-			scrambleVariations.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.selectvariation")); //$NON-NLS-1$
+			scrambleVariations.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.selectvariation"));
 			customPanel.add(scrambleVariations);
 
 			originalFieldText = custom.getCustomization();
 			customField = new JTextField(originalFieldText, 15);
-			customField.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.specifycustomization")); //$NON-NLS-1$
+			customField.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.specifycustomization"));
 			customPanel.add(customField);
 		} else {
-			customPanel.add(new JLabel("<html><b>" + custom.getScrambleVariation().toString() + "</b></html>")); //$NON-NLS-1$ //$NON-NLS-2$
+			customPanel.add(new JLabel("<html><b>" + custom.getScrambleVariation().toString() + "</b></html>"));
 		}
 
 		disabledComponents = new ArrayList<Component>();
@@ -238,13 +238,13 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 		lengthPanel.setLayout(new BoxLayout(lengthPanel, BoxLayout.LINE_AXIS));
 		customization = custom;
 		scramLength = new JSpinner(new SpinnerNumberModel(Math.max(custom.getScrambleVariation().getLength(), 0), 0, null, 1));
-		scramLength.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.specifylength")); //$NON-NLS-1$
+		scramLength.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.specifylength"));
 		((JSpinner.DefaultEditor) scramLength.getEditor()).getTextField().setColumns(3);
 		lengthPanel.add(scramLength);
 
-		JButton resetButton = new JButton("X"); //$NON-NLS-1$
+		JButton resetButton = new JButton("X");
 		resetButton.setEnabled(false);
-		resetButton.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.resetlength")); //$NON-NLS-1$
+		resetButton.setToolTipText(StringAccessor.getString("ScrambleCustomizationListModel.resetlength"));
 		resetButton.setFocusable(false);
 		resetButton.setFocusPainted(false);
 		resetButton.setMargin(new Insets(0, 0, 0, 0));
@@ -319,13 +319,13 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 //		if(customization.getCustomization() != null) {
 			String customName = customField.getText();
 			String error = null;
-			if(customName.isEmpty()) { //$NON-NLS-1$
-				error = StringAccessor.getString("ScrambleCustomizationListModel.noemptycustomization"); //$NON-NLS-1$
+			if(customName.isEmpty()) {
+				error = StringAccessor.getString("ScrambleCustomizationListModel.noemptycustomization");
 			} else {
-				String fullCustomName = customization.getScrambleVariation().getVariation() + ":" + customName; //$NON-NLS-1$
+				String fullCustomName = customization.getScrambleVariation().getVariation() + ":" + customName;
 				for(ScrambleCustomization c : customizations) {
 					if(c.toString().equals(fullCustomName) && c != customization) {
-						error = StringAccessor.getString("ScrambleCustomizationListModel.noduplicatecustomizations"); //$NON-NLS-1$
+						error = StringAccessor.getString("ScrambleCustomizationListModel.noduplicatecustomizations");
 						break;
 					}
 				}
@@ -333,9 +333,9 @@ public class ScrambleCustomizationListModel extends DraggableJTableModel impleme
 			if(error != null) {
 				customField.setBorder(new LineBorder(Color.RED));
 				customField.setToolTipText(error);
-				Action toolTipAction = customField.getActionMap().get("postTip"); //$NON-NLS-1$
+				Action toolTipAction = customField.getActionMap().get("postTip");
 				if(toolTipAction != null) {
-					ActionEvent postTip = new ActionEvent(customField, ActionEvent.ACTION_PERFORMED, ""); //$NON-NLS-1$
+					ActionEvent postTip = new ActionEvent(customField, ActionEvent.ACTION_PERFORMED, "");
 					toolTipAction.actionPerformed(postTip);
 				}
 				return false;

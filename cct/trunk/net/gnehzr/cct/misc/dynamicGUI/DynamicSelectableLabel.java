@@ -13,7 +13,7 @@ public class DynamicSelectableLabel extends JEditorPane implements StatisticsUpd
 	private DynamicString s = null;
 
 	public DynamicSelectableLabel(){
-		super("text/html", null); //$NON-NLS-1$
+		super("text/html", null);
 		putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 		setEditable(false);
 		setBorder(null);

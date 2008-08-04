@@ -25,7 +25,7 @@ public class LocaleAndIcon {
 	public ImageIcon getFlag() {
 		if(flag == null) {
 			try {
-				flag = new ImageIcon(new File(Configuration.flagsFolder, l.getCountry() + ".png").toURI().toURL()); //$NON-NLS-1$
+				flag = new ImageIcon(new File(Configuration.flagsFolder, l.getCountry() + ".png").toURI().toURL()); 
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 				flag = new ImageIcon();

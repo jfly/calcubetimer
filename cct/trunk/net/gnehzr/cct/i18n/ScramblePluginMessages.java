@@ -23,7 +23,7 @@ public class ScramblePluginMessages implements MessageAccessor {
 
 	public String getString(String key) {
 		if(RESOURCE_BUNDLE == null)
-			return "Could not find " + bundleFileName + ".properties!"; //$NON-NLS-1$
+			return "Could not find " + bundleFileName + ".properties!"; 
 		try {
 			return RESOURCE_BUNDLE.getString(key);
 		} catch (MissingResourceException e) {

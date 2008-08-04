@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 import net.gnehzr.cct.configuration.Configuration;
 
 public class XMLGuiMessages implements MessageAccessor {
-	private static final String BUNDLE_NAME = "guiLayouts/"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "guiLayouts/"; 
 
 	private static ResourceBundle RESOURCE_BUNDLE = null;
 
@@ -30,7 +30,7 @@ public class XMLGuiMessages implements MessageAccessor {
 
 	public String getString(String key) {
 		if(RESOURCE_BUNDLE == null)
-			return "Could not find " + bundleFileName + ".properties!"; //$NON-NLS-1$
+			return "Could not find " + bundleFileName + ".properties!"; 
 		try {
 			return RESOURCE_BUNDLE.getString(key);
 		} catch (MissingResourceException e) {

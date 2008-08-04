@@ -50,7 +50,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 	private JButton submitButton, doneButton;
 	public SundayContestDialog(Window w) {
 		super(w);
-		setTitle(StringAccessor.getString("SundayContestDialog.submit")); //$NON-NLS-1$
+		setTitle(StringAccessor.getString("SundayContestDialog.submit"));
 		setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
 		
 		Container pane = this.getContentPane();
@@ -62,7 +62,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.gridx = 0;
 		c.gridy = 0;
 		c.insets = new Insets(2, 2, 2, 2);
-		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.name")), c); //$NON-NLS-1$
+		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.name")), c);
 		c.weightx = 1;
 		c.gridx = 1;
 		c.gridy = 0;
@@ -72,7 +72,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.weightx = 0;
 		c.gridx = 0;
 		c.gridy = 1;
-		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.country")), c); //$NON-NLS-1$
+		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.country")), c);
 		c.weightx = 1;
 		c.gridx = 1;
 		c.gridy = 1;
@@ -82,7 +82,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.weightx = 0;
 		c.gridx = 0;
 		c.gridy = 2;
-		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.email")), c); //$NON-NLS-1$
+		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.email")), c);
 		c.weightx = 1;
 		c.gridx = 1;
 		c.gridy = 2;
@@ -92,7 +92,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.weightx = 0;
 		c.gridx = 0;
 		c.gridy = 3;
-		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.average")), c); //$NON-NLS-1$
+		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.average")), c);
 		c.weightx = 1;
 		c.gridx = 1;
 		c.gridy = 3;
@@ -102,7 +102,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.weightx = 0;
 		c.gridx = 0;
 		c.gridy = 4;
-		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.times")), c); //$NON-NLS-1$
+		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.times")), c);
 		c.weightx = 1;
 		c.gridx = 1;
 		c.gridy = 4;
@@ -112,7 +112,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.weightx = 0;
 		c.gridx = 0;
 		c.gridy = 5;
-		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.quote")), c); //$NON-NLS-1$
+		pane.add(new JLabel(StringAccessor.getString("SundayContestDialog.quote")), c);
 		c.weighty = 1;
 		c.weightx = 1;
 		c.gridx = 1;
@@ -126,12 +126,12 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		c.gridx = 0;
 		c.gridy = 6;
 		JPanel sideBySide = new JPanel();
-		showEmailBox = new JCheckBox(StringAccessor.getString("SundayContestDialog.showemail")); //$NON-NLS-1$
+		showEmailBox = new JCheckBox(StringAccessor.getString("SundayContestDialog.showemail"));
 		sideBySide.add(showEmailBox);
-		submitButton = new JButton(StringAccessor.getString("SundayContestDialog.submittimes")); //$NON-NLS-1$
+		submitButton = new JButton(StringAccessor.getString("SundayContestDialog.submittimes"));
 		submitButton.addActionListener(this);
 		sideBySide.add(submitButton);
-		doneButton = new JButton(StringAccessor.getString("SundayContestDialog.done")); //$NON-NLS-1$
+		doneButton = new JButton(StringAccessor.getString("SundayContestDialog.done"));
 		doneButton.addActionListener(this);
 		sideBySide.add(doneButton);
 		pane.add(sideBySide, c);
@@ -160,12 +160,12 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		
 		private int level = 0;
 		private int resultsLevel = -1;
-		String results = ""; //$NON-NLS-1$
+		String results = "";
 		public void startElement(String uri, String localName, String name,
 				Attributes attributes) throws SAXException {
 			if(resultsLevel != -1)
-				results += "<" + name + ">"; //$NON-NLS-1$ //$NON-NLS-2$
-			if(name.equals("div") && attributes.getValue("id").equals("results")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				results += "<" + name + ">";
+			if(name.equals("div") && attributes.getValue("id").equals("results")) {
 				resultsLevel = level;
 			}
 			level++;
@@ -174,10 +174,10 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		public void endElement(String uri, String localName, String name)
 				throws SAXException {
 			level--;
-			if(name.equals("div") && level == resultsLevel) //$NON-NLS-1$
+			if(name.equals("div") && level == resultsLevel)
 				resultsLevel = -1;
 			if(resultsLevel != -1)
-				results += "</" + name + ">"; //$NON-NLS-1$ //$NON-NLS-2$
+				results += "</" + name + ">";
 		}
 		public void characters(char[] ch, int start, int length)
 				throws SAXException {
@@ -188,23 +188,23 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 
 	private static String[] submitSundayContest(String URL, String name, String country, String email,
 			String average, String times, String quote, boolean showemail) throws IOException {
-		String data = URLEncoder.encode("name", "UTF-8") + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		+ URLEncoder.encode(name, "UTF-8"); //$NON-NLS-1$
-		data += "&" + URLEncoder.encode("country", "UTF-8") + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		+ URLEncoder.encode(country, "UTF-8"); //$NON-NLS-1$
-		data += "&" + URLEncoder.encode("email", "UTF-8") + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		+ URLEncoder.encode(email, "UTF-8"); //$NON-NLS-1$
-		data += "&" + URLEncoder.encode("average", "UTF-8") + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		+ URLEncoder.encode(average, "UTF-8"); //$NON-NLS-1$
-		data += "&" + URLEncoder.encode("times", "UTF-8") + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		+ URLEncoder.encode(times, "UTF-8"); //$NON-NLS-1$
-		data += "&" + URLEncoder.encode("quote", "UTF-8") + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		+ URLEncoder.encode(quote, "UTF-8"); //$NON-NLS-1$
+		String data = URLEncoder.encode("name", "UTF-8") + "="
+		+ URLEncoder.encode(name, "UTF-8");
+		data += "&" + URLEncoder.encode("country", "UTF-8") + "="
+		+ URLEncoder.encode(country, "UTF-8");
+		data += "&" + URLEncoder.encode("email", "UTF-8") + "="
+		+ URLEncoder.encode(email, "UTF-8");
+		data += "&" + URLEncoder.encode("average", "UTF-8") + "="
+		+ URLEncoder.encode(average, "UTF-8");
+		data += "&" + URLEncoder.encode("times", "UTF-8") + "="
+		+ URLEncoder.encode(times, "UTF-8");
+		data += "&" + URLEncoder.encode("quote", "UTF-8") + "="
+		+ URLEncoder.encode(quote, "UTF-8");
 		if(showemail)
-			data += "&" + URLEncoder.encode("showemail", "UTF-8") + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			+ URLEncoder.encode("on", "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
-		data += "&" + URLEncoder.encode("submit", "UTF-8") + "=" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		+ URLEncoder.encode("submit times", "UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
+			data += "&" + URLEncoder.encode("showemail", "UTF-8") + "="
+			+ URLEncoder.encode("on", "UTF-8");
+		data += "&" + URLEncoder.encode("submit", "UTF-8") + "="
+		+ URLEncoder.encode("submit times", "UTF-8");
 
 		URL url = new URL(URL);
 		URLConnection urlConn = url.openConnection();
@@ -217,7 +217,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		printout.close();
 
 		BufferedReader rd = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
-		String str = "", temp; //$NON-NLS-1$
+		String str = "", temp;
 		while (null != ((temp = rd.readLine())))
 			str += temp + "\n";
 
@@ -227,7 +227,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(new ByteArrayInputStream(str.getBytes()), handler);
 		} catch(SAXParseException spe) {
-			System.err.println(spe.getSystemId() + ":" + spe.getLineNumber() + StringAccessor.getString("SundayContestDialog.parseerror") + spe.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+			System.err.println(spe.getSystemId() + ":" + spe.getLineNumber() + StringAccessor.getString("SundayContestDialog.parseerror") + spe.getMessage());
 
 			Exception x = spe;
 			if(spe.getException() != null)
@@ -245,7 +245,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		} finally {
 			rd.close();
 		}
-		return new String[] { handler.results, str }; //$NON-NLS-1$ //$NON-NLS-2$
+		return new String[] { handler.results, str };
 	}
 
 	public void actionPerformed(ActionEvent e) {

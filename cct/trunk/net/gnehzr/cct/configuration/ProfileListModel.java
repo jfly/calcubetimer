@@ -60,7 +60,7 @@ public class ProfileListModel extends DraggableJTableModel {
 		removeRows(indices);
 	}
 	public String getColumnName(int column) {
-		return StringAccessor.getString("ProfileListModel.profiles"); //$NON-NLS-1$
+		return StringAccessor.getString("ProfileListModel.profiles");
 	}
 	public Class<?> getColumnClass(int columnIndex) {
 		return Profile.class;

@@ -25,25 +25,25 @@ public class ProfileEditor extends DefaultCellEditor {
 		this.editText = editText;
 	}
 
-	private static final String INVALID_CHARACTERS = "\\/:*?<>|\""; //$NON-NLS-1$
+	private static final String INVALID_CHARACTERS = "\\/:*?<>|\"";
 	public boolean stopCellEditing() {
 		String s = (String) super.getCellEditorValue();
 		value = Profile.getProfileByName(s);
 		if(!value.toString().equals(originalValue)) {
 			String error = null;
 			if(stringContainsCharacters(s, INVALID_CHARACTERS))
-				error = StringAccessor.getString("ProfileEditor.invalidname") + INVALID_CHARACTERS; //$NON-NLS-1$
+				error = StringAccessor.getString("ProfileEditor.invalidname") + INVALID_CHARACTERS;
 			if(model.getContents().contains(value)) {
-				error = StringAccessor.getString("ProfileEditor.alreadyexists"); //$NON-NLS-1$
+				error = StringAccessor.getString("ProfileEditor.alreadyexists");
 			}
 			if(error != null) {
 				JComponent component = (JComponent) getComponent();
 				component.setBorder(new LineBorder(Color.RED));
 				component.setToolTipText(error);
-				Action toolTipAction = component.getActionMap().get("postTip"); //$NON-NLS-1$
+				Action toolTipAction = component.getActionMap().get("postTip");
 				if (toolTipAction != null) {
 					ActionEvent postTip = new ActionEvent(component,
-							ActionEvent.ACTION_PERFORMED, ""); //$NON-NLS-1$
+							ActionEvent.ACTION_PERFORMED, "");
 					toolTipAction.actionPerformed(postTip);
 				}
 				return false;

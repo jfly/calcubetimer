@@ -15,8 +15,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.xml.transform.TransformerConfigurationException;
 
-import org.xml.sax.SAXException;
-
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.customJTable.DraggableJTable;
@@ -25,6 +23,8 @@ import net.gnehzr.cct.misc.customJTable.SessionListener;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
+
+import org.xml.sax.SAXException;
 
 public class ProfileDatabase extends DraggableJTableModel implements ActionListener {
 	private HashMap<String, PuzzleStatistics> database = new HashMap<String, PuzzleStatistics>();
@@ -118,7 +118,7 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 				sessionCache.add(s);
 	}
 	
-	private String[] columnNames = new String[] { "ProfileDatabase.datestarted", "ProfileDatabase.customization", "ProfileDatabase.sessionaverage", "ProfileDatabase.bestra0", "ProfileDatabase.bestra1", "ProfileDatabase.besttime", "ProfileDatabase.stdev", "ProfileDatabase.solvecount", "ProfileDatabase.comment" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$
+	private String[] columnNames = new String[] { "ProfileDatabase.datestarted", "ProfileDatabase.customization", "ProfileDatabase.sessionaverage", "ProfileDatabase.bestra0", "ProfileDatabase.bestra1", "ProfileDatabase.besttime", "ProfileDatabase.stdev", "ProfileDatabase.solvecount", "ProfileDatabase.comment" };
 	private Class<?>[] columnClasses = new Class<?>[] { Session.class, ScrambleCustomization.class, SolveTime.class, SolveTime.class, SolveTime.class, SolveTime.class, SolveTime.class, Integer.class, String.class};
 	public String getColumnName(int column) {
 		return StringAccessor.getString(columnNames[column]);
@@ -193,11 +193,11 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 		String t = getNthSession(rowIndex).getComment();
 		return t.isEmpty() ? null : t;
 	}
-	private static final String SEND_TO_PROFILE = "sendToProfile"; //$NON-NLS-1$
+	private static final String SEND_TO_PROFILE = "sendToProfile";
 	public void showPopup(MouseEvent e, final DraggableJTable source, Component prevFocusOwner) {
 		JPopupMenu jpopup = new JPopupMenu();
 
-		JMenuItem discard = new JMenuItem(StringAccessor.getString("ProfileDatabase.discard")); //$NON-NLS-1$
+		JMenuItem discard = new JMenuItem(StringAccessor.getString("ProfileDatabase.discard"));
 		discard.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				source.deleteSelectedRows(false);
@@ -205,14 +205,14 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 		});
 		jpopup.add(discard);
 		
-		JMenu sendTo = new JMenu(StringAccessor.getString("ProfileDatabase.sendto")); //$NON-NLS-1$
+		JMenu sendTo = new JMenu(StringAccessor.getString("ProfileDatabase.sendto"));
 		for(Profile p : Configuration.getProfiles()) {
 			if(p == Configuration.getSelectedProfile())
 				continue;
 			JMenuItem profile = new JMenuItem(p.getName());
-			String rows = ""; //$NON-NLS-1$
+			String rows = "";
 			for(int r : source.getSelectedRows())
-				rows += "," + source.convertRowIndexToModel(r); //$NON-NLS-1$
+				rows += "," + source.convertRowIndexToModel(r);
 			rows = rows.substring(1);
 			profile.setActionCommand(SEND_TO_PROFILE + rows);
 			profile.addActionListener(this);
@@ -229,7 +229,7 @@ public class ProfileDatabase extends DraggableJTableModel implements ActionListe
 			Profile to = Profile.getProfileByName(((JMenuItem)e.getSource()).getText());
 			to.loadDatabase();
 			
-			String[] rows = e.getActionCommand().substring(SEND_TO_PROFILE.length()).split(","); //$NON-NLS-1$
+			String[] rows = e.getActionCommand().substring(SEND_TO_PROFILE.length()).split(",");
 			Session[] seshs = new Session[rows.length];
 			for(int ch = 0; ch < rows.length; ch++) {
 				int row = Integer.parseInt(rows[ch]);

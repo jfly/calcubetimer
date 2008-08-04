@@ -1,6 +1,6 @@
 package net.gnehzr.cct.stackmatInterpreter;
 
-import java.util.*;
+import java.util.ArrayList;
 
 import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.VariableKey;
@@ -102,6 +102,6 @@ public class StackmatState extends TimerState {
 		return greenLight;
 	}
 	public String toString() {
-		return minutes + ":" + ((seconds < 10) ? "0" : "") + seconds + "." + ((hundredths < 10) ? "0" : "") + hundredths; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+		return minutes + ":" + ((seconds < 10) ? "0" : "") + seconds + "." + ((hundredths < 10) ? "0" : "") + hundredths;
 	}
 }

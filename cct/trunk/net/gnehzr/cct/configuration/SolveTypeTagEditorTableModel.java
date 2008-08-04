@@ -159,9 +159,9 @@ public class SolveTypeTagEditorTableModel extends DraggableJTableModel {
 				JComponent component = (JComponent) getComponent();
 				component.setBorder(new LineBorder(Color.RED));
 				component.setToolTipText(error);
-				Action toolTipAction = component.getActionMap().get("postTip"); //$NON-NLS-1$
+				Action toolTipAction = component.getActionMap().get("postTip"); 
 				if (toolTipAction != null) {
-					ActionEvent postTip = new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""); //$NON-NLS-1$
+					ActionEvent postTip = new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""); 
 					toolTipAction.actionPerformed(postTip);
 				}
 				return false;

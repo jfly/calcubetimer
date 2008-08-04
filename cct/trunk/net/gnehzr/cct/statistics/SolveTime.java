@@ -136,7 +136,7 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 		hundredths = 0; //don't remove this
 		toParse = toParse.trim();
 		if(toParse.isEmpty())
-			throw new Exception(StringAccessor.getString("SolveTime.noemptytimes")); //$NON-NLS-1$
+			throw new Exception(StringAccessor.getString("SolveTime.noemptytimes"));
 		
 		String[] split = toParse.split(",");
 		boolean isSolved = true;
@@ -158,16 +158,16 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 		}
 		
 		//parse time to determine raw seconds
-		if(time.endsWith("+")) { //$NON-NLS-1$
+		if(time.endsWith("+")) {
 			types.add(SolveType.PLUS_TWO);
 			time = time.substring(0, time.length() - 1);
 		}
 		time = toUSFormatting(time);
-		String[] temp = time.split(":"); //$NON-NLS-1$
-		if(temp.length > 3 || time.lastIndexOf(":") == time.length() - 1) throw new Exception(StringAccessor.getString("SolveTime.invalidcolons")); //$NON-NLS-1$ //$NON-NLS-2$
-		else if(time.indexOf(".") != time.lastIndexOf(".")) throw new Exception(StringAccessor.getString("SolveTime.toomanydecimals")); //$NON-NLS-1$
-		else if(time.indexOf(".") >= 0 && time.indexOf(":") >= 0 && time.indexOf(".") < time.lastIndexOf(":")) throw new Exception(StringAccessor.getString("SolveTime.invaliddecimal")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		else if(time.indexOf("-") >= 0) throw new Exception(StringAccessor.getString("SolveTime.nonpositive")); //$NON-NLS-1$ //$NON-NLS-2$
+		String[] temp = time.split(":");
+		if(temp.length > 3 || time.lastIndexOf(":") == time.length() - 1) throw new Exception(StringAccessor.getString("SolveTime.invalidcolons"));
+		else if(time.indexOf(".") != time.lastIndexOf(".")) throw new Exception(StringAccessor.getString("SolveTime.toomanydecimals"));
+		else if(time.indexOf(".") >= 0 && time.indexOf(":") >= 0 && time.indexOf(".") < time.lastIndexOf(":")) throw new Exception(StringAccessor.getString("SolveTime.invaliddecimal"));
+		else if(time.indexOf("-") >= 0) throw new Exception(StringAccessor.getString("SolveTime.nonpositive"));
 
 		double seconds = 0;
 		for(int i = 0; i < temp.length; i++) {
@@ -176,18 +176,18 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 			try {
 				d = Double.parseDouble(temp[i]); //we want this to handle only "." as a decimal separator
 			} catch(NumberFormatException e) {
-				throw new Exception(StringAccessor.getString("SolveTime.invalidnumerals")); //$NON-NLS-1$
+				throw new Exception(StringAccessor.getString("SolveTime.invalidnumerals"));
 			}
-			if(i != 0 && d >= 60) throw new Exception(StringAccessor.getString("SolveTime.toolarge")); //$NON-NLS-1$
+			if(i != 0 && d >= 60) throw new Exception(StringAccessor.getString("SolveTime.toolarge"));
 			seconds += d;
 		}
 		seconds -= (isType(SolveType.PLUS_TWO) ? 2 : 0);
-		if(seconds < 0) throw new Exception(StringAccessor.getString("SolveTime.nonpositive")); //$NON-NLS-1$
-		else if(seconds > 21000000) throw new Exception(StringAccessor.getString("SolveTime.toolarge")); //$NON-NLS-1$
+		if(seconds < 0) throw new Exception(StringAccessor.getString("SolveTime.nonpositive"));
+		else if(seconds > 21000000) throw new Exception(StringAccessor.getString("SolveTime.toolarge"));
 		this.hundredths = (int)(100 * seconds + .5);
 	}
 	static String toUSFormatting(String time) {
-		return time.replaceAll(Pattern.quote(Utils.getDecimalSeparator()), "."); //$NON-NLS-1$
+		return time.replaceAll(Pattern.quote(Utils.getDecimalSeparator()), ".");
 	}
 	
 	public void setScramble(String scramble) {
@@ -195,12 +195,12 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	}
 
 	public String getScramble() {
-		return scramble == null ? "" : scramble; //$NON-NLS-1$
+		return scramble == null ? "" : scramble;
 	}
 	
 	//this is for display by CCT
 	public String toString() {
-		if(hundredths == Integer.MAX_VALUE || hundredths < 0) return "N/A"; //$NON-NLS-1$
+		if(hundredths == Integer.MAX_VALUE || hundredths < 0) return "N/A";
 		for(SolveType t : types)
 			if(!t.isSolved())
 				return t.toString();
@@ -225,10 +225,10 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 		return typeString + time;
 	}
 	public String toSplitsString() {
-		if(splits == null) return ""; //$NON-NLS-1$
-		String temp = ""; //$NON-NLS-1$
+		if(splits == null) return "";
+		String temp = "";
 		for(SolveTime st : splits) {
-			temp += ", " + st; //$NON-NLS-1$
+			temp += ", " + st;
 		}
 		if(!temp.isEmpty())
 			temp = temp.substring(2);
@@ -238,7 +238,7 @@ public class SolveTime extends Commentable implements Comparable<SolveTime> {
 	//this follows the same formatting as the above method spits out
 	public void setSplitsFromString(String splitsString) {
 		splits = new ArrayList<SolveTime>();
-		for(String s : splitsString.split(", *")) { //$NON-NLS-1$
+		for(String s : splitsString.split(", *")) {
 			try {
 				splits.add(new SolveTime(s, null));
 			} catch (Exception e) {}

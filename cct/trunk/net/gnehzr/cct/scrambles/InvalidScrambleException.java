@@ -4,6 +4,6 @@ import net.gnehzr.cct.i18n.StringAccessor;
 
 public class InvalidScrambleException extends Exception {
 	public InvalidScrambleException(String scramble) {
-		super(StringAccessor.getString("InvalidScrambleException.invalidscramble") + "\n" + scramble); //$NON-NLS-1$ //$NON-NLS-2$
+		super(StringAccessor.getString("InvalidScrambleException.invalidscramble") + "\n" + scramble);
 	}
 }

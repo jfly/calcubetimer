@@ -48,7 +48,7 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 	private JButton importButton, cancelButton;
 	private CALCubeTimer cct;
 	public ScrambleImportDialog(CALCubeTimer cct, ScrambleCustomization sc) {
-		super(cct, StringAccessor.getString("ScrambleImportDialog.importscrambles"), true); //$NON-NLS-1$
+		super(cct, StringAccessor.getString("ScrambleImportDialog.importscrambles"), true); 
 		this.cct = cct;
 
 		JPanel contentPane = new JPanel(new BorderLayout());
@@ -61,12 +61,12 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 		sideBySide.setLayout(new BoxLayout(sideBySide, BoxLayout.X_AXIS));
 		urlField = new URLHistoryBox(VariableKey.IMPORT_URLS);
 		urlField.setSelectedItem(Configuration.getString(VariableKey.DEFAULT_SCRAMBLE_URL, false));
-		urlField.setToolTipText(StringAccessor.getString("ScrambleImportDialog.browsescrambles")); //$NON-NLS-1$
+		urlField.setToolTipText(StringAccessor.getString("ScrambleImportDialog.browsescrambles")); 
 		sideBySide.add(urlField);
-		browse = new JButton(StringAccessor.getString("ScrambleImportDialog.browse")); //$NON-NLS-1$
+		browse = new JButton(StringAccessor.getString("ScrambleImportDialog.browse")); 
 		browse.addActionListener(this);
 		sideBySide.add(browse);
-		addToArea = new JButton(StringAccessor.getString("ScrambleImportDialog.add")); //$NON-NLS-1$
+		addToArea = new JButton(StringAccessor.getString("ScrambleImportDialog.add")); 
 		addToArea.addActionListener(this);
 		sideBySide.add(addToArea);
 		topBot.add(sideBySide);
@@ -84,7 +84,7 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 		scrambles.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 		JScrollPane scramblePane = new JScrollPane(scrambles, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		qualityControl = new JEditorPane();
-		qualityControl.setContentType("text/html"); //$NON-NLS-1$
+		qualityControl.setContentType("text/html"); 
 		qualityControl.setEditable(false);
 		qualityControl.setFocusable(false);
 		scramblePane.setRowHeaderView(new JScrollPane(qualityControl));
@@ -93,10 +93,10 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 		qualityControl.setMinimumSize(new Dimension(25, 0));
 		contentPane.add(scramblePane, BorderLayout.CENTER);
 		
-		importButton = new JButton(StringAccessor.getString("ScrambleImportDialog.import")); //$NON-NLS-1$
+		importButton = new JButton(StringAccessor.getString("ScrambleImportDialog.import")); 
 		importButton.setEnabled(false);
 		importButton.addActionListener(this);
-		cancelButton = new JButton(StringAccessor.getString("ScrambleImportDialog.cancel")); //$NON-NLS-1$
+		cancelButton = new JButton(StringAccessor.getString("ScrambleImportDialog.cancel")); 
 		cancelButton.addActionListener(this);
 		sideBySide = new JPanel();
 		sideBySide.add(importButton);
@@ -113,13 +113,13 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if(source == browse) {
-			JFileChooser fc = new JFileChooser("."); //$NON-NLS-1$
-			if(fc.showDialog(this, StringAccessor.getString("ScrambleImportDialog.open")) == JFileChooser.APPROVE_OPTION) { //$NON-NLS-1$
+			JFileChooser fc = new JFileChooser("."); 
+			if(fc.showDialog(this, StringAccessor.getString("ScrambleImportDialog.open")) == JFileChooser.APPROVE_OPTION) { 
 				File selectedFile = fc.getSelectedFile();
 				urlField.setSelectedItem(selectedFile.toURI().toString());
 				if(!selectedFile.exists()) {
 					Utils.showErrorDialog(this, StringAccessor.getString("ScrambleImportDialog.filenotfound") + " " + selectedFile.getName());
-					urlField.setSelectedItem(""); //$NON-NLS-1$
+					urlField.setSelectedItem(""); 
 				}
 			}
 		} else if(source == addToArea) {
@@ -127,14 +127,14 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 			try {
 				url = new URI(urlField.getSelectedItem().toString()).toURL();
 			} catch(Exception ee) {
-				Utils.showErrorDialog(this, ee, StringAccessor.getString("ScrambleImportDialog.badname")); //$NON-NLS-1$ //$NON-NLS-2$
+				Utils.showErrorDialog(this, ee, StringAccessor.getString("ScrambleImportDialog.badname"));  
 				return;
 			}
 			try {
 				BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-				String line, all = ""; //$NON-NLS-1$
+				String line, all = ""; 
 				while((line = in.readLine()) != null) {
-					all += line + "\n"; //$NON-NLS-1$
+					all += line + "\n"; 
 				}
 				scrambles.append(all);
 				in.close();
@@ -173,22 +173,22 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 		ScrambleCustomization sc = getSelectedCustomization();
 		
 		Font font = scrambles.getFont();
-		String fontStyle = ""; //$NON-NLS-1$
+		String fontStyle = ""; 
 		if(font.isItalic())
-			fontStyle += "font-style: italic; "; //$NON-NLS-1$
+			fontStyle += "font-style: italic; "; 
 		else if(font.isPlain())
-			fontStyle += "font-style: normal; "; //$NON-NLS-1$
+			fontStyle += "font-style: normal; "; 
 		if(font.isBold())
-			fontStyle += "font-weight: bold; "; //$NON-NLS-1$
+			fontStyle += "font-weight: bold; "; 
 		else
-			fontStyle += "font-weight: normal; "; //$NON-NLS-1$
-		StringBuilder validationString = new StringBuilder("<html><head><style type=\"text/css\">") //$NON-NLS-1$
-			.append("span {text-align: center; font-family: ").append(font.getFamily()).append("; font-size: ").append(font.getSize()).append("; ") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			.append(fontStyle).append(";}") //$NON-NLS-1$
-			.append("span.green {color: green;}") //$NON-NLS-1$
-			.append("span.red {color: red;}") //$NON-NLS-1$
-			.append("</style></head><body>"); //$NON-NLS-1$
-		String[] importedScrams = scrambles.getText().split("\n", -1); //-1 allows for trailing \n //$NON-NLS-1$
+			fontStyle += "font-weight: normal; "; 
+		StringBuilder validationString = new StringBuilder("<html><head><style type=\"text/css\">") 
+			.append("span {text-align: center; font-family: ").append(font.getFamily()).append("; font-size: ").append(font.getSize()).append("; ")   
+			.append(fontStyle).append(";}") 
+			.append("span.green {color: green;}") 
+			.append("span.red {color: red;}") 
+			.append("</style></head><body>"); 
+		String[] importedScrams = scrambles.getText().split("\n", -1); //-1 allows for trailing \n 
 		boolean perfect = true;
 		boolean empty = true;
 		int scramNumber = 1;
@@ -198,19 +198,19 @@ public class ScrambleImportDialog extends JDialog implements ActionListener, Doc
 				empty = false;
 				try {
 					scrams.add(sc.generateScramble(importedScrams[ch]));
-					validationString.append("<span class=\"green\">O"); //$NON-NLS-1$
+					validationString.append("<span class=\"green\">O"); 
 				} catch (InvalidScrambleException e) {
 					perfect = false;
-					validationString.append("<span class=\"red\">X"); //$NON-NLS-1$
+					validationString.append("<span class=\"red\">X"); 
 				}
-				validationString.append(" ").append(scramNumber).append(". "); //$NON-NLS-1$ //$NON-NLS-2$
+				validationString.append(" ").append(scramNumber).append(". ");  
 				scramNumber++;
 			} else {
-				validationString.append("<span>"); //$NON-NLS-1$
+				validationString.append("<span>"); 
 			}
-			validationString.append("<br></span>"); //$NON-NLS-1$
+			validationString.append("<br></span>"); 
 		}
-		validationString.append("</body></html>"); //$NON-NLS-1$
+		validationString.append("</body></html>"); 
 		qualityControl.setText(validationString.toString());
 		importButton.setEnabled(perfect && !empty);
 		validate();

@@ -156,8 +156,8 @@ import org.xml.sax.helpers.DefaultHandler;
 import sun.awt.AppContext;
 
 public class CALCubeTimer extends JFrame implements ActionListener, TableModelListener, ChangeListener, ConfigurationChangeListener, ItemListener, SessionListener, TimingListener {
-	public static final String CCT_VERSION = CALCubeTimer.class.getPackage().getImplementationVersion(); //$NON-NLS-1$
-	public static final ImageIcon cubeIcon = new ImageIcon(CALCubeTimer.class.getResource("cube.png")); //$NON-NLS-1$
+	public static final String CCT_VERSION = CALCubeTimer.class.getPackage().getImplementationVersion();
+	public static final ImageIcon cubeIcon = new ImageIcon(CALCubeTimer.class.getResource("cube.png"));
 
 	public final static StatisticsTableModel statsModel = new StatisticsTableModel(); //used in ProfileDatabase
 
@@ -226,34 +226,34 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 		private AbstractAction initialize(String s){
 			AbstractAction a = null;
-			if(s.equals("keyboardtiming")){ //$NON-NLS-1$
+			if(s.equals("keyboardtiming")){
 				a = new KeyboardTimingAction(cct);
 				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_K);
-				a.putValue(Action.SHORT_DESCRIPTION, StringAccessor.getString("CALCubeTimer.stackmatnote")); //$NON-NLS-1$
+				a.putValue(Action.SHORT_DESCRIPTION, StringAccessor.getString("CALCubeTimer.stackmatnote"));
 			}
-			else if(s.equals("addtime")){ //$NON-NLS-1$
+			else if(s.equals("addtime")){
 				a = new AddTimeAction(cct);
 				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
 				a.putValue(Action.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.ALT_MASK));
 			}
-			else if(s.equals("reset")){ //$NON-NLS-1$
+			else if(s.equals("reset")){
 				a = new ResetAction(cct);
 				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
 			}
-			else if(s.equals("currentaverage0")){ //$NON-NLS-1$
+			else if(s.equals("currentaverage0")){
 				a = new StatisticsAction(cct, statsModel, AverageType.CURRENT, 0);
 			}
-			else if(s.equals("bestaverage0")){ //$NON-NLS-1$
+			else if(s.equals("bestaverage0")){
 				a = new StatisticsAction(cct, statsModel, AverageType.RA, 0);
 			}
-			else if(s.equals("currentaverage1")){ //$NON-NLS-1$
+			else if(s.equals("currentaverage1")){
 				a = new StatisticsAction(cct, statsModel, AverageType.CURRENT, 1);
 			}
-			else if(s.equals("bestaverage1")){ //$NON-NLS-1$
+			else if(s.equals("bestaverage1")){
 				a = new StatisticsAction(cct, statsModel, AverageType.RA, 1);
 			}
-			else if(s.equals("sessionaverage")){ //$NON-NLS-1$
+			else if(s.equals("sessionaverage")){
 				a = new StatisticsAction(cct, statsModel, AverageType.SESSION, 0);
 			}
 			else if(s.equals("togglefullscreen")){
@@ -265,7 +265,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				};
 			}
 			else if(s.equals("importscrambles")){
-				a = new AbstractAction() { //$NON-NLS-1$
+				a = new AbstractAction() {
 					{
 						putValue(Action.MNEMONIC_KEY, KeyEvent.VK_I);
 						putValue(Action.ACCELERATOR_KEY,
@@ -276,13 +276,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					}
 				};
 			}
-			else if(s.equals("exportscrambles")){ //$NON-NLS-1$
+			else if(s.equals("exportscrambles")){
 				a = new ExportScramblesAction(cct);
 				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_E);
 				a.putValue(Action.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.CTRL_MASK));
 			}
-			else if(s.equals("connecttoserver")){ //$NON-NLS-1$
+			else if(s.equals("connecttoserver")){
 				a = new AbstractAction() {
 					{
 						putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
@@ -300,35 +300,35 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					}
 				};
 			}
-			else if(s.equals("showconfiguration")){ //$NON-NLS-1$
+			else if(s.equals("showconfiguration")){
 				a = new ShowConfigurationDialogAction(cct);
 				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_C);
 				a.putValue(Action.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.ALT_MASK));
 			}
-			else if(s.equals("exit")){ //$NON-NLS-1$
+			else if(s.equals("exit")){
 				a = new ExitAction(cct);
 				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_X);
 				a.putValue(Action.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
 			}
-			else if(s.equals("togglelessannoyingdisplay")){ //$NON-NLS-1$
+			else if(s.equals("togglelessannoyingdisplay")){
 				a = new LessAnnoyingDisplayAction(cct);
 				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_L);
 			}
-			else if(s.equals("togglehidescrambles")){ //$NON-NLS-1$
+			else if(s.equals("togglehidescrambles")){
 				a = new HideScramblesAction(cct);
 				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_H);
 			}
-			else if(s.equals("togglespacebarstartstimer")){ //$NON-NLS-1$
+			else if(s.equals("togglespacebarstartstimer")){
 				a = new SpacebarOptionAction();
 				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_S);
 			}
-			else if(s.equals("togglefullscreentiming")){ //$NON-NLS-1$
+			else if(s.equals("togglefullscreentiming")){
 				a = new FullScreenTimingAction();
 				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_F);
 			}
-			else if(s.equals("togglescramblepopup")){ //$NON-NLS-1$
+			else if(s.equals("togglescramblepopup")){
 				a = new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
 						Configuration.setBoolean(VariableKey.SCRAMBLE_POPUP, ((AbstractButton)e.getSource()).isSelected());
@@ -336,7 +336,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					}
 				};
 			}
-			else if(s.equals("undo")){ //$NON-NLS-1$
+			else if(s.equals("undo")){
 				a = new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
 						if(statsModel.getCurrentStatistics().undo()) { //should decrement 1 from scramblenumber if possible
@@ -349,7 +349,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				};
 				a.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
 			}
-			else if(s.equals("redo")){ //$NON-NLS-1$
+			else if(s.equals("redo")){
 				a = new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
 						statsModel.getCurrentStatistics().redo();
@@ -357,17 +357,17 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				};
 				a.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
 			}
-			else if(s.equals("submitsundaycontest")){ //$NON-NLS-1$
+			else if(s.equals("submitsundaycontest")){
 				final SundayContestDialog submitter = new SundayContestDialog(cct);
-				a = new AbstractAction() { //$NON-NLS-1$
+				a = new AbstractAction() {
 					public void actionPerformed(ActionEvent e) {
 						submitter.syncWithStats(statsModel.getCurrentStatistics(), AverageType.CURRENT, 0);
 						submitter.setVisible(true);
 					}
 				};
 			}
-			else if(s.equals("newsession")){ //$NON-NLS-1$
-				a = new AbstractAction() { //$NON-NLS-1$
+			else if(s.equals("newsession")){
+				a = new AbstractAction() {
 					public void actionPerformed(ActionEvent arg0) {
 						if(statsModel.getRowCount() > 0) { //only create a new session if we've added any times to the current one
 							statsModel.setSession(createNewSession(Configuration.getSelectedProfile(), scramblesList.getScrambleCustomization().toString()));
@@ -378,13 +378,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					}
 				};
 			}
-			else if(s.equals("showdocumentation")){ //$NON-NLS-1$
+			else if(s.equals("showdocumentation")){
 				a = new DocumentationAction(cct);
 			}
-			else if(s.equals("showabout")){ //$NON-NLS-1$
+			else if(s.equals("showabout")){
 				a = new AboutAction();
 			}
-			else if(s.equals("requestscramble")){ //$NON-NLS-1$
+			else if(s.equals("requestscramble")){
 				a = new RequestScrambleAction(cct);
 				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_N);
 			}
@@ -404,8 +404,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			public void refresh() {
 				actionMap.get("undo").setEnabled(undoable != 0);
 				actionMap.get("redo").setEnabled(redoable != 0);
-				actionMap.get("undo").putValue(Action.NAME, StringAccessor.getString("CALCubeTimer.undo") + undoable); //$NON-NLS-1$
-				actionMap.get("redo").putValue(Action.NAME, StringAccessor.getString("CALCubeTimer.redo") + redoable); //$NON-NLS-1$
+				actionMap.get("undo").putValue(Action.NAME, StringAccessor.getString("CALCubeTimer.undo") + undoable);
+				actionMap.get("redo").putValue(Action.NAME, StringAccessor.getString("CALCubeTimer.redo") + redoable);
 			}
 		});
 	}
@@ -464,7 +464,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	private Timer tickTock;
-	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Changed"; //$NON-NLS-1$
+	private static final String GUI_LAYOUT_CHANGED = "GUI Layout Changed";
 	private JMenu customGUIMenu;
 	private void initializeGUIComponents() {
 		//NOTE: all internationalizable text must go in the loadStringsFromDefaultLocale() method
@@ -486,23 +486,23 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scrambleAttributes = new JPanel();
 		generator = new GeneratorTextField();
 
-		scramblePopup = new ScrambleFrame(this, actionMap.get("togglescramblepopup"), false); //$NON-NLS-1$
+		scramblePopup = new ScrambleFrame(this, actionMap.get("togglescramblepopup"), false);
 		scramblePopup.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		scramblePopup.setIconImage(cubeIcon.getImage());
 		scramblePopup.setFocusableWindowState(false);
 
 		onLabel = new JLabel() {
 			public void updateUI() {
-				Font f = UIManager.getFont("Label.font"); //$NON-NLS-1$
+				Font f = UIManager.getFont("Label.font");
 				setFont(f.deriveFont(f.getSize2D() * 2));
 				super.updateUI();
 			}
 		};
 
-		timesTable = new DraggableJTable(false, true); //$NON-NLS-1$
+		timesTable = new DraggableJTable(false, true);
 //		timesTable.setFocusable(false); //Man, this is almost perfect for us
-		timesTable.setName("timesTable"); //$NON-NLS-1$
-		timesTable.setDefaultEditor(SolveTime.class, new SolveTimeEditor()); //$NON-NLS-1$
+		timesTable.setName("timesTable");
+		timesTable.setDefaultEditor(SolveTime.class, new SolveTimeEditor());
 		timesTable.setDefaultRenderer(SolveTime.class, new SolveTimeRenderer(statsModel));
 		timesTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		timesTable.setModel(statsModel);
@@ -511,7 +511,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		timesScroller = new JScrollPane(timesTable);
 
 		sessionsTable = new SessionsTable(statsModel);
-		sessionsTable.setName("sessionsTable"); //$NON-NLS-1$
+		sessionsTable.setName("sessionsTable");
 		//TODO - this wastes space, probably not easy to fix...
 		sessionsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		sessionsScroller = new JScrollPane(sessionsTable);
@@ -740,11 +740,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		statsModel.fireStringUpdates(); //this is necessary to update the undo-redo actions
 //		timeLabel.refreshTimer(); //this is inside of parse_xml
 
-		customGUIMenu.setText(StringAccessor.getString("CALCubeTimer.loadcustomgui")); //$NON-NLS-1$
-		timesTable.refreshStrings(StringAccessor.getString("CALCubeTimer.addtime")); //$NON-NLS-1$
+		customGUIMenu.setText(StringAccessor.getString("CALCubeTimer.loadcustomgui"));
+		timesTable.refreshStrings(StringAccessor.getString("CALCubeTimer.addtime"));
 		scramblePopup.setTitle(StringAccessor.getString("CALCubeTimer.scrambleview"));
-		scrambleNumber.setToolTipText(StringAccessor.getString("CALCubeTimer.scramblenumber")); //$NON-NLS-1$
-		scrambleLength.setToolTipText(StringAccessor.getString("CALCubeTimer.scramblelength")); //$NON-NLS-1$
+		scrambleNumber.setToolTipText(StringAccessor.getString("CALCubeTimer.scramblenumber"));
+		scrambleLength.setToolTipText(StringAccessor.getString("CALCubeTimer.scramblelength"));
 		scrambleArea.updateStrings();
 
 		stackmatOn(false); //force the stackmat label to refresh
@@ -816,7 +816,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(xmlGUIfile, handler);
 		} catch(SAXParseException spe) {
-			System.err.println(spe.getSystemId() + ":" + spe.getLineNumber() + ": parse error: " + spe.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+			System.err.println(spe.getSystemId() + ":" + spe.getLineNumber() + ": parse error: " + spe.getMessage());
 
 			Exception x = spe;
 			if(spe.getException() != null)
@@ -855,7 +855,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	}
 
 	private DynamicCheckBox[] attributes;
-	private static final String SCRAMBLE_ATTRIBUTE_CHANGED = "Scramble Attribute Changed"; //$NON-NLS-1$
+	private static final String SCRAMBLE_ATTRIBUTE_CHANGED = "Scramble Attribute Changed";
 	public void createScrambleAttributes() {
 		ScrambleCustomization sc = scramblesList.getScrambleCustomization();
 		scrambleAttributes.removeAll();
@@ -916,42 +916,42 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			String elementName = qName.toLowerCase();
 
 			if(level == -1){
-				if(!elementName.equals("gui")){ //$NON-NLS-1$
-					throw new SAXException("parse error: invalid root tag"); //$NON-NLS-1$
+				if(!elementName.equals("gui")){
+					throw new SAXException("parse error: invalid root tag");
 				}
 				return;
 			}
 			else if(level == 0){
-				if(!(elementName.equals("menubar") || elementName.equals("panel"))) //$NON-NLS-1$ //$NON-NLS-2$
-					throw new SAXException("parse error: level 1 must be menubar or panel"); //$NON-NLS-1$
+				if(!(elementName.equals("menubar") || elementName.equals("panel")))
+					throw new SAXException("parse error: level 1 must be menubar or panel");
 			}
 
 			//must deal with level < 0 before adding anything
 			elementNames.add(elementName);
-			needText.add(elementName.equals("label") || elementName.equals("selectablelabel") || elementName.equals("button") || elementName.equals("checkbox") || elementName.equals("menu") || elementName.equals("menuitem") || elementName.equals("checkboxmenuitem")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
-			strs.add(""); //$NON-NLS-1$
+			needText.add(elementName.equals("label") || elementName.equals("selectablelabel") || elementName.equals("button") || elementName.equals("checkbox") || elementName.equals("menu") || elementName.equals("menuitem") || elementName.equals("checkboxmenuitem"));
+			strs.add("");
 
-			if(elementName.equals("label")){ //$NON-NLS-1$
+			if(elementName.equals("label")){
 				com = new DynamicLabel();
 			}
-			else if(elementName.equals("selectablelabel")) { //$NON-NLS-1$
+			else if(elementName.equals("selectablelabel")) {
 				com = new DynamicSelectableLabel();
 				try{
-					if((temp = attrs.getValue("editable")) != null) //$NON-NLS-1$
+					if((temp = attrs.getValue("editable")) != null)
 						((DynamicSelectableLabel) com).setEditable(Boolean.parseBoolean(temp));
 				} catch(Exception e){
 					throw new SAXException(e);
 				}
 			}
-			else if(elementName.equals("button")){ //$NON-NLS-1$
+			else if(elementName.equals("button")){
 				com = new DynamicButton();
 				com.setFocusable(Configuration.getBoolean(VariableKey.FOCUSABLE_BUTTONS, false));
 			}
-			else if(elementName.equals("checkbox")){ //$NON-NLS-1$
+			else if(elementName.equals("checkbox")){
 				com = new DynamicCheckBox();
 				com.setFocusable(Configuration.getBoolean(VariableKey.FOCUSABLE_BUTTONS, false));
 			}
-			else if(elementName.equals("panel")){ //$NON-NLS-1$
+			else if(elementName.equals("panel")){
 				com = new JPanel() {
 					//we're overwriting this to allow "nice" resizing of the gui with the jsplitpane
 					public Dimension getMinimumSize() {
@@ -973,54 +973,54 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				if(attrs == null) layout = new FlowLayout();
 				else{
 					try{
-						if((temp = attrs.getValue("hgap")) != null) hgap = Integer.parseInt(temp); //$NON-NLS-1$
-						if((temp = attrs.getValue("vgap")) != null) vgap = Integer.parseInt(temp); //$NON-NLS-1$
-						if((temp = attrs.getValue("rows")) != null) rows = Integer.parseInt(temp); //$NON-NLS-1$
-						if((temp = attrs.getValue("cols")) != null) cols = Integer.parseInt(temp); //$NON-NLS-1$
+						if((temp = attrs.getValue("hgap")) != null) hgap = Integer.parseInt(temp);
+						if((temp = attrs.getValue("vgap")) != null) vgap = Integer.parseInt(temp);
+						if((temp = attrs.getValue("rows")) != null) rows = Integer.parseInt(temp);
+						if((temp = attrs.getValue("cols")) != null) cols = Integer.parseInt(temp);
 					} catch(Exception e){
-						throw new SAXException("integer parse error", e); //$NON-NLS-1$
+						throw new SAXException("integer parse error", e);
 					}
 
-					if((temp = attrs.getValue("align")) != null){ //$NON-NLS-1$
-						if(temp.equalsIgnoreCase("left")) align = FlowLayout.LEFT; //$NON-NLS-1$
-						else if(temp.equalsIgnoreCase("right")) align = FlowLayout.RIGHT; //$NON-NLS-1$
-						else if(temp.equalsIgnoreCase("center")) align = FlowLayout.CENTER; //$NON-NLS-1$
-						else if(temp.equalsIgnoreCase("leading")) align = FlowLayout.LEADING; //$NON-NLS-1$
-						else if(temp.equalsIgnoreCase("trailing")) align = FlowLayout.TRAILING; //$NON-NLS-1$
-						else throw new SAXException("parse error in align"); //$NON-NLS-1$
+					if((temp = attrs.getValue("align")) != null){
+						if(temp.equalsIgnoreCase("left")) align = FlowLayout.LEFT;
+						else if(temp.equalsIgnoreCase("right")) align = FlowLayout.RIGHT;
+						else if(temp.equalsIgnoreCase("center")) align = FlowLayout.CENTER;
+						else if(temp.equalsIgnoreCase("leading")) align = FlowLayout.LEADING;
+						else if(temp.equalsIgnoreCase("trailing")) align = FlowLayout.TRAILING;
+						else throw new SAXException("parse error in align");
 					}
 
-					if((temp = attrs.getValue("orientation")) != null){ //$NON-NLS-1$
-						if(temp.equalsIgnoreCase("horizontal")) orientation = BoxLayout.X_AXIS; //$NON-NLS-1$
-						else if(temp.equalsIgnoreCase("vertical")) orientation = BoxLayout.Y_AXIS; //$NON-NLS-1$
-						else if(temp.equalsIgnoreCase("page")) orientation = BoxLayout.PAGE_AXIS; //$NON-NLS-1$
-						else if(temp.equalsIgnoreCase("line")) orientation = BoxLayout.LINE_AXIS; //$NON-NLS-1$
-						else throw new SAXException("parse error in orientation"); //$NON-NLS-1$
+					if((temp = attrs.getValue("orientation")) != null){
+						if(temp.equalsIgnoreCase("horizontal")) orientation = BoxLayout.X_AXIS;
+						else if(temp.equalsIgnoreCase("vertical")) orientation = BoxLayout.Y_AXIS;
+						else if(temp.equalsIgnoreCase("page")) orientation = BoxLayout.PAGE_AXIS;
+						else if(temp.equalsIgnoreCase("line")) orientation = BoxLayout.LINE_AXIS;
+						else throw new SAXException("parse error in orientation");
 					}
 
-					if((temp = attrs.getValue("layout")) != null) { //$NON-NLS-1$
-						if(temp.equalsIgnoreCase("border")) layout = new BorderLayout(hgap, vgap); //$NON-NLS-1$
-						else if(temp.equalsIgnoreCase("box")) layout = new BoxLayout(com, orientation); //$NON-NLS-1$
-						else if(temp.equalsIgnoreCase("grid")) layout = new GridLayout(rows, cols, hgap, vgap); //$NON-NLS-1$
-						else if(temp.equalsIgnoreCase("flow")) layout = new FlowLayout(align, hgap, vgap); //$NON-NLS-1$
-						else throw new SAXException("parse error in layout"); //$NON-NLS-1$
+					if((temp = attrs.getValue("layout")) != null) {
+						if(temp.equalsIgnoreCase("border")) layout = new BorderLayout(hgap, vgap);
+						else if(temp.equalsIgnoreCase("box")) layout = new BoxLayout(com, orientation);
+						else if(temp.equalsIgnoreCase("grid")) layout = new GridLayout(rows, cols, hgap, vgap);
+						else if(temp.equalsIgnoreCase("flow")) layout = new FlowLayout(align, hgap, vgap);
+						else throw new SAXException("parse error in layout");
 					} else
 						layout = new FlowLayout(align, hgap, vgap);
 				}
 
 				com.setLayout(layout);
 			}
-			else if(elementName.equals("component")){ //$NON-NLS-1$
-				if(attrs == null || (temp = attrs.getValue("type")) == null) //$NON-NLS-1$
-					throw new SAXException("parse error in component"); //$NON-NLS-1$
+			else if(elementName.equals("component")){
+				if(attrs == null || (temp = attrs.getValue("type")) == null)
+					throw new SAXException("parse error in component");
 				com = persistentComponents.getComponent(temp);
 				if(com == null)
 					throw new SAXException("could not find component: " + temp.toLowerCase());
 			}
-			else if(elementName.equals("center") || elementName.equals("east") || elementName.equals("west") || elementName.equals("south") || elementName.equals("north") || elementName.equals("page_start") || elementName.equals("page_end") || elementName.equals("line_start") || elementName.equals("line_end")){ //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$
+			else if(elementName.equals("center") || elementName.equals("east") || elementName.equals("west") || elementName.equals("south") || elementName.equals("north") || elementName.equals("page_start") || elementName.equals("page_end") || elementName.equals("line_start") || elementName.equals("line_end")){
 				com = null;
 			}
-			else if(elementName.equals("menubar")){ //$NON-NLS-1$
+			else if(elementName.equals("menubar")){
 				com = new JMenuBar() {
 					public Component add(Component comp) {
 						//if components in the menubar resist resizing,
@@ -1032,23 +1032,23 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					}
 				};
 			}
-			else if(elementName.equals("menu")){ //$NON-NLS-1$
+			else if(elementName.equals("menu")){
 				JMenu menu = new DynamicMenu();
-				if((temp = attrs.getValue("mnemonic")) != null) //$NON-NLS-1$
+				if((temp = attrs.getValue("mnemonic")) != null)
 					menu.setMnemonic(temp.charAt(0));
 
 				com = menu;
 			}
-			else if(elementName.equals("menuitem")){ //$NON-NLS-1$
+			else if(elementName.equals("menuitem")){
 				com = new DynamicMenuItem();
 			}
-			else if(elementName.equals("checkboxmenuitem")){ //$NON-NLS-1$
+			else if(elementName.equals("checkboxmenuitem")){
 				com = new DynamicCheckBoxMenuItem();
 			}
-			else if(elementName.equals("separator")){ //$NON-NLS-1$
+			else if(elementName.equals("separator")){
 				com = new JSeparator();
 			}
-			else if(elementName.equals("scrollpane")){ //$NON-NLS-1$
+			else if(elementName.equals("scrollpane")){
 				JScrollPane scroll = new JScrollPane() {
 					{
 						setBorder(null);
@@ -1074,83 +1074,83 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 //						new AlphaControlBackgroundComposite(0.3f, 0.5f));
 				com = scroll;
 			}
-			else if(elementName.equals("tabbedpane")) { //$NON-NLS-1$
+			else if(elementName.equals("tabbedpane")) {
 				com = new DynamicTabbedPane();
-				com.setName(componentID+""); //$NON-NLS-1$
+				com.setName(componentID+"");
 				tabbedPanes.add((JTabbedPane) com);
 			}
-			else if(elementName.equals("splitpane")) { //$NON-NLS-1$
+			else if(elementName.equals("splitpane")) {
 				com = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, null, null);
-				com.setName(componentID+""); //$NON-NLS-1$
+				com.setName(componentID+"");
 				splitPanes.add((JSplitPane) com);
 			}
-			else if(elementName.equals("glue")) { //$NON-NLS-1$
+			else if(elementName.equals("glue")) {
 				Component glue = null;
-				if((temp = attrs.getValue("orientation")) != null) { //$NON-NLS-1$
-					if(temp.equalsIgnoreCase("horizontal")) glue = Box.createHorizontalGlue(); //$NON-NLS-1$
-					else if(temp.equalsIgnoreCase("vertical")) glue = Box.createVerticalGlue(); //$NON-NLS-1$
-					else throw new SAXException("parse error in orientation"); //$NON-NLS-1$
+				if((temp = attrs.getValue("orientation")) != null) {
+					if(temp.equalsIgnoreCase("horizontal")) glue = Box.createHorizontalGlue();
+					else if(temp.equalsIgnoreCase("vertical")) glue = Box.createVerticalGlue();
+					else throw new SAXException("parse error in orientation");
 				}
 				else glue = Box.createGlue();
 				com = new JPanel();
 				com.add(glue);
 			}
-			else throw new SAXException("invalid tag " + elementName); //$NON-NLS-1$
+			else throw new SAXException("invalid tag " + elementName);
 
 			if(com instanceof AbstractButton){
 				if(attrs != null){
-					if((temp = attrs.getValue("action")) != null){ //$NON-NLS-1$
+					if((temp = attrs.getValue("action")) != null){
 						AbstractAction a = actionMap.get(temp);
 						if(a != null) ((AbstractButton)com).setAction(a);
-						else throw new SAXException("parse error in action: " + temp.toLowerCase()); //$NON-NLS-1$
+						else throw new SAXException("parse error in action: " + temp.toLowerCase());
 					}
 				}
 			}
 
 			if(com != null && attrs != null){
 				try{
-					if((temp = attrs.getValue("alignmentX")) != null) //$NON-NLS-1$
+					if((temp = attrs.getValue("alignmentX")) != null)
 						com.setAlignmentX(Float.parseFloat(temp));
-					if((temp = attrs.getValue("alignmentY")) != null) //$NON-NLS-1$
+					if((temp = attrs.getValue("alignmentY")) != null)
 						com.setAlignmentY(Float.parseFloat(temp));
-					if((temp = attrs.getValue("border")) != null) //$NON-NLS-1$
+					if((temp = attrs.getValue("border")) != null)
 						com.setBorder(DynamicBorderSetter.getBorder(temp));
-					if((temp = attrs.getValue("minimumsize")) != null) { //$NON-NLS-1$
-						String[] dims = temp.split("x"); //$NON-NLS-1$
+					if((temp = attrs.getValue("minimumsize")) != null) {
+						String[] dims = temp.split("x");
 						com.setMinimumSize(new Dimension(Integer.parseInt(dims[0]), Integer.parseInt(dims[1])));
 					}
-					if((temp = attrs.getValue("preferredsize")) != null) { //$NON-NLS-1$
-						String[] dims = temp.split("x"); //$NON-NLS-1$
+					if((temp = attrs.getValue("preferredsize")) != null) {
+						String[] dims = temp.split("x");
 						com.setPreferredSize(new Dimension(Integer.parseInt(dims[0]), Integer.parseInt(dims[1])));
 					}
-					if((temp = attrs.getValue("maximumsize")) != null) { //$NON-NLS-1$
-						String[] dims = temp.split("x"); //$NON-NLS-1$
+					if((temp = attrs.getValue("maximumsize")) != null) {
+						String[] dims = temp.split("x");
 						com.setMaximumSize(new Dimension(Integer.parseInt(dims[0]), Integer.parseInt(dims[1])));
 					}
 					if(com instanceof JScrollPane) {
 						JScrollPane scroller = (JScrollPane) com;
-						if((temp = attrs.getValue("verticalpolicy")) != null) { //$NON-NLS-1$
+						if((temp = attrs.getValue("verticalpolicy")) != null) {
 							int policy = ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
-							if(temp.equalsIgnoreCase("never")) //$NON-NLS-1$
+							if(temp.equalsIgnoreCase("never"))
 								policy = ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER;
-							else if(temp.equalsIgnoreCase("always")) //$NON-NLS-1$
+							else if(temp.equalsIgnoreCase("always"))
 								policy = ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
 							scroller.setVerticalScrollBarPolicy(policy);
 						}
-						if((temp = attrs.getValue("horizontalpolicy")) != null) { //$NON-NLS-1$
+						if((temp = attrs.getValue("horizontalpolicy")) != null) {
 							int policy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
-							if(temp.equalsIgnoreCase("never")) //$NON-NLS-1$
+							if(temp.equalsIgnoreCase("never"))
 								policy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER;
-							else if(temp.equalsIgnoreCase("always")) //$NON-NLS-1$
+							else if(temp.equalsIgnoreCase("always"))
 								policy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS;
 							scroller.setHorizontalScrollBarPolicy(policy);
 						}
 					} else if(com instanceof JSplitPane) {
 						JSplitPane jsp = (JSplitPane) com;
-						if((temp = attrs.getValue("drawcontinuous")) != null) { //$NON-NLS-1$
+						if((temp = attrs.getValue("drawcontinuous")) != null) {
 							jsp.setContinuousLayout(Boolean.parseBoolean(temp));
 						}
-						if((temp = attrs.getValue("resizeweight")) != null) { //$NON-NLS-1$
+						if((temp = attrs.getValue("resizeweight")) != null) {
 							double resizeWeight;
 							try {
 								resizeWeight = Double.parseDouble(temp);
@@ -1160,30 +1160,30 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 							jsp.setResizeWeight(resizeWeight);
 						}
 					}
-					if((temp = attrs.getValue("opaque")) != null) //$NON-NLS-1$
+					if((temp = attrs.getValue("opaque")) != null)
 						com.setOpaque(Boolean.parseBoolean(temp));
-					if((temp = attrs.getValue("background")) != null) //$NON-NLS-1$
+					if((temp = attrs.getValue("background")) != null)
 						com.setBackground(Utils.stringToColor(temp, false));
-					if((temp = attrs.getValue("foreground")) != null) //$NON-NLS-1$
+					if((temp = attrs.getValue("foreground")) != null)
 						com.setForeground(Utils.stringToColor(temp, false));
-					if((temp = attrs.getValue("orientation")) != null){ //$NON-NLS-1$
+					if((temp = attrs.getValue("orientation")) != null){
 						if(com instanceof JSeparator){
-							if(temp.equalsIgnoreCase("horizontal")) //$NON-NLS-1$
+							if(temp.equalsIgnoreCase("horizontal"))
 								((JSeparator)com).setOrientation(SwingConstants.HORIZONTAL);
-							else if(temp.equalsIgnoreCase("vertical")) //$NON-NLS-1$
+							else if(temp.equalsIgnoreCase("vertical"))
 								((JSeparator)com).setOrientation(SwingConstants.VERTICAL);
 						} else if (com instanceof JSplitPane) {
 							JSplitPane jsp = (JSplitPane) com;
-							if(temp.equalsIgnoreCase("horizontal")) //$NON-NLS-1$
+							if(temp.equalsIgnoreCase("horizontal"))
 								jsp.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-							else if(temp.equalsIgnoreCase("vertical")) //$NON-NLS-1$
+							else if(temp.equalsIgnoreCase("vertical"))
 								jsp.setOrientation(JSplitPane.VERTICAL_SPLIT);
 						}
 					}
-					if((temp = attrs.getValue("nominsize")) != null) { //$NON-NLS-1$
+					if((temp = attrs.getValue("nominsize")) != null) {
 						com.putClientProperty(SubstanceLookAndFeel.BUTTON_NO_MIN_SIZE_PROPERTY, Boolean.parseBoolean(temp));
 					}
-					if((temp = attrs.getValue("name")) != null) { //$NON-NLS-1$
+					if((temp = attrs.getValue("name")) != null) {
 						com.setName(temp);
 					}
 				} catch(Exception e) {
@@ -1194,10 +1194,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			componentTree.add(com);
 
 			if(level == 0){
-				if(elementName.equals("panel")){ //$NON-NLS-1$
+				if(elementName.equals("panel")){
 					frame.setContentPane(componentTree.get(level));
 				}
-				else if(elementName.equals("menubar")){ //$NON-NLS-1$
+				else if(elementName.equals("menubar")){
 					frame.setJMenuBar((JMenuBar)componentTree.get(level));
 				}
 			}
@@ -1222,15 +1222,15 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 								c.add(com);
 						} else {
 							String loc = null;
-							if(temp.equals("center")) loc = BorderLayout.CENTER; //$NON-NLS-1$
-							else if(temp.equals("east")) loc = BorderLayout.EAST; //$NON-NLS-1$
-							else if(temp.equals("west")) loc = BorderLayout.WEST; //$NON-NLS-1$
-							else if(temp.equals("south")) loc = BorderLayout.SOUTH; //$NON-NLS-1$
-							else if(temp.equals("north")) loc = BorderLayout.NORTH; //$NON-NLS-1$
-							else if(temp.equals("page_start")) loc = BorderLayout.PAGE_START; //$NON-NLS-1$
-							else if(temp.equals("page_end")) loc = BorderLayout.PAGE_END; //$NON-NLS-1$
-							else if(temp.equals("line_start")) loc = BorderLayout.LINE_START; //$NON-NLS-1$
-							else if(temp.equals("line_end")) loc = BorderLayout.LINE_END; //$NON-NLS-1$
+							if(temp.equals("center")) loc = BorderLayout.CENTER;
+							else if(temp.equals("east")) loc = BorderLayout.EAST;
+							else if(temp.equals("west")) loc = BorderLayout.WEST;
+							else if(temp.equals("south")) loc = BorderLayout.SOUTH;
+							else if(temp.equals("north")) loc = BorderLayout.NORTH;
+							else if(temp.equals("page_start")) loc = BorderLayout.PAGE_START;
+							else if(temp.equals("page_end")) loc = BorderLayout.PAGE_END;
+							else if(temp.equals("line_start")) loc = BorderLayout.LINE_START;
+							else if(temp.equals("line_end")) loc = BorderLayout.LINE_END;
 							c.add(com, loc);
 						}
 						break;
@@ -1272,7 +1272,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 
 		public void warning(SAXParseException e) throws SAXParseException {
-			System.err.println(e.getSystemId() + ":" + e.getLineNumber() + ": warning: " + e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+			System.err.println(e.getSystemId() + ":" + e.getLineNumber() + ": warning: " + e.getMessage());
 		}
 	} //}}}
 
@@ -1292,12 +1292,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		//The error messages are not internationalized because I want people to
 		//be able to google the following messages
 		if(args.length >= 2) {
-			System.out.println("Too many arguments!"); //$NON-NLS-1$
-			System.out.println("Usage: CALCubeTimer (profile directory)"); //$NON-NLS-1$
+			System.out.println("Too many arguments!");
+			System.out.println("Usage: CALCubeTimer (profile directory)");
 		} else if(args.length == 1) {
 			File startupProfileDir = new File(args[0]);
 			if(!startupProfileDir.exists() || !startupProfileDir.isDirectory()) {
-				System.out.println("Couldn't find directory " + startupProfileDir.getAbsolutePath()); //$NON-NLS-1$
+				System.out.println("Couldn't find directory " + startupProfileDir.getAbsolutePath());
 			} else {
 				Profile commandedProfile = new Profile(startupProfileDir);
 				Configuration.setCommandLineProfile(commandedProfile);
@@ -1314,7 +1314,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					JOptionPane.showMessageDialog(
 							null,
 							errors,
-							"Cannot start CCT!", //$NON-NLS-1$
+							"Cannot start CCT!",
 							JOptionPane.ERROR_MESSAGE);
 					System.exit(1);
 				}
@@ -1335,7 +1335,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 				cct = new CALCubeTimer();
 				Configuration.addConfigurationChangeListener(cct);
-				cct.setTitle("CCT " + CCT_VERSION); //$NON-NLS-1$
+				cct.setTitle("CCT " + CCT_VERSION);
 				cct.setIconImage(cubeIcon.getImage());
 				cct.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 				cct.setSelectedProfile(Configuration.getSelectedProfile()); //this will eventually cause sessionSelected() and configurationChanged() to be called
@@ -1498,7 +1498,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			outOfScrambles = !scramblesList.getNext().isImported() && outOfScrambles;
 			if(outOfScrambles)
 				Utils.showWarningDialog(this,
-						StringAccessor.getString("CALCubeTimer.outofimported") + //$NON-NLS-1$
+						StringAccessor.getString("CALCubeTimer.outofimported") +
 						StringAccessor.getString("CALCubeTimer.generatedscrambles"));
 			updateScramble();
 			//make the new time visible
@@ -1740,9 +1740,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private void addSplit(TimerState state) {
 		long currentTime = System.currentTimeMillis();
 		if((currentTime - lastSplit) / 1000. > Configuration.getDouble(VariableKey.MIN_SPLIT_DIFFERENCE, false)) {
-			String hands = ""; //$NON-NLS-1$
+			String hands = "";
 			if(state instanceof StackmatState) {
-				hands += ((StackmatState) state).leftHand() ? StringAccessor.getString("CALCubeTimer.lefthand") : StringAccessor.getString("CALCubeTimer.righthand"); //$NON-NLS-1$ //$NON-NLS-2$
+				hands += ((StackmatState) state).leftHand() ? StringAccessor.getString("CALCubeTimer.lefthand") : StringAccessor.getString("CALCubeTimer.righthand");
 			}
 			splits.add(state.toSolveTime(hands, null));
 			lastSplit = currentTime;
@@ -1775,12 +1775,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		}
 		int choice = JOptionPane.YES_OPTION;
 		if(Configuration.getBoolean(VariableKey.PROMPT_FOR_NEW_TIME, false) && !sameAsLast) {
-			String[] OPTIONS = { StringAccessor.getString("CALCubeTimer.accept"), SolveType.PLUS_TWO.toString(), SolveType.DNF.toString() }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			String[] OPTIONS = { StringAccessor.getString("CALCubeTimer.accept"), SolveType.PLUS_TWO.toString(), SolveType.DNF.toString() };
 			//This leaves +2 and DNF enabled, even if the user just got a +2 or DNF from inspection.
 			//I don't really care however, since I doubt that anyone even uses this feature. --Jeremy
 			choice = JOptionPane.showOptionDialog(null,
-					StringAccessor.getString("CALCubeTimer.yourtime") + protect.toString() + StringAccessor.getString("CALCubeTimer.newtimedialog"), //$NON-NLS-1$ //$NON-NLS-2$
-					StringAccessor.getString("CALCubeTimer.confirm"), //$NON-NLS-1$
+					StringAccessor.getString("CALCubeTimer.yourtime") + protect.toString() + StringAccessor.getString("CALCubeTimer.newtimedialog"),
+					StringAccessor.getString("CALCubeTimer.confirm"),
 					JOptionPane.YES_NO_CANCEL_OPTION,
 					JOptionPane.QUESTION_MESSAGE,
 					null,
@@ -1857,12 +1857,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		String time;
 		if(inspection <= -2) {
 			penalty = SolveType.DNF;
-			time = StringAccessor.getString("CALCubeTimer.disqualification"); //$NON-NLS-1$
+			time = StringAccessor.getString("CALCubeTimer.disqualification");
 		} else if(inspection <= 0) {
 			penalty = SolveType.PLUS_TWO;
-			time = StringAccessor.getString("CALCubeTimer.+2penalty"); //$NON-NLS-1$
+			time = StringAccessor.getString("CALCubeTimer.+2penalty");
 		} else
-			time = "" + inspection; //$NON-NLS-1$
+			time = "" + inspection;
 		timeLabel.setText(time);
 		if(isFullscreen)
 			bigTimersDisplay.setText(time);
@@ -1921,13 +1921,13 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	public void stackmatOn(boolean on) {
 		if(!Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false)) {
-			onLabel.setText(""); //$NON-NLS-1$
+			onLabel.setText("");
 		} else {
 			timeLabel.setStackmatOn(on);
 			if(on) {
-				onLabel.setText(StringAccessor.getString("CALCubeTimer.timerON")); //$NON-NLS-1$
+				onLabel.setText(StringAccessor.getString("CALCubeTimer.timerON"));
 			} else {
-				onLabel.setText(StringAccessor.getString("CALCubeTimer.timerOFF")); //$NON-NLS-1$
+				onLabel.setText(StringAccessor.getString("CALCubeTimer.timerOFF"));
 			}
 		}
 	}

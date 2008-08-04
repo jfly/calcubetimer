@@ -76,7 +76,7 @@ public class ScrambleCustomization {
 		if(temp.isEmpty())
 			temp += variation.getScramblePlugin().getPuzzleName();
 		if(customization != null)
-			temp += ":" + customization; //$NON-NLS-1$
+			temp += ":" + customization;
 		return temp;
 	}
 	public int hashCode() {

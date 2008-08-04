@@ -12,7 +12,7 @@ public class SortedProperties extends Properties {
 
 	public SortedProperties() {}
 
-	@SuppressWarnings("unchecked") //$NON-NLS-1$
+	@SuppressWarnings("unchecked") 
 	public synchronized Enumeration keys() {
 		Enumeration keysEnum = super.keys();
 		Vector keyList = new Vector();

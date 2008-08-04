@@ -15,7 +15,7 @@ public class DynamicBorderSetter { //implements ConfigurationChangeListener, Sta
 //	private DynamicString titleString, colorString;
 //	public DynamicBorderSetter(JComponent com, String dynamicString, StatisticsTableModel statsModel) {
 //		this.com = com;
-//		String[] titleAttrs = dynamicString.split(";"); //$NON-NLS-1$
+//		String[] titleAttrs = dynamicString.split(";");
 //		titleString = new DynamicString(titleAttrs[0], statsModel, XMLGuiMessages.XMLGUI_ACCESSOR);
 //		if(titleAttrs.length > 1) {
 //			colorString = new DynamicString(titleAttrs[1], null, XMLGuiMessages.XMLGUI_ACCESSOR);
@@ -41,7 +41,7 @@ public class DynamicBorderSetter { //implements ConfigurationChangeListener, Sta
 //	}
 	
 	public static Border getBorder(String dynamicString) {
-		String[] titleAttrs = dynamicString.split(";"); //$NON-NLS-1$
+		String[] titleAttrs = dynamicString.split(";");
 		DynamicString titleString = new DynamicString(titleAttrs[0], CALCubeTimer.statsModel, XMLGuiMessages.XMLGUI_ACCESSOR);
 		DynamicString colorString = null;
 		if(titleAttrs.length > 1)

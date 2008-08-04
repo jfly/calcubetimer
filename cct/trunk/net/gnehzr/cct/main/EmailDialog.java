@@ -49,12 +49,12 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		c.gridx = 0;
 		c.gridy = 0;
 		c.insets = new Insets(2, 2, 2, 2);
-		pane.add(new JLabel(StringAccessor.getString("EmailDialog.destination")), c); //$NON-NLS-1$
+		pane.add(new JLabel(StringAccessor.getString("EmailDialog.destination")), c); 
 
 		toAddress = new JTextField();
 		toAddress.addCaretListener(this);
 		caretUpdate(null);
-		toAddress.setToolTipText(StringAccessor.getString("EmailDialog.separate")); //$NON-NLS-1$
+		toAddress.setToolTipText(StringAccessor.getString("EmailDialog.separate")); 
 		c.weightx = 1;
 		c.weighty = 0;
 		c.gridx = 1;
@@ -65,7 +65,7 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		c.weighty = 0;
 		c.gridx = 0;
 		c.gridy = 1;
-		pane.add(new JLabel(StringAccessor.getString("EmailDialog.subject")), c); //$NON-NLS-1$
+		pane.add(new JLabel(StringAccessor.getString("EmailDialog.subject")), c); 
 
 		c.weightx = 1;
 		c.weighty = 0;
@@ -84,10 +84,10 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		pane.add(new JScrollPane(body), c);
 
 		JPanel horiz = new JPanel();
-		sendButton = new JButton(StringAccessor.getString("EmailDialog.send")); //$NON-NLS-1$
+		sendButton = new JButton(StringAccessor.getString("EmailDialog.send")); 
 		sendButton.addActionListener(this);
 		horiz.add(sendButton);
-		doneButton = new JButton(StringAccessor.getString("EmailDialog.done")); //$NON-NLS-1$
+		doneButton = new JButton(StringAccessor.getString("EmailDialog.done")); 
 		doneButton.addActionListener(this);
 		horiz.add(doneButton);
 		c.weightx = 0;
@@ -102,9 +102,9 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 	}
 
 	static String toPrettyString(String[] recievers) {
-		String result = ""; //$NON-NLS-1$
+		String result = ""; 
 		for(String reciever : recievers) {
-			result += ", " + reciever; //$NON-NLS-1$
+			result += ", " + reciever; 
 		}
 		return result.substring(2);
 	}
@@ -120,9 +120,9 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 
 			waiting = new WaitingDialog(owner, true, this);
 			waiting.setResizable(false);
-			waiting.setTitle(StringAccessor.getString("EmailDialog.working")); //$NON-NLS-1$
-			waiting.setText(StringAccessor.getString("EmailDialog.sending")); //$NON-NLS-1$
-			waiting.setButtonText(StringAccessor.getString("EmailDialog.cancel")); //$NON-NLS-1$
+			waiting.setTitle(StringAccessor.getString("EmailDialog.working")); 
+			waiting.setText(StringAccessor.getString("EmailDialog.sending")); 
+			waiting.setButtonText(StringAccessor.getString("EmailDialog.cancel")); 
 		}
 		protected Void doInBackground() {
 			SwingUtilities.invokeLater(new Runnable() {
@@ -141,13 +141,13 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 			return null;
 		}
 		protected void done() {
-			waiting.setButtonText(StringAccessor.getString("EmailDialog.ok")); //$NON-NLS-1$
+			waiting.setButtonText(StringAccessor.getString("EmailDialog.ok")); 
 			if(error == null) {
-				waiting.setTitle(StringAccessor.getString("EmailDialog.sucess")); //$NON-NLS-1$
-				waiting.setText(StringAccessor.getString("EmailDialog.successmessage") + "\n" + StringAccessor.getString("EmailDialog.recipients") + toPrettyString(receivers)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				waiting.setTitle(StringAccessor.getString("EmailDialog.sucess")); 
+				waiting.setText(StringAccessor.getString("EmailDialog.successmessage") + "\n" + StringAccessor.getString("EmailDialog.recipients") + toPrettyString(receivers));   
 			} else {
-				waiting.setTitle(StringAccessor.getString("EmailDialog.error")); //$NON-NLS-1$
-				waiting.setText(StringAccessor.getString("EmailDialog.failmessage") + "\n" + StringAccessor.getString("EmailDialog.error") + ": " + error.getLocalizedMessage()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+				waiting.setTitle(StringAccessor.getString("EmailDialog.error")); 
+				waiting.setText(StringAccessor.getString("EmailDialog.failmessage") + "\n" + StringAccessor.getString("EmailDialog.error") + ": " + error.getLocalizedMessage());    
 			}
 		}
 	}
@@ -199,13 +199,13 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 					pass = prompt.getPassword();
 				}
 
-				SwingWorker<Void, Void> sendEmail = new EmailWorker(this, pass, toAddress.getText().split("[,;]")); //$NON-NLS-1$
+				SwingWorker<Void, Void> sendEmail = new EmailWorker(this, pass, toAddress.getText().split("[,;]")); 
 				sendEmail.execute();
 			} else {
 				try {
-					URI mailTo = new URI("mailto", //$NON-NLS-1$
-							toAddress.getText() + "?" + //$NON-NLS-1$
-							"subject=" + subject.getText() + "&body=" + body.getText(), //$NON-NLS-1$ //$NON-NLS-2$
+					URI mailTo = new URI("mailto", 
+							toAddress.getText() + "?" + 
+							"subject=" + subject.getText() + "&body=" + body.getText(),  
 							null);
 					Desktop.getDesktop().mail(mailTo);
 				} catch (URISyntaxException e1) {
@@ -223,14 +223,14 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		private JPasswordField pass = null;
 		private JButton ok, cancel = null;
 		public PasswordPrompt(JDialog parent) {
-			super(parent, StringAccessor.getString("EmailDialog.passwordprompt"), true); //$NON-NLS-1$
+			super(parent, StringAccessor.getString("EmailDialog.passwordprompt"), true); 
 			Container pane = getContentPane();
 
 			pass = new JPasswordField(20);
-			ok = new JButton(StringAccessor.getString("EmailDialog.ok")); //$NON-NLS-1$
+			ok = new JButton(StringAccessor.getString("EmailDialog.ok")); 
 			ok.addActionListener(this);
 			getRootPane().setDefaultButton(ok);
-			cancel = new JButton(StringAccessor.getString("EmailDialog.cancel")); //$NON-NLS-1$
+			cancel = new JButton(StringAccessor.getString("EmailDialog.cancel")); 
 			cancel.addActionListener(this);
 			JPanel okCancel = new JPanel();
 			okCancel.add(ok);
@@ -260,6 +260,6 @@ public class EmailDialog extends JDialog implements ActionListener, CaretListene
 		}
 	}
 	public void caretUpdate(CaretEvent e) {
-		setTitle(StringAccessor.getString("EmailDialog.emailto") + toAddress.getText()); //$NON-NLS-1$
+		setTitle(StringAccessor.getString("EmailDialog.emailto") + toAddress.getText()); 
 	}
 }

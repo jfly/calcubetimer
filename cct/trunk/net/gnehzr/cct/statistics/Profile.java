@@ -56,13 +56,13 @@ public class Profile {
 		statistics = getStatistics(directory, name);
 	}
 	private File getDirectory(String name) {
-		return new File(Configuration.profilesFolder, name+"/"); //$NON-NLS-1$
+		return new File(Configuration.profilesFolder, name+"/");
 	}
 	private File getConfiguration(File directory, String name) {
-		return new File(directory, name+".properties"); //$NON-NLS-1$
+		return new File(directory, name+".properties");
 	}
 	private File getStatistics(File directory, String name) {
-		return new File(directory, name+".xml"); //$NON-NLS-1$
+		return new File(directory, name+".xml");
 	}
 	
 	private boolean saveable = true;
@@ -119,7 +119,7 @@ public class Profile {
 		if(currentProfile) {
 			RandomAccessFile t = null;
 			try {
-				t = new RandomAccessFile(statistics, "rw"); //$NON-NLS-1$
+				t = new RandomAccessFile(statistics, "rw");
 				t.getChannel().tryLock();
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -163,7 +163,7 @@ public class Profile {
 	}
 	//this is the only indication to the user of whether we successfully loaded the database file
 	public String toString() {
-		return (newName != null ? newName : name) + (dbFile == null && this == Configuration.getSelectedProfile() ? StringAccessor.getString("Profile.loggingdisabled") : ""); //$NON-NLS-1$ //$NON-NLS-2$
+		return (newName != null ? newName : name) + (dbFile == null && this == Configuration.getSelectedProfile() ? StringAccessor.getString("Profile.loggingdisabled") : "");
 	}
 	
 	private class DatabaseLoader extends DefaultHandler {
@@ -180,51 +180,51 @@ public class Profile {
 		private String solveCommentOrScrambleOrSplits;
 		@Override
 		public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
-			if(name.equalsIgnoreCase("database")) { //$NON-NLS-1$
+			if(name.equalsIgnoreCase("database")) {
 				if(level != 0)
-					throw new SAXException("Root element must be database tag."); //$NON-NLS-1$
-			} else if(name.equalsIgnoreCase("puzzle")) { //$NON-NLS-1$
+					throw new SAXException("Root element must be database tag.");
+			} else if(name.equalsIgnoreCase("puzzle")) {
 				if(level != 1)
-					throw new SAXException("1st level expected for puzzle tag."); //$NON-NLS-1$
-				customization = attributes.getValue("customization"); //$NON-NLS-1$
+					throw new SAXException("1st level expected for puzzle tag.");
+				customization = attributes.getValue("customization");
 				if(customization == null) {
-					throw new SAXException("Customization attribute needed for puzzle tag."); //$NON-NLS-1$
+					throw new SAXException("Customization attribute needed for puzzle tag.");
 				}
-			} else if(name.equalsIgnoreCase("session")) { //$NON-NLS-1$
+			} else if(name.equalsIgnoreCase("session")) {
 				if(level != 2)
-					throw new SAXException("2nd level expected for session tag."); //$NON-NLS-1$
+					throw new SAXException("2nd level expected for session tag.");
 				try {
-					session = new Session(Configuration.getDateFormat().parse(attributes.getValue("date"))); //$NON-NLS-1$
+					session = new Session(Configuration.getDateFormat().parse(attributes.getValue("date")));
 					puzzleDB.getPuzzleStatistics(customization).addSession(session);
 				} catch (ParseException e) {
 					throw new SAXException(e);
 				}
-				if(Boolean.parseBoolean(attributes.getValue("loadonstartup"))) //$NON-NLS-1$
+				if(Boolean.parseBoolean(attributes.getValue("loadonstartup")))
 					CALCubeTimer.statsModel.setSession(session);
-			} else if(name.equalsIgnoreCase("solve")) { //$NON-NLS-1$
+			} else if(name.equalsIgnoreCase("solve")) {
 				if(level != 3)
-					throw new SAXException("3rd level expected for solve tag."); //$NON-NLS-1$
+					throw new SAXException("3rd level expected for solve tag.");
 				solve = new SolveTime();
-				seshCommentOrSolveTime = ""; //$NON-NLS-1$
-			} else if(name.equalsIgnoreCase("comment")) { //$NON-NLS-1$
+				seshCommentOrSolveTime = "";
+			} else if(name.equalsIgnoreCase("comment")) {
 				if(level == 3)
-					seshCommentOrSolveTime = ""; //$NON-NLS-1$
+					seshCommentOrSolveTime = "";
 				else if(level == 4)
-					solveCommentOrScrambleOrSplits = ""; //$NON-NLS-1$
+					solveCommentOrScrambleOrSplits = "";
 				else
-					throw new SAXException("3rd or 4th level expected for " + name + " tag."); //$NON-NLS-1$ //$NON-NLS-2$
-			} else if(name.equalsIgnoreCase("scramble")) { //$NON-NLS-1$
+					throw new SAXException("3rd or 4th level expected for " + name + " tag.");
+			} else if(name.equalsIgnoreCase("scramble")) {
 				if(level == 4)
-					solveCommentOrScrambleOrSplits = ""; //$NON-NLS-1$
+					solveCommentOrScrambleOrSplits = "";
 				else
-					throw new SAXException("4th level expected for " + name + " tag."); //$NON-NLS-1$ //$NON-NLS-2$
-			} else if(name.equalsIgnoreCase("splits")) { //$NON-NLS-1$
+					throw new SAXException("4th level expected for " + name + " tag.");
+			} else if(name.equalsIgnoreCase("splits")) {
 				if(level == 4)
-					solveCommentOrScrambleOrSplits = ""; //$NON-NLS-1$
+					solveCommentOrScrambleOrSplits = "";
 				else
-					throw new SAXException("4th level expected for " + name + " tag."); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new SAXException("4th level expected for " + name + " tag.");
 			} else {
-				throw new SAXException("Unexpected element encountered: " + name); //$NON-NLS-1$
+				throw new SAXException("Unexpected element encountered: " + name);
 			}
 			
 			level++;
@@ -233,23 +233,23 @@ public class Profile {
 		public void endElement(String uri, String localName, String name) throws SAXException {
 			level--;
 
-			if(name.equalsIgnoreCase("solve")) { //$NON-NLS-1$
+			if(name.equalsIgnoreCase("solve")) {
 				try {
 					solve.parseTime(seshCommentOrSolveTime);
 					session.getStatistics().add(solve);
 				} catch (Exception e) {
 					e.printStackTrace();
-					throw new SAXException("Unable to parse time: " + seshCommentOrSolveTime + " " + e.toString()); //$NON-NLS-1$
+					throw new SAXException("Unable to parse time: " + seshCommentOrSolveTime + " " + e.toString());
 				}
-			} else if(name.equalsIgnoreCase("comment")) { //$NON-NLS-1$
+			} else if(name.equalsIgnoreCase("comment")) {
 				if(level == 3) {
 					session.setComment(seshCommentOrSolveTime);
 				} else if(level == 4) {
 					solve.setComment(solveCommentOrScrambleOrSplits);
 				}
-			} else if(name.equalsIgnoreCase("scramble")) { //$NON-NLS-1$
+			} else if(name.equalsIgnoreCase("scramble")) {
 				solve.setScramble(solveCommentOrScrambleOrSplits);
-			} else if(name.equalsIgnoreCase("splits")) //$NON-NLS-1$
+			} else if(name.equalsIgnoreCase("splits"))
 				solve.setSplitsFromString(solveCommentOrScrambleOrSplits);
 		}
 		@Override
@@ -304,7 +304,7 @@ public class Profile {
 		FileLock fl = null;
 		try {
 			CALCubeTimer.setWaiting(true);
-			RandomAccessFile t = new RandomAccessFile(statistics, "rw"); //$NON-NLS-1$
+			RandomAccessFile t = new RandomAccessFile(statistics, "rw");
 			fl = t.getChannel().tryLock();
 			if(fl != null) {
 				puzzleDB = new ProfileDatabase(this); //reset the database
@@ -323,7 +323,7 @@ public class Profile {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch(SAXParseException spe) {
-			System.err.println(spe.getSystemId() + ":" + spe.getLineNumber() + ": parse error: " + spe.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+			System.err.println(spe.getSystemId() + ":" + spe.getLineNumber() + ": parse error: " + spe.getMessage());
 			
 			Exception x = spe;
 			if(spe.getException() != null)
@@ -363,77 +363,77 @@ public class Profile {
 			dbFile.setLength(0);
 			StreamResult streamResult = new StreamResult(new RandomOutputStream(dbFile));
 			SAXTransformerFactory tf = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
-			tf.setAttribute("indent-number", Integer.valueOf(4)); //$NON-NLS-1$
+			tf.setAttribute("indent-number", Integer.valueOf(4));
 			// SAX2.0 ContentHandler.
 			TransformerHandler hd = tf.newTransformerHandler();
 			Transformer serializer = hd.getTransformer();
-			serializer.setOutputProperty(OutputKeys.ENCODING, "utf-8"); //$NON-NLS-1$
-			serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "../database.dtd"); //$NON-NLS-1$
-			serializer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
+			serializer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
+			serializer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "../database.dtd");
+			serializer.setOutputProperty(OutputKeys.INDENT, "yes");
 			hd.setResult(streamResult);
 			hd.startDocument();
 			AttributesImpl atts = new AttributesImpl();
-			hd.startElement("", "", "database", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			hd.startElement("", "", "database", atts);
 			for(PuzzleStatistics ps : puzzleDB.getPuzzlesStatistics()) {
 				//TODO - check if there are 0 sessions here and continue? NOTE: this isn't good enough, as there could be a bunch of empty sessions
 				atts.clear();
-				atts.addAttribute("", "", "customization", "CDATA", ps.getCustomization()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-				hd.startElement("", "", "puzzle", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				atts.addAttribute("", "", "customization", "CDATA", ps.getCustomization());
+				hd.startElement("", "", "puzzle", atts);
 				for(Session s : ps.toSessionIterable()) {
 					Statistics stats = s.getStatistics();
 					if(stats.getAttemptCount() == 0) //this indicates that the session wasn't started
 						continue;
 					atts.clear();
-					atts.addAttribute("", "", "date", "CDATA", s.toDateString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+					atts.addAttribute("", "", "date", "CDATA", s.toDateString());
 					if(s == CALCubeTimer.statsModel.getCurrentSession())
-						atts.addAttribute("", "", "loadonstartup", "CDATA", "true"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-					hd.startElement("", "", "session", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						atts.addAttribute("", "", "loadonstartup", "CDATA", "true");
+					hd.startElement("", "", "session", atts);
 					atts.clear();
 					String temp = s.getComment();
 					if(!temp.isEmpty()) {
-						hd.startElement("", "", "comment", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						hd.startElement("", "", "comment", atts);
 						char[] chs = temp.toCharArray();
 						hd.characters(chs, 0, chs.length);
-						hd.endElement("", "", "comment"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						hd.endElement("", "", "comment");
 					}
 					for(int ch = 0; ch < stats.getAttemptCount(); ch++) {
 						SolveTime st = stats.get(ch);
 						atts.clear();
-						hd.startElement("", "", "solve", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						hd.startElement("", "", "solve", atts);
 						char[] chs = st.toExternalizableString().toCharArray();
 						hd.characters(chs, 0, chs.length);
 						temp = st.getComment();
 						if(!temp.isEmpty()) {
 							atts.clear();
-							hd.startElement("", "", "comment", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							hd.startElement("", "", "comment", atts);
 							chs = temp.toCharArray();
 							hd.characters(chs, 0, chs.length);
-							hd.endElement("", "", "comment"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							hd.endElement("", "", "comment");
 						}
 						temp = st.toSplitsString();
 						if(!temp.isEmpty()) {
 							atts.clear();
-							hd.startElement("", "", "splits", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							hd.startElement("", "", "splits", atts);
 							chs = temp.toCharArray();
 							hd.characters(chs, 0, chs.length);
-							hd.endElement("", "", "splits"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							hd.endElement("", "", "splits");
 						}
 						temp = st.getScramble();
 						if(!temp.isEmpty()) {
 							atts.clear();
-							hd.startElement("", "", "scramble", atts); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							hd.startElement("", "", "scramble", atts);
 							chs = temp.toCharArray();
 							hd.characters(chs, 0, chs.length);
-							hd.endElement("", "", "scramble"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+							hd.endElement("", "", "scramble");
 						}
 						
-						hd.endElement("", "", "solve"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						hd.endElement("", "", "solve");
 					}
-					hd.endElement("", "", "session"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					hd.endElement("", "", "session");
 				}
-				hd.endElement("", "", "puzzle"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				hd.endElement("", "", "puzzle");
 			}
-			hd.endElement("", "", "database"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			hd.endElement("", "", "database");
 			hd.endDocument();
 		} finally {
 			CALCubeTimer.setWaiting(false);

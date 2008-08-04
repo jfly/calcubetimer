@@ -18,7 +18,7 @@ import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
 public class NumberSpeaker implements Comparable<NumberSpeaker> {
 	public static enum TalkerType {
-		TIMER_OFF("timer_off"), TIMER_RUNNING("timer_running"), TIMER_RESET("timer_reset"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		TIMER_OFF("timer_off"), TIMER_RUNNING("timer_running"), TIMER_RESET("timer_reset");
 		private String desc;
 		private TalkerType(String desc) {
 			this.desc = desc;
@@ -27,7 +27,7 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
 			return desc;
 		}
 	}
-	private static final String ZIP_EXTENSION = ".zip"; //$NON-NLS-1$
+	private static final String ZIP_EXTENSION = ".zip";
 	private static HashMap<String, NumberSpeaker> numberSpeakers;
 	private static HashMap<String, NumberSpeaker> getNumberSpeakers() {
 		if(numberSpeakers == null) {
@@ -89,9 +89,9 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
     //appends .mp3 to name
     private MP3 getMP3FromName(String name) throws Exception {
     	try {
-    		return new MP3(clips.getInputStream(new ZipEntry(name + ".mp3"))); //$NON-NLS-1$
+    		return new MP3(clips.getInputStream(new ZipEntry(name + ".mp3")));
     	} catch(Exception e) {
-    		throw new Exception("Error opening file: " + name + ".mp3 in " + this.name + ".zip"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    		throw new Exception("Error opening file: " + name + ".mp3 in " + this.name + ".zip");
     	}
     }
     
@@ -111,7 +111,7 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
     
     public void speak(SolveTime time) throws Exception {
     	if(time.isType(SolveType.DNF))
-    		getMP3FromName("dnf").play(); //$NON-NLS-1$
+    		getMP3FromName("dnf").play();
     	else
     		speak(false, (int)Math.round(time.secondsValue() * 100));
     }
@@ -120,9 +120,9 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
     //Speaks something of the form "xyz.ab seconds"
     public void speak(boolean yourTime, int hundredths) throws Exception {
     	if(clips == null)
-    		throw new Exception("Failed to open " + name + ".zip!"); //$NON-NLS-1$ //$NON-NLS-2$
+    		throw new Exception("Failed to open " + name + ".zip!");
     	if(yourTime) {
-    		getMP3FromName("your_time_is").play(); //$NON-NLS-1$
+    		getMP3FromName("your_time_is").play();
     	}
     	
     	LinkedList<String> time = breakItDown(hundredths);
@@ -130,7 +130,7 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
 //    		System.out.println(file);
 	    	getMP3FromName(file).play();
     	}
-    	getMP3FromName("second" + (hundredths == 100 ? "" : "s")).play(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    	getMP3FromName("second" + (hundredths == 100 ? "" : "s")).play();
     }
     
     private LinkedList<String> breakItDown(int hundredths) {
@@ -145,16 +145,16 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
 
     	LinkedList<String> temp = new LinkedList<String>();
     	if(hundreds != 0) {
-    		temp.add(100*hundreds+""); //$NON-NLS-1$
+    		temp.add(100*hundreds+"");
     	}
 		if(hundreds == 0 || tens + ones != 0) {
 			dealWithTens(temp, tens, ones);
 		}
 		if(tenths + hundredths != 0) {
-	    	temp.add("point"); //$NON-NLS-1$
-	    	temp.add(tenths+""); //$NON-NLS-1$
+	    	temp.add("point");
+	    	temp.add(tenths+"");
 	    	if(hundredths != 0) {
-	    		temp.add(hundredths+""); //$NON-NLS-1$
+	    		temp.add(hundredths+"");
 	    	}
 		}
     	return temp;
@@ -162,21 +162,21 @@ public class NumberSpeaker implements Comparable<NumberSpeaker> {
     
     private void dealWithTens(LinkedList<String> temp, int tens, int ones) {
 		if(tens == 1)
-			temp.add((10*tens + ones) + ""); //$NON-NLS-1$
+			temp.add((10*tens + ones) + "");
 		else if(tens != 0) {
-			temp.add(10*tens + ""); //$NON-NLS-1$
+			temp.add(10*tens + "");
 			if(ones != 0)
-				temp.add(ones + ""); //$NON-NLS-1$
+				temp.add(ones + "");
 		} else {
-			temp.add(ones + ""); //$NON-NLS-1$
+			temp.add(ones + "");
 		}
     }
 
     // test client
     public static void main(String[] args) {
-    	NumberSpeaker carrie = getSpeaker("carrie"); //$NON-NLS-1$
+    	NumberSpeaker carrie = getSpeaker("carrie");
 		for(int ch = 20000; ch < 60000; ch+=10) {
-			System.out.println("TIME: " + ch / 100.); //$NON-NLS-1$
+			System.out.println("TIME: " + ch / 100.);
 			try {
 				carrie.speak(false, ch);
 			} catch (Exception e) {

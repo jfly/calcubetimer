@@ -32,10 +32,10 @@ public class AboutScrollFrame extends JFrame implements ActionListener, WindowLi
 			try {
 				pane.setPage(helpURL);
 			} catch (IOException e) {
-				throw new Exception("Could not find: " + helpURL); //$NON-NLS-1$
+				throw new Exception("Could not find: " + helpURL); 
 			}
 		} else {
-			throw new Exception("Couldn't find help file"); //$NON-NLS-1$
+			throw new Exception("Couldn't find help file"); 
 		}
 
 		editorScrollPane = new JScrollPane(pane);

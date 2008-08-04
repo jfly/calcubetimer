@@ -27,19 +27,19 @@ public class PuzzleCustomizationCellRenderer extends SubstanceDefaultListCellRen
 			} else if(value instanceof ScrambleVariation) {
 				sv = (ScrambleVariation) value;
 			} else {
-				throw new NullPointerException("Value must be an instance of ScrambleCustomization or ScrambleVariation!"); //$NON-NLS-1$
+				throw new NullPointerException("Value must be an instance of ScrambleCustomization or ScrambleVariation!"); 
 			}
 			if(icons)
 				i = sv.getImage();
 			String bolded = sv.getVariation();
 			if(bolded.isEmpty())
 				bolded = sv.getScramblePlugin().getPuzzleName();
-			val = "<html><b>" + bolded + "</b>"; //$NON-NLS-1$ //$NON-NLS-2$
+			val = "<html><b>" + bolded + "</b>";  
 			if(customization != null && customization.getCustomization() != null)
-				val += ":" + customization.getCustomization(); //$NON-NLS-1$
-			val += "</html>"; //$NON-NLS-1$
+				val += ":" + customization.getCustomization(); 
+			val += "</html>"; 
 		} else
-			val = ""; //$NON-NLS-1$
+			val = ""; 
 		Component c = super.getListCellRendererComponent(list, val, index, isSelected, cellHasFocus);
 		setIcon(i);
 		return c;

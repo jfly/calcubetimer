@@ -25,7 +25,7 @@ public class ComboRenderer extends JLabel implements ListCellRenderer {
 
 		if(!((ComboItem)value).isEnabled()) {
 			setBackground(list.getBackground());
-//			setForeground(UIManager.getColor("Label.disabledForeground")); //$NON-NLS-1$
+//			setForeground(UIManager.getColor("Label.disabledForeground"));
 			setForeground(Color.GRAY); //the above isn't having any noticeable effect on the foreground
 		}
 

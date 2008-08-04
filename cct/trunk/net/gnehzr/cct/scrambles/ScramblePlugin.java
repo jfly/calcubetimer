@@ -23,9 +23,9 @@ import net.gnehzr.cct.misc.Utils;
 
 public class ScramblePlugin {
 	public static final ScrambleCustomization NULL_SCRAMBLE_CUSTOMIZATION = new ScrambleCustomization(new ScrambleVariation(new ScramblePlugin("X"), ""), null);
-	public static final String SCRAMBLE_PLUGIN_PACKAGE = "scramblePlugins."; //$NON-NLS-1$
-	private static final String PLUGIN_EXTENSION = ".class"; //$NON-NLS-1$
-	public static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/"); //$NON-NLS-1$
+	public static final String SCRAMBLE_PLUGIN_PACKAGE = "scramblePlugins.";
+	private static final String PLUGIN_EXTENSION = ".class";
+	public static final File scramblePluginsFolder = new File(getRootDirectory(), "scramblePlugins/");
 	public static File getRootDirectory() { //this is duplicated from configuration
 		File root = null;
 		try {
@@ -45,7 +45,7 @@ public class ScramblePlugin {
 			scramblePlugins = new ArrayList<ScramblePlugin>();
 			if(scramblePluginsFolder.isDirectory()) {
 				for(File plugin : scramblePluginsFolder.listFiles()) {
-					if(!plugin.getName().endsWith(".class") || plugin.getName().indexOf('$') != -1) //$NON-NLS-1$
+					if(!plugin.getName().endsWith(".class") || plugin.getName().indexOf('$') != -1)
 						continue;
 					try {
 						scramblePlugins.add(new ScramblePlugin(plugin));
@@ -100,7 +100,7 @@ public class ScramblePlugin {
 
 		//now we'll try to match the variation, if we couldn't match the customization
 		if(sc == null && scName.indexOf(':') != -1) {
-			scName = scName.substring(0, scName.indexOf(":")); //$NON-NLS-1$
+			scName = scName.substring(0, scName.indexOf(":"));
 			sc = getCustomizationFromString(scName);
 		}
 		if(sc == null) {
@@ -299,29 +299,29 @@ public class ScramblePlugin {
 			} catch(NoSuchMethodException e) {}
 			
 			//validating fields
-			Field f = getPrivateStaticField(pluginClass, "PUZZLE_NAME"); //$NON-NLS-1$
+			Field f = getPrivateStaticField(pluginClass, "PUZZLE_NAME");
 			PUZZLE_NAME = (String) f.get(null);
 			if(PUZZLE_NAME == null)
 				throw new NullPointerException("PUZZLE_NAME may not be null!");
 			if(PUZZLE_NAME.indexOf(':') != -1)
 				throw new IllegalArgumentException("PUZZLE_NAME (" + PUZZLE_NAME + ") may not contain ':'!");
 	
-			f = getPrivateStaticField(pluginClass, "FACE_NAMES_COLORS"); //$NON-NLS-1$
+			f = getPrivateStaticField(pluginClass, "FACE_NAMES_COLORS");
 			FACE_NAMES_COLORS = (String[][]) f.get(null);
 			if(FACE_NAMES_COLORS != null) {
 				if(FACE_NAMES_COLORS.length != 2)
-					throw new ArrayIndexOutOfBoundsException("FACE_NAMES_COLORS.length (" + FACE_NAMES_COLORS.length + ") does not equal 2!"); //$NON-NLS-1$ //$NON-NLS-2$
+					throw new ArrayIndexOutOfBoundsException("FACE_NAMES_COLORS.length (" + FACE_NAMES_COLORS.length + ") does not equal 2!");
 				if(FACE_NAMES_COLORS[0].length != FACE_NAMES_COLORS[1].length)
-					throw new ArrayIndexOutOfBoundsException("FACE_NAMES_COLORS[0].length (" + FACE_NAMES_COLORS[0].length + ") != FACE_NAMES_COLORS[1].length (" + FACE_NAMES_COLORS[1].length + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					throw new ArrayIndexOutOfBoundsException("FACE_NAMES_COLORS[0].length (" + FACE_NAMES_COLORS[0].length + ") != FACE_NAMES_COLORS[1].length (" + FACE_NAMES_COLORS[1].length + ")");
 			}
 	
 			try {
-				f = getPrivateStaticField(pluginClass, "DEFAULT_UNIT_SIZE"); //$NON-NLS-1$
+				f = getPrivateStaticField(pluginClass, "DEFAULT_UNIT_SIZE");
 				DEFAULT_UNIT_SIZE = f.getInt(null);
 			} catch(NoSuchFieldException e) {}
 			
 			try {
-				f = getPrivateStaticField(pluginClass, "VARIATIONS"); //$NON-NLS-1$
+				f = getPrivateStaticField(pluginClass, "VARIATIONS");
 				VARIATIONS = (String[]) f.get(null);
 				if(VARIATIONS == null)
 					throw new NullPointerException("VARIATIONS may not be null!");
@@ -336,7 +336,7 @@ public class ScramblePlugin {
 			}
 			
 			try {
-				f = getPrivateStaticField(pluginClass, "DEFAULT_LENGTHS"); //$NON-NLS-1$
+				f = getPrivateStaticField(pluginClass, "DEFAULT_LENGTHS");
 				DEFAULT_LENGTHS = (int[]) f.get(null);
 				if(DEFAULT_LENGTHS == null)
 					throw new NullPointerException("DEFAULT_LENGTHS may not be null!");
@@ -349,7 +349,7 @@ public class ScramblePlugin {
 				throw new ArrayIndexOutOfBoundsException("VARIATIONS.length (" + VARIATIONS.length + ") != DEFAULT_LENGTHS.length (" + DEFAULT_LENGTHS.length + ")");
 			
 			try {
-				f = getPrivateStaticField(pluginClass, "ATTRIBUTES"); //$NON-NLS-1$
+				f = getPrivateStaticField(pluginClass, "ATTRIBUTES");
 				ATTRIBUTES = (String[]) f.get(null);
 				if(ATTRIBUTES == null)
 					throw new NullPointerException("ATTRIBUTES may not be null!");
@@ -361,7 +361,7 @@ public class ScramblePlugin {
 			}
 
 			try {
-				f = getPrivateStaticField(pluginClass, "DEFAULT_ATTRIBUTES"); //$NON-NLS-1$
+				f = getPrivateStaticField(pluginClass, "DEFAULT_ATTRIBUTES");
 				DEFAULT_ATTRIBUTES = (String[]) f.get(null);
 				if(DEFAULT_ATTRIBUTES == null)
 					throw new NullPointerException("DEFAULT_ATTRIBUTES may not be null!");
@@ -380,17 +380,17 @@ public class ScramblePlugin {
 			}
 			
 			try {
-				f = getPrivateStaticField(pluginClass, "TOKEN_REGEX"); //$NON-NLS-1$
+				f = getPrivateStaticField(pluginClass, "TOKEN_REGEX");
 				TOKEN_REGEX = (Pattern) f.get(null);
 			} catch(NoSuchFieldException e) {
 				
 			}
 			
 			try {
-				f = getPrivateStaticField(pluginClass, "DEFAULT_GENERATORS"); //$NON-NLS-1$
+				f = getPrivateStaticField(pluginClass, "DEFAULT_GENERATORS");
 				DEFAULT_GENERATORS = (String[]) f.get(null);
 				if(DEFAULT_GENERATORS.length != VARIATIONS.length)
-					throw new ArrayIndexOutOfBoundsException("DEFAULT_GENERATORS.length (" + DEFAULT_GENERATORS.length + ") != VARIATIONS.length (" + VARIATIONS.length + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					throw new ArrayIndexOutOfBoundsException("DEFAULT_GENERATORS.length (" + DEFAULT_GENERATORS.length + ") != VARIATIONS.length (" + VARIATIONS.length + ")");
 			} catch(NoSuchFieldException e) {
 				
 			}
@@ -445,7 +445,7 @@ public class ScramblePlugin {
 				e.printStackTrace();
 			}
 		}
-		return new Scramble(""); //$NON-NLS-1$
+		return new Scramble("");
 	}
 	
 	public Scramble importScramble(final String variation, final String scramble, final String generatorGroup, final String[] attributes) throws InvalidScrambleException {

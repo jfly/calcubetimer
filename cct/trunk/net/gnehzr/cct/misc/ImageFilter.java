@@ -1,13 +1,14 @@
 package net.gnehzr.cct.misc;
 
 import java.io.File;
-import javax.swing.filechooser.*;
+
+import javax.swing.filechooser.FileFilter;
 
 import net.gnehzr.cct.i18n.StringAccessor;
 
 /* ImageFilter.java is a 1.4 example used by FileChooserDemo2.java. */
 public class ImageFilter extends FileFilter {
-	private static final String[] IMG_EXTS = { "png", "jpg", "gif", "tif", "tiff" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+	private static final String[] IMG_EXTS = { "png", "jpg", "gif", "tif", "tiff" };
 
 	/* Accept all directories and all gif, jpg, tiff, or png files. */
 	public boolean accept(File f) {
@@ -27,7 +28,7 @@ public class ImageFilter extends FileFilter {
 
 	/* The description of this filter */
 	public String getDescription() {
-		return StringAccessor.getString("ImageFilter.imagefiles"); //$NON-NLS-1$
+		return StringAccessor.getString("ImageFilter.imagefiles");
 	}
 
 	/* Get the extension of a file. */

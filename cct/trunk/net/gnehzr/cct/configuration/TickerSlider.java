@@ -57,7 +57,7 @@ public class TickerSlider extends JPanel implements ChangeListener {
 
 		slider = new JSlider(SwingConstants.HORIZONTAL);
 		spinner = new JSpinner();
-		spinner.setToolTipText(StringAccessor.getString("TickerSlider.Delaymillis")); //$NON-NLS-1$
+		spinner.setToolTipText(StringAccessor.getString("TickerSlider.Delaymillis")); 
 		add(slider);
 		add(spinner);
 		slider.addMouseListener(new MouseListener() {

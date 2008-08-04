@@ -126,8 +126,8 @@ public class TimerLabel extends JColorComponent implements ComponentListener, Co
 	private static BufferedImage curr, red, green;
 	static {
 		try { //can't use TimerLabel.class because the class hasn't been loaded yet
-			red = ImageIO.read(CALCubeTimer.class.getResourceAsStream("red-button.png")); //$NON-NLS-1$
-			green = ImageIO.read(CALCubeTimer.class.getResourceAsStream("green-button.png")); //$NON-NLS-1$
+			red = ImageIO.read(CALCubeTimer.class.getResourceAsStream("red-button.png")); 
+			green = ImageIO.read(CALCubeTimer.class.getResourceAsStream("green-button.png")); 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -197,19 +197,19 @@ public class TimerLabel extends JColorComponent implements ComponentListener, Co
 				else
 					borderColor = Color.RED;
 				if(keyHandler.isRunning())
-					title = StringAccessor.getString("TimerLabel.stoptimer"); //$NON-NLS-1$
+					title = StringAccessor.getString("TimerLabel.stoptimer"); 
 				else if(keyHandler.isInspecting() || !inspectionEnabled)
-					title = StringAccessor.getString("TimerLabel.starttimer"); //$NON-NLS-1$
+					title = StringAccessor.getString("TimerLabel.starttimer"); 
 				else
-					title = StringAccessor.getString("TimerLabel.startinspection"); //$NON-NLS-1$
+					title = StringAccessor.getString("TimerLabel.startinspection"); 
 			} else {
 				curr = red;
-				title = StringAccessor.getString("TimerLabel.clickme"); //$NON-NLS-1$
+				title = StringAccessor.getString("TimerLabel.clickme"); 
 				borderColor = Color.GRAY;
 				releaseAllKeys();
 			}
 		} else {
-			title = StringAccessor.getString("TimerLabel.keyboardoff"); //$NON-NLS-1$
+			title = StringAccessor.getString("TimerLabel.keyboardoff"); 
 			if(on) {
 				curr = green;
 				if(greenLight) {

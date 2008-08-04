@@ -1,6 +1,13 @@
 package net.gnehzr.cct.stackmatInterpreter;
-import java.util.*;
-import javax.sound.sampled.*;
+import java.util.ArrayList;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.Mixer;
+import javax.sound.sampled.TargetDataLine;
 import javax.swing.SwingWorker;
 
 import net.gnehzr.cct.configuration.Configuration;
@@ -131,8 +138,8 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 	public ComboItem[] getMixerChoices(){
 		ComboItem[] items = new ComboItem[aInfos.length+1];
 		for(int i = 0; i < aInfos.length; i++)
-			items[i] = new ComboItem(StringAccessor.getString("StackmatInterpreter.mixer") + i + ": " + aInfos[i].getName() + StringAccessor.getString("StackmatInterpreter.description") + aInfos[i].getDescription(), AudioSystem.getMixer(aInfos[i]).isLineSupported(info)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		items[items.length-1] = new ComboItem(StringAccessor.getString("StackmatInterpreter.nomixer"), true); //$NON-NLS-1$
+			items[i] = new ComboItem(StringAccessor.getString("StackmatInterpreter.mixer") + i + ": " + aInfos[i].getName() + StringAccessor.getString("StackmatInterpreter.description") + aInfos[i].getDescription(), AudioSystem.getMixer(aInfos[i]).isLineSupported(info));
+		items[items.length-1] = new ComboItem(StringAccessor.getString("StackmatInterpreter.nomixer"), true);
 		int current = getSelectedMixerIndex();
 		items[current].setEnabled(true);
 		items[current].setInUse(true);
@@ -152,7 +159,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 		boolean previousWasSplit = false;
 		while(!isCancelled()) {
 			if(!enabled || line == null){
-				firePropertyChange("Off", null, null); //$NON-NLS-1$
+				firePropertyChange("Off", null, null);
 				try{
 					synchronized(this){
 						wait();
@@ -174,7 +181,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 					else if(timeSinceLastFlip == newPeriod * 4){
 						state = new StackmatState();
 						timeSinceLastFlip++;
-						firePropertyChange("Off", null, null); //$NON-NLS-1$
+						firePropertyChange("Off", null, null);
 					}
 
 					if(Math.abs(lastSample - currentSample) > (Configuration.getInt(VariableKey.SWITCH_THRESHOLD, false) << (BYTES_PER_SAMPLE * 4)) && timeSinceLastFlip > noiseSpikeThreshold) {
@@ -189,7 +196,7 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 //							System.out.println(currentPeriod.size());
 							StackmatState newState = new StackmatState(state, currentPeriod);
 							if(state != null && state.isRunning() && newState.isReset()) { //this is indicative of an "accidental reset"
-								firePropertyChange("Accident Reset", state, newState); //$NON-NLS-1$
+								firePropertyChange("Accident Reset", state, newState);
 							}
 							state = newState;
 							//This is to be able to identify new times when they are "equal"
@@ -198,18 +205,18 @@ public class StackmatInterpreter extends SwingWorker<Void, StackmatState> implem
 
 							boolean thisIsSplit = state.isRunning() && state.oneHand();
 							if(thisIsSplit && !previousWasSplit) {
-								firePropertyChange("Split", null, state); //$NON-NLS-1$
+								firePropertyChange("Split", null, state);
 							}
 							previousWasSplit = thisIsSplit;
 							if(state.isReset())
-								firePropertyChange("Reset", null, state); //$NON-NLS-1$
+								firePropertyChange("Reset", null, state);
 							else if(state.isRunning())
-								firePropertyChange("TimeChange", null, state); //$NON-NLS-1$
+								firePropertyChange("TimeChange", null, state);
 							else if(state.compareTo(old) != 0) {
 								old = state;
-								firePropertyChange("New Time", null, state); //$NON-NLS-1$
+								firePropertyChange("New Time", null, state);
 							} else { //So we can always get the current time
-								firePropertyChange("Current Display", null, state); //$NON-NLS-1$
+								firePropertyChange("Current Display", null, state);
 							}
 							currentPeriod = new ArrayList<Integer>(100);
 						}

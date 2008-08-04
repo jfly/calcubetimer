@@ -138,7 +138,7 @@ public class ScrambleViewComponent extends JComponent implements ComponentListen
 	public void mouseClicked(MouseEvent e) {
 		if(focusedFace != -1) {
 			Color c = JColorChooser.showDialog(this,
-					StringAccessor.getString("ScrambleViewComponent.choosecolor") + ": " + currentPlugin.FACE_NAMES_COLORS[0][focusedFace], //$NON-NLS-1$ //$NON-NLS-2$
+					StringAccessor.getString("ScrambleViewComponent.choosecolor") + ": " + currentPlugin.FACE_NAMES_COLORS[0][focusedFace],
 					colorScheme[focusedFace]);
 			if(c != null) {
 				colorScheme[focusedFace] = c;

@@ -66,7 +66,7 @@ public class StatisticsTableModel extends DraggableJTableModel implements Action
 		l.refresh();
 	}
 	
-	private String[] columnNames = new String[] { "StatisticsTableModel.times", "StatisticsTableModel.ra0", "StatisticsTableModel.ra1", "StatisticsTableModel.comment", "StatisticsTableModel.tags" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	private String[] columnNames = new String[] { "StatisticsTableModel.times", "StatisticsTableModel.ra0", "StatisticsTableModel.ra1", "StatisticsTableModel.comment", "StatisticsTableModel.tags" };
 	private Class<?>[] columnClasses = new Class<?>[] { SolveTime.class, SolveTime.class, SolveTime.class, String.class, String.class };
 	public String getColumnName(int column) {
 		return StringAccessor.getString(columnNames[column]);
@@ -156,7 +156,7 @@ public class StatisticsTableModel extends DraggableJTableModel implements Action
 			return;
 		else if(selectedSolves.length == 1) {
 			SolveTime selectedSolve = stats.get(timesTable.getSelectedRow());
-			JMenuItem rawTime = new JMenuItem(StringAccessor.getString("StatisticsTableModel.rawtime") //$NON-NLS-1$
+			JMenuItem rawTime = new JMenuItem(StringAccessor.getString("StatisticsTableModel.rawtime")
 					+ Utils.formatTime(selectedSolve.rawSecondsValue()));
 			rawTime.setEnabled(false);
 			jpopup.add(rawTime);
@@ -166,14 +166,14 @@ public class StatisticsTableModel extends DraggableJTableModel implements Action
 				ListIterator<SolveTime> splits = split.listIterator();
 				while (splits.hasNext()) {
 					SolveTime next = splits.next();
-					rawTime = new JMenuItem(StringAccessor.getString("StatisticsTableModel.split") + splits.nextIndex() //$NON-NLS-1$
-							+ ": " + next + "\t" + next.getScramble()); //$NON-NLS-1$ //$NON-NLS-2$
+					rawTime = new JMenuItem(StringAccessor.getString("StatisticsTableModel.split") + splits.nextIndex()
+							+ ": " + next + "\t" + next.getScramble());
 					rawTime.setEnabled(false);
 					jpopup.add(rawTime);
 				}
 			}
 			
-			edit = new JMenuItem(StringAccessor.getString("StatisticsTableModel.edittime")); //$NON-NLS-1$
+			edit = new JMenuItem(StringAccessor.getString("StatisticsTableModel.edittime"));
 			edit.addActionListener(this);
 			jpopup.add(edit);
 
@@ -203,7 +203,7 @@ public class StatisticsTableModel extends DraggableJTableModel implements Action
 			jpopup.addSeparator();
 		}
 
-		discard = new JMenuItem(StringAccessor.getString("StatisticsTableModel.discard")); //$NON-NLS-1$
+		discard = new JMenuItem(StringAccessor.getString("StatisticsTableModel.discard"));
 		discard.addActionListener(this);
 		jpopup.add(discard);
 		timesTable.requestFocusInWindow();
