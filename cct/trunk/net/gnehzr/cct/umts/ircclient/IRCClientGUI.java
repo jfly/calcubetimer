@@ -586,8 +586,8 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 						} catch(PropertyVetoException e) {}
 						setCommChannel(f, commChannel);
 						f.setConnected(true);
-						f.appendInformation(StringAccessor.format("IRCClientGUI.joined", sender, channel));
 					}
+					f.appendInformation(StringAccessor.format("IRCClientGUI.joined", sender, channel));
 					f.setIRCUsers(bot.getUsers(channel));
 				}
 				if(weJoined)
