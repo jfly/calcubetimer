@@ -58,6 +58,10 @@ public class UnfocusableEditorPane extends JEditorPane implements MouseListener,
 		select(getSelectionStart(), getSelectionStart());
 		repaint();
 	}
+	
+	public boolean isSelectingText() {
+		return getSelectionStart() != getSelectionEnd();
+	}
 
 	private static class Highliter extends DefaultHighlighter {
 		private JTextComponent c;
