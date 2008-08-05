@@ -50,6 +50,7 @@ public class IRCUtils {
 		s = s.replaceAll("&lt;", "<");
 		s = s.replaceAll("&gt;", ">");
 		s = s.replaceAll("&nbsp;", " ");
+		s = s.replaceAll(ZWSP, "");
 		
 		StringBuffer b = new StringBuffer();
 		Matcher m = ESCAPE_PATTERN.matcher(s);
