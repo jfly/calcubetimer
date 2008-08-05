@@ -245,7 +245,13 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 			}
 		if(options.isEmpty())
 			return chatField.getText();
-		return options.get((optionsLower.indexOf(chatField.getText().toLowerCase().trim()) + (forward ? 1 : options.size() - 1)) % options.size()) + " ";
+		int index = optionsLower.indexOf(chatField.getText().toLowerCase().trim());
+		if(index == -1)
+			index = 0;
+		else
+			index += forward ? 1 : -1;
+		index = (index + options.size()) % options.size(); //need this because % is remainder, not mod
+		return options.get(index) + " ";
 	}
 	
 	private void synchChatField() {
