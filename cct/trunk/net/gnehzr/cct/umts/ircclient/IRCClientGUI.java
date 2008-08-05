@@ -291,11 +291,10 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 			pmFrames.remove(((PMMessageFrame) src).getBuddyNick());
 		} else if(src instanceof ChatMessageFrame) {
 			ChatMessageFrame channelFrame = (ChatMessageFrame) src;
+			assert channelFrames.containsKey(channelFrame.getChannel());
+			channelFrames.remove(channelFrame.getChannel());
+			commChannelMap.remove(channelFrame.getCommChannel().getChannel());
 			if(channelFrame.isConnected()) {
-				assert channelFrames.containsKey(channelFrame.getChannel());
-				assert commChannelMap.containsKey(channelFrame.getCommChannel().getChannel());
-				channelFrames.remove(channelFrame.getChannel());
-				commChannelMap.remove(channelFrame.getCommChannel().getChannel());
 				bot.partChannel(channelFrame.getChannel());
 				bot.partChannel(channelFrame.getCommChannel().getChannel());
 			}

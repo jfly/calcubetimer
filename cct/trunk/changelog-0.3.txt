@@ -249,6 +249,7 @@ changes:
 since last beta:
 +nickname autocomplete changed to colon from comma
 +fixed &#8203; bug with copy paste
++fixed bug where statusbar wouldn't update when typing "/part", then closing the window, and reconnecting wouldn't work
 
 TODO:
 
