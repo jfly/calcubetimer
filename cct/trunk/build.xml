@@ -25,7 +25,7 @@
 	<property name="dist.cctbot" location="${dist}/cctbot-${version.cctbot}/"/>
 	<property name="dist.dbpatcher" location="${dist}/dbpatcher/"/>
 	<target name="dist" depends="compile, emptydist, diagnostics, cct, cctbot" description="Main distribution">
-		<echo>Building everything!</echo>
+		<echo>Finished building revision ${revision}!</echo>
 	</target>
 
 	<target name="run" description="Compile and run">
