@@ -1877,16 +1877,18 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 	private SolveType penalty = null;
 	private void updateTime(TimerState newTime) {
+		boolean running = true;
 		if(newTime instanceof StackmatState) {
 			StackmatState newState = (StackmatState) newTime;
 			timeLabel.setHands(newState.leftHand(), newState.rightHand());
 			timeLabel.setStackmatGreenLight(newState.isGreenLight());
-//			reset = newState.isReset();
+			running = newState.isRunning();
 		}
 		if(!isInspecting()) {
 			timeLabel.setTime(newTime);
 			bigTimersDisplay.setTime(newTime);
-			sendUserstate();
+			if(running)
+				sendUserstate();
 		}
 	}
 

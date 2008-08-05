@@ -56,7 +56,7 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	private static final boolean wrap = true;
 
 	//http://software.jessies.org/salma-hayek/ 
-	//ptextarea is supposed to be a fast jtextarea implementation with support for hyperlinks 
+	//TODO - ptextarea is supposed to be a fast jtextarea implementation with support for hyperlinks 
 	private UnfocusableEditorPane messagePane;
 	private JTextField chatField;
 	private Element msgs;

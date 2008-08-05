@@ -769,7 +769,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 	}
 
 	public void log(String line) {
-		serverFrame.appendInformation(line);
+//		serverFrame.appendInformation(line);
 	}
 	
 	private Thread connectThread;
@@ -822,6 +822,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 	/*** What follows is code to connect to a secondary channel for CCT status messages ***/
 
 	public void onServerResponse(int code, String response) {
+		serverFrame.appendInformation(code + " " + response);
 		if(code == ReplyConstants.ERR_CANNOTSENDTOCHAN) {
 			final String[] nick_chan_msg = response.split(" ", 3);
 			SwingUtilities.invokeLater(new Runnable() {
@@ -871,6 +872,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 		verifyCommChannels.start();
 	}
 	
+	// TODO - using /cctstats, connect to the same comm channel from different chat channels?
 	// TODO - what if attempt to connect to channel takes a while, and the time is fired, or the user overrides it with /cctstats?
 	// TODO - if the server lag is > 10 seconds, we'll connect to many, many channels
 	// this timer will check every 10 seconds for unconnected comm channels
