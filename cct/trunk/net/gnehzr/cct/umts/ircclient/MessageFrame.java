@@ -13,6 +13,7 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -223,19 +224,26 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 			incomplete = null;
 	}
 	private String incomplete;
-	//TODO - tab nickname completion
+	
+	private TreeSet<String> autoStrings = new TreeSet<String>(IRCClientGUI.cmdHelp.keySet());
+	//this will be used by ChatMessageFrame to provide nickname autocompletion
+	public void addAutocompleteStrings(ArrayList<String> auto) {
+		autoStrings.clear();
+		autoStrings.addAll(IRCClientGUI.cmdHelp.keySet());
+		autoStrings.addAll(auto);
+	}
 	private String getNextString(boolean forward) {
 		if(incomplete == null)
 			incomplete = chatField.getText().toLowerCase();
 		
 		ArrayList<String> options = new ArrayList<String>();
-		for(String cmd : IRCClientGUI.cmdHelp.keySet())
+		for(String cmd : autoStrings)
 			if(cmd.toLowerCase().startsWith(incomplete))
 				options.add(cmd);
 		if(options.isEmpty())
 			return chatField.getText();
-
-		return options.get((options.indexOf(chatField.getText().toLowerCase()) + (forward ? 1 : options.size() - 1)) % options.size());
+		
+		return options.get((options.indexOf(chatField.getText().toLowerCase().trim()) + (forward ? 1 : options.size() - 1)) % options.size()) + " ";
 	}
 	
 	private void synchChatField() {

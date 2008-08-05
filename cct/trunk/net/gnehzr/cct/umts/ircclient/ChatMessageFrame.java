@@ -1,6 +1,7 @@
 package net.gnehzr.cct.umts.ircclient;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.JScrollPane;
@@ -92,12 +93,21 @@ public class ChatMessageFrame extends MessageFrame {
 
 	//this is for when the list of cct users is modified
 	public void usersListChanged() {
+		addAutocompleteStrings(getNickList());
 		usersTableModel.setCCTUsers(cctusers.values().toArray(new CCTUser[0]));
 	}
 	
 	//this is for when one or more users have had status changes
 	public void usersChanged() {
+		addAutocompleteStrings(getNickList());
 		usersTableModel.fireTableDataChanged();
+	}
+	
+	private ArrayList<String> getNickList() {
+		ArrayList<String> nicks = new ArrayList<String>();
+		for(User c : getIRCUsers())
+			nicks.add(c.getNick() + ",");
+		return nicks;
 	}
 
 	public void updateStrings() {
