@@ -80,8 +80,8 @@ public class CCTUserTableModel extends DraggableJTableModel {
 	public String getToolTip(int rowIndex, int columnIndex) {
 		if(users[rowIndex].isCCTUser()) {
 			CCTUser u = users[rowIndex].getCCTUser();
-			return "<html>" + StringAccessor.getString("CCTUserTableModel.currRA") + "(" + u.getCurrentRA() + "): " + u.getCurrRASolves() + "<br>"
-			+ StringAccessor.getString("CCTUserTableModel.bestRA") + "(" + u.getBestRA() + "): " + u.getBestRASolves() + "</html>";
+			return "<html>" + StringAccessor.getString("CCTUserTableModel.currRA") + " (" + u.getCurrentRA() + "): " + u.getCurrRASolves() + "<br>"
+			+ StringAccessor.getString("CCTUserTableModel.bestRA") + " (" + u.getBestRA() + "): " + u.getBestRASolves() + "</html>";
 		}
 		return null;
 	}

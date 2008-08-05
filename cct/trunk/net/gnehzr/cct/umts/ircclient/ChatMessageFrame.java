@@ -53,7 +53,7 @@ public class ChatMessageFrame extends MessageFrame {
 			return;
 		cct.setNick(newNick);
 		cctusers.put(newNick, cct);
-		usersChanged();
+		usersListChanged(); //unfortunately, it's not good enough to just call usersChanged()
 	}
 	
 	public CCTUser addCCTUser(User irc, String nick) {

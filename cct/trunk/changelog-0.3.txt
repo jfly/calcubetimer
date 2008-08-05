@@ -235,6 +235,10 @@ changes:
 +fixed bug where changing the profile wouldn't update the stackmat onlabel
 +remove non-nls stuff
 
+since last beta:
++horizontal scrolling fixed, scricter line wrapping implemented
++fixed bug when cct users change their nick
+
 TODO:
 
 for release:
