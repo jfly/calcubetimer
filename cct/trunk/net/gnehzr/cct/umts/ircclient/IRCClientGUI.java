@@ -413,19 +413,18 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 				}
 			} else if(command.equalsIgnoreCase(CMD_PART)) {
 				String channel = null, reason = null;
-				if(arg != null) {
-					if(arg.startsWith("#")) {
-						String[] chan_reason = arg.split(" +", 2);
-						if(chan_reason.length == 2) {
-							channel = chan_reason[0];
-							reason = chan_reason[1];
-						} else { //length == 1
-							channel = chan_reason[0];
-						}
-					} else if(src instanceof ChatMessageFrame){
-						channel = ((ChatMessageFrame) src).getChannel();
-						reason = arg;
+				if(arg != null && arg.startsWith("#")) {
+					String[] chan_reason = arg.split(" +", 2);
+					if(chan_reason.length == 2) {
+						channel = chan_reason[0];
+						reason = chan_reason[1];
+					} else { //length == 1
+						channel = chan_reason[0];
 					}
+				}
+				if(channel == null && src instanceof ChatMessageFrame) {
+					channel = ((ChatMessageFrame) src).getChannel();
+					reason = arg;
 				}
 				if(channel != null) {
 					if(reason == null)
