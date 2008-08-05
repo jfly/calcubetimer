@@ -1540,8 +1540,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			myself.setTimingState(state);
 			
 			Statistics stats = statsModel.getCurrentStatistics();
-			myself.setCurrentRA(stats.average(AverageType.CURRENT, 0), stats.toTerseString(AverageType.CURRENT, 0));
-			myself.setBestRA(stats.average(AverageType.RA, 0), stats.toTerseString(AverageType.RA, 0));
+			myself.setCurrentRA(stats.average(AverageType.CURRENT, 0), stats.toTerseString(AverageType.CURRENT, 0, true));
+			myself.setBestRA(stats.average(AverageType.RA, 0), stats.toTerseString(AverageType.RA, 0, false));
 			myself.setSessionAverage(new SolveTime(stats.getSessionAvg(), null));
 			
 			myself.setSolvesAttempts(stats.getSolveCount(), stats.getAttemptCount());

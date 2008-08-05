@@ -150,7 +150,7 @@ public class SundayContestDialog extends JDialog implements ActionListener {
 		countryField.setText(Configuration.getString(VariableKey.SUNDAY_COUNTRY, false));
 		emailField.setText(Configuration.getString(VariableKey.SUNDAY_EMAIL_ADDRESS, false));
 		averageField.setText(stats.average(type, aveNum).toString());
-		timesField.setText(stats.toTerseString(type, aveNum));
+		timesField.setText(stats.toTerseString(type, aveNum, true));
 		quoteArea.setText(Configuration.getString(VariableKey.SUNDAY_QUOTE, false));
 		showEmailBox.setSelected(Configuration.getBoolean(VariableKey.SHOW_EMAIL, false));
 	}

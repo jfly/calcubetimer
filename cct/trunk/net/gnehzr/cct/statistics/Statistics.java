@@ -624,13 +624,13 @@ public class Statistics implements ConfigurationChangeListener {
 		return toTerseStringHelper(list, bestAndWorst[0], bestAndWorst[1]);
 	}
 
-	public String toTerseString(AverageType type, int num) {
+	public String toTerseString(AverageType type, int num, boolean showincomplete) {
 		if(num < 0) num = 0;
 		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
 		SolveTime[] bestAndWorst = getBestAndWorstTimes(type, num);
 		List<SolveTime> list = getSublist(type, num);
-		if(list.size() != curRASize[num])
+		if(list.size() != curRASize[num] && !showincomplete)
 			return "N/A";
 		return toTerseStringHelper(list, bestAndWorst[0], bestAndWorst[1]);
 	}
@@ -997,15 +997,15 @@ public class Statistics implements ConfigurationChangeListener {
 	}
 
 	public String getBestAverageList(int num) {
-		return toTerseString(AverageType.RA, num);
+		return toTerseString(AverageType.RA, num, false);
 	}
 
 	public String getCurrentAverageList(int num) {
-		return toTerseString(AverageType.CURRENT, num);
+		return toTerseString(AverageType.CURRENT, num, false);
 	}
 
 	public String getSessionAverageList() {
-		return toTerseString(AverageType.SESSION, 0);
+		return toTerseString(AverageType.SESSION, 0, false);
 	}
 
 	public String getWorstAverageList(int num) {
@@ -1015,6 +1015,6 @@ public class Statistics implements ConfigurationChangeListener {
 		if(sortaverages[num].size() >= 1)
 			return toTerseString(averages[num].indexOf(sortaverages[num].get(sortaverages[num].size() - 1)), num);
 		
-		return toTerseString(AverageType.RA, num);
+		return toTerseString(AverageType.RA, num, false);
 	}
 }
