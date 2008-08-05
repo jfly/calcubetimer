@@ -236,14 +236,16 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		if(incomplete == null)
 			incomplete = chatField.getText().toLowerCase();
 		
+		ArrayList<String> optionsLower = new ArrayList<String>();
 		ArrayList<String> options = new ArrayList<String>();
 		for(String cmd : autoStrings)
-			if(cmd.toLowerCase().startsWith(incomplete))
+			if(cmd.toLowerCase().startsWith(incomplete)) {
+				optionsLower.add(cmd.toLowerCase());
 				options.add(cmd);
+			}
 		if(options.isEmpty())
 			return chatField.getText();
-		
-		return options.get((options.indexOf(chatField.getText().toLowerCase().trim()) + (forward ? 1 : options.size() - 1)) % options.size()) + " ";
+		return options.get((optionsLower.indexOf(chatField.getText().toLowerCase().trim()) + (forward ? 1 : options.size() - 1)) % options.size()) + " ";
 	}
 	
 	private void synchChatField() {
