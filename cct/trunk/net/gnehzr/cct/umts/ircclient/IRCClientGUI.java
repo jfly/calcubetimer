@@ -292,7 +292,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 			ChatMessageFrame channelFrame = (ChatMessageFrame) src;
 			if(channelFrame.isConnected())
 				bot.partChannel(channelFrame.getChannel());
-			updateStatusBar();
+			//no use updating the statusbar here, wait for onPart()
 		}
 	}
 
@@ -675,9 +675,8 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 					
 					c.getChatFrame().removeCCTUser(user);
 					c.getChatFrame().usersListChanged();
-				} else
-					//this must be a comm channel that we intentionally left via /cctstats
-				
+				} else {} //this must be a comm channel that we intentionally left via /cctstats
+
 				if(iLeft)
 					updateStatusBar();
 			}
