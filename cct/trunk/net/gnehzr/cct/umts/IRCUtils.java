@@ -25,9 +25,16 @@ public class IRCUtils {
 		return type + MSGTYPE_DELIMETER + message;
 	}
 	
+	public static final String ZWSP = "&#8203;";
 	public static String escapeHTML(String s) {
+		s = s.replaceAll("&", "\f"); //this is to prevent escaping of the & sign in opbr
+		StringBuffer b = new StringBuffer(s);
+		for(int c = 0; c < b.length(); c+= ZWSP.length() + 10)
+			b.insert(c, ZWSP);
+		s = b.toString();
+		s = s.replaceAll("\f", "&amp;");
+		
 		s = s.replaceAll("\n", "<br>");
-		s = s.replaceAll("&", "&amp;");
 		s = s.replaceAll("<", "&lt;");
 		s = s.replaceAll(">", "&gt;");
 		s = s.replaceAll("  ", " &nbsp;");
