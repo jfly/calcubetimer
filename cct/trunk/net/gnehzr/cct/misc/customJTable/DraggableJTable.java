@@ -4,7 +4,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.KeyboardFocusManager;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -427,9 +426,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		return 0;
 	}
 	public void tableChanged(TableModelEvent e) {
-		Point p = getMousePosition(true);
-		if(p != null) //this should force the tooltip to refresh
-			dispatchEvent(new MouseEvent(this, MouseEvent.MOUSE_MOVED, 0, 0, p.x, p.y, 0, 0, 0, false, MouseEvent.NOBUTTON));
+		//TODO - refreshing the tooltip would be nice here
 		
 		List<? extends SortKey> sorts = null;
 		if(getRowSorter() != null) {
