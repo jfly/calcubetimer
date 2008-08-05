@@ -119,14 +119,14 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	public void keyPressed(KeyEvent e) {
 		switch(e.getKeyCode()) {
 			case KeyEvent.VK_P:
-				if(e.isAltDown())
-					messagePane.dispatchEvent(new KeyEvent(messagePane, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_PAGE_UP,
+				if(e.isAltDown()) //strange, seems like dispatching immediately to the messagePane doesn't work
+					chatField.dispatchEvent(new KeyEvent(chatField, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_PAGE_UP,
 							KeyEvent.CHAR_UNDEFINED,
 							KeyEvent.KEY_LOCATION_STANDARD));
 				break;
 			case KeyEvent.VK_N:
-				if(e.isAltDown())
-					messagePane.dispatchEvent(new KeyEvent(messagePane, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_PAGE_DOWN,
+				if(e.isAltDown()) //strange, seems like dispatching immediately to the messagePane doesn't work
+					chatField.dispatchEvent(new KeyEvent(chatField, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), 0, KeyEvent.VK_PAGE_DOWN,
 							KeyEvent.CHAR_UNDEFINED,
 							KeyEvent.KEY_LOCATION_STANDARD));
 				break;
