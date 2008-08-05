@@ -292,8 +292,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 						if(e == null) { //this means that the client gui was disposed
 							this.setEnabled(true);
 						} else {
-							if(client == null)
+							if(client == null) {
 								client = new IRCClientGUI(cct, this);
+								syncUserStateNOW();
+							}
 							client.setVisible(true);
 							this.setEnabled(false);
 						}
@@ -1525,33 +1527,38 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private Timer sendStateTimer = new Timer(1000, new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			if(!userStateDirty) return;
-			CCTUser myself = client.getMyUserstate();
-			myself.setCustomization(scrambleChooser.getSelectedItem().toString());
-			
-			myself.setLatestTime(statsModel.getCurrentStatistics().get(-1));
-			
-			String state;
-			if(isInspecting())
-				state = "Inspecting";
-			else if(timing)
-				state = timeLabel.getText();
-			else
-				state = "";
-			myself.setTimingState(state);
-			
-			Statistics stats = statsModel.getCurrentStatistics();
-			myself.setCurrentRA(stats.average(AverageType.CURRENT, 0), stats.toTerseString(AverageType.CURRENT, 0, true));
-			myself.setBestRA(stats.average(AverageType.RA, 0), stats.toTerseString(AverageType.RA, 0, false));
-			myself.setSessionAverage(new SolveTime(stats.getSessionAvg(), null));
-			
-			myself.setSolvesAttempts(stats.getSolveCount(), stats.getAttemptCount());
-			
-			myself.setRASize(stats.getRASize(0));
-			
+			syncUserStateNOW();
 			client.broadcastUserstate();
 			userStateDirty = false;
 		}
 	});
+	
+	//this will sync the cct state with the client, but will not transmit the data to other users
+	private void syncUserStateNOW() {
+		CCTUser myself = client.getMyUserstate();
+		myself.setCustomization(scrambleChooser.getSelectedItem().toString());
+		
+		myself.setLatestTime(statsModel.getCurrentStatistics().get(-1));
+		
+		String state;
+		if(isInspecting())
+			state = "Inspecting";
+		else if(timing)
+			state = timeLabel.getText();
+		else
+			state = "";
+		myself.setTimingState(state);
+		
+		Statistics stats = statsModel.getCurrentStatistics();
+		myself.setCurrentRA(stats.average(AverageType.CURRENT, 0), stats.toTerseString(AverageType.CURRENT, 0, true));
+		myself.setBestRA(stats.average(AverageType.RA, 0), stats.toTerseString(AverageType.RA, 0, false));
+		myself.setSessionAverage(new SolveTime(stats.getSessionAvg(), null));
+		
+		myself.setSolvesAttempts(stats.getSolveCount(), stats.getAttemptCount());
+		
+		myself.setRASize(stats.getRASize(0));
+	}
+	//this will start a timer to transmit the cct state every one second, if there's new information
 	private void sendUserstate() {
 		if(client == null || !client.isConnected()) {
 			sendStateTimer.stop();
