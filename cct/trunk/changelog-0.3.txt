@@ -246,6 +246,10 @@ changes:
 +fixed /cctstats command (had to remove an assertion)
 +fixed bug with \n to <br> escaping
 
+since last beta:
++nickname autocomplete changed to colon from comma
++fixed &#8203; bug with copy paste
+
 TODO:
 
 for release:
