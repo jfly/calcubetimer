@@ -562,7 +562,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 				boolean weJoined = sender.equals(bot.getNick());
 				if(commChannelMap.containsKey(channel)) {
 					CCTCommChannel c = commChannelMap.get(channel);
-					sendUserstate(c); //whenever we or another user connects to a comm channel, we send our userstate immediately
+					sendUserstate(c, IRCUtils.createMessage(IRCUtils.CLIENT_USERSTATE, myself.getUserState())); //whenever we or another user connects to a comm channel, we send our userstate immediately
 					c.getChatFrame().addCCTUser(getUser(c.getChatFrame().getChannel(), sender), sender);
 					c.getChatFrame().usersListChanged();
 				} else { //we or someone else joined a chat channel
@@ -871,6 +871,8 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 		verifyCommChannels.start();
 	}
 	
+	// TODO - what if attempt to connect to channel takes a while, and the time is fired, or the user overrides it with /cctstats?
+	// TODO - if the server lag is > 10 seconds, we'll connect to many, many channels
 	// this timer will check every 10 seconds for unconnected comm channels
 	private Timer verifyCommChannels = new Timer(10000, new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
@@ -911,15 +913,19 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 		c.usersChanged();
 	}
 
-	public void onMode(String channel, String sourceNick, String sourceLogin, String sourceHostname, String mode) {
-		if(channelFrames.containsKey(channel)) {
-			ChatMessageFrame c = channelFrames.get(channel);
-			c.setIRCUsers(bot.getUsers(channel));
-			updateCCTUserModes(c);
-		} else if(commChannelMap.containsKey(channel)) {
-			updateCCTUserModes(commChannelMap.get(channel).getChatFrame());
-		} else
-			assert false : channel;
+	public void onMode(final String channel, String sourceNick, String sourceLogin, String sourceHostname, String mode) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				if(channelFrames.containsKey(channel)) {
+					ChatMessageFrame c = channelFrames.get(channel);
+					c.setIRCUsers(bot.getUsers(channel));
+					updateCCTUserModes(c);
+				} else if(commChannelMap.containsKey(channel)) {
+					updateCCTUserModes(commChannelMap.get(channel).getChatFrame());
+				} else
+					assert false : channel;
+			}
+		});
 	}
 
 	private User getUser(String channel, String user) {
@@ -957,16 +963,16 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 		return myself;
 	}
 	
-	private void sendUserstate(CCTCommChannel c) {
+	private void sendUserstate(CCTCommChannel c, String msg) {
 		//it's not that big a deal if we're not connected to c yet,
 		//we can try to send the userstate anyways
-		String msg = IRCUtils.createMessage(IRCUtils.CLIENT_USERSTATE, myself.getUserState());
 		bot.sendMessage(c.getChannel(), msg);
 		cctStatusUpdate(bot.getNick(), msg, c);
 	}
 
 	public void broadcastUserstate() {
+		String msg = IRCUtils.createMessage(IRCUtils.CLIENT_USERSTATE, myself.getUserState());
 		for(CCTCommChannel c : commChannelMap.values())
-			sendUserstate(c);
+			sendUserstate(c, msg);
 	}
 }
