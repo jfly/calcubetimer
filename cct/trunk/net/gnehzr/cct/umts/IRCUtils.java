@@ -3,6 +3,8 @@ package net.gnehzr.cct.umts;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jibble.pircbot.PircBot;
+
 
 public class IRCUtils {
 	private IRCUtils() {}
@@ -63,4 +65,12 @@ public class IRCUtils {
 		
 		return b.toString();
 	}
+
+	public static boolean isConnectedToChannel(PircBot bot, String channel) {
+		for(String c : bot.getChannels())
+			if(c.equals(channel))
+				return true;
+		return false;
+	}
+
 }

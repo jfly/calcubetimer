@@ -1,4 +1,4 @@
-package net.gnehzr.cct.umts.ircclient;
+package net.gnehzr.cct.umts;
 
 import org.jibble.pircbot.User;
 

@@ -42,7 +42,9 @@ import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.main.URLHistoryBox;
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
+import net.gnehzr.cct.umts.IRCListener;
 import net.gnehzr.cct.umts.IRCUtils;
+import net.gnehzr.cct.umts.KillablePircBot;
 import net.gnehzr.cct.umts.cctbot.CCTUser;
 import net.gnehzr.cct.umts.ircclient.MessageFrame.CommandListener;
 
@@ -442,7 +444,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 				}
 			} else if(command.equalsIgnoreCase(CMD_CCTSTATS)) {
 				if(arg != null && arg.startsWith("#") && src instanceof ChatMessageFrame) {
-					if(!isConnectedToChannel(arg)) {
+					if(!IRCUtils.isConnectedToChannel(bot, arg)) {
 						setCommChannel((ChatMessageFrame) src, arg);
 						return;
 					}
@@ -835,7 +837,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 			assert commChannelMap.containsKey(commChannel.getChannel()) : commChannel.getChannel();
 			commChannelMap.remove(commChannel.getChannel());
 			
-			if(isConnectedToChannel(commChannel.getChannel()))
+			if(IRCUtils.isConnectedToChannel(bot, commChannel.getChannel()))
 				bot.partChannel(commChannel.getChannel());
 			
 			if(newCommChannel != null)
@@ -849,7 +851,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 		}
 		
 		//we don't want to turn a channel we're already connected to into a comm channel
-		while(isConnectedToChannel(commChannel.getChannel()))
+		while(IRCUtils.isConnectedToChannel(bot, commChannel.getChannel()))
 			commChannel.addAttempt();
 		
 		commChannelMap.put(commChannel.getChannel(), commChannel);
@@ -864,7 +866,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 			boolean alliswell = true;
 			for(ChatMessageFrame c : channelFrames.values()) {
 				CCTCommChannel commChannel = c.getCommChannel();
-				if(!isConnectedToChannel(commChannel.getChannel())) {
+				if(!IRCUtils.isConnectedToChannel(bot, commChannel.getChannel())) {
 					alliswell = false;
 					setCommChannel(c, null);
 				}
@@ -914,15 +916,8 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 		return null;
 	}
 	
-	private boolean isConnectedToChannel(String channel) {
-		for(String c : bot.getChannels())
-			if(c.equals(channel))
-				return true;
-		return false;
-	}
-
 	private String getHTMLForChannel(String channel) {
-		if(isConnectedToChannel(channel))
+		if(IRCUtils.isConnectedToChannel(bot, channel))
 			return channel;
 		
 		return "<strike>" + channel + "</strike>";
