@@ -241,6 +241,9 @@ since last beta:
 +bugs with parting chat channel and reconnecting have been fixed
 +cct now properly sends state upon connecting to the server
 +search as you type functionality added for URLHistoryBox
++Nickname autocompletion added.
++fixed bug where people joining a channel wouldn't show up on the right hand side
++fixed bug where others joining/leaving a channel would break cct stats transmission
 
 TODO:
 

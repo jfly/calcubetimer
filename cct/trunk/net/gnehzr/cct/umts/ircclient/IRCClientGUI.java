@@ -342,7 +342,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 	}
 	private static final String CMD_CCTSTATS = "/cctstats";
 	{
-		cmdHelp.put(CMD_CCTSTATS, "/cctstats #COMMCHANNEL" + "\n\t" + "Sets the channel used for communication of CCT status between CCT users. "
+		cmdHelp.put(CMD_CCTSTATS, "/cctstats #COMMCHANNEL" + "\n" + "Sets the channel used for communication of CCT status between CCT users. "
 				+ "Only use this if the default channel isn't working, perhaps because everyone else is connected to a different channel. "
 				+ "You must type this command from a channel which you want to display everyone's CCT status.");
 	}
@@ -555,30 +555,33 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 					CCTCommChannel c = commChannelMap.get(channel);
 					sendUserstate(c); //whenever we or another user connects to a comm channel, we send our userstate immediately
 					c.getChatFrame().addCCTUser(getUser(c.getChatFrame().getChannel(), sender), sender);
-				} else {
+					c.getChatFrame().usersListChanged();
+				} else { //we or someone else joined a chat channel
 					ChatMessageFrame f = channelFrames.get(channel);
-					String commChannel;
-					if(f == null) {
-						assert weJoined;
-						f = new ChatMessageFrame(desk, channel);
-						channelFrames.put(channel, f);
-						
-						desk.add(f);
-						f.addCommandListener(IRCClientGUI.this);
-						f.setLocation(20, 20); // this may help make it easier to see the new window
-						f.setVisible(true);
-						commChannel = channel + "-cct";
-					} else {
-						commChannel = f.getCommChannel().getChannel();
-						f.setCommChannel(null); //make this guy look like a new frame, so setcommchannel will work
+					if(weJoined) {
+						String commChannel;
+						if(f == null) {
+							f = new ChatMessageFrame(desk, channel);
+							channelFrames.put(channel, f);
+
+							desk.add(f);
+							f.addCommandListener(IRCClientGUI.this);
+							f.setLocation(20, 20); // this may help make it easier to see the new window
+							f.setVisible(true);
+							commChannel = channel + "-cct";
+						} else {
+							commChannel = f.getCommChannel().getChannel();
+							f.setCommChannel(null); //make this guy look like a new frame, so setcommchannel will work
+						}
+						f.appendInformation(StringAccessor.getString("IRCClientGUI.connected") + ": " + channel);
+						try {
+							f.setSelected(true);
+						} catch(PropertyVetoException e) {}
+						setCommChannel(f, commChannel);
+						f.setConnected(true);
+						f.appendInformation(StringAccessor.format("IRCClientGUI.joined", sender, channel));
 					}
-					f.appendInformation(StringAccessor.getString("IRCClientGUI.connected") + ": " + channel);
-					try {
-						f.setSelected(true);
-					} catch(PropertyVetoException e) {}
-					setCommChannel(f, commChannel);
-					f.setConnected(true);
-					f.appendInformation(StringAccessor.format("IRCClientGUI.joined", sender, channel));
+					f.setIRCUsers(bot.getUsers(channel));
 				}
 				if(weJoined)
 					updateStatusBar();
@@ -673,7 +676,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 					c.getChatFrame().removeCCTUser(user);
 					c.getChatFrame().usersListChanged();
 				} else
-					assert false : channel;
+					//this must be a comm channel that we intentionally left via /cctstats
 				
 				if(iLeft)
 					updateStatusBar();
