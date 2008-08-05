@@ -244,6 +244,8 @@ since last beta:
 +Nickname autocompletion added.
 +fixed bug where people joining a channel wouldn't show up on the right hand side
 +fixed bug where others joining/leaving a channel would break cct stats transmission
++fixed /cctstats command (had to remove an assertion)
++fixed bug with \n to <br> escaping
 
 TODO:
 

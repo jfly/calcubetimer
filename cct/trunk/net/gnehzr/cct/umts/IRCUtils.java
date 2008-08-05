@@ -36,9 +36,9 @@ public class IRCUtils {
 		s = b.toString();
 		s = s.replaceAll("\f", "&amp;");
 		
-		s = s.replaceAll("\n", "<br>");
 		s = s.replaceAll("<", "&lt;");
 		s = s.replaceAll(">", "&gt;");
+		s = s.replaceAll("\n", "<br>"); //note that this must be after the < and > replacement!
 		s = s.replaceAll("  ", " &nbsp;");
 		return s;
 	}

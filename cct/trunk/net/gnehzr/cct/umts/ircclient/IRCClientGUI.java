@@ -370,7 +370,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 					for(String c : cmdHelp.keySet())
 						cmds += ", " + c;
 					cmds = cmds.substring(2);
-					src.appendInformation("Available commands:\n\t" + cmds);
+					src.appendInformation("Available commands:\n" + cmds);
 				}
 				return;
 			} else if(command.equalsIgnoreCase(CMD_JOIN)) {
