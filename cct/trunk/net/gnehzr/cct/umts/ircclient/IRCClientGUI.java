@@ -290,9 +290,15 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 			pmFrames.remove(((PMMessageFrame) src).getBuddyNick());
 		} else if(src instanceof ChatMessageFrame) {
 			ChatMessageFrame channelFrame = (ChatMessageFrame) src;
-			if(channelFrame.isConnected())
+			if(channelFrame.isConnected()) {
+				assert channelFrames.containsKey(channelFrame.getChannel());
+				assert commChannelMap.containsKey(channelFrame.getCommChannel().getChannel());
+				channelFrames.remove(channelFrame.getChannel());
+				commChannelMap.remove(channelFrame.getCommChannel().getChannel());
 				bot.partChannel(channelFrame.getChannel());
-			//no use updating the statusbar here, wait for onPart()
+				bot.partChannel(channelFrame.getCommChannel().getChannel());
+			}
+			updateStatusBar();
 		}
 	}
 
@@ -374,6 +380,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 				}
 				return;
 			} else if(command.equalsIgnoreCase(CMD_JOIN)) {
+				//TODO - join alone from a disconnected chat frame should work
 				if(arg != null) {
 					if(!arg.startsWith("#"))
 						arg = "#" + arg;
@@ -675,7 +682,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 					
 					c.getChatFrame().removeCCTUser(user);
 					c.getChatFrame().usersListChanged();
-				} else {} //this must be a comm channel that we intentionally left via /cctstats
+				} else {} //this must be a comm channel that we intentionally left via /cctstats, or a chat channel we x-ed close
 
 				if(iLeft)
 					updateStatusBar();
