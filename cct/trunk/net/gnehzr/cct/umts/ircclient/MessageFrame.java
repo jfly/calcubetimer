@@ -194,6 +194,20 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 				if(e.isControlDown())
 					scrollToBottom();
 				break;
+			case KeyEvent.VK_I:
+				if(e.isControlDown()) { //emulate tab with ctrl+j
+					chatField.dispatchEvent(new KeyEvent(chatField, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), e.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK, KeyEvent.VK_TAB,
+							KeyEvent.CHAR_UNDEFINED,
+							KeyEvent.KEY_LOCATION_STANDARD));
+				}
+				break;
+			case KeyEvent.VK_J:
+				if(e.isControlDown()) { //emulate enter with ctrl+j
+					chatField.dispatchEvent(new KeyEvent(chatField, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), e.getModifiersEx() & InputEvent.SHIFT_DOWN_MASK, KeyEvent.VK_ENTER,
+							KeyEvent.CHAR_UNDEFINED,
+							KeyEvent.KEY_LOCATION_STANDARD));
+				}
+				break;
 			case KeyEvent.VK_TAB:
 				if(e.isControlDown()) {
 					//we need to pass this on to the desktop manager

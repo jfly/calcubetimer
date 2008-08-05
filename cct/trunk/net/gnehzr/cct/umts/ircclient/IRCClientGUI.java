@@ -14,6 +14,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.TreeSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -374,7 +375,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 				}
 				if(arg == null) {
 					String cmds = "";
-					for(String c : cmdHelp.keySet())
+					for(String c : new TreeSet<String>(cmdHelp.keySet()))
 						cmds += ", " + c;
 					cmds = cmds.substring(2);
 					src.appendInformation("Available commands:\n" + cmds);
