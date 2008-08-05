@@ -150,6 +150,6 @@
 		<delete file="cctbot0.log"/>
 		<delete dir="${dist}"/>
 		<delete dir="profiles/Guest"/>
-		<echo file="profiles/startup">Guest${line.separator}Guest</echo>
+		<echo file="profiles/startup">Guest${line.separator}Guest${line.separator}</echo>
 	</target>
 </project>
