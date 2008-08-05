@@ -18,7 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.Icon;
-import javax.swing.JEditorPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -55,7 +54,9 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	private static final Timer messageAppender = new Timer(30, null);
 	private static final boolean wrap = true;
 
-	private JEditorPane messagePane;
+	//http://software.jessies.org/salma-hayek/ 
+	//ptextarea is supposed to be a fast jtextarea implementation with support for hyperlinks 
+	private UnfocusableEditorPane messagePane;
 	private JTextField chatField;
 	private Element msgs;
 	private HTMLDocument doc;
@@ -76,6 +77,7 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		
 		resetMessagePane();
 		msgScroller = new JScrollPane(messagePane, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		
 		messagePane.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, IRCClientGUI.WATERMARK);
 
 		chatField = new JTextField();
@@ -221,6 +223,7 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 			incomplete = null;
 	}
 	private String incomplete;
+	//TODO - tab nickname completion
 	private String getNextString(boolean forward) {
 		if(incomplete == null)
 			incomplete = chatField.getText().toLowerCase();
@@ -382,7 +385,7 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 			} else if(url.startsWith("http://")) {
 			} else
 				continue;
-			m.appendReplacement(msg, fragmentation ? /*m.group()*/ "" : "<a" + var + id + " href=\"" + url + "\">" + m.group() + "</a>");
+			m.appendReplacement(msg, fragmentation ? /*m.group()*/ "" : "<a" + var + id + " href=\"" + url.replaceAll(IRCUtils.ZWSP, "") + "\">" + m.group() + "</a>");
 		}
 		m.appendTail(msg);
 		if(msg.length() != 0) {
@@ -448,19 +451,21 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 				} finally {
 					buffer.delete(0, len);
 				}
-			}
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					JScrollBar horScroller = msgScroller.getHorizontalScrollBar();
-					if(atBottom) {
-						scrollToBottom();
-						horScroller.setValue(0);
-					} else {
-						msgScroller.getVerticalScrollBar().setValue(vertVal);
-						horScroller.setValue(horVal);
-					}
+				if(!messagePane.isSelectingText()) {
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							JScrollBar horScroller = msgScroller.getHorizontalScrollBar();
+							if(atBottom) {
+								scrollToBottom();
+								horScroller.setValue(0);
+							} else {
+								msgScroller.getVerticalScrollBar().setValue(vertVal);
+								horScroller.setValue(horVal);
+							}
+						}
+					});
 				}
-			});
+			}
 		} else if(e.getSource() == chatField) {
 			if(e.getActionCommand().isEmpty())
 				return;
