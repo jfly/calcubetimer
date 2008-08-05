@@ -288,7 +288,6 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 			pmFrames.remove(((PMMessageFrame) src).getBuddyNick());
 		} else if(src instanceof ChatMessageFrame) {
 			ChatMessageFrame channelFrame = (ChatMessageFrame) src;
-			channelFrames.remove(channelFrame.getChannel());
 			if(channelFrame.isConnected())
 				bot.partChannel(channelFrame.getChannel());
 			updateStatusBar();
@@ -556,6 +555,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 					c.getChatFrame().addCCTUser(getUser(c.getChatFrame().getChannel(), sender), sender);
 				} else {
 					ChatMessageFrame f = channelFrames.get(channel);
+					String commChannel;
 					if(f == null) {
 						assert weJoined;
 						f = new ChatMessageFrame(desk, channel);
@@ -565,14 +565,17 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 						f.addCommandListener(IRCClientGUI.this);
 						f.setLocation(20, 20); // this may help make it easier to see the new window
 						f.setVisible(true);
-						f.setConnected(true);
-						f.appendInformation(StringAccessor.getString("IRCClientGUI.connected") + ": " + channel);
-						try {
-							f.setSelected(true);
-						} catch(PropertyVetoException e) {}
-						
-						setCommChannel(f, channel + "-cct");
+						commChannel = channel + "-cct";
+					} else {
+						commChannel = f.getCommChannel().getChannel();
+						f.setCommChannel(null); //make this guy look like a new frame, so setcommchannel will work
 					}
+					f.appendInformation(StringAccessor.getString("IRCClientGUI.connected") + ": " + channel);
+					try {
+						f.setSelected(true);
+					} catch(PropertyVetoException e) {}
+					setCommChannel(f, commChannel);
+					f.setConnected(true);
 					f.appendInformation(StringAccessor.format("IRCClientGUI.joined", sender, channel));
 				}
 				if(weJoined)
@@ -645,8 +648,10 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 						f.appendInformation(StringAccessor.format(kicker != null ? "IRCClientGUI.youkicked" : "IRCClientGUI.youleft", channel, kicker));
 						f.setConnected(false);
 						
-						//since we left this chat channel, we should leave the associated comm channel
-						commChannelMap.remove(f.getCommChannel().getChannel()); //we don't want to attempt to reconnect when onPart() is called 
+						if(f.isClosed())
+							channelFrames.remove(f.getChannel());
+						
+						//since we left this chat channel, we should attempt to leave the associated comm channel 
 						bot.partChannel(f.getCommChannel().getChannel(), StringAccessor.format("IRCClientGUI.alsoleft", channel));
 					} else {
 						f.appendInformation(StringAccessor.format(kicker != null ? "IRCClientGUI.someonekicked" : "IRCClientGUI.someoneleft", channel, user,
@@ -655,15 +660,19 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 					}
 				} else if(commChannelMap.containsKey(channel)) {
 					CCTCommChannel c = commChannelMap.get(channel);
-					if(iLeft) {
-						verifyCommChannels.start();
-						updateStatusBar();
-					}
+					if(c.getChatFrame().isConnected()) {
+						if(iLeft) {
+							verifyCommChannels.start();
+							updateStatusBar();
+						}
+					} else
+						commChannelMap.remove(c.getChannel()); //we don't want to attempt to reconnect when onPart() is called
+					
 					c.getChatFrame().removeCCTUser(user);
 					c.getChatFrame().usersListChanged();
-				} else {
-					//this must be a recently closed chat channel, or recently exited comm channel as a result of parting a chat channel
-				}
+				} else
+					assert false : channel;
+				
 				if(iLeft)
 					updateStatusBar();
 			}
@@ -823,10 +832,11 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 	private void setCommChannel(ChatMessageFrame chatChannel, String newCommChannel) {
 		CCTCommChannel commChannel = chatChannel.getCommChannel();
 		if(commChannel != null) {
-			if(isConnectedToChannel(commChannel.getChannel()))
-				bot.partChannel(commChannel.getChannel());
 			assert commChannelMap.containsKey(commChannel.getChannel()) : commChannel.getChannel();
 			commChannelMap.remove(commChannel.getChannel());
+			
+			if(isConnectedToChannel(commChannel.getChannel()))
+				bot.partChannel(commChannel.getChannel());
 			
 			if(newCommChannel != null)
 				commChannel.setCommChannel(newCommChannel);
