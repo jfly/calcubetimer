@@ -306,7 +306,8 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 	public static final HashMap<String, String> cmdHelp = new HashMap<String, String>();
 	private static final String CMD_JOIN = "/join";
 	{
-		cmdHelp.put(CMD_JOIN, "/join #CHANNEL" + "\nJoins #CHANNEL on the current server. The # sign is optional.");
+		cmdHelp.put(CMD_JOIN, "/join (#CHANNEL)" + "\nJoins #CHANNEL (optional if you're typing " +
+				"the command from the channel you wish to join). The # sign is optional.");
 	}
 	private static final String CMD_QUIT = "/quit";
 	{
@@ -323,7 +324,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 	private static final String CMD_PART = "/part";
 	{
 		cmdHelp.put(CMD_PART, "/part (#CHANNEL) (REASON)" + "\nLeaves #CHANNEL (optional if you're typing " +
-				"the message from the channel you wish to part). The # sign is required. You may also " +
+				"the command from the channel you wish to part). The # sign is required. You may also " +
 				"specify a REASON for people to see when you leave." );
 	}
 	private static final String CMD_NICK = "/nick";
@@ -380,11 +381,13 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 				}
 				return;
 			} else if(command.equalsIgnoreCase(CMD_JOIN)) {
-				//TODO - join alone from a disconnected chat frame should work
 				if(arg != null) {
 					if(!arg.startsWith("#"))
 						arg = "#" + arg;
 					bot.joinChannel(arg);
+					return;
+				} else if(src instanceof ChatMessageFrame) {
+					bot.joinChannel(((ChatMessageFrame) src).getChannel());
 					return;
 				}
 			} else if(command.equalsIgnoreCase(CMD_QUIT)) {
