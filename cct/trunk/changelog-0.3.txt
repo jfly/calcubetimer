@@ -249,6 +249,7 @@ changes:
 TODO:
 
 for release:
+-analyze possible performance issues with cct/irc
 -generator groups for scramble plugins (w/ cctbot too)
 -dynamic string multiple argument format
 -open source sourceforge!
