@@ -240,11 +240,11 @@ since last beta:
 +fixed bug when cct users change their nick
 +bugs with parting chat channel and reconnecting have been fixed
 +cct now properly sends state upon connecting to the server
++search as you type functionality added for URLHistoryBox
 
 TODO:
 
 for release:
--search as you type functionality for URLHistoryBox (substance removed it)
 -generator groups for scramble plugins (w/ cctbot too)
 -dynamic string multiple argument format
 -open source sourceforge!
