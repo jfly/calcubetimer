@@ -234,8 +234,7 @@ changes:
 +saxparseexception for not finding gui component type in xml gui (startElement() in cct.java), how strict to be with errors in xml files? changed to system.err
 +fixed bug where changing the profile wouldn't update the stackmat onlabel
 +remove non-nls stuff
-
-since last beta:
++cct now sends incremental solves in the current average
 +horizontal scrolling fixed, scricter line wrapping implemented
 +fixed bug when cct users change their nick
 +bugs with parting chat channel and reconnecting have been fixed
