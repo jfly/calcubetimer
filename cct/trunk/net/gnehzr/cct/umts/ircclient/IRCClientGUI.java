@@ -413,18 +413,18 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 				}
 			} else if(command.equalsIgnoreCase(CMD_PART)) {
 				String channel = null, reason = null;
-				if(src instanceof ChatMessageFrame)
-					channel = ((ChatMessageFrame) src).getChannel();
 				if(arg != null) {
-					String[] chan_reason = arg.split(" +", 2);
-					if(chan_reason.length == 2) {
-						channel = chan_reason[0];
-						reason = chan_reason[1];
-					} else { //length == 1
-						if(chan_reason[0].startsWith("#"))
+					if(arg.startsWith("#")) {
+						String[] chan_reason = arg.split(" +", 2);
+						if(chan_reason.length == 2) {
 							channel = chan_reason[0];
-						else
-							reason = chan_reason[0];
+							reason = chan_reason[1];
+						} else { //length == 1
+							channel = chan_reason[0];
+						}
+					} else if(src instanceof ChatMessageFrame){
+						channel = ((ChatMessageFrame) src).getChannel();
+						reason = arg;
 					}
 				}
 				if(channel != null) {
@@ -772,7 +772,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 	public void log(String line) {
 		serverFrame.appendInformation(line);
 	}
-
+	
 	private Thread connectThread;
 
 	private void forkConnect(String hostname) {
@@ -872,15 +872,17 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 		verifyCommChannels.start();
 	}
 	
-	// this timer will check every 1 second for unconnected comm channels
-	private Timer verifyCommChannels = new Timer(1000, new ActionListener() {
+	// this timer will check every 10 seconds for unconnected comm channels
+	private Timer verifyCommChannels = new Timer(10000, new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			boolean alliswell = true;
 			for(ChatMessageFrame c : channelFrames.values()) {
-				CCTCommChannel commChannel = c.getCommChannel();
-				if(!IRCUtils.isConnectedToChannel(bot, commChannel.getChannel())) {
-					alliswell = false;
-					setCommChannel(c, null);
+				if(c.isConnected()) {
+					CCTCommChannel commChannel = c.getCommChannel();
+					if(!IRCUtils.isConnectedToChannel(bot, commChannel.getChannel())) {
+						alliswell = false;
+						setCommChannel(c, null);
+					}
 				}
 			}
 			if(alliswell)
