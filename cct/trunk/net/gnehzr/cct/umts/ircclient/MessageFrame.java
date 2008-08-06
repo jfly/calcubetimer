@@ -130,6 +130,30 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 							KeyEvent.CHAR_UNDEFINED,
 							KeyEvent.KEY_LOCATION_STANDARD));
 				break;
+			case KeyEvent.VK_K:
+				if(e.isControlDown()) { //cut to end of line
+					chatField.select(chatField.getCaretPosition(), chatField.getDocument().getLength());
+					chatField.cut();
+				}
+				break;
+			case KeyEvent.VK_B:
+				if(e.isAltDown())
+					chatField.dispatchEvent(new KeyEvent(chatField, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), InputEvent.CTRL_DOWN_MASK, KeyEvent.VK_LEFT,
+							KeyEvent.CHAR_UNDEFINED,
+							KeyEvent.KEY_LOCATION_STANDARD));
+				break;
+			case KeyEvent.VK_D:
+				if(e.isAltDown())
+					chatField.dispatchEvent(new KeyEvent(chatField, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), InputEvent.CTRL_DOWN_MASK, KeyEvent.VK_DELETE,
+							KeyEvent.CHAR_UNDEFINED,
+							KeyEvent.KEY_LOCATION_STANDARD));
+				break;
+			case KeyEvent.VK_F:
+				if(e.isAltDown())
+					chatField.dispatchEvent(new KeyEvent(chatField, KeyEvent.KEY_PRESSED, System.currentTimeMillis(), InputEvent.CTRL_DOWN_MASK, KeyEvent.VK_RIGHT,
+							KeyEvent.CHAR_UNDEFINED,
+							KeyEvent.KEY_LOCATION_STANDARD));
+				break;
 			case KeyEvent.VK_PAGE_UP:
 			case KeyEvent.VK_PAGE_DOWN:
 				messagePane.dispatchEvent(e);
