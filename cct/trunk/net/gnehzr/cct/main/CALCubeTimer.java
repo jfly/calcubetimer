@@ -138,6 +138,7 @@ import net.gnehzr.cct.statistics.StatisticsTableModel;
 import net.gnehzr.cct.statistics.UndoRedoListener;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
 import net.gnehzr.cct.statistics.Statistics.AverageType;
+import net.gnehzr.cct.statistics.Statistics.CCTUndoableEdit;
 import net.gnehzr.cct.umts.cctbot.CCTUser;
 import net.gnehzr.cct.umts.ircclient.IRCClientGUI;
 
@@ -648,7 +649,11 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		for(int ch = 0; ch < stats.getAttemptCount(); ch++)
 			scramblesList.addScramble(stats.get(ch).getScramble());
 		scramblesList.setScrambleNumber(scramblesList.size() + 1);
+
+		customizationEditsDisabled = true;
 		scrambleChooser.setSelectedItem(s.getCustomization()); //this will update the scramble
+		customizationEditsDisabled = false;
+		
 		sendUserstate();
 	}
 
@@ -658,9 +663,32 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		scrambleChooser.setSelectedItem(s.getCustomization());
 	}
 
+	private static boolean customizationEditsDisabled = false;
+	private class CustomizationEdit implements CCTUndoableEdit {
+		private ScrambleCustomization oldCustom, newCustom;
+		public CustomizationEdit(ScrambleCustomization oldCustom, ScrambleCustomization newCustom) {
+			this.oldCustom = oldCustom;
+			this.newCustom = newCustom;
+		}
+		public void doEdit() {
+			customizationEditsDisabled = true;
+			scrambleChooser.setSelectedItem(newCustom);
+			customizationEditsDisabled = false;
+		}
+		public void undoEdit() {
+			customizationEditsDisabled = true;
+			scrambleChooser.setSelectedItem(oldCustom);
+			customizationEditsDisabled = false;
+		}
+	}
+	
 	public void itemStateChanged(ItemEvent e) {
 		Object source = e.getSource();
 		if(source == scrambleChooser && e.getStateChange() == ItemEvent.SELECTED) {
+			Statistics s = statsModel.getCurrentStatistics();
+			if(!customizationEditsDisabled && s != null) //TODO - changing session? //TODO - deleted customization?
+				s.editActions.add(new CustomizationEdit(scramblesList.getScrambleCustomization(), (ScrambleCustomization) scrambleChooser.getSelectedItem()));
+			
 			scramblesList.setScrambleCustomization((ScrambleCustomization) scrambleChooser.getSelectedItem());
 			//send current customization to irc, if connected
 			sendUserstate();

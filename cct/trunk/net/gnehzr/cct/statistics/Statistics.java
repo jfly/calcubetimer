@@ -31,7 +31,12 @@ public class Statistics implements ConfigurationChangeListener {
 		}
 	}
 
-	private class StatisticsEdit {
+	public interface CCTUndoableEdit {
+		public void doEdit();
+		public void undoEdit();
+	}
+	
+	private class StatisticsEdit implements CCTUndoableEdit {
 		private int[] positions;
 		SolveTime[] oldTimes;
 		private SolveTime newTime;
@@ -99,14 +104,18 @@ public class Statistics implements ConfigurationChangeListener {
 	}
 	//returns true if the caller should decrement the scramble #
 	public boolean undo() {
-		StatisticsEdit t = editActions.getPrevious();
+		CCTUndoableEdit t = editActions.getPrevious();
 		t.undoEdit();
-		return t.row == -1 && t.oldTimes == null;
+		if(t instanceof StatisticsEdit) {
+			StatisticsEdit se = (StatisticsEdit) t;
+			return se.row == -1 && se.oldTimes == null;
+		}
+		return false;
 	}
 	public void setUndoRedoListener(UndoRedoListener url) {
 		editActions.setUndoRedoListener(url);
 	}
-	UndoRedoList<StatisticsEdit> editActions = new UndoRedoList<StatisticsEdit>();
+	public UndoRedoList<CCTUndoableEdit> editActions = new UndoRedoList<CCTUndoableEdit>();
 	
 	ArrayList<SolveTime> times;
 	private ArrayList<Double>[] averages;

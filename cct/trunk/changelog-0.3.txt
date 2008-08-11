@@ -256,6 +256,7 @@ since last beta:
 +command line option & command to set the one character prefix added to cctbot
 +scramble debugger fixed (token regex, attributes, scramble length, generator group support added)
 	+instructions for using the debugger added to readme.html
++added scramble customization choice to undo-redo list
 
 TODO:
 
