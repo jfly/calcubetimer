@@ -520,9 +520,15 @@
 			create new plugins for CCT. Just checkout the CCT sourcecode from here ???, and examine
 			Scramble.java. Writing a new plugin is as simple as writing a subclass of Scramble.
 			See CubeScramble, MegaminxScramble, and SquareOneScramble for examples of how to do it.</p>
+			<p>We also created a scramble debugger to hopefully save you some of the bother (and time)
+			of restarting CCT every time you want to test your new scramble plugin. To start the debugger,
+			just run the following command from your CCT folder. You should see some simple instructions for
+			using the scramble debugger.</p>
+			<p>java -cp CALCubeTimer.jar net.gnehzr.cct.scrambles.ScrambleDebugger</p>
 			<p>A lot of time has been put into ensuring that it is not possible for scramble plugins to harm your
 			computer or freeze CCT, but care should always be exercised when running a scramble plugin from
-			an unknown or untrusted source.</p>
+			an unknown or untrusted source. The scramble debugger does not apply all the security settings when
+			running scrambles that CCT does.</p>
 			
 			<h3><a name="scramblearea">Scramble Area</a></h3>
 			<p>CCT supports incremental scramble display. If you want to know what the puzzle looks like

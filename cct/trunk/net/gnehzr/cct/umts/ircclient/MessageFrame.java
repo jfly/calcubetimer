@@ -1,6 +1,7 @@
 package net.gnehzr.cct.umts.ircclient;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -10,13 +11,11 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.beans.PropertyVetoException;
-import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.Icon;
 import javax.swing.JInternalFrame;
@@ -30,39 +29,27 @@ import javax.swing.Timer;
 import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
-import javax.swing.event.HyperlinkEvent.EventType;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.Element;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.html.HTML;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.parser.ParserDelegator;
 
 import net.gnehzr.cct.scrambles.Scramble;
 import net.gnehzr.cct.scrambles.ScramblePlugin;
 import net.gnehzr.cct.scrambles.ScrambleVariation;
-import net.gnehzr.cct.umts.IRCUtils;
+import net.gnehzr.cct.umts.ircclient.hyperlinkTextArea.HyperlinkTextArea;
+import net.gnehzr.cct.umts.ircclient.hyperlinkTextArea.HyperlinkTextArea.CCTLink;
+import net.gnehzr.cct.umts.ircclient.hyperlinkTextArea.HyperlinkTextArea.HyperlinkListener;
 
+import org.jibble.pircbot.Colors;
 import org.jvnet.substance.SubstanceLookAndFeel;
 
 public class MessageFrame extends JInternalFrame implements ActionListener, HyperlinkListener, KeyListener, DocumentListener {
+	private static final boolean WRAP_WORD = true; //TODO - do we want this to be true or false?
 	private static final Timer messageAppender = new Timer(30, null);
-	private static final boolean wrap = true;
 
-	//http://software.jessies.org/salma-hayek/ 
-	//TODO - ptextarea is supposed to be a fast jtextarea implementation with support for hyperlinks 
-	private UnfocusableEditorPane messagePane;
+	private HyperlinkTextArea messageArea;
 	private JTextField chatField;
-	private Element msgs;
-	private HTMLDocument doc;
 	protected JScrollPane msgScroller;
-	private Font mono;
 	private MinimizableDesktop desk;
 
 	public MessageFrame(MinimizableDesktop desk, boolean closeable, Icon icon) {
@@ -71,15 +58,20 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		setFrameIcon(icon);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		
-		mono = new Font("Monospaced", Font.PLAIN, 12);
+		Font mono = new Font("Monospaced", Font.PLAIN, 12);
 
-		messagePane = new UnfocusableEditorPane();
-		messagePane.addHyperlinkListener(this);
+		messageArea = new HyperlinkTextArea();
+		messageArea.setFont(mono);
+		messageArea.setFocusable(false);
+		messageArea.setEditable(false);
+		messageArea.setWrapStyleWord(WRAP_WORD);
+		messageArea.setLineWrap(true);
+		messageArea.addHyperlinkListener(this);
 		
 		resetMessagePane();
-		msgScroller = new JScrollPane(messagePane, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		msgScroller = new JScrollPane(messageArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
-		messagePane.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, IRCClientGUI.WATERMARK);
+		messageArea.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, IRCClientGUI.WATERMARK);
 
 		chatField = new JTextField();
 		chatField.getDocument().addDocumentListener(this);
@@ -156,7 +148,8 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 				break;
 			case KeyEvent.VK_PAGE_UP:
 			case KeyEvent.VK_PAGE_DOWN:
-				messagePane.dispatchEvent(e);
+				if(!e.isShiftDown()) //we don't want to send this event with shift down, because it will select text
+					messageArea.dispatchEvent(e);
 				break;
 			case KeyEvent.VK_UP:
 				if(nthCommand > 0)
@@ -301,60 +294,47 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	private static String[] splitURL(String url) {
 		return url.split("://", 2);
 	}
-	public void hyperlinkUpdate(HyperlinkEvent e) {
-		if(e.getEventType() == EventType.ACTIVATED) {
-			String[] desc = splitURL(e.getDescription());
-			if(desc[0].equals("http")) {
-				try {
-					Desktop.getDesktop().browse(e.getURL().toURI());
-				} catch(Exception error) {
-					error.printStackTrace();
-				}
-			} else {
-				//				//TODO - prompt user if they want just this scramble, or all of them
-				//				Scramble clickedScramble = getScrambleFromElement(e.getSourceElement());
-
-				SimpleAttributeSet sas = (SimpleAttributeSet) e.getSourceElement().getAttributes().getAttribute(HTML.Tag.A);
-				String[] id = ((String) sas.getAttribute(HTML.Attribute.ID)).split(" ", 3);
-				int set = getSetNumFromID(id);
-				int scramCount = getScramNumFromID(id);
-				String nick = getNickFromID(id);
-				while(doc.getElement(constructID(set, ++scramCount, nick)) != null) ; //finding upper bound
-				
-				ArrayList<Scramble> scrambles = new ArrayList<Scramble>();
-				for(int c = scramCount - 1; c >= 0; c--) {
-					Scramble s = getScrambleFromElement(doc.getElement(constructID(set, c, nick)));
-					if(s == null)	break;
-					scrambles.add(s);
-				}
-				ScrambleVariation sv = getScrambleVariation(e.getSourceElement());
-				if(sv == null)
-					sv = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation();
-				
-				for(CommandListener l : listeners)
-					l.scramblesImported(this, sv, scrambles);
+	public void hyperlinkUpdate(HyperlinkTextArea source, String url, int linkNum) {
+		String[] desc = splitURL(url);
+		if(desc[0].equals("http")) {
+			try {
+				Desktop.getDesktop().browse(new URI(url));
+			} catch(Exception error) {
+				error.printStackTrace();
 			}
+		} else {
+			CCTLink l = scramblesLinkMap.get(linkNum);
+			//TODO - prompt user if they want just this scramble, or all of them
+			//Scramble clickedScramble = getScrambleFromLink(l);
+			
+			TreeMap<Integer, Integer> scramblesMap = nickMap.get(l.nick).get(l.set);
+			int scramCount = scramblesMap.lastKey();
+
+			ArrayList<Scramble> scrambles = new ArrayList<Scramble>();
+			for(int ch = scramCount; ch >= 0; ch--) {
+				CCTLink c = scramblesLinkMap.get(scramblesMap.get(ch));
+				if(c == null)	break;
+				Scramble s = getScrambleFromLink(c);
+				scrambles.add(s);
+			}
+			ScrambleVariation sv = ScramblePlugin.getBestMatchVariation(l.variation);
+			if(sv == null)
+				sv = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation();
+
+			for(CommandListener cl : listeners)
+				cl.scramblesImported(this, sv, scrambles);
 		}
 	}
-	private ScrambleVariation getScrambleVariation(Element el) {
-		SimpleAttributeSet sas = (SimpleAttributeSet) el.getAttributes().getAttribute(HTML.Tag.A);
-		return ScramblePlugin.getBestMatchVariation((String) sas.getAttribute(HTML.Attribute.TYPE));
-	}
-	private Scramble getScrambleFromElement(Element el) {
-		if(el == null) return null;
-		SimpleAttributeSet sas = (SimpleAttributeSet) el.getAttributes().getAttribute(HTML.Tag.A);
-		String variation = (String) sas.getAttribute(HTML.Attribute.TYPE);
-		String scramble = (String) sas.getAttribute(HTML.Attribute.HREF);
-
-		ScrambleVariation var = ScramblePlugin.getBestMatchVariation(variation);
+	private Scramble getScrambleFromLink(CCTLink l) {
+		ScrambleVariation var = ScramblePlugin.getBestMatchVariation(l.variation);
 		if(var == null)
 			var = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation();
 		try {
-			return var.generateScramble(scramble);
+			return var.generateScramble(l.scramble);
 		} catch(Exception e1) {
 			try {
 				var = ScramblePlugin.NULL_SCRAMBLE_CUSTOMIZATION.getScrambleVariation();
-				return var.generateScramble(scramble);
+				return var.generateScramble(l.scramble);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -362,110 +342,41 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		return null;
 	}
 	
-	private String constructID(int setNum, int scramNum, String nick) {
-		return setNum + " " + scramNum + " " + nick;
-	}
-	private int getSetNumFromID(String[] id) {
-		return Integer.parseInt(id[0]);
-	}
-	private int getScramNumFromID(String[] id) {
-		return Integer.parseInt(id[1]);
-	}
-	private String getNickFromID(String[] id) {
-		return id[2];
-	}
-	
 	public void appendInformation(String info) {
-		appendHTML(null, "<font color='green'>" + IRCUtils.escapeHTML(info) + "</font>");
+		appendMessage(null, info, Color.green.darker());
 	}
 	public void appendMessage(String nick, String message) {
-		appendHTML(nick, IRCUtils.escapeHTML(message));
+		appendMessage(nick, message, null);
 	}
 	public void appendError(String error) {
-		appendHTML(null, "<font color='red'>" + IRCUtils.escapeHTML(error) + "</font>");
+		appendMessage(null, error, Color.RED);
 	}
-
-	private HashMap<String, int[]> userScrambles = new HashMap<String, int[]>();
-	private int nthSet = 0;
-	private static final Pattern URL = Pattern.compile("\\b(?:(http://[^\\s\"]+)\\b|(cct://[^\"]+))");
-	private StringBuffer buffer = new StringBuffer();
-	private void appendHTML(String nick, String message) {
+	private static class AppendAction {
+		private Color c;
+		private StringBuffer msgBuff;
+		public AppendAction(String msg, Color c) {
+			msgBuff = new StringBuffer(msg);
+			this.c = c;
+		}
+		public boolean sameColor(Color o) {
+			if(c == null || o == null)
+				return c == o;
+			return c.equals(o);
+		}
+		public String toString() {
+			return msgBuff.toString();
+		}
+	}
+	private ArrayList<AppendAction> buffer = new ArrayList<AppendAction>();
+	private void appendMessage(String nick, String message, Color c) {
 		//this lets everyone know that we received a message and no one was looking
 		if(!isSelected())
 			fireInternalFrameEvent(InternalFrameEvent.INTERNAL_FRAME_CLOSED);
-		
-		StringBuffer msg = new StringBuffer();
-		Matcher m = URL.matcher(message);
-		boolean fragmentation = false;
-		while(m.find()) {
-			String id = "", var = "";
-			String url = m.group();
-			if(url.startsWith("cct://") && nick != null) {
-				url = url.substring(6);
-				if(url.startsWith("*")) {
-					fragmentation = true;
-					url = url.substring(1);
-				}
-				int n = 0, temp;
-				if(url.startsWith("#")) {
-					try {
-						int c = url.indexOf(':');
-						n = Integer.parseInt(url.substring(1, c));
-						url = url.substring(c + 1);
-					} catch(Exception e) {}
-				}
-				var = "";
-				if((temp = url.indexOf(':')) != -1) {
-					var = " type=\"" + url.substring(0, temp) + "\"";
-					url = url.substring(temp + 1);
-				}
-				
-				//this boolean algebra could be combined, but i've left it as is for the
-				//sake of readability
-				int[] scramNumAndSetNum = userScrambles.get(nick);
-				fragmentation &= scramNumAndSetNum != null && scramNumAndSetNum[0] == n;
-				if(!fragmentation && (scramNumAndSetNum == null || scramNumAndSetNum[0] - 1 != n)) {
-					scramNumAndSetNum = new int[] { -1, nthSet++ };
-					userScrambles.put(nick, scramNumAndSetNum);
-				}
-				scramNumAndSetNum[0] = n;
-				id = constructID(scramNumAndSetNum[1], scramNumAndSetNum[0], nick);
-				if(fragmentation) {
-					Element el = doc.getElement(id);
-					if(el != null)
-						bufferedActions.add(new AppendLink(el, url));
-				}
-				id = " id='" + id + "'";
-			} else if(url.startsWith("http://")) {
-			} else
-				continue;
-			m.appendReplacement(msg, fragmentation ? /*m.group()*/ "" : "<a" + var + id + " href=\"" + url.replaceAll(IRCUtils.ZWSP, "") + "\">" + m.group() + "</a>");
-		}
-		m.appendTail(msg);
-		if(msg.length() != 0) {
-			msg.insert(0, "<br>" + (nick == null ? "" : IRCUtils.escapeHTML("<" + nick + "> ")));
-			buffer.append(msg);
-		}
-	}
-	private CopyOnWriteArrayList<Runnable> bufferedActions = new CopyOnWriteArrayList<Runnable>();
-	private class AppendLink implements Runnable {
-		private Element old;
-		private String appendText;
-		public AppendLink(Element old, String appendText) {
-			this.old = old;
-			this.appendText = appendText;
-		}
-		public void run() {
-			try {
-				String newScram = doc.getText(old.getStartOffset(), old.getEndOffset() - old.getStartOffset()) + appendText;
-				SimpleAttributeSet sas = (SimpleAttributeSet) old.getAttributes().getAttribute(HTML.Tag.A);
-				String pureScram = ((String) sas.getAttribute(HTML.Attribute.HREF)) + appendText;
-				sas.addAttribute(HTML.Attribute.HREF, pureScram);
-				doc.replace(old.getStartOffset(), old.getEndOffset() - old.getStartOffset(), newScram, old.getAttributes());
-			} catch (BadLocationException e) {
-				e.printStackTrace();
-			}
-		}
+		message = (nick == null ? "" : "<" + nick + "> ") + Colors.removeFormattingAndColors(message) + "\n";
+		if(buffer.size() > 0 && buffer.get(0).sameColor(c))
+			buffer.get(0).msgBuff.append(message);
+		else
+			buffer.add(new AppendAction(message, c));
 	}
 
 	//this will leave the scrollbar fully scrolled if approriate when resizing
@@ -482,6 +393,11 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 		}
 	}
 	
+	//this will map Nicks to a TreeMap of set numbers to a TreeMap of scramble numbers to unique link numbers recognized by HyperlinkTextArea
+	private HashMap<String, TreeMap<Integer, TreeMap<Integer, Integer>>> nickMap = new HashMap<String, TreeMap<Integer, TreeMap<Integer, Integer>>>();
+	//this maps link numbers to CCTLinks
+	private HashMap<Integer, CCTLink> scramblesLinkMap = new HashMap<Integer, CCTLink>();
+	
 	private ArrayList<String> commands = new ArrayList<String>();
 	private int nthCommand = 0;
 	public void actionPerformed(ActionEvent e) {
@@ -489,23 +405,51 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 			final int vertVal = msgScroller.getVerticalScrollBar().getValue();
 			final int horVal = msgScroller.getHorizontalScrollBar().getValue();
 			final boolean atBottom = isAtBottom();
-			
-			while(bufferedActions.size() > 0)
-				bufferedActions.remove(0).run();
-			if(buffer.length() != 0) {
-				int len = 0;
-				try {
-					String msg = buffer.toString();
-					len = msg.length();
-					doc.insertBeforeEnd(msgs, msg);
-				} catch (BadLocationException e1) {
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				} finally {
-					buffer.delete(0, len);
+
+			while(buffer.size() > 0) {
+				AppendAction aa = buffer.remove(0);
+				String msg = aa.msgBuff.toString();
+				HashMap<Integer, CCTLink> links = messageArea.append(msg, aa.c);
+				scramblesLinkMap.putAll(links);
+				for(Integer link : links.keySet()) {
+					CCTLink l = links.get(link);
+					TreeMap<Integer, TreeMap<Integer, Integer>> setMap = nickMap.get(l.nick);
+					if(setMap == null) {
+						setMap = new TreeMap<Integer, TreeMap<Integer, Integer>>();
+						nickMap.put(l.nick, setMap);
+					}
+					Integer setNum = null;
+					Integer scrambleNum = null;
+					TreeMap<Integer, Integer> scrambleMap = null;
+					try { 
+						setNum = setMap.lastKey();
+						scrambleMap = setMap.get(setNum);
+						scrambleNum = scrambleMap.firstKey();
+					} catch(Exception exc) {}
+					l.fragmentation &= scrambleNum != null && scrambleNum == l.number;
+					if(l.fragmentation) {
+						int linkNum = scrambleMap.get(scrambleNum);
+						try {
+							//appending to old line
+							scramblesLinkMap.get(linkNum).scramble += l.scramble;
+							messageArea.appendToLink(linkNum, l.scramble);
+							//and removing new line
+							int line = messageArea.getLineOfLink(link);
+							int start = messageArea.getLineStartOffset(line);
+							messageArea.getDocument().remove(start, messageArea.getLineEndOffset(line) - start);
+						} catch(Exception err) {}
+					} else {
+						if(scrambleNum == null || scrambleNum - 1 != l.number) {
+							setNum = setNum == null ? 0 : setNum + 1;
+							scrambleMap = new TreeMap<Integer, Integer>();
+							setMap.put(setNum, scrambleMap);
+						}
+						scrambleNum = l.number;
+						scrambleMap.put(scrambleNum, link);
+					}
+					l.set = setNum;
 				}
-				if(!messagePane.isSelectingText()) {
+				if(!messageArea.isSelectingText()) {
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							JScrollBar horScroller = msgScroller.getHorizontalScrollBar();
@@ -549,16 +493,9 @@ public class MessageFrame extends JInternalFrame implements ActionListener, Hype
 	}
 	
 	public void resetMessagePane() {
-		messagePane.setEditorKit(new HTMLEditorKit());
-		doc = new HTMLDocument();
-		doc.setParser(new ParserDelegator());
-		messagePane.setDocument(doc);
-		messagePane.setText("<html><head><style>" +
-				"a { text-decoration: underline; color: red;} " +
-				"p { margin-top: 0; white-space: "
-				+ (wrap ? "normal" : "nowrap") + "; font-family: " + mono.getFamily() + "; }" +
-				"</style></head><body><p id='msgs'></p></body></html>");
-		msgs = doc.getElement("msgs");
+		messageArea.clear();
+		nickMap.clear();
+		scramblesLinkMap.clear();
 	}
 	
 	private ArrayList<CommandListener> listeners = new ArrayList<CommandListener>();

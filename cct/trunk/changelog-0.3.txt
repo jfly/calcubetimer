@@ -250,17 +250,22 @@ since last beta:
 +nickname autocomplete changed to colon from comma
 +fixed &#8203; bug with copy paste
 +fixed bug where statusbar wouldn't update when typing "/part", then closing the window, and reconnecting wouldn't work
++analyze possible performance issues with cct/irc
+	+rewritten with speed in mind, esp: created custom jtextarea subclass that does links & coloring
++colors/formatting are stripped from incoming messages
++command line option & command to set the one character prefix added to cctbot
++scramble debugger fixed (token regex, attributes, scramble length, generator group support added)
+	+instructions for using the debugger added to readme.html
 
 TODO:
 
 for release:
--analyze possible performance issues with cct/irc
+-add sub-forums specifically for xml gui layouts, scramble plugins? icon/voice packs?
 -generator groups for scramble plugins (w/ cctbot too)
 -dynamic string multiple argument format
 -open source sourceforge!
 -about.html: add a blurb for version 1.0
 -create license, give credit where credit is due
--write scramble plugin tutorial
 
 misc:
 -java webstart? applet?

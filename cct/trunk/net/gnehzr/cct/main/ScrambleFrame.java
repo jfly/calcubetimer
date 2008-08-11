@@ -29,9 +29,9 @@ public class ScrambleFrame extends JDialog implements ConfigurationChangeListene
 	private JPanel pane;
 	private ScrambleViewComponent incrementalScrambleView, finalView;
 	private AbstractAction visibilityAction;
-	public ScrambleFrame(JFrame parent, AbstractAction scrambleVisibility, boolean detectColorClicks) {
+	public ScrambleFrame(JFrame parent, AbstractAction visibilityAction, boolean detectColorClicks) {
 		super(parent);
-		visibilityAction = scrambleVisibility;
+		this.visibilityAction = visibilityAction;
 		incrementalScrambleView = new ScrambleViewComponent(false, detectColorClicks);
 		finalView = new ScrambleViewComponent(false, detectColorClicks);
 		pane = new JPanel(new GridLayout(1, 0));

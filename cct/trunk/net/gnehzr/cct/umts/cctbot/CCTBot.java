@@ -24,6 +24,7 @@ import org.jibble.pircbot.User;
 
 public class CCTBot implements IRCListener {
 	private int MAX_SCRAMBLES = 12;
+	private String PREFIX = "!";
 	private HashMap<String, Integer> scrambleMaxMap = new HashMap<String, Integer>();
 	private String cctCommChannel = null;
 	private KillablePircBot bot;
@@ -42,7 +43,7 @@ public class CCTBot implements IRCListener {
 	//max message length: 470 characters
 	private static final int MAX_MESSAGE = 470;
 	public void onMessage(String channel, String sender, String login, String hostname, String message) {
-		if(message.startsWith("!")) {
+		if(message.startsWith(PREFIX)) {
 			if(message.substring(1).equalsIgnoreCase("cct")) {
 				if(cctCommChannel != null)
 					bot.sendMessage(sender, "The current CCT comm channel is " + cctCommChannel);
@@ -88,7 +89,6 @@ public class CCTBot implements IRCListener {
 
 	private boolean shuttingdown = false;
 	private boolean isConnected = false;
-	//TODO - reconnect to channels too!
 	public void onDisconnect() {
 		isConnected = false;
 		final String[] oldChannels = bot.getChannels();
@@ -155,7 +155,7 @@ public class CCTBot implements IRCListener {
 	}
 
 	private static void printUsage() {
-		System.out.println("USAGE: CCTBot (-c COMMCHANNEL) (-m SCRAMBLEMAX_DEFAULT) -u irc://servername.tld(:port)#channel");
+		System.out.println("USAGE: CCTBot (-c COMMCHANNEL) (-m SCRAMBLEMAX_DEFAULT) (-p PREFIX) -u irc://servername.tld(:port)#channel");
 	}
 	
 	private static HashMap<String, String> parseArguments(String[] args) throws Exception {
@@ -212,11 +212,16 @@ public class CCTBot implements IRCListener {
 				printUsage();
 				return;
 			}
-		
+				
 		logger.info("Setting security manager");
 		System.setSecurityManager(new ScrambleSecurityManager(TimeoutJob.PLUGIN_LOADER));
 
 		CCTBot cctbot = new CCTBot();
+
+		if(argMap.containsKey("p"))
+			if(argMap.get("p").length() == 1)
+				cctbot.PREFIX = argMap.get("p");
+		
 		if(commChannel != null)
 			cctbot.cctCommChannel = commChannel;
 		if(max != null)
@@ -224,6 +229,10 @@ public class CCTBot implements IRCListener {
 		logger.info("CCTBot name: " + cctbot.bot.getName());
 		logger.info("CCTBot nick: " + cctbot.bot.getNick());
 		logger.info("CCTBot version: " + cctbot.bot.getVersion());
+		
+		logger.info("CCTBot prefix: " + cctbot.PREFIX);
+		logger.info("CCTBot comm channel: " + cctbot.cctCommChannel);
+		logger.info("CCTBot scramble max: " + cctbot.MAX_SCRAMBLES);
 		try {
 			logger.info("Connecting to " + u.getHost());
 			if(u.getPort() == -1)
@@ -287,6 +296,11 @@ public class CCTBot implements IRCListener {
 	{
 		commands.put(CMD_COMM_CHANNEL, "commchannel (#CHANNEL)\n\tSets the comm channel that cctbot will respond with when users type !cct on a channel.\n" +
 				"\tIf #CHANNEL is omitted, will display the current comm channel.");
+	}
+	private static final String CMD_PREFIX = "prefix";
+	{
+		commands.put(CMD_PREFIX, "prefix (CHAR)\n\tSets the prefix cctbot will respond to to CHAR." +
+		"\tIf CHAR is omitted, will display the current prefix. CHAR must be exactly one character long.");
 	}
 	private static final String CMD_HELP = "help";
 	{
@@ -418,6 +432,17 @@ public class CCTBot implements IRCListener {
 				else
 					logger.info("Unconnected to " + bot.getServer());
 				continue;
+			} else if(command.equalsIgnoreCase(CMD_PREFIX)) {
+				if(arg != null) {
+					if(arg.length() == 1) {
+						PREFIX = arg;
+						logger.info("Prefix set to " + PREFIX);
+						continue;
+					}
+				} else {
+					logger.info("The current prefix is " + PREFIX);
+					continue;
+				}
 			}
 			
 			String usage = commands.get(command);

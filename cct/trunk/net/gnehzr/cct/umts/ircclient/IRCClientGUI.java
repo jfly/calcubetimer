@@ -834,8 +834,9 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 						// if we've been silenced on a comm channel,
 						// we'll have to try to connect to a different channel
 						bot.partChannel(nick_chan_msg[1]);
-					} else
-						assert false : nick_chan_msg[1]; //this channel should be a chat channel or a comm channel
+					} else {
+						//this must be a channel we parted from before our outgoing queue emptied
+					}
 				}
 			});
 		}
@@ -872,8 +873,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 		verifyCommChannels.start();
 	}
 	
-	// TODO - using /cctstats, connect to the same comm channel from different chat channels?
-	// TODO - what if attempt to connect to channel takes a while, and the time is fired, or the user overrides it with /cctstats?
+	// TODO - what if attempt to connect to channel takes a while, and the timer is fired, or the user overrides it with /cctstats?
 	// TODO - if the server lag is > 10 seconds, we'll connect to many, many channels
 	// this timer will check every 10 seconds for unconnected comm channels
 	private Timer verifyCommChannels = new Timer(10000, new ActionListener() {

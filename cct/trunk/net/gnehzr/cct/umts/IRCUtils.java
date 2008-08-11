@@ -1,8 +1,5 @@
 package net.gnehzr.cct.umts;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.jibble.pircbot.PircBot;
 
 
@@ -27,45 +24,45 @@ public class IRCUtils {
 		return type + MSGTYPE_DELIMETER + message;
 	}
 	
-	public static final String ZWSP = "&#8203;";
-	public static String escapeHTML(String s) {
-		s = s.replaceAll("&", "\f"); //this is to prevent escaping of the & sign in opbr
-		StringBuffer b = new StringBuffer(s);
-		for(int c = 0; c < b.length(); c+= ZWSP.length() + 10)
-			b.insert(c, ZWSP);
-		s = b.toString();
-		s = s.replaceAll("\f", "&amp;");
-		
-		s = s.replaceAll("<", "&lt;");
-		s = s.replaceAll(">", "&gt;");
-		s = s.replaceAll("\n", "<br>"); //note that this must be after the < and > replacement!
-		s = s.replaceAll("  ", " &nbsp;");
-		return s;
-	}
-
-	//this is used for copying from the pane
-	private static final Pattern ESCAPE_PATTERN = Pattern.compile("&#(\\d{1,3});");
-	public static String unescapeHTML(String s) {
-		s = s.replaceAll("&amp;", "&");
-		s = s.replaceAll("&lt;", "<");
-		s = s.replaceAll("&gt;", ">");
-		s = s.replaceAll("&nbsp;", " ");
-		s = s.replaceAll(ZWSP, "");
-		
-		StringBuffer b = new StringBuffer();
-		Matcher m = ESCAPE_PATTERN.matcher(s);
-		while(m.find()) {
-			try {
-				int i = Integer.parseInt(m.group(1));
-				m.appendReplacement(b, "" + (char) i);
-			} catch(NumberFormatException e) {
-				e.printStackTrace();
-			}
-		}
-		m.appendTail(b);
-		
-		return b.toString();
-	}
+//	public static final String ZWSP = "&#8203;";
+//	public static String escapeHTML(String s) {
+//		s = s.replaceAll("&", "\f"); //this is to prevent escaping of the & sign in opbr
+//		StringBuffer b = new StringBuffer(s);
+//		for(int c = 0; c < b.length(); c+= ZWSP.length() + 10)
+//			b.insert(c, ZWSP);
+//		s = b.toString();
+//		s = s.replaceAll("\f", "&amp;");
+//		
+//		s = s.replaceAll("<", "&lt;");
+//		s = s.replaceAll(">", "&gt;");
+//		s = s.replaceAll("\n", "<br>"); //note that this must be after the < and > replacement!
+//		s = s.replaceAll("  ", " &nbsp;");
+//		return s;
+//	}
+//
+//	//this is used for copying from the pane
+//	private static final Pattern ESCAPE_PATTERN = Pattern.compile("&#(\\d{1,3});");
+//	public static String unescapeHTML(String s) {
+//		s = s.replaceAll("&amp;", "&");
+//		s = s.replaceAll("&lt;", "<");
+//		s = s.replaceAll("&gt;", ">");
+//		s = s.replaceAll("&nbsp;", " ");
+//		s = s.replaceAll(ZWSP, "");
+//		
+//		StringBuffer b = new StringBuffer();
+//		Matcher m = ESCAPE_PATTERN.matcher(s);
+//		while(m.find()) {
+//			try {
+//				int i = Integer.parseInt(m.group(1));
+//				m.appendReplacement(b, "" + (char) i);
+//			} catch(NumberFormatException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		m.appendTail(b);
+//		
+//		return b.toString();
+//	}
 
 	public static boolean isConnectedToChannel(PircBot bot, String channel) {
 		for(String c : bot.getChannels())
