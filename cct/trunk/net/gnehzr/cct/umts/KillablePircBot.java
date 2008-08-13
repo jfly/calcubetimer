@@ -6,9 +6,9 @@ import org.jibble.pircbot.User;
 public class KillablePircBot extends PircBot {
 	private IRCListener l;
 
-	public KillablePircBot(IRCListener l) {
+	public KillablePircBot(IRCListener l, String fingerMsg) {
 		this.l = l;
-		setFinger("This is the cct/irc client");
+		setFinger(fingerMsg);
 	}
 	
 	public void setlogin(String l) {

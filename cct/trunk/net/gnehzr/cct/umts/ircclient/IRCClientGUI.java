@@ -56,6 +56,7 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 public class IRCClientGUI implements CommandListener, ActionListener, ConfigurationChangeListener, DocumentListener, IRCListener {
 	public static final Boolean WATERMARK = false;
 	private static final String VERSION = IRCClientGUI.class.getPackage().getImplementationVersion();
+	private static final String FINGER_MSG = "This is the cct/irc client " + VERSION;
 	private static final Image IRC_IMAGE = new ImageIcon(IRCClientGUI.class.getResource("cube-irc.png")).getImage();
 
 	// TODO - disable ctrl(+shift)+tab for swing components
@@ -71,7 +72,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 
 	public IRCClientGUI(CALCubeTimer cct, final ActionListener closeListener) {
 		this.cct = cct;
-		bot = new KillablePircBot(this);
+		bot = new KillablePircBot(this, FINGER_MSG);
 
 		login = new JInternalFrame("", false, false, false, true) {
 			public void setVisible(boolean visible) {
@@ -790,7 +791,7 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 						try {
 							bot.dispose();
 						} catch(NullPointerException e) {}
-						bot = new KillablePircBot(IRCClientGUI.this);
+						bot = new KillablePircBot(IRCClientGUI.this, FINGER_MSG);
 					}
 					bot.setAutoNickChange(true);
 					bot.setlogin(nameField.getText());

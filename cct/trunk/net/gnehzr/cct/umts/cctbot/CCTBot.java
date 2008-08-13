@@ -33,11 +33,12 @@ public class CCTBot implements IRCListener {
 		bot = getKillableBot();
 	}
 	private KillablePircBot getKillableBot() {
-		KillablePircBot bot = new KillablePircBot(this);
+		String version = CCTBot.class.getPackage().getImplementationVersion();
+		KillablePircBot bot = new KillablePircBot(this, "This is cctbot " + version);
 		bot.setlogin("cctbot");
 		bot.setname("cctbot");
 		bot.setAutoNickChange(true);
-		bot.setversion("CCTBot version " + CCTBot.class.getPackage().getImplementationVersion());
+		bot.setversion("CCTBot version " + version);
 		return bot;
 	}
 	//max message length: 470 characters
