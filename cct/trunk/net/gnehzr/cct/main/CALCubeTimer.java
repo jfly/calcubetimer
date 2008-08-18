@@ -1743,6 +1743,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		stackmatOn(false); //we clear the state here, if the stackmat is on, it will be set later
 		if(selected)
 			timeLabel.requestFocusInWindow();
+		else
+			timerAccidentlyReset(null); //when the keyboard timer is disabled, we reset the timer
 	}
 
 	Session createNewSession(Profile p, String customization) {
