@@ -30,7 +30,7 @@ public class CCTUser {
 	}
 
 	public String getPrefix() {
-		return prefix;
+		return prefix == null ? "" : prefix;
 	}
 	
 	public String getNick() {

@@ -257,6 +257,7 @@ since last beta:
 +scramble debugger fixed (token regex, attributes, scramble length, generator group support added)
 	+instructions for using the debugger added to readme.html
 +added scramble customization choice to undo-redo list
++fixed bug with cctuser names being prefixed with "null"
 
 TODO:
 
