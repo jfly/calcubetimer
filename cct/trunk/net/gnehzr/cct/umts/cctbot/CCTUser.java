@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.gnehzr.cct.stackmatInterpreter.TimerState;
 import net.gnehzr.cct.statistics.SolveTime;
 
 import org.jibble.pircbot.User;
@@ -62,7 +63,10 @@ public class CCTUser {
 	private int solves, attempts, raSize;
 	private SolveTime seshAverage, currRA, bestRA, lastTime;
 	private String bestRASolves, currRASolves;
-	private String customization, timingState;
+	private String customization;
+	private static final long INSPECTING = -1, STOPPED = -2;
+	private static final String INSPECTING_MSG = "Inspecting";
+	private long startTime = STOPPED;
 	
 	public void setSolvesAttempts(int solves, int attempts) {
 		this.solves = solves;
@@ -89,11 +93,25 @@ public class CCTUser {
 		return denullify(customization);
 	}
 
-	public void setTimingState(String timingState) {
-		this.timingState = timingState;
+	public void setTimingState(boolean inspecting, TimerState state) {
+		if(state == null) {
+			if(inspecting)
+				startTime = INSPECTING;
+			else
+				startTime = STOPPED;
+		} else
+			startTime = System.currentTimeMillis() - state.value() * 10;
 	}
-	public String getTimingState() {
-		return denullify(timingState);
+	public String getTimingState(boolean formatted) {
+		if(startTime == INSPECTING)
+			return INSPECTING_MSG;
+		if(startTime == STOPPED)
+			return "";
+		long netTime = System.currentTimeMillis() - startTime;
+		if(!formatted)
+			return "" + netTime;
+
+		return new SolveTime(netTime / 1000., null).toString();
 	}
 
 	public void setCurrentRA(SolveTime average, String terseTimes) {
@@ -141,12 +159,18 @@ public class CCTUser {
 			currRASolves = split.remove(0);
 			bestRA = toSolveTime(split.remove(0));
 			bestRASolves = split.remove(0);
-			timingState = split.remove(0);
+			String timingState = split.remove(0);
+			if(timingState.isEmpty())
+				startTime = STOPPED;
+			else if(timingState.equals(INSPECTING_MSG))
+				startTime = INSPECTING;
+			else
+				startTime = System.currentTimeMillis() - Long.parseLong(timingState);
 			solves = toInt(split.remove(0));
 			attempts = toInt(split.remove(0));
 			customization = split.remove(0);
 			raSize = toInt(split.remove(0));
-		} catch(IndexOutOfBoundsException e) {
+		} catch(Exception e) {
 			//this means the userstate didn't contain everything we were
 			//looking for, oh well
 		}
@@ -158,7 +182,7 @@ public class CCTUser {
 		getCurrRASolves() + USERSTATE_DELIMETER +
 		getBestRA() + USERSTATE_DELIMETER +
 		getBestRASolves() + USERSTATE_DELIMETER +
-		getTimingState() + USERSTATE_DELIMETER + 
+		getTimingState(false) + USERSTATE_DELIMETER + 
 		getSolves() + USERSTATE_DELIMETER +
 		getAttempts() + USERSTATE_DELIMETER +
 		getCustomization() + USERSTATE_DELIMETER +

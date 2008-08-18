@@ -26,6 +26,7 @@ import javax.swing.text.View;
 import javax.swing.text.Highlighter.Highlight;
 
 public class HyperlinkTextArea extends JTextArea implements DocumentListener, MouseMotionListener, MouseListener {
+	// TODO - there may be some bug where coloring is getting lost
 	private Document doc;
 	public HyperlinkTextArea() {
 		doc = getDocument();

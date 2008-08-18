@@ -1551,13 +1551,14 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		repaintTimes();
 	}
 
-	private boolean userStateDirty = false;
+//	private boolean userStateDirty = false;
 	private Timer sendStateTimer = new Timer(1000, new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			if(!userStateDirty) return;
+//			if(!userStateDirty) return;
 			syncUserStateNOW();
 			client.broadcastUserstate();
-			userStateDirty = false;
+//			userStateDirty = false;
+			sendStateTimer.stop();
 		}
 	});
 	
@@ -1568,14 +1569,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		
 		myself.setLatestTime(statsModel.getCurrentStatistics().get(-1));
 		
-		String state;
-		if(isInspecting())
-			state = "Inspecting";
-		else if(timing)
-			state = timeLabel.getText();
-		else
-			state = "";
-		myself.setTimingState(state);
+		TimerState state = timeLabel.getTimerState();
+		if(!timing)
+			state = null;
+		myself.setTimingState(isInspecting(), state);
 		
 		Statistics stats = statsModel.getCurrentStatistics();
 		myself.setCurrentRA(stats.average(AverageType.CURRENT, 0), stats.toTerseString(AverageType.CURRENT, 0, true));
@@ -1593,7 +1590,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			return;
 		}
 		if(!sendStateTimer.isRunning()) sendStateTimer.start();
-		userStateDirty = true;
+//		userStateDirty = true;
 	}
 
 	private void loadXMLGUI() {
@@ -1915,8 +1912,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		if(!isInspecting()) {
 			timeLabel.setTime(newTime);
 			bigTimersDisplay.setTime(newTime);
-			if(running)
-				sendUserstate();
+//			if(running)
+//				sendUserstate();
 		}
 	}
 

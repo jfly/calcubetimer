@@ -1,6 +1,10 @@
 package net.gnehzr.cct.umts.ircclient;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.TreeSet;
+
+import javax.swing.Timer;
 
 import net.gnehzr.cct.i18n.StringAccessor;
 import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
@@ -10,6 +14,13 @@ import net.gnehzr.cct.umts.cctbot.CCTUser;
 import org.jibble.pircbot.User;
 
 public class CCTUserTableModel extends DraggableJTableModel {
+	public CCTUserTableModel() {
+		new Timer(100, new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				fireTableDataChanged(); //this will update the times
+			}
+		}).start();
+	}
 	public User[] getIRCUsers() {
 		return ircUsers;
 	}
@@ -61,7 +72,7 @@ public class CCTUserTableModel extends DraggableJTableModel {
 			if(columnIndex == 1) //last time
 				return u.getLastTime();
 			else if(columnIndex == 2) //state
-				return u.getTimingState();
+				return u.getTimingState(true);
 			else if(columnIndex == 3) //customization
 				return u.getCustomization();
 			else if(columnIndex == 4) //solves/attempts
