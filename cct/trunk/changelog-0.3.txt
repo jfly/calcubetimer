@@ -245,8 +245,6 @@ changes:
 +fixed bug where others joining/leaving a channel would break cct stats transmission
 +fixed /cctstats command (had to remove an assertion)
 +fixed bug with \n to <br> escaping
-
-since last beta:
 +nickname autocomplete changed to colon from comma
 +fixed &#8203; bug with copy paste
 +fixed bug where statusbar wouldn't update when typing "/part", then closing the window, and reconnecting wouldn't work
@@ -257,7 +255,10 @@ since last beta:
 +scramble debugger fixed (token regex, attributes, scramble length, generator group support added)
 	+instructions for using the debugger added to readme.html
 +added scramble customization choice to undo-redo list
+
+since last beta:
 +fixed bug with cctuser names being prefixed with "null"
++fixed bug with /me messages not being sent properly
 
 TODO:
 

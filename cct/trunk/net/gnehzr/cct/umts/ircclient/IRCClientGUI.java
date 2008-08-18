@@ -449,8 +449,15 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 				}
 			} else if(command.equalsIgnoreCase(CMD_ME)) {
 				if(arg != null) {
-					bot.sendAction(bot.getNick(), arg);
-					return;
+					if(src instanceof ChatMessageFrame) {
+						bot.sendAction(((ChatMessageFrame) src).getChannel(), arg);
+						_onAction(bot.getNick(), arg);
+						return;
+					} else if(src instanceof PMMessageFrame) {
+						bot.sendAction(((PMMessageFrame) src).getBuddyNick(), arg);
+						_onAction(bot.getNick(), arg);
+						return;
+					}
 				}
 			} else if(command.equalsIgnoreCase(CMD_CCTSTATS)) {
 				if(arg != null && arg.startsWith("#") && src instanceof ChatMessageFrame) {
@@ -549,14 +556,21 @@ public class IRCClientGUI implements CommandListener, ActionListener, Configurat
 	public void onAction(final String sender, String login, String hostname, String target, final String action) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				for(ChatMessageFrame f : channelFrames.values()) {
-					f.appendInformation("* " + sender + " " + action);
-					f.setIRCUsers(bot.getUsers(f.getChannel()));
-				}
+				_onAction(sender, action);
 			}
 		});
 	}
-
+	//must be invoked from EDT!
+	private void _onAction(String sender, String action) {
+		for(ChatMessageFrame f : channelFrames.values()) {
+			f.appendInformation("* " + sender + " " + action);
+			f.setIRCUsers(bot.getUsers(f.getChannel()));
+		}
+		for(PMMessageFrame f : pmFrames.values())
+			if(f.getBuddyNick().equals(sender))
+				f.appendInformation("* " + sender + " " + action);
+	}
+	
 	public void onJoin(final String channel, final String sender, String login, String hostname) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
