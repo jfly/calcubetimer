@@ -259,6 +259,7 @@ changes:
 since last beta:
 +fixed bug with cctuser names being prefixed with "null"
 +fixed bug with /me messages not being sent properly
++fixed bug with autocomplete and % prefix
 
 TODO:
 

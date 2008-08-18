@@ -106,7 +106,7 @@ public class ChatMessageFrame extends MessageFrame {
 	private ArrayList<String> getNickList() {
 		ArrayList<String> nicks = new ArrayList<String>();
 		for(User c : getIRCUsers())
-			nicks.add(c.getNick() + ":");
+			nicks.add(c.getNick().replaceAll("%", "") + ":"); //TODO - bug with pircbot?
 		return nicks;
 	}
 
