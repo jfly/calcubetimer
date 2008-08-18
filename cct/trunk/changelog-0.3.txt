@@ -260,6 +260,7 @@ since last beta:
 +fixed bug with cctuser names being prefixed with "null"
 +fixed bug with /me messages not being sent properly
 +fixed bug with autocomplete and % prefix
++the current times of users is kept by the clients, rather than by spamming the comm channel with times
 
 TODO:
 
