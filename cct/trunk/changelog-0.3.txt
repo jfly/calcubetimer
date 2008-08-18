@@ -255,8 +255,6 @@ changes:
 +scramble debugger fixed (token regex, attributes, scramble length, generator group support added)
 	+instructions for using the debugger added to readme.html
 +added scramble customization choice to undo-redo list
-
-since last beta:
 +fixed bug with cctuser names being prefixed with "null"
 +fixed bug with /me messages not being sent properly
 +fixed bug with autocomplete and % prefix
