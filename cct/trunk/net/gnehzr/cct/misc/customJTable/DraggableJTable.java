@@ -329,7 +329,7 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		TableColumnModel columns = this.getColumnModel();
 		if(addText == null) {
 			for(int ch = 0; ch < columns.getColumnCount(); ch++) {
-				columns.getColumn(ch).setPreferredWidth(getRendererPreferredSize(value, ch).width);
+				columns.getColumn(ch).setPreferredWidth(getRendererPreferredSize(value, ch).width + 2); //need to add a bit of space for insets
 			}
 			return;
 		}

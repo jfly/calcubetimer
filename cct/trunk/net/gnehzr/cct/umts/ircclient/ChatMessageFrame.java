@@ -34,6 +34,7 @@ public class ChatMessageFrame extends MessageFrame {
 		usersTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		usersTable.setModel(usersTableModel);
 		usersTable.computePreferredSizes(new SolveTime(60, null).toString());
+		System.out.println(new SolveTime(60, null).toString());
 		usersTable.setFocusable(false);
 		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, msgScroller, new JScrollPane(usersTable));
 		split.setResizeWeight(.8);
