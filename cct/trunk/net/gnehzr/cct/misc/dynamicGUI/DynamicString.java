@@ -10,6 +10,7 @@ import net.gnehzr.cct.i18n.MessageAccessor;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.misc.Utils;
 import net.gnehzr.cct.statistics.PuzzleStatistics;
+import net.gnehzr.cct.statistics.SolveCounter;
 import net.gnehzr.cct.statistics.Statistics;
 import net.gnehzr.cct.statistics.StatisticsTableModel;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
@@ -20,7 +21,9 @@ public class DynamicString{
 	private static final String CONF = "configuration_";
 	private static final String SOLVE_TYPE = "solvecount_";
 	private static final String GLOBAL_SOLVE_TYPE = "global_solvecount_";
-	
+
+	private static final Pattern argPattern = Pattern.compile("^\\s*\\(([^)]*)\\)\\s*(.*)$");
+
 	private String rawString;
 	private String[] splitText;
 	private StatisticsTableModel statsModel;
@@ -56,12 +59,12 @@ public class DynamicString{
 	public StatisticsTableModel getStatisticsModel() {
 		return statsModel;
 	}
-	
-	public String toString(){
-		return toString(0);
+
+	public String toString(int i){
+		return toString();
 	}
-	
-	public String toString(int arg) {
+
+	public String toString() {
 		StringBuilder s = new StringBuilder();
 
 		for(int i = 0; i < splitText.length; i++){
@@ -69,28 +72,28 @@ public class DynamicString{
 			char c = splitText[i].charAt(0);
 			String t = splitText[i].substring(1);
 			switch(c) {
-			case I18N_TEXT:
-				if(accessor != null) {
-					s.append(accessor.getString(t));
+				case I18N_TEXT:
+					if(accessor != null) {
+						s.append(accessor.getString(t));
+						break;
+					}
+				case STAT:
+					if(statsModel != null) {
+						s.append(getReplacement(t));
+						break;
+					}
+				case RAW_TEXT:
+					s.append(t);
 					break;
-				}
-			case STAT:
-				if(statsModel != null) {
-					s.append(getReplacement(t, arg));
-					break;
-				}
-			case RAW_TEXT:
-				s.append(t);
-				break;
 			}
 		}
 		return s.toString();
 	}
-	
+
 	public String getRawText() {
 		return rawString;
 	}
-	
+
 	private String formatProgressTime(double progress, boolean parens) {
 		String r = "";
 		if(Double.isInfinite(progress)) {
@@ -105,118 +108,278 @@ public class DynamicString{
 		return r;
 	}
 
-	private String getReplacement(String s, int num){
-		//Configuration section
-		if(s.toLowerCase().startsWith(CONF.toLowerCase()))
-			return Configuration.getValue(s.substring(CONF.length()));
-		
-		Statistics stats = statsModel.getCurrentStatistics();
-		if(s.toLowerCase().startsWith(SOLVE_TYPE.toLowerCase())) {
-			String type = s.substring(SOLVE_TYPE.length());
-			boolean percent = type.startsWith("%");
-			if(percent) type = type.substring(1);
-			int val;
-			if(type.equalsIgnoreCase("solved"))
-				val = stats.getSolveCount();
-			else if(type.equalsIgnoreCase("attempt"))
-				val = stats.getAttemptCount();
-			else
-				val = stats.getSolveTypeCount(SolveType.getSolveType(type));
-			if(percent)
-				return Utils.format((double) 100 * val / stats.getAttemptCount());
-			return "" + val;
-		}
-		
-		Pattern p = Pattern.compile("([^0-9]*)([0-9]*)");
-		Matcher m = p.matcher(s);
-
-//		num is an optional argument, in order to allow the statsdialoghandler to specify which RA we're doing
-		if(m.matches()){
-			if(m.group(2).trim().length() > 0){
-				num = Integer.parseInt(m.group(2));
-			}
-
-			s = m.group(1).trim();
-		}
+	private String getReplacement(String s){
+		String sorig = s;
 
 		String r = "";
+
+		//Configuration section
+		if(s.startsWith(CONF.toLowerCase()))
+			return Configuration.getValue(s.substring(CONF.length()));
+
+		s = s.toLowerCase();
+
+		Statistics stats = statsModel.getCurrentStatistics();
 		if(stats == null)
 			return r;
-		
-		if(s.isEmpty()) ;
-		//Statistics section
-		else if(s.equalsIgnoreCase("sessionAverage")) {
-			double ave = stats.getSessionAvg(); //this method returns zero if there are no solves to allow the global stats to be computed nicely
-			if(ave == 0) ave = Double.POSITIVE_INFINITY;
-			r = Utils.formatTime(ave);
-		} else if(s.equalsIgnoreCase("sessionSD")) r = Utils.formatTime(stats.getSessionSD());
-		else if(s.equalsIgnoreCase("progressTime")) r = formatProgressTime(stats.getProgressTime(), false);
-		else if(s.equalsIgnoreCase("progressAverage")) r = formatProgressTime(stats.getProgressAverage(num), false);
-		else if(s.equalsIgnoreCase("progressTimeParens")) r = formatProgressTime(stats.getProgressTime(), true);
-		else if(s.equalsIgnoreCase("progressAverageParens")) r = formatProgressTime(stats.getProgressAverage(num), true);
-		else if(s.equalsIgnoreCase("bestTime")) r = stats.getBestTime().toString();
-		else if(s.equalsIgnoreCase("bestRA")) r = Utils.formatTime(stats.getBestAverage(num));
-		else if(s.equalsIgnoreCase("bestSD")) r = Utils.formatTime(stats.getBestSD(num));
-		else if(s.equalsIgnoreCase("bestAverageSD")) r = Utils.formatTime(stats.getBestAverageSD(num));
-		else if(s.equalsIgnoreCase("worstTime")) r = stats.getWorstTime().toString();
-		else if(s.equalsIgnoreCase("worstAverage")) r = Utils.formatTime(stats.getWorstAverage(num));
-		else if(s.equalsIgnoreCase("worstSD")) r = Utils.formatTime(stats.getWorstSD(num));
-		else if(s.equalsIgnoreCase("worstAverageSD")) r = Utils.formatTime(stats.getWorstAverageSD(num));
-		else if(s.equalsIgnoreCase("currentTime")) r = Utils.formatTime(stats.getCurrentTime());
-		else if(s.equalsIgnoreCase("currentAverage")) r = Utils.formatTime(stats.getCurrentAverage(num));
-		else if(s.equalsIgnoreCase("currentSD")) r = Utils.formatTime(stats.getCurrentSD(num));
-		else if(s.equalsIgnoreCase("lastTime")) r = Utils.formatTime(stats.getLastTime());
-		else if(s.equalsIgnoreCase("lastAverage")) r = Utils.formatTime(stats.getLastAverage(num));
-		else if(s.equalsIgnoreCase("lastSD")) r = Utils.formatTime(stats.getLastSD(num));
-		else if(s.equalsIgnoreCase("bestTimeOfCurrentAverage")) r = stats.getBestTimeOfCurrentAverage(num).toString();
-		else if(s.equalsIgnoreCase("worstTimeOfCurrentAverage")) r = stats.getWorstTimeOfCurrentAverage(num).toString();
-		else if(s.equalsIgnoreCase("bestTimeOfBestAverage")) r = stats.getBestTimeOfBestAverage(num).toString();
-		else if(s.equalsIgnoreCase("worstTimeOfBestAverage")) r = stats.getWorstTimeOfBestAverage(num).toString();
-		else if(s.equalsIgnoreCase("bestTimeOfWorstAverage")) r = stats.getBestTimeOfWorstAverage(num).toString();
-		else if(s.equalsIgnoreCase("worstTimeOfWorstAverage")) r = stats.getWorstTimeOfWorstAverage(num).toString();
-		else if(s.equalsIgnoreCase("progressSessionAverage")) r = formatProgressTime(stats.getProgressSessionAverage(), false);
-		else if(s.equalsIgnoreCase("progressSessionSD")) r = formatProgressTime(stats.getProgressSessionSD(), false);
-		else if(s.equalsIgnoreCase("progressSessionAverageParens")) r = formatProgressTime(stats.getProgressSessionAverage(), true);
-		else if(s.equalsIgnoreCase("progressSessionSDParens")) r = formatProgressTime(stats.getProgressSessionSD(), true);
 
-		else if(s.equalsIgnoreCase("bestAverageList")) r = stats.getBestAverageList(num);
-		else if(s.equalsIgnoreCase("currentAverageList")) r = stats.getCurrentAverageList(num);
-		else if(s.equalsIgnoreCase("sessionAverageList")) r = stats.getSessionAverageList();
-		else if(s.equalsIgnoreCase("worstAverageList")) r = stats.getWorstAverageList(num);
-		
-		else if(s.equalsIgnoreCase("bestAverageStats")) r = stats.toStatsString(AverageType.RA, false, num);
-		else if(s.equalsIgnoreCase("currentAverageStats")) r = stats.toStatsString(AverageType.CURRENT, false, num);
-		else if(s.equalsIgnoreCase("sessionStats")) r = stats.toStatsString(AverageType.SESSION, false, 0);
-		else if(s.equalsIgnoreCase("bestAverageStatsWithSplits")) r = stats.toStatsString(AverageType.RA, true, num);
-		else if(s.equalsIgnoreCase("currentAverageStatsWithSplits")) r = stats.toStatsString(AverageType.CURRENT, true, num);
-		else if(s.equalsIgnoreCase("sessionStatsWithSplits")) r = stats.toStatsString(AverageType.SESSION, true, 0);
-		
-		else if(s.equalsIgnoreCase("RASize")) r = "" + stats.getRASize(num);
-		
-		else if(s.equalsIgnoreCase("date")) r = Configuration.getDateFormat().format(new Date());
-		//Database queries for current scramble customization
-		else {
+		Pattern p = Pattern.compile("^\\s*(global|session|ra|date)\\s*(.*)$");
+		Matcher m = p.matcher(s);
+
+		if(m.matches()){
+			s = m.group(1);
+		}
+		else return "Unimplemented: " + sorig;
+
+		Pattern progressPattern = Pattern.compile("^\\s*\\.\\s*(progress)\\s*(.*)$");
+
+		if(s.equals("global")){
+			//Database queries for current scramble customization
 			PuzzleStatistics ps = CALCubeTimer.statsModel.getCurrentSession().getPuzzleStatistics();
-			if(s.equalsIgnoreCase("veryBestTime")) r = ps.getBestTime().toString();
-			else if(s.equalsIgnoreCase("veryBestRA")) r = Utils.formatTime(ps.getBestRA(num));
-			else if(s.equalsIgnoreCase("globalAverage")) r = Utils.formatTime(ps.getGlobalAverage());
-			else if(s.toLowerCase().startsWith(GLOBAL_SOLVE_TYPE.toLowerCase())) {
-				String type = s.substring(GLOBAL_SOLVE_TYPE.length());
-				boolean percent = type.startsWith("%");
-				if(percent) type = type.substring(1);
-				int val;
-				if(type.equalsIgnoreCase("solved"))
-					val = ps.getSolveCount();
-				else if(type.equalsIgnoreCase("attempt"))
-					val = ps.getAttemptCount();
-				else
-					val = ps.getSolveTypeCount(SolveType.getSolveType(type));
-				if(percent)
-					return Utils.format((double) 100 * val / ps.getAttemptCount());
-				return "" + val;
+			Pattern globalPattern = Pattern.compile("^\\s*\\.\\s*(time|ra|average|solvecount)\\s*(.*)$");
+			Matcher globalMatcher = globalPattern.matcher(m.group(2));
+			if(globalMatcher.matches()){
+				String t = globalMatcher.group(1);
+				if(t.equals("time")){
+					Matcher timeMatcher = argPattern.matcher(globalMatcher.group(2));
+					if(timeMatcher.matches()){
+						String u = timeMatcher.group(1);
+						if(u.equals("best"))
+							r = ps.getBestTime().toString();
+						else
+							r = "Unimplemented: " + u + " : " + sorig;
+					}
+					else r = "Unimplemented: " + sorig;
+				}
+				else if(t.equals("ra")){
+					int num = 0;
+					Matcher raMatcher = argPattern.matcher(globalMatcher.group(2));
+					String[] args = null;
+					if(raMatcher.matches()){
+						args = raMatcher.group(1).split(",");
+					}
+					else return "Unimplemented: " + sorig;
+
+					try{
+						num = Integer.parseInt(args[0]);
+					} catch(NumberFormatException e){
+						return "Invalid argument: " + args[0] + " : " + sorig;
+					}
+
+					if(args.length < 2) r = "Invalid number of arguments: " + sorig;
+					else{
+						String avg = args[1].trim();
+						if(avg.equals("best"))
+							r = Utils.formatTime(ps.getBestRA(num));
+						else{
+							r = "Unimplemented: " + avg + " : " + sorig;
+						}
+					}
+				}
+				else if(t.equals("average")){
+					r = Utils.formatTime(ps.getGlobalAverage());
+				}
+				else if(t.equals("solvecount")){
+					r = handleSolveCount(globalMatcher.group(2), ps);
+					if(r == null) r = "Unimplemented: " + sorig;
+				}
+				else r = "Unimplemented: " + sorig;
+			}
+			else r = "Unimplemented: " + sorig;
+		}
+		else if(s.equals("session")){
+			Pattern sessionPattern = Pattern.compile("^\\s*\\.\\s*(solvecount|average|sd|list|stats|time)\\s*(.*)$");
+			Matcher sessionMatcher = sessionPattern.matcher(m.group(2));
+			String t;
+			if(sessionMatcher.matches()){
+				t = sessionMatcher.group(1);
+			}
+			else return "Unimplemented: " + sorig;
+
+			if(t.equals("solvecount")){
+				r = handleSolveCount(sessionMatcher.group(2), stats);
+				if(r == null) r = "Unimplemented: " + sorig;
+			}
+			else if(t.equals("average")){
+				if(sessionMatcher.group(2).isEmpty()){
+					double ave = stats.getSessionAvg(); //this method returns zero if there are no solves to allow the global stats to be computed nicely
+					if(ave == 0) ave = Double.POSITIVE_INFINITY;
+					r = Utils.formatTime(ave);
+				}
+				else{
+					Matcher progressMatcher = progressPattern.matcher(sessionMatcher.group(2));
+					if(progressMatcher.matches()){
+						if(progressMatcher.group(1).equals("progress")){
+							boolean parens = hasFilter(progressMatcher.group(2), "parens");
+							r = formatProgressTime(stats.getProgressSessionAverage(), parens);
+						}
+					}
+				}
+			}
+			else if(t.equals("sd")){
+				if(sessionMatcher.group(2).isEmpty()){
+					r = Utils.formatTime(stats.getSessionSD());
+				}
+				else{
+					Matcher progressMatcher = progressPattern.matcher(sessionMatcher.group(2));
+					if(progressMatcher.matches()){
+						if(progressMatcher.group(1).equals("progress")){
+							boolean parens = hasFilter(progressMatcher.group(2), "parens");
+							r = formatProgressTime(stats.getProgressSessionSD(), parens);
+						}
+					}
+				}
+			}
+			else if(t.equals("list")) r = stats.getSessionAverageList();
+			else if(t.equals("stats")){
+				boolean splits = hasFilter(sessionMatcher.group(2), "splits");
+				r = stats.toStatsString(AverageType.SESSION, splits, 0);
+			}
+			else if(t.equals("time")){
+				Matcher timeMatcher = argPattern.matcher(sessionMatcher.group(2));
+				if(timeMatcher.matches()){
+					String u = timeMatcher.group(1);
+					if(u.equals("progress")){
+						boolean parens = hasFilter(timeMatcher.group(2), "parens");
+						r = formatProgressTime(stats.getProgressTime(), parens);
+					}
+					else if(u.equals("best")) r = stats.getBestTime().toString();
+					else if(u.equals("worst")) r = stats.getWorstTime().toString();
+					else if(u.equals("recent")) r = Utils.formatTime(stats.getCurrentTime());
+					else if(u.equals("last")) r = Utils.formatTime(stats.getLastTime());
+					else r = "Unimplemented: " + u + " : " + sorig;
+				}
+				else r = "Unimplemented: " + sorig;
+			}
+			else r = "Unimplemented: " + t + " : " + sorig;
+		}
+		else if(s.equals("ra")){
+			int num = 0;
+			Matcher raMatcher = argPattern.matcher(m.group(2));
+			String[] args = null;
+			if(raMatcher.matches()){
+				args = raMatcher.group(1).split(",");
+			}
+			else return "Unimplemented: " + sorig;
+
+			try{
+				num = Integer.parseInt(args[0]);
+			} catch(NumberFormatException e){
+				return "Invalid argument: " + args[0] + " : " + sorig;
+			}
+
+			if(args.length == 0) r = "Invalid number of arguments: " + sorig;
+			else if(args.length == 1){
+				Pattern arg1Pattern = Pattern.compile("^\\s*\\.\\s*(sd|size)\\s*(.*)$");
+				Matcher arg1Matcher = arg1Pattern.matcher(raMatcher.group(2));
+
+				if(arg1Matcher.matches()){
+					if(arg1Matcher.group(1).equals("sd")){
+						Matcher sdArgMatcher = argPattern.matcher(arg1Matcher.group(2));
+						if(sdArgMatcher.matches()){
+							if(sdArgMatcher.group(1).equals("best")) r = Utils.formatTime(stats.getBestSD(num));
+							else if(sdArgMatcher.group(1).equals("worst")) r = Utils.formatTime(stats.getWorstSD(num));
+						}
+					}
+					else if(arg1Matcher.group(1).equals("size")) r = "" + stats.getRASize(num);
+					else r = "Unimplemented: " + sorig;
+				}
+				else r = "Unimplemented: " + sorig;
+			}
+			else{
+				String avg = args[1].trim();
+				Pattern raPattern = Pattern.compile("^\\s*\\.\\s*(progress|size|list|sd|time|stats)\\s*(.*)$");
+				Matcher raMatcher2 = raPattern.matcher(raMatcher.group(2));
+				String t = "";
+				if(raMatcher2.matches()){
+					t = raMatcher2.group(1);
+
+					if(t.equals("progress")){
+						boolean parens = hasFilter(raMatcher2.group(2), "parens");
+						r = formatProgressTime(stats.getProgressAverage(num), parens);
+					}
+					else if(t.equals("size")) r = "" + stats.getRASize(num);
+					else if(t.equals("list")){
+						if(avg.equals("best")) r = stats.getBestAverageList(num);
+						else if(avg.equals("worst")) r = stats.getWorstAverageList(num);
+						else if(avg.equals("recent")) r = stats.getCurrentAverageList(num);
+						else if(avg.equals("last")) r = stats.getLastAverageList(num);
+						else r = "Unimplemented: " + avg + " : " + sorig;
+					}
+					else if(t.equals("sd")){
+						if(avg.equals("best")) r = Utils.formatTime(stats.getBestAverageSD(num));
+						else if(avg.equals("worst")) r = Utils.formatTime(stats.getWorstAverageSD(num));
+						else if(avg.equals("recent")) r = Utils.formatTime(stats.getCurrentSD(num));
+						else if(avg.equals("last")) r = Utils.formatTime(stats.getLastSD(num));
+						else r = "Unimplemented: " + avg + " : " + sorig;
+					}
+					else if(t.equals("time")){
+						Matcher timeMatcher = argPattern.matcher(raMatcher2.group(2));
+						if(timeMatcher.matches()){
+							String time = timeMatcher.group(1);
+							if(avg.equals("best"))
+								if(time.equals("best")) r = stats.getBestTimeOfBestAverage(num).toString();
+								else if(time.equals("worst")) r = stats.getWorstTimeOfBestAverage(num).toString();
+								else r = "Unimplemented: " + time + " : " + sorig;
+							else if(avg.equals("worst"))
+								if(time.equals("best")) r = stats.getBestTimeOfWorstAverage(num).toString();
+								else if(time.equals("worst")) r = stats.getWorstTimeOfWorstAverage(num).toString();
+								else r = "Unimplemented: " + time + " : " + sorig;
+							else if(avg.equals("recent"))
+								if(time.equals("best")) r = stats.getBestTimeOfCurrentAverage(num).toString();
+								else if(time.equals("worst")) r = stats.getWorstTimeOfCurrentAverage(num).toString();
+								else r = "Unimplemented: " + time + " : " + sorig;
+							else if(avg.equals("last"))
+								if(time.equals("best")) r = stats.getBestTimeOfLastAverage(num).toString();
+								else if(time.equals("worst")) r = stats.getWorstTimeOfLastAverage(num).toString();
+								else r = "Unimplemented: " + time + " : " + sorig;
+							else r = "Unimplemented: " + avg + " : " + sorig;
+						}
+						else r = "Unimplemented: " + sorig;
+					}
+					else if(t.equals("stats")){
+						boolean splits = hasFilter(raMatcher2.group(2), "splits");
+						if(avg.equals("best")) r = stats.toStatsString(AverageType.RA, splits, num);
+						else if(avg.equals("recent")) r = stats.toStatsString(AverageType.CURRENT, splits, num);
+						else r = "Unimplemented: " + avg + " : " + sorig;
+					}
+					else r = "Unimplemented: " + t + " : " + sorig;
+				}
+				else{
+					if(avg.equals("best")) r = Utils.formatTime(stats.getBestAverage(num));
+					else if(avg.equals("worst")) r = Utils.formatTime(stats.getWorstAverage(num));
+					else if(avg.equals("recent")) r = Utils.formatTime(stats.getCurrentAverage(num));
+					else if(avg.equals("last")) r = Utils.formatTime(stats.getLastAverage(num));
+					else r = "Unimplemented: " + avg + " : " + sorig;
+				}
 			}
 		}
+		else if(s.equals("date")) r = Configuration.getDateFormat().format(new Date());
+		else r = "Unimplemented: " + sorig;
 
 		return r;
+	}
+
+	private static boolean hasFilter(String s, String filter){
+		return s.matches("\\|\\s*" + filter);
+	}
+
+	private static String handleSolveCount(String s, SolveCounter stats){
+		Matcher solvecountMatcher = argPattern.matcher(s);
+		if(solvecountMatcher.matches()){
+			String u = solvecountMatcher.group(1);
+			boolean percent = u.startsWith("%");
+			if(percent) u = u.substring(1);
+			int val;
+			if(u.equals("solved"))
+				val = stats.getSolveCount();
+			else if(u.equals("attempt"))
+				val = stats.getAttemptCount();
+			else
+				val = stats.getSolveTypeCount(SolveType.getSolveType(u));
+			if(percent) return Utils.format(100. * val / stats.getAttemptCount());
+			else return "" + val;
+		}
+		else return null;
 	}
 }

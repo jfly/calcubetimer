@@ -33,12 +33,12 @@
 							<panel layout="border" border="Session Statistics">
 								<center>
 									<panel layout="box" orientation="page">
-										<label>Recent Time: $$currentTime$$</label>
-										<label>Previous Time: $$lastTime$$</label>
-										<label>Progress: $$progressTime$$ seconds</label>
+										<label>Recent Time: $$session.time(recent)$$</label>
+										<label>Previous Time: $$session.time(last)$$</label>
+										<label>Progress: $$session.time(progress)$$ seconds</label>
 										<panel preferredsize="10x15"></panel>
-										<label>Cubes Solved: $$solves$$</label>
-										<label>Session Average: $$sessionAverage$$ seconds</label>
+										<label>Cubes Solved: $$session.solvecount(solved)$$</label>
+										<label>Session Average: $$session.average$$ seconds</label>
 									</panel>
 								</center>
 								<line_end>
@@ -51,19 +51,19 @@
 							</panel>
 							<panel layout="border" border="Rolling Average">
 								<panel layout="box" orientation="page">
-									<label>Current Average: $$currentAverage$$</label>
-									<label>Progress: $$progressAverage0$$</label>
+									<label>Current Average: $$ra(0, recent)$$</label>
+									<label>Progress: $$ra(0, recent).progress$$</label>
 									<panel preferredsize="10x15"></panel>
-									<label>Fastest Time: $$bestTimeOfCurrentAverage0$$</label>
-									<label>Slowest Time: $$worstTimeOfCurrentAverage0$$</label>
-									<label>Standard Deviation: $$currentSD$$</label>
+									<label>Fastest Time: $$ra(0, recent).time(best)$$</label>
+									<label>Slowest Time: $$ra(0, recent).time(worst)$$</label>
+									<label>Standard Deviation: $$ra(0, recent).sd$$</label>
 								</panel>
 							</panel>
 						</panel>
 						<panel border="Best Average" layout="box" orientation="page">
 							<button action="bestAverage0" alignmentX=".99">Details</button>
 							<selectablelabel border=";000000" alignmentX=".99">
-								<![CDATA[<html>Average: $$bestRA0$$<br/>Individual Times: $$bestAverageList0$$</html>]]>
+								<![CDATA[<html>Average: $$ra(0, best)$$<br/>Individual Times: $$ra(0, best).list$$</html>]]>
 							</selectablelabel>
 						</panel>
 					</panel>

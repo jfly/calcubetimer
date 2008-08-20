@@ -14,7 +14,7 @@ import net.gnehzr.cct.misc.customJTable.DraggableJTableModel;
 import net.gnehzr.cct.scrambles.ScrambleCustomization;
 import net.gnehzr.cct.statistics.SolveTime.SolveType;
 
-public class Statistics implements ConfigurationChangeListener {
+public class Statistics implements ConfigurationChangeListener, SolveCounter {
 	public static enum AverageType {
 		CURRENT {
 			public String toString() {
@@ -989,6 +989,14 @@ public class Statistics implements ConfigurationChangeListener {
 		return getWorstTimeOfAverage(-1, num);
 	}
 
+	public SolveTime getBestTimeOfLastAverage(int num) {
+		return getBestTimeOfAverage(-2, num);
+	}
+
+	public SolveTime getWorstTimeOfLastAverage(int num) {
+		return getWorstTimeOfAverage(-2, num);
+	}
+
 	public SolveTime getBestTimeOfBestAverage(int num) {
 		return getBestTimeOfSortAverage(0, num);
 	}
@@ -1014,7 +1022,7 @@ public class Statistics implements ConfigurationChangeListener {
 	}
 
 	public String getSessionAverageList() {
-		return toTerseString(AverageType.SESSION, 0, false);
+		return toTerseString(AverageType.SESSION, 0, true);
 	}
 
 	public String getWorstAverageList(int num) {
@@ -1025,5 +1033,15 @@ public class Statistics implements ConfigurationChangeListener {
 			return toTerseString(averages[num].indexOf(sortaverages[num].get(sortaverages[num].size() - 1)), num);
 		
 		return toTerseString(AverageType.RA, num, false);
+	}
+
+	public String getLastAverageList(int num) {
+		if(num < 0) num = 0;
+		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
+
+		if(sortaverages[num].size() > 1)
+			return toTerseString(averages[num].size() - 2, num);
+		
+		return "N/A";
 	}
 }

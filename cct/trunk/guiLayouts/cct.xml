@@ -35,24 +35,24 @@
 						<panel layout="box" orientation="line">
 							<panel border="%%seshstats%%" layout="grid" cols="1">
 								<panel layout="box" orientation="line">
-									<label>%%raof%% $$RASize0$$</label>
-									<button action="currentAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$currentAverage0$$ $$progressAverageParens0$$</font></html>]]></button>
-									<button action="bestAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">%%bestra%% $$bestRA0$$</font></html>]]></button>
+									<label>%%raof%% $$ra(0).size$$</label>
+									<button action="currentAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$ra(0, recent)$$ $$ra(0, recent).progress|parens$$</font></html>]]></button>
+									<button action="bestAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">%%bestra%% $$ra(0, best)$$</font></html>]]></button>
 								</panel>
 								<panel layout="box" orientation="line">
-									<label>%%raof%% $$RASize1$$</label>
-									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$currentAverage1$$ $$progressAverageParens1$$</font></html>]]></button>
-									<button action="bestAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">%%bestra%% $$bestRA1$$</font></html>]]></button>
+									<label>%%raof%% $$ra(1).size$$</label>
+									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">%%currave%% $$ra(1, recent)$$ $$ra(1, recent).progress|parens$$</font></html>]]></button>
+									<button action="bestAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">%%bestra%% $$ra(1, best)$$</font></html>]]></button>
 								</panel>
 								<panel layout="box" orientation="line">
-									<label>$$solvecount_solved$$/$$solvecount_attempt$$ (%%solves%%/%%attempts%%)</label>
-									<button action="sessionAverage"><![CDATA[<html>%%seshave%% $$sessionAverage$$ $$progressSessionAverageParens$$</html>]]></button>
+									<label>$$session.solvecount(solved)$$/$$session.solvecount(attempt)$$ (%%solves%%/%%attempts%%)</label>
+									<button action="sessionAverage"><![CDATA[<html>%%seshave%% $$session.average$$ $$session.average.progress|parens$$</html>]]></button>
 								</panel>
 							</panel>
 							<panel border="%%history%%" layout="box" orientation="page">
-								<panel><label alignmentX=".5">%%bestever%% $$veryBestTime$$</label></panel>
-								<panel><label alignmentX=".5">%%bestraof%% $$RASize0$$: $$veryBestRA0$$</label></panel>
-								<panel><label alignmentX=".5">$$global_solvecount_solved$$/$$global_solvecount_attempt$$ %%globalaverage%% $$globalAverage$$</label></panel>
+								<panel><label alignmentX=".5">%%bestever%% $$global.time(best)$$</label></panel>
+								<panel><label alignmentX=".5">%%bestraof%% $$ra(0).size$$: $$global.ra(0, best)$$</label></panel>
+								<panel><label alignmentX=".5">$$global.solvecount(solved)$$/$$global.solvecount(attempt)$$ %%globalaverage%% $$global.average$$</label></panel>
 							</panel>
 						</panel>
 					</panel>
