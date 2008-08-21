@@ -272,7 +272,7 @@ public class DynamicString{
 
 			if(args.length == 0) r = "Invalid number of arguments: " + sorig;
 			else if(args.length == 1){
-				Pattern arg1Pattern = Pattern.compile("^\\s*\\.\\s*(sd|size)\\s*(.*)$");
+				Pattern arg1Pattern = Pattern.compile("^\\s*\\.\\s*(sd|progress|size)\\s*(.*)$");
 				Matcher arg1Matcher = arg1Pattern.matcher(raMatcher.group(2));
 
 				if(arg1Matcher.matches()){
@@ -283,6 +283,10 @@ public class DynamicString{
 							else if(sdArgMatcher.group(1).equals("worst")) r = Utils.formatTime(stats.getWorstSD(num));
 						}
 					}
+					if(arg1Matcher.group(1).equals("progress")){
+						boolean parens = hasFilter(arg1Matcher.group(2), "parens");
+						r = formatProgressTime(stats.getProgressAverage(num), parens);
+					}
 					else if(arg1Matcher.group(1).equals("size")) r = "" + stats.getRASize(num);
 					else r = "Unimplemented: " + sorig;
 				}
@@ -290,18 +294,13 @@ public class DynamicString{
 			}
 			else{
 				String avg = args[1].trim();
-				Pattern raPattern = Pattern.compile("^\\s*\\.\\s*(progress|size|list|sd|time|stats)\\s*(.*)$");
+				Pattern raPattern = Pattern.compile("^\\s*\\.\\s*(list|sd|time|stats)\\s*(.*)$");
 				Matcher raMatcher2 = raPattern.matcher(raMatcher.group(2));
 				String t = "";
 				if(raMatcher2.matches()){
 					t = raMatcher2.group(1);
 
-					if(t.equals("progress")){
-						boolean parens = hasFilter(raMatcher2.group(2), "parens");
-						r = formatProgressTime(stats.getProgressAverage(num), parens);
-					}
-					else if(t.equals("size")) r = "" + stats.getRASize(num);
-					else if(t.equals("list")){
+					if(t.equals("list")){
 						if(avg.equals("best")) r = stats.getBestAverageList(num);
 						else if(avg.equals("worst")) r = stats.getWorstAverageList(num);
 						else if(avg.equals("recent")) r = stats.getCurrentAverageList(num);

@@ -259,13 +259,13 @@ changes:
 +fixed bug with /me messages not being sent properly
 +fixed bug with autocomplete and % prefix
 +the current times of users is kept by the clients, rather than by spamming the comm channel with times
++dynamic string multiple argument format
 
 TODO:
 
 for release:
 -add sub-forums specifically for xml gui layouts, scramble plugins? icon/voice packs?
 -generator groups for scramble plugins (w/ cctbot too)
--dynamic string multiple argument format
 -open source sourceforge!
 -about.html: add a blurb for version 1.0
 -create license, give credit where credit is due

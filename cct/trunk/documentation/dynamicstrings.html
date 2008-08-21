@@ -59,172 +59,172 @@
 				<td class="title">Description</td>
 			</tr>
 			<tr>
-				<td>sessionAverage</td>
+				<td>session.average</td>
 				<td>This will be replaced with the average of all non infinite solves in the times list (current session).</td>
 			</tr>
 			<tr>
-				<td>sessionSD</td>
+				<td>session.sd</td>
 				<td>This is the standard deviation of all non infinite solves in the current session.</td>
 			</tr>
 			<tr>
-				<td>progressTime</td>
+				<td>session.time(progress)</td>
 				<td>The difference between the most recent solve and the solve before it.</td>
 			</tr>
 			<tr>
-				<td>progressAverage#</td>
+				<td>ra(#).progress</td>
 				<td>The difference between the most recent RA # and the previous RA #.</td>
 			</tr>
 			<tr>
-				<td>progressTimeParens</td>
-				<td>This formats progressAverage between parenthesis, and will be an empty string if the difference was infinite.</td>
+				<td>session.time(progress)|parens</td>
+				<td>This formats session.time(progress) between parenthesis, and will be an empty string if the difference was infinite.</td>
 			</tr>
 			<tr>
-				<td>progressAverageParens#</td>
-				<td>see progressTimeParens</td>
+				<td>ra(#).progress|parens</td>
+				<td>see session.time(progress)|parens</td>
 			</tr>
 			<tr>
-				<td>bestTime</td>
+				<td>session.time(best)</td>
 				<td>This is the best time in the current session, or N/A if there are no solves.</td>
 			</tr>
 			<tr>
-				<td>RASize#</td>
+				<td>ra(#).size</td>
 				<td>The is the size of RA #.</td>
 			</tr>
 			<tr>
-				<td>bestRA#</td>
+				<td>ra(#, best)</td>
 				<td>The is the best rolling average of RA #.</td>
 			</tr>
 			<tr>
-				<td>bestAverageSD#</td>
+				<td>ra(#, best).sd</td>
 				<td>This is the standard deviation of the best average of RA #.</td>
 			</tr>
 			<tr>
-				<td>bestSD#</td>
-				<td>The is the best standard deviation of RA #. Not necessarily the same as bestAverageSD, for example, you could have
+				<td>ra(#).sd(best)</td>
+				<td>The is the best standard deviation of RA #. Not necessarily the same as ra(#, best).sd, for example, you could have
 				a slower average with very little variation.</td>
 			</tr>
 			<tr>
-				<td>worstTime</td>
+				<td>session.time(worst)</td>
 				<td>This is the worst, finite time in the current session.</td>
 			</tr>
 			<tr>
-				<td>worstAverage#</td>
+				<td>ra(#, worst)</td>
 				<td>This is the worst average of RA #.</td>
 			</tr>
 			<tr>
-				<td>worstAverageSD#</td>
+				<td>ra(#, worst).sd</td>
 				<td>The standard deviation of the worst average in RA #.</td>
 			</tr>
 			<tr>
-				<td>worstSD#</td>
+				<td>ra(#).sd(worst)</td>
 				<td>This is the worst standard deviation of all rolling averages in RA #.</td>
 			</tr>
 			<tr>
-				<td>currentTime</td>
+				<td>session.time(recent)</td>
 				<td>The most recent time.</td>
 			</tr>
 			<tr>
-				<td>currentAverage#</td>
+				<td>ra(#, recent)</td>
 				<td>The current average of RA #.</td>
 			</tr>
 			<tr>
-				<td>currentSD#</td>
+				<td>ra(#, recent).sd</td>
 				<td>The standard deviation of the current average of RA #.</td>
 			</tr>
 			<tr>
-				<td>lastTime</td>
-				<td>This is the time before the currentTime.</td>
+				<td>session.time(last)</td>
+				<td>This is the time before the session.time(recent).</td>
 			</tr>
 			<tr>
-				<td>lastAverage#</td>
+				<td>ra(#, last)</td>
 				<td>This is the 2nd most recent average of RA #.</td>
 			</tr>
 			<tr>
-				<td>lastSD</td>
+				<td>ra(#, last).sd</td>
 				<td>This is the standard deviation of the average in lastAverage#.</td>
 			</tr>
 			<tr>
-				<td>bestTimeOfCurrentAverage#</td>
+				<td>ra(#, recent).time(best)</td>
+				<td>The best time of the most recent RA #.</td>
+			</tr>
+			<tr>
+				<td>ra(#, recent).time(worst)</td>
 				<td>Straightforward.</td>
 			</tr>
 			<tr>
-				<td>worstTimeOfCurrentAverage#</td>
+				<td>ra(#, best).time(best)</td>
 				<td>Straightforward.</td>
 			</tr>
 			<tr>
-				<td>bestTimeOfBestAverage#</td>
+				<td>ra(#, best).time(worst)</td>
 				<td>Straightforward.</td>
 			</tr>
 			<tr>
-				<td>worstTimeOfBestAverage#</td>
+				<td>ra(#, worst).time(best)</td>
 				<td>Straightforward.</td>
 			</tr>
 			<tr>
-				<td>bestTimeOfWorstAverage#</td>
+				<td>ra(#, worst).time(worst)</td>
 				<td>Straightforward.</td>
 			</tr>
 			<tr>
-				<td>worstTimeOfWorstAverage#</td>
-				<td>Straightforward.</td>
-			</tr>
-			<tr>
-				<td>progressSessionAverage</td>
+				<td>session.average.progress</td>
 				<td>This is the difference between the current session average and the one before it.</td>
 			</tr>
 			<tr>
-				<td>progressSessionSD</td>
+				<td>session.sd.progress</td>
 				<td>This is the difference between the SD of the current session and the one before it.</td>
 			</tr>
 			<tr>
-				<td>progressSessionAverageParens</td>
+				<td>session.average.progress|parens</td>
 				<td>This formats progressAverageSD nicely.</td>
 			</tr>
 			<tr>
-				<td>progressSessionSDParens</td>
+				<td>session.sd.progress|parens</td>
 				<td>This formats progressSessionSD nicely.</td>
 			</tr>
 			
 			<tr>
-				<td>bestAverageList#</td>
+				<td>ra(#, best).list</td>
 				<td>A comma separated list of the times in the best average of RA #. The best and worst times are
 				surrounded with parenthesis.</td>
 			</tr>
 			<tr>
-				<td>currentAverageList#</td>
-				<td>see bestAverageList#</td>
+				<td>ra(#, recent).list</td>
+				<td>see ra(#, best).list</td>
 			</tr>
 			<tr>
-				<td>sessionAverageList</td>
-				<td>see bestAverageList#</td>
+				<td>session.list</td>
+				<td>see ra(#, best).list</td>
 			</tr>
 			<tr>
-				<td>worstAverageList#</td>
+				<td>ra(#, worst).list</td>
 				<td>see bestAverageList#</td>
 			</tr>
 			
 			<tr>
-				<td>bestAverageStats#</td>
+				<td>ra(#, best).stats</td>
 				<td>This enumerates the times of the best average of RA #, and appends their scramble and comment.</td>
 			</tr>
 			<tr>
-				<td>currentAverageStats#</td>
-				<td>see bestAverageStats#</td>
+				<td>ra(#, recent).stats</td>
+				<td>see ra(#, best).stats</td>
 			</tr>
 			<tr>
-				<td>sessionStats</td>
-				<td>see bestAverageStats#</td>
+				<td>session.stats</td>
+				<td>see ra(#, best).stats</td>
 			</tr>
 			<tr>
-				<td>bestAverageStatsWithSplits#</td>
+				<td>ra(#, best).stats|splits</td>
 				<td>This enumerates the times of the best average of RA #, and appends their scramble, splits, and comment.</td>
 			</tr>
 			<tr>
-				<td>currentAverageStatsWithSplits#</td>
-				<td>see bestAverageStatsWithSplits#</td>
+				<td>ra(#, recent).stats|splits</td>
+				<td>see ra(#, best).stats|splits</td>
 			</tr>
 			<tr>
-				<td>sessionStatsWithSplits</td>
-				<td>see bestAverageStatsWithSplits#</td>
+				<td>session.stats|splits</td>
+				<td>see ra(#, best).stats|splits</td>
 			</tr>
 			
 			<tr>
@@ -233,15 +233,15 @@
 				done of the current scramble customization.</td>
 			</tr>
 			<tr>
-				<td>veryBestTime</td>
+				<td>global.time(best)</td>
 				<td>This is the best time of all the sessions of the current scramble customization.</td>
 			</tr>
 			<tr>
-				<td>veryBestRA#</td>
+				<td>global.ra(#, best)</td>
 				<td>The best RA of RA # of all the sessions of the current scramble customization.</td>
 			</tr>
 			<tr>
-				<td>globalAverage</td>
+				<td>global.average</td>
 				<td>The average of all solves of all the sessions of the current scramble customization.</td>
 			</tr>
 			
@@ -257,14 +257,14 @@
 			<tr>
 				<td class="title"><a name="tags" /></td>
 				<td class="title">Solve tags and counts. SOLVETAG can be any of SOLVED, ATTEMPT, POP, DNF, +2, 
-				or any solve tags defined within CCT. See the <a href="readme.html#tags>Readme</a> for more details.</td>
+				or any solve tags defined within CCT. See the <a href="readme.html#tags">Readme</a> for more details.</td>
 			</tr>
 			<tr>
-				<td>solvecount_SOLVETAG</td>
+				<td>session.solvecount(SOLVETAG)</td>
 				<td>This is a count of the number of solves of type SOLVETAG in the current session.</td>
 			</tr>
 			<tr>
-				<td>global_solvecount_SOLVETAG</td>
+				<td>global.solvecount(SOLVETAG)</td>
 				<td>This is a global count of the number of solves of type SOLVETAG.</td>
 			</tr>
 		</table>

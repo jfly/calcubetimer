@@ -52,7 +52,7 @@
 							<panel layout="border" border="Rolling Average">
 								<panel layout="box" orientation="page">
 									<label>Current Average: $$ra(0, recent)$$</label>
-									<label>Progress: $$ra(0, recent).progress$$</label>
+									<label>Progress: $$ra(0).progress$$</label>
 									<panel preferredsize="10x15"></panel>
 									<label>Fastest Time: $$ra(0, recent).time(best)$$</label>
 									<label>Slowest Time: $$ra(0, recent).time(worst)$$</label>
