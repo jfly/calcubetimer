@@ -18,9 +18,7 @@ import net.gnehzr.cct.statistics.Statistics.AverageType;
 
 public class DynamicString{
 	private static final char RAW_TEXT = 'a', I18N_TEXT = 'b', STAT = 'c';
-	private static final String CONF = "configuration_";
-	private static final String SOLVE_TYPE = "solvecount_";
-	private static final String GLOBAL_SOLVE_TYPE = "global_solvecount_";
+	private static final String CONF = "configuration";
 
 	private static final Pattern argPattern = Pattern.compile("^\\s*\\(([^)]*)\\)\\s*(.*)$");
 
@@ -114,8 +112,12 @@ public class DynamicString{
 		String r = "";
 
 		//Configuration section
-		if(s.startsWith(CONF.toLowerCase()))
-			return Configuration.getValue(s.substring(CONF.length()));
+		if(s.startsWith(CONF.toLowerCase() + "(")) {
+			if(s.endsWith(")")) {
+				s = s.substring(CONF.length());
+				return Configuration.getValue(s.substring(1, s.length() - 1));
+			}
+		}
 
 		s = s.toLowerCase();
 
