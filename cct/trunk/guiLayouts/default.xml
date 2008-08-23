@@ -22,29 +22,28 @@
 							</panel>
 						</scrollpane>
 						<component alignmentX=".5" type="startStopPanel"/>
-						<panel layout="grid" cols="3">
-							<button action="addTime">Add Time</button>
-							<panel><checkbox alignmentX=".5" action="keyboardTiming"/></panel>
-							<panel>
+						<panel layout="border">
+							<center><panel><checkbox alignmentX=".5" action="keyboardTiming"/></panel></center>
+							<line_end><panel>
 								<button action="newSession">New Session</button>
 								<button action="reset">Clear Session</button>
-							</panel>
+							</panel></line_end>
 						</panel>
 						<panel layout="box" orientation="line">
 							<panel border=";Session Statistics" layout="box" orientation="page">
 								<panel layout="box" orientation="line">
 									<label alignmentX=".5">RA of $$configuration_Statistics_raSize0$$</label>
-									<button action="currentAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average: $$currentAverage0$$</font></html>]]></button>
+									<button action="currentAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average: $$currentAverage0$$ ($$progressAverage0$$)</font></html>]]></button>
 									<button action="bestAverage0"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">Best RA: $$bestRA0$$</font></html>]]></button>
 								</panel>
 								<panel layout="box" orientation="line">
 									<label alignmentX=".5">RA of $$configuration_Statistics_raSize1$$</label>
-									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average: $$currentAverage1$$</font></html>]]></button>
+									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_currentAverage$$">Current Average: $$currentAverage1$$ ($$progressAverage1$$)</font></html>]]></button>
 									<button action="bestAverage1"><![CDATA[<html><font color="$$configuration_Statistics_Color_bestRA$$">Best RA: $$bestRA1$$</font></html>]]></button>
 								</panel>
 								<panel layout="box" orientation="line">
 									<label alignmentX=".5">$$solves$$/$$attempts$$ (solves/attempts)</label>
-									<button action="sessionAverage"><![CDATA[<html>Session Average: $$sessionAverage$$</html>]]></button>
+									<button action="sessionAverage"><![CDATA[<html>Session Average: $$sessionAverage$$ ($$progressSessionAverage$$)</html>]]></button>
 								</panel>
 								<panel></panel> <!-- I have no idea why this needs to be here, weird behavior without it -->
 							</panel>
@@ -74,6 +73,8 @@
 		<menu mnemonic="f">File
 			<menuitem action="importScrambles">Import scrambles</menuitem>
 			<menuitem action="exportScrambles">Export scrambles</menuitem>
+			<separator/>
+			<menuitem action="addTime">Add time</menuitem>
 			<separator/>
 			<menuitem action="connectToServer">Connect to server</menuitem>
 			<separator/>

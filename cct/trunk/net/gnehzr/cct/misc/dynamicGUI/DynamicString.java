@@ -38,6 +38,15 @@ public class DynamicString{
 		}
 		return s;
 	}
+	
+	private String formatProgressTime(double progress) {
+		String r = "";
+		if(Double.isInfinite(progress))
+			r = "\u221E"; //unicode for infinity
+		else
+			r = Utils.formatTime(Math.abs(progress));
+		return (progress >= 0 ? "+" : "-") + r;
+	}
 
 	private String getReplacement(String s){
 		//Configuration section
@@ -64,15 +73,18 @@ public class DynamicString{
 		if(s.equalsIgnoreCase("")) ;
 
 		//Statistics section
-		else if(s.equalsIgnoreCase("sessionAverage")) r = Utils.formatTime(stats.getSessionAvg());
-		else if(s.equalsIgnoreCase("sessionSD")) r = Utils.format(stats.getSessionSD());
+		else if(s.equalsIgnoreCase("sessionAverage")) {
+			double ave = stats.getSessionAvg(); //this method returns zero if there are no solves to allow the global stats to be computed nicely
+			if(ave == 0) ave = Double.POSITIVE_INFINITY;
+			r = Utils.formatTime(ave);
+		} else if(s.equalsIgnoreCase("sessionSD")) r = Utils.format(stats.getSessionSD());
 		else if(s.equalsIgnoreCase("pops")) r = "" + stats.getPOPCount();
 		else if(s.equalsIgnoreCase("+twos")) r = "" + stats.getPlus2Count();
 		else if(s.equalsIgnoreCase("dnfs")) r = "" + stats.getDNFCount();
 		else if(s.equalsIgnoreCase("solves")) r = "" + stats.getSolveCount();
 		else if(s.equalsIgnoreCase("attempts")) r = "" + stats.getAttemptCount();
-		else if(s.equalsIgnoreCase("progressTime")) r = Utils.formatTime(stats.getProgressTime());
-		else if(s.equalsIgnoreCase("progressAverage")) r = Utils.formatTime(stats.getProgressAverage(num));
+		else if(s.equalsIgnoreCase("progressTime")) r = formatProgressTime(stats.getProgressTime());
+		else if(s.equalsIgnoreCase("progressAverage")) r = formatProgressTime(stats.getProgressAverage(num));
 		else if(s.equalsIgnoreCase("bestTime")) r = Utils.formatTime(stats.getBestTime());
 		else if(s.equalsIgnoreCase("bestRA")) r = Utils.formatTime(stats.getBestAverage(num));
 		else if(s.equalsIgnoreCase("bestSD")) r = Utils.format(stats.getBestSD(num));
@@ -93,8 +105,8 @@ public class DynamicString{
 		else if(s.equalsIgnoreCase("worstTimeOfBestAverage")) r = Utils.formatTime(stats.getWorstTimeOfBestAverage(num));
 		else if(s.equalsIgnoreCase("bestTimeOfWorstAverage")) r = Utils.formatTime(stats.getBestTimeOfWorstAverage(num));
 		else if(s.equalsIgnoreCase("worstTimeOfWorstAverage")) r = Utils.formatTime(stats.getWorstTimeOfWorstAverage(num));
-		else if(s.equalsIgnoreCase("progressSessionAverage")) r = Utils.formatTime(stats.getProgressSessionAverage());
-		else if(s.equalsIgnoreCase("progressSessionSD")) r = Utils.formatTime(stats.getProgressSessionSD());
+		else if(s.equalsIgnoreCase("progressSessionAverage")) r = formatProgressTime(stats.getProgressSessionAverage());
+		else if(s.equalsIgnoreCase("progressSessionSD")) r = formatProgressTime(stats.getProgressSessionSD());
 
 		else if(s.equalsIgnoreCase("bestAverageList")) r = stats.getBestAverageList(num);
 		else if(s.equalsIgnoreCase("currentAverageList")) r = stats.getCurrentAverageList(num);

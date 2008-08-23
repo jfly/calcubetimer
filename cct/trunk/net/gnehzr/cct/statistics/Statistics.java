@@ -166,6 +166,8 @@ public class Statistics implements ConfigurationChangeListener {
 	private void initialize() {
 		times.clear();
 		sorttimes.clear();
+		sessionavgs.clear();
+		sessionsds.clear();
 
 		for(int i = 0; i < RA_SIZES_COUNT; i++){
 			averages[i].clear();
@@ -834,7 +836,7 @@ public class Statistics implements ConfigurationChangeListener {
 				return Double.POSITIVE_INFINITY;
 			double t2 = getTime(-2);
 			if (t2 == Double.POSITIVE_INFINITY)
-				return Double.POSITIVE_INFINITY;
+				return Double.NEGATIVE_INFINITY;
 			return t1 - t2;
 		}
 	}
@@ -843,29 +845,33 @@ public class Statistics implements ConfigurationChangeListener {
 		if(num < 0) num = 0;
 		else if(num >= RA_SIZES_COUNT) num = RA_SIZES_COUNT - 1;
 
-		if (averages[num].size() < 2)
+		if(averages[num].size() == 0) {
 			return Double.POSITIVE_INFINITY;
-		else {
+		} else if(averages[num].size() == 1) {
+			return Double.NEGATIVE_INFINITY;
+		} else {
 			double t1 = getAverage(-1, num);
-			if (t1 == Double.POSITIVE_INFINITY)
+			if(t1 == Double.POSITIVE_INFINITY)
 				return Double.POSITIVE_INFINITY;
 			double t2 = getAverage(-2, num);
-			if (t2 == Double.POSITIVE_INFINITY)
-				return Double.POSITIVE_INFINITY;
+			if(t2 == Double.POSITIVE_INFINITY)
+				return Double.NEGATIVE_INFINITY;
 			return t1 - t2;
 		}
 	}
 
 	public double getProgressSessionAverage() {
-		if (sessionavgs.size() < 2)
+		if(sessionavgs.size() == 0) {
 			return Double.POSITIVE_INFINITY;
-		else {
+		} else if(sessionavgs.size() == 1) {
+			return Double.NEGATIVE_INFINITY;
+		} else {
 			double t1 = getSessionAverage(-1);
 			if (t1 == Double.POSITIVE_INFINITY)
 				return Double.POSITIVE_INFINITY;
 			double t2 = getSessionAverage(-2);
 			if (t2 == Double.POSITIVE_INFINITY)
-				return Double.POSITIVE_INFINITY;
+				return Double.NEGATIVE_INFINITY;
 			return t1 - t2;
 		}
 	}

@@ -207,6 +207,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		addTimeAction = new AddTimeAction(this);
 		addTimeAction.putValue(Action.NAME, "Add time");
 		addTimeAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_A);
+		addTimeAction.putValue(Action.ACCELERATOR_KEY,
+				KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.ALT_MASK));
 		actionMap.put("addtime", addTimeAction);
 
 		resetAction = new ResetAction(this);
