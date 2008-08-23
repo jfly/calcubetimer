@@ -1341,11 +1341,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			public void run() {
 				String errors = Configuration.getStartupErrors();
 				if(!errors.isEmpty()) {
-					JOptionPane.showMessageDialog(
-							null,
-							errors,
-							"Cannot start CCT!",
-							JOptionPane.ERROR_MESSAGE);
+					Utils.showErrorDialog(null, errors, "Couldn't start CCT!");
 					System.exit(1);
 				}
 				try {

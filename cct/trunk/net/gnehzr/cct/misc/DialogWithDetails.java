@@ -36,22 +36,31 @@ public class DialogWithDetails extends JDialog implements ActionListener {
 		JPanel pane = new JPanel(new BorderLayout());
 		setContentPane(pane);
 		
-		JTextArea detailsArea = new JTextArea(CALCubeTimer.CCT_VERSION + " " + new Date() + "\n" + details, 15, 30);
+		JTextArea detailsArea = new JTextArea("CCT " + CALCubeTimer.CCT_VERSION + " " + new Date() + "\n" + details, 15, 30);
 		detailsArea.putClientProperty(LafWidget.TEXT_SELECT_ON_FOCUS, Boolean.FALSE);
 		detailsArea.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.FALSE);
 //		detailsArea.setLineWrap(true);
 		detailsPane = new JScrollPane(detailsArea);
 		detailsArea.setEditable(false);
 		
-		copy = new JButton(StringAccessor.getString("Utils.copy"));
+		String cpy, okay;
+		if(StringAccessor.keyExists("Utils.copy"))
+			cpy = StringAccessor.getString("Utils.copy");
+		else
+			cpy = "Copy";
+		if(StringAccessor.keyExists("Utils.ok"))
+			okay = StringAccessor.getString("Utils.ok");
+		else
+			okay = "Ok";
+		copy = new JButton(cpy);
 		copy.addActionListener(this);
-		ok = new JButton(StringAccessor.getString("Utils.ok"));
+		ok = new JButton(okay);
 		ok.addActionListener(this);
 		JPanel copy_ok = new JPanel();
 		copy_ok.add(copy);
 		copy_ok.add(ok);
 		
-		pane.add(new JLabel(message), BorderLayout.PAGE_START);
+		pane.add(new JLabel("<html>" + message.replaceAll("\n", "<br>") + "</html>"), BorderLayout.PAGE_START);
 		pane.add(detailsPane, BorderLayout.CENTER);
 		pane.add(copy_ok, BorderLayout.PAGE_END);
 		

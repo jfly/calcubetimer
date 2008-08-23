@@ -9,7 +9,14 @@ public class StringAccessor {
 	private static final String CCT_STRINGS = "languages/cctStrings";
 	private static final ResourceBundle EMPTY_BUNDLE = new ResourceBundle() {
 		public Enumeration<String> getKeys() {
-			return null;
+			return new Enumeration<String>() {
+				public boolean hasMoreElements() {
+					return false;
+				}
+				public String nextElement() {
+					return null;
+				}
+			};
 		}
 		protected Object handleGetObject(String key) {
 			return "Couldn't find " + CCT_STRINGS + ".properties!";
@@ -26,6 +33,19 @@ public class StringAccessor {
 			}
 		}
 		return cctStrings.getString(key);
+	}
+	public static boolean keyExists(String key) {
+		if(cctStrings == null) {
+			try {
+				cctStrings = ResourceBundle.getBundle(CCT_STRINGS);
+			} catch(MissingResourceException e) {
+				cctStrings = EMPTY_BUNDLE;
+				e.printStackTrace();
+			}
+		}
+		if(cctStrings == null)
+			return false;
+		return cctStrings.containsKey(key);
 	}
 	public static String format(String formatKey, Object... values) {
 		return MessageFormat.format(StringAccessor.getString(formatKey), values);

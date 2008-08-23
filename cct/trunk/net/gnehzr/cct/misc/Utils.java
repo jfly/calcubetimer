@@ -115,7 +115,11 @@ public class Utils {
 	}
 
 	public static void showErrorDialog(Window c, String s) {
-		showErrorDialog(c, null, s);
+		showErrorDialog(c, null, s, null);
+	}
+	
+	public static void showErrorDialog(Window c, String s, String t) {
+		showErrorDialog(c, null, s, t);
 	}
 
 	public static void showErrorDialog(Window c, Throwable e) {
@@ -123,6 +127,9 @@ public class Utils {
 	}
 
 	public static void showErrorDialog(Window w, Throwable e, String message) {
+		showErrorDialog(w, e, message, null);
+	}
+	public static void showErrorDialog(Window w, Throwable e, String message, String title) {
 		StringBuilder msg = new StringBuilder();
 		if(message != null)
 			msg.append(message).append("\n");
@@ -131,7 +138,9 @@ public class Utils {
 			e.printStackTrace(new PrintWriter(caw));
 			msg.append(caw.toString());
 		}
-		new DialogWithDetails(w, StringAccessor.getString("Utils.error"), message, msg.toString()).setVisible(true);
+		if(title == null)
+			title = StringAccessor.getString("Utils.error");
+		new DialogWithDetails(w, title, message, msg.toString()).setVisible(true);
 	}
 
 	public static int showYesNoDialog(Component c, String message) {
