@@ -518,8 +518,8 @@
 			into this folder, and they should appear when you restart CCT. The scramble plugin
 			system was designed to make it easy for people to add new scrambles to CCT without us having
 			to release a new version. Anyone with a strong background in Java should be able to
-			create new plugins for CCT. Just checkout the CCT sourcecode from here ???, and examine
-			Scramble.java. Writing a new plugin is as simple as writing a subclass of Scramble.
+			create new plugins for CCT. Just checkout the CCT sourcecode from <a href="http://code.google.com/p/calcubetimer/">here</a>,
+			and examine	Scramble.java. Writing a new plugin is as simple as writing a subclass of Scramble.
 			See CubeScramble, MegaminxScramble, and SquareOneScramble for examples of how to do it.</p>
 			<p>We also created a scramble debugger to hopefully save you some of the bother (and time)
 			of restarting CCT every time you want to test your new scramble plugin. To start the debugger,
@@ -540,7 +540,10 @@
 			the system clipboard in plaintext.</p>
 			
 			<h3><a name="generatorgroups">Generator Groups</a></h3>
-			<p>Certain scramble plugins may support generator groups.</p>
+			<p>Certain scramble plugins may support generator groups. Generator groups are specified in a text box that will
+			show up on the main gui if the plugin supports generators. For example, SquareOneScramble supports specifying
+			one of 3 different types of generator groups, either "(x, x) /", "(0, x) /", or "(x, 0) /". See
+			the applicable scramble plugin for details on how to use its generator groups.</p>
 
 			<h2><a name="i18n">CCT in another language</a></h2>
 			<p>We want to provide CCT as many languages as possible. If you use CCT and speak another language
