@@ -914,8 +914,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	//{{{ GUIParser
 	//we save these guys to help us save the tabbedPane selection and
 	//splitPane location later on
-	ArrayList<JTabbedPane> tabbedPanes;
-	ArrayList<JSplitPane> splitPanes;
+	ArrayList<JTabbedPane> tabbedPanes = new ArrayList<JTabbedPane>();
+	ArrayList<JSplitPane> splitPanes = new ArrayList<JSplitPane>();
 	private class GUIParser extends DefaultHandler {
 		private int level = -2;
 		private int componentID = -1;
@@ -932,8 +932,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			needText = new ArrayList<Boolean>();
 			elementNames = new ArrayList<String>();
 
-			tabbedPanes = new ArrayList<JTabbedPane>();
-			splitPanes = new ArrayList<JSplitPane>();
+			tabbedPanes.clear();
+			splitPanes.clear();
 		}
 
 		//{{{ startElement
