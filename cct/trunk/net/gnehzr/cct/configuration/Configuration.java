@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.UIDefaults;
 import javax.swing.plaf.FontUIResource;
@@ -44,8 +46,9 @@ public final class Configuration {
 	private static final File guiLayoutsFolder = new File(getRootDirectory(), "guiLayouts/");
 	public static final File languagesFolder = new File(getRootDirectory(), "languages/");
 	public static final File flagsFolder = new File(languagesFolder, "flags/");
-	private static final File installedLanguagesFile = new File(languagesFolder, "installed.properties");
 	private static final File startupProfileFile = new File(profilesFolder, "startup");
+	
+	private static final Pattern languageFile = Pattern.compile("^language_(.*).properties$");
 
 	private static final String guestName = "Guest";
 	public static final Profile guestProfile = createGuestProfile();
@@ -474,32 +477,43 @@ public final class Configuration {
 		if(locales == null) {
 			locales = new ArrayList<LocaleAndIcon>();
 			Locale l;
-			FileInputStream in = null;
-			try {
-				Properties p = new Properties();
-				in = new FileInputStream(installedLanguagesFile);
-				p.load(in);
-				for(Object o : p.keySet()) {
-					String[] languageAndRegion = ((String) o).split("_");
-					if(languageAndRegion.length == 1)
-						l = new Locale(languageAndRegion[0]);
-					else if(languageAndRegion.length == 2)
-						l = new Locale(languageAndRegion[0], languageAndRegion[1]);
+			for(File lang : languagesFolder.listFiles()) {
+				Matcher m = languageFile.matcher(lang.getName());
+				if(m.matches()) {
+					String[] language_region = m.group(1).split("_");
+					if(language_region.length == 1)
+						l = new Locale(language_region[0]);
+					else if(language_region.length == 2)
+						l = new Locale(language_region[0], language_region[1]);
 					else
 						continue;
-					LocaleAndIcon li = new LocaleAndIcon(l, p.getProperty((String) o));
-					if(!locales.contains(li)) {
-						locales.add(li);
-					}
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				if(in != null) {
+					String i18nName = null;
+					BufferedReader in = null;
 					try {
-						in.close();
+						in = new BufferedReader(new FileReader(lang));
+						i18nName = in.readLine();
+						//What follows is a hack to escape any characters within this file as with all
+						//the other properties files. Apparently Java doesn't provide this functionality
+						//for us. See http://forums.sun.com/thread.jspa?threadID=733734&messageID=4219038
+						Properties prop = new Properties();
+						prop.load(new FileInputStream(lang));
+						i18nName = prop.getProperty("language");
 					} catch(Exception e) {
 						e.printStackTrace();
+					} finally {
+						if(in != null) {
+							try {
+								in.close();
+							} catch(IOException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+					if(i18nName == null)
+						i18nName = m.group(1);
+					LocaleAndIcon li = new LocaleAndIcon(l, i18nName);
+					if(!locales.contains(li)) {
+						locales.add(li);
 					}
 				}
 			}
