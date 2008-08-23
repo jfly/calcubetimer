@@ -11,7 +11,7 @@
 		</redirector>
 	</exec>
 	
-	<property name="version.cct" value="1.0.0"/>
+	<property name="version.cct" value="0.9.0"/>
 	<property name="version.cctbot" value="0.1.0"/>
 	<property name="version.ircclient" value="0.1.0"/>
 	<property name="version.diagnostics" value="0.1.0"/>

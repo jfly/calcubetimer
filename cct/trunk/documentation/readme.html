@@ -75,6 +75,7 @@
 			<li><a href="#customizations">Scramble Customizations</a></li>
 			<li><a href="#plugins">Scramble Plugins</a>
 				<ul><li><a href="#scramblearea">Scramble Area</a></li></ul>
+				<ul><li><a href="#generatorgroups">Generator Groups</a></li></ul>
 			</li>
 			<li><a href="#i18n">How can I get CCT in my own language?</a></li>
 			<li><a href="#releases">Release history</a></li>
@@ -209,7 +210,7 @@
 			<img src="stackmat.jpg" alt="stackmat cable connection">
 
 			<h2><a name="gui">User Interface</a></h2>
-			<p>In CCT 1.0, we've made the GUI completely customizable via xml files. In your CCT directory, there should
+			<p>In CCT 0.9.0, we've made the GUI completely customizable via xml files. In your CCT directory, there should
 			be a folder called "guiLayouts". Within that folder, you can create any *.xml file, and CCT will give you the option
 			to load that layout. Some rudimentary knowledge of Java Swing and XML files is required to accomplish anything complicated,
 			however it should be easy for a semi-techinical user to modify the text on various buttons and labels throughout CCT.
@@ -241,7 +242,7 @@
 				the scrambles. You are on the 6th scramble, and the stackmat accepts a fake time. You finish your solve and
 				discard your fake time. CCT now believes you just finished the 7th solve and displays the 8th scramble. To
 				fix this problem, all you need to do is rewind one scramble to the 7th and you don't lose your 7th scramble.</li>
-					<ul><li><a name="scramblehistory">UPDATE:</a> As of CCT 1.0, the scramble history will keep track of every scramble
+					<ul><li><a name="scramblehistory">UPDATE:</a> As of CCT 0.9.0, the scramble history will keep track of every scramble
 					you use, even if you switch scramble customizations. To avoid confusion when going back in your scramble history,
 					the scramble customization dropdown box will be disabled whenever you are not at the latest, non-imported scramble. </li></ul>
 				<li>A new option for scrambles is the multi-slice option. This affects NxNxN cubes where N &#x2265; 4. <del>If multi-slice is
@@ -537,6 +538,9 @@
 			Just right click on the scramble image to enable it.
 			You can also copy the current scramble simply by double clicking on the scramble area. The scramble will be copied to
 			the system clipboard in plaintext.</p>
+			
+			<h3><a name="generatorgroups">Generator Groups</a></h3>
+			<p>Certain scramble plugins may support generator groups.</p>
 
 			<h2><a name="i18n">CCT in another language</a></h2>
 			<p>We want to provide CCT as many languages as possible. If you use CCT and speak another language
@@ -587,7 +591,7 @@
 				<li>Scramble options added, including support for cubes up to 11x11x11</li>
 			</ul>
 			
-			2008 ?????? - Version 1.0.0
+			2008 Aug 22 - Version 0.9.0
 			<ul>
 				<li>Client/Server system <a href="#umts">replaced</a></li>
 				<li>Support for solve tags</li>
