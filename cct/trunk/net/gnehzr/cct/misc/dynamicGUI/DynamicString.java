@@ -58,11 +58,11 @@ public class DynamicString{
 		return statsModel;
 	}
 
-	public String toString(int i){
-		return toString();
+	public String toString(){
+		return toString(-1);
 	}
 
-	public String toString() {
+	public String toString(int num) {
 		StringBuilder s = new StringBuilder();
 
 		for(int i = 0; i < splitText.length; i++){
@@ -77,7 +77,7 @@ public class DynamicString{
 					}
 				case STAT:
 					if(statsModel != null) {
-						s.append(getReplacement(t));
+						s.append(getReplacement(t, num));
 						break;
 					}
 				case RAW_TEXT:
@@ -106,7 +106,7 @@ public class DynamicString{
 		return r;
 	}
 
-	private String getReplacement(String s){
+	private String getReplacement(String s, int num){
 		String sorig = s;
 
 		String r = "";
@@ -154,7 +154,6 @@ public class DynamicString{
 					else r = "Unimplemented: " + sorig;
 				}
 				else if(t.equals("ra")){
-					int num = 0;
 					Matcher raMatcher = argPattern.matcher(globalMatcher.group(2));
 					String[] args = null;
 					if(raMatcher.matches()){
@@ -162,10 +161,12 @@ public class DynamicString{
 					}
 					else return "Unimplemented: " + sorig;
 
-					try{
-						num = Integer.parseInt(args[0]);
-					} catch(NumberFormatException e){
-						return "Invalid argument: " + args[0] + " : " + sorig;
+					if(num == -1){
+						try{
+							num = Integer.parseInt(args[0]);
+						} catch(NumberFormatException e){
+							return "Invalid argument: " + args[0] + " : " + sorig;
+						}
 					}
 
 					if(args.length < 2) r = "Invalid number of arguments: " + sorig;
@@ -256,7 +257,6 @@ public class DynamicString{
 			else r = "Unimplemented: " + t + " : " + sorig;
 		}
 		else if(s.equals("ra")){
-			int num = 0;
 			Matcher raMatcher = argPattern.matcher(m.group(2));
 			String[] args = null;
 			if(raMatcher.matches()){
@@ -264,10 +264,12 @@ public class DynamicString{
 			}
 			else return "Unimplemented: " + sorig;
 
-			try{
-				num = Integer.parseInt(args[0]);
-			} catch(NumberFormatException e){
-				return "Invalid argument: " + args[0] + " : " + sorig;
+			if(num == -1){
+				try{
+					num = Integer.parseInt(args[0]);
+				} catch(NumberFormatException e){
+					return "Invalid argument: " + args[0] + " : " + sorig;
+				}
 			}
 
 			if(args.length == 0) r = "Invalid number of arguments: " + sorig;
