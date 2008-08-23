@@ -35,20 +35,20 @@
 		<p>All of the text in CCT is formatted as dynamic strings. Dynamic strings can be used as
 		plaintext, but can also access statistics that CCT keeps track of. Using dynamic strings,
 		you can get CCT to display just the information that you are interested in.
-		<p>Here's a simple example: "Your best time: $$besttime$$". If your best time is 15.77 seconds, this
+		<p>Here's a simple example: "Your best time: $$session.time(best)$$". If your best time is 15.77 seconds, this
 		will be formatted by CCT as "Your best time: 15.77". However, to make it easy to translate your xml layout,
-		you can externalize the "Your best time" string as well. The dynamic string would then become "%%besttimemessage%%: $$besttime$$.
-		If your layout is called "My Awesome Layout.xml", then you must also create "My Awesome Layout.properties" containing this line:
+		you can externalize the "Your best time" string as well. The dynamic string would then become "%%besttimemessage%%: $$session.time(best)$$.
+		If your layout is called "MyAwesomeLayout.xml", then you must also create "MyAwesomeLayout.properties" containing this line:
 		"besttimemessage=Your best time". NOTE: This will not work if your xml layout file contains more than one period.
 		See <a href="readme.html#i18n">CCT Readme</a> for a more detailed description of properties files
 		and internationalization.</p>
 		
 		What follows is a list of all the $$ properties accessible within CCT.
-		As described above, to distinguish the keys from plaintext, surround them with $$ and $$, for example: $$pops$$. To print "$$pops$$" as
-		plaintext, just use "\$\$pops\$\$"
+		As described above, to distinguish the keys from plaintext, surround them with $$ and $$, for example: $$session.solvecount(pop)$$. To print "$$session.solvecount(pop)$$" as
+		plaintext, just use "\$\$session.solvecount(pops)\$\$"
 		Some keys may require a numeric argument specifying which RA you are interested in. Remember that CCT keeps
 		track of all the statistics for two rolling average lengths. For example, to get the latest 
-		average for a given RA number, use $$currentAverage0$$ or $$currentAverage1$$. For any key ending in #,
+		average for a given RA number, use $$ra(0, recent)$$ or $$ra(0, recent)$$. For any key ending in #,
 		the # should be replaced with the number of the desired RA.</p>
 		<p>NOTE: Standard deviations for trimmed (rolling) averages are computed over only the solves included in the average.<br />
 		FURTHER NOTE: Capitalization of the $$ keywords does not matter.</p>
