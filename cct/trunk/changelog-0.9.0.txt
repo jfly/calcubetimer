@@ -261,15 +261,16 @@ changes:
 +the current times of users is kept by the clients, rather than by spamming the comm channel with times
 +dynamic string multiple argument format
 +develop better solution for installed.properties (replaced with language_*.properties)
++about.html: add a blurb for version 0.9
 
 TODO:
 
 for release:
+-add minute support to voice packs
 -document generator groups
 -add sub-forums specifically for xml gui layouts, scramble plugins? icon/voice packs?
 -generator groups for scramble plugins (w/ cctbot too)
 -open source sourceforge!
--about.html: add a blurb for version 1.0
 -create license, give credit where credit is due
 
 misc:
