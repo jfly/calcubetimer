@@ -9,6 +9,7 @@ public class KillablePircBot extends PircBot {
 	public KillablePircBot(IRCListener l, String fingerMsg) {
 		this.l = l;
 		setFinger(fingerMsg);
+		startIdentServer();
 	}
 	
 	public void setlogin(String l) {
