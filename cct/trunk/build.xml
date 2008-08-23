@@ -77,6 +77,9 @@
 			</manifest>
 			<fileset dir="." includes="net/gnehzr/notcct/diagnostics/**"/>
 		</jar>
+		<copy todir="${dist.diagnostics}">
+			<fileset dir="." includes="LICENSE"/>
+		</copy>
 	</target>
 	
 	<target name="cctbot" depends="compile, emptydist" description="Compresses CCTBot into an executable jar file.">
@@ -94,6 +97,7 @@
 		<copy todir="${dist.cctbot}">
 			<fileset dir=".">
 				<include name="scramblePlugins/*.class"/>
+				<include name="LICENSE"/>
 			</fileset>
 		</copy>
 	</target>
@@ -136,6 +140,7 @@
 				<include name="documentation/*"/>
 				<include name="voices/*"/>
 				<include name="languages/**"/>
+				<include name="LICENSE"/>
 			</fileset>
 		</copy>
 		<delete file="${about.html}"/>
