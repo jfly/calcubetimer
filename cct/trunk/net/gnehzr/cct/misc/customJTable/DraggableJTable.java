@@ -50,7 +50,6 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 		this.addKeyListener(this);
 		this.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 		this.putClientProperty("JTable.autoStartsEdit", Boolean.FALSE);
-//		headers = getTableHeader();
 		headers = new JTableHeader() {
 			public String getToolTipText(MouseEvent event) {
 				int col = convertColumnIndexToModel(columnAtPoint(event.getPoint()));
@@ -61,26 +60,26 @@ public class DraggableJTable extends JTable implements MouseListener, MouseMotio
 			}
 		};
 		setTableHeader(headers);
-		if(columnChooser) {
+		if(columnChooser)
 			headers.addMouseListener(this);
-			//need to override the DefaultTableColumnModel's moveColumn()
-			//in order to catch mouse dragging, the JTable's moveColumn()
-			//won't catch that stuff
-			setColumnModel(new DefaultTableColumnModel() {
-				public void moveColumn(int fromIndex, int toIndex) {
-					HideableTableColumn col = getHideableTableColumn(getColumnModel().getColumn(fromIndex));
-					if(col == null)
-						return;
-					int from = col.viewIndex;
-					col = getHideableTableColumn(getColumnModel().getColumn(toIndex));
-					if(col == null)
-						return;
-					int to = col.viewIndex;
-					moveHideableColumn(from, to);
-					super.moveColumn(fromIndex, toIndex);
-				}
-			});
-		}
+		//need to override the DefaultTableColumnModel's moveColumn()
+		//in order to catch mouse dragging, the JTable's moveColumn()
+		//won't catch that stuff
+		//this needs to be outside the above if statement so the header is visible
+		setColumnModel(new DefaultTableColumnModel() {
+			public void moveColumn(int fromIndex, int toIndex) {
+				HideableTableColumn col = getHideableTableColumn(getColumnModel().getColumn(fromIndex));
+				if(col == null)
+					return;
+				int from = col.viewIndex;
+				col = getHideableTableColumn(getColumnModel().getColumn(toIndex));
+				if(col == null)
+					return;
+				int to = col.viewIndex;
+				moveHideableColumn(from, to);
+				super.moveColumn(fromIndex, toIndex);
+			}
+		});
 		refreshStrings(null);
 	}
 	
