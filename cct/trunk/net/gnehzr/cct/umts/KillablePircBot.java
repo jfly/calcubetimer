@@ -1,5 +1,8 @@
 package net.gnehzr.cct.umts;
 
+import net.gnehzr.cct.configuration.Configuration;
+import net.gnehzr.cct.configuration.VariableKey;
+
 import org.jibble.pircbot.PircBot;
 import org.jibble.pircbot.User;
 
@@ -9,7 +12,8 @@ public class KillablePircBot extends PircBot {
 	public KillablePircBot(IRCListener l, String fingerMsg) {
 		this.l = l;
 		setFinger(fingerMsg);
-		startIdentServer();
+		if(Configuration.getBoolean(VariableKey.IDENT_SERVER, false))
+			startIdentServer();
 	}
 	
 	public void setlogin(String l) {

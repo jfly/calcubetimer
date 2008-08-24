@@ -575,6 +575,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 	JCheckBox useSMTPServer;
 	JCheckBox showEmail = null;
 	JTextField ircname, ircnick;
+	JCheckBox identserver = null;
 	private JPanel emailOptions;
 	private JPanel makeSundaySetupPanel() {
 		JPanel sundayOptions = new JPanel(new GridBagLayout());
@@ -647,6 +648,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		
 		ircname = new JTextField(18);
 		ircnick = new JTextField(18);
+		identserver = new JCheckBox(StringAccessor.getString("ConfigurationDialog.identserver"));
 		
 		c.weightx = 0;
 		c.gridx = 0;
@@ -665,6 +667,11 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		c.gridx = 1;
 		c.gridy = 2;
 		ircOptions.add(ircnick, c);
+		
+		c.weightx = 0;
+		c.gridx = 1;
+		c.gridy = 3;
+		ircOptions.add(identserver, c);
 		
 		emailOptions = new JPanel(new GridBagLayout());
 		emailOptions.setBorder(new AABorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.BLACK), StringAccessor.getString("ConfigurationDialog.emailsetup"))));
@@ -771,6 +778,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 				showEmail.setSelected(Configuration.getBoolean(VariableKey.SHOW_EMAIL, defaults));
 				ircname.setText(Configuration.getString(VariableKey.IRC_NAME, defaults));
 				ircnick.setText(Configuration.getString(VariableKey.IRC_NICK, defaults));
+				identserver.setSelected(Configuration.getBoolean(VariableKey.IDENT_SERVER, defaults));
 			}
 		};
 		resetListeners.add(sl);
@@ -1147,6 +1155,7 @@ public class ConfigurationDialog extends JDialog implements KeyListener, MouseLi
 		
 		Configuration.setString(VariableKey.IRC_NAME, ircname.getText());
 		Configuration.setString(VariableKey.IRC_NICK, ircnick.getText());
+		Configuration.setBoolean(VariableKey.IDENT_SERVER, identserver.isSelected());
 
 		Configuration.setString(VariableKey.SESSION_STATISTICS, sessionStats.getText());
 		Configuration.setString(VariableKey.CURRENT_AVERAGE_STATISTICS, currentAverageStats.getText());

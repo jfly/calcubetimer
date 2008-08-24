@@ -107,6 +107,7 @@ public class VariableKey<H> {
 	public static final VariableKey<Font> TIMER_FONT = new VariableKey<Font>("Timer_font"); 
 	public static final VariableKey<Font> SCRAMBLE_FONT = new VariableKey<Font>("Scramble_font"); 
 
+	public static final VariableKey<Boolean> IDENT_SERVER = new VariableKey<Boolean>("IRC_identserver"); 
 	public static final VariableKey<Boolean> SIDE_BY_SIDE_SCRAMBLE = new VariableKey<Boolean>("GUI_ScrambleView_sideBySide"); 
 	public static final VariableKey<Boolean> SCRAMBLE_PLUGINS_SECURE = new VariableKey<Boolean>("Scramble_Plugins_secure"); 
 	public static final VariableKey<Boolean> SPEAK_INSPECTION = new VariableKey<Boolean>("Misc_Voices_readInspection"); 
