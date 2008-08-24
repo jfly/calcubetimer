@@ -6,7 +6,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
-public class DynamicButton extends JButton implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener{
+public class DynamicButton extends JButton implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener, DynamicDestroyable{
 	private DynamicString s = null;
 
 	public DynamicButton(){
@@ -34,5 +34,10 @@ public class DynamicButton extends JButton implements StatisticsUpdateListener, 
 
 	public void configurationChanged(){
 		update();
+	}
+
+	public void destroy(){
+		setDynamicString(null);
+		Configuration.removeConfigurationChangeListener(this);
 	}
 }

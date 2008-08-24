@@ -6,7 +6,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
-public class DynamicCheckBox extends JCheckBox implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener{
+public class DynamicCheckBox extends JCheckBox implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener, DynamicDestroyable{
 	private DynamicString s = null;
 
 	public DynamicCheckBox(){
@@ -38,5 +38,10 @@ public class DynamicCheckBox extends JCheckBox implements StatisticsUpdateListen
 
 	public void configurationChanged(){
 		update();
+	}
+
+	public void destroy(){
+		setDynamicString(null);
+		Configuration.removeConfigurationChangeListener(this);
 	}
 }

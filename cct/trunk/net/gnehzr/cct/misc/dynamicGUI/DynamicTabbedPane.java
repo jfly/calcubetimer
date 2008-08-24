@@ -11,7 +11,7 @@ import net.gnehzr.cct.i18n.XMLGuiMessages;
 import net.gnehzr.cct.main.CALCubeTimer;
 import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
-public class DynamicTabbedPane extends JTabbedPane implements StatisticsUpdateListener, ConfigurationChangeListener {
+public class DynamicTabbedPane extends JTabbedPane implements StatisticsUpdateListener, ConfigurationChangeListener, DynamicDestroyable {
 	private ArrayList<DynamicString> tabNames = new ArrayList<DynamicString>();
 
 	public DynamicTabbedPane() {
@@ -38,5 +38,10 @@ public class DynamicTabbedPane extends JTabbedPane implements StatisticsUpdateLi
 
 	public void configurationChanged() {
 		update();
+	}
+
+	public void destroy(){
+		Configuration.removeConfigurationChangeListener(this);
+		CALCubeTimer.statsModel.removeStatisticsUpdateListener(this);
 	}
 }

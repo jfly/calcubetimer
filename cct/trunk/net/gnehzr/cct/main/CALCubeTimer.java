@@ -109,6 +109,7 @@ import net.gnehzr.cct.misc.dynamicGUI.DynamicBorderSetter;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicButton;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicCheckBox;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicCheckBoxMenuItem;
+import net.gnehzr.cct.misc.dynamicGUI.DynamicDestroyable;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicLabel;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicMenu;
 import net.gnehzr.cct.misc.dynamicGUI.DynamicMenuItem;
@@ -916,6 +917,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	//splitPane location later on
 	ArrayList<JTabbedPane> tabbedPanes = new ArrayList<JTabbedPane>();
 	ArrayList<JSplitPane> splitPanes = new ArrayList<JSplitPane>();
+	ArrayList<DynamicDestroyable> dynamicStringComponents = new ArrayList<DynamicDestroyable>();
 	private class GUIParser extends DefaultHandler {
 		private int level = -2;
 		private int componentID = -1;
@@ -934,6 +936,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 
 			tabbedPanes.clear();
 			splitPanes.clear();
+
+			for(DynamicDestroyable dd : dynamicStringComponents)
+				dd.destroy();
+			dynamicStringComponents.clear();
 		}
 
 		//{{{ startElement
@@ -1267,6 +1273,9 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 					} else temp = elementNames.get(i);
 				}
 			}
+
+			if(com instanceof DynamicDestroyable)
+				dynamicStringComponents.add((DynamicDestroyable)com);
 		}
 		//}}}
 

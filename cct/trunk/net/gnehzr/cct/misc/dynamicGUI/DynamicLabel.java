@@ -6,7 +6,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
-public class DynamicLabel extends JLabel implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener{
+public class DynamicLabel extends JLabel implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener, DynamicDestroyable{
 	private DynamicString s = null;
 
 	public DynamicLabel(){
@@ -34,5 +34,10 @@ public class DynamicLabel extends JLabel implements StatisticsUpdateListener, Dy
 
 	public void configurationChanged(){
 		update();
+	}
+
+	public void destroy(){
+		setDynamicString(null);
+		Configuration.removeConfigurationChangeListener(this);
 	}
 }

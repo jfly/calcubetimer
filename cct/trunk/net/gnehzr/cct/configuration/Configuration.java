@@ -237,6 +237,9 @@ public final class Configuration {
 	public static void addConfigurationChangeListener(ConfigurationChangeListener listener) {
 		listeners.add(listener);
 	}
+	public static void removeConfigurationChangeListener(ConfigurationChangeListener listener) {
+		listeners.remove(listener);
+	}
 	public static void apply() {
 		for(ConfigurationChangeListener listener : listeners) {
 			listener.configurationChanged();

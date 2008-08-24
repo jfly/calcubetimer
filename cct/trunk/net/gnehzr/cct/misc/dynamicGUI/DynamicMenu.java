@@ -6,7 +6,7 @@ import net.gnehzr.cct.configuration.Configuration;
 import net.gnehzr.cct.configuration.ConfigurationChangeListener;
 import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
-public class DynamicMenu extends JMenu implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener{
+public class DynamicMenu extends JMenu implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener, DynamicDestroyable{
 	private DynamicString s = null;
 
 	public DynamicMenu(){
@@ -34,5 +34,10 @@ public class DynamicMenu extends JMenu implements StatisticsUpdateListener, Dyna
 
 	public void configurationChanged(){
 		update();
+	}
+
+	public void destroy(){
+		setDynamicString(null);
+		Configuration.removeConfigurationChangeListener(this);
 	}
 }

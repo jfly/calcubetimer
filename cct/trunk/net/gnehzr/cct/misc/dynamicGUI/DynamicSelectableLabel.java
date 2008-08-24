@@ -9,7 +9,7 @@ import net.gnehzr.cct.statistics.StatisticsUpdateListener;
 
 import org.jvnet.lafwidget.LafWidget;
 
-public class DynamicSelectableLabel extends JEditorPane implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener{
+public class DynamicSelectableLabel extends JEditorPane implements StatisticsUpdateListener, DynamicStringSettable, ConfigurationChangeListener, DynamicDestroyable{
 	private DynamicString s = null;
 
 	public DynamicSelectableLabel(){
@@ -49,5 +49,10 @@ public class DynamicSelectableLabel extends JEditorPane implements StatisticsUpd
 
 	public void configurationChanged(){
 		update();
+	}
+
+	public void destroy(){
+		setDynamicString(null);
+		Configuration.removeConfigurationChangeListener(this);
 	}
 }
