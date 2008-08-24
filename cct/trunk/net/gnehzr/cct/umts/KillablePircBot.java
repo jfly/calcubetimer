@@ -12,8 +12,12 @@ public class KillablePircBot extends PircBot {
 	public KillablePircBot(IRCListener l, String fingerMsg) {
 		this.l = l;
 		setFinger(fingerMsg);
-		if(Configuration.getBoolean(VariableKey.IDENT_SERVER, false))
+		try {
+			if(Configuration.getBoolean(VariableKey.IDENT_SERVER, false))
+				startIdentServer();
+		} catch(Throwable t) { //if we're running without a configuration, enable the ident server
 			startIdentServer();
+		}
 	}
 	
 	public void setlogin(String l) {
