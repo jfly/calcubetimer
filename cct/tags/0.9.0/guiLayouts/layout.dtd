@@ -1,0 +1,123 @@
+<!ELEMENT gui (panel,menubar)?>
+
+<!ELEMENT panel (center|north|south|east|west|page_start|page_end|line_start|line_end|panel|scrollpane|splitpane|component|button|checkbox|label|selectablelabel|tabbedpane)*>
+<!ELEMENT center (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+<!ELEMENT north (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+<!ELEMENT south (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+<!ELEMENT east (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+<!ELEMENT west (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+<!ELEMENT page_start (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+<!ELEMENT page_end (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+<!ELEMENT line_start (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+<!ELEMENT line_end (panel|splitpane|component|button|checkbox|label|selectablelabel|scrollpane|tabbedpane)?>
+
+<!ELEMENT menubar (menu|glue|component|button|checkbox|label|selectablelabel)*>
+<!ELEMENT menu (#PCDATA|menu|menuitem|separator|checkboxmenuitem|component)*>
+
+<!ELEMENT scrollpane (panel|splitpane|component|button|checkbox|label|selectablelabel)?>
+<!ATTLIST scrollpane verticalpolicy (always|never|asneeded) #IMPLIED>
+<!ATTLIST scrollpane horizontalpolicy (always|never|asneeded) #IMPLIED>
+
+<!ELEMENT tabbedpane (panel|component|button|checkbox|label|selectablelabel|tabbedpane)*>
+<!-- The following name attribute is currently used only to give tabs in jtabbedpanes titles -->
+<!ATTLIST panel name CDATA #IMPLIED>
+<!ATTLIST component name CDATA #IMPLIED>
+<!ATTLIST button name CDATA #IMPLIED>
+<!ATTLIST checkbox name CDATA #IMPLIED>
+<!ATTLIST label name CDATA #IMPLIED>
+<!ATTLIST selectablelabel name CDATA #IMPLIED>
+<!ATTLIST tabbedpane name CDATA #IMPLIED>
+
+<!ELEMENT splitpane (panel)*>
+<!ATTLIST splitpane drawcontinuous (true|false) #IMPLIED>
+<!ATTLIST splitpane resizeweight CDATA #IMPLIED>
+<!ATTLIST splitpane split (horizontal|vertical) #IMPLIED>
+
+<!ELEMENT component EMPTY>
+<!ELEMENT separator EMPTY>
+<!ELEMENT glue EMPTY>
+<!ELEMENT button (#PCDATA)>
+<!ELEMENT checkbox (#PCDATA)>
+<!ELEMENT label (#PCDATA)>
+<!ELEMENT selectablelabel (#PCDATA)>
+<!ELEMENT menuitem (#PCDATA)>
+<!ELEMENT checkboxmenuitem (#PCDATA)>
+
+<!ATTLIST panel layout (border|box|grid|flow) #IMPLIED>
+<!ATTLIST panel orientation (horizontal|vertical|page|line) #IMPLIED>
+<!ATTLIST panel hgap CDATA #IMPLIED>
+<!ATTLIST panel vgap CDATA #IMPLIED>
+<!ATTLIST panel rows CDATA #IMPLIED>
+<!ATTLIST panel cols CDATA #IMPLIED>
+<!ATTLIST panel border CDATA #IMPLIED>
+<!ATTLIST panel align (left|right|center|leading|trailing) #IMPLIED>
+
+<!ATTLIST component type CDATA #REQUIRED>
+
+<!ATTLIST button nominsize (true|false) #IMPLIED>
+<!-- This attribute for panels is to override the
+	default behavior of giving panels a minimum size of zero -->
+<!ATTLIST panel nominsize (true|false) #IMPLIED>
+
+<!ATTLIST button action CDATA #IMPLIED>
+<!ATTLIST checkbox action CDATA #IMPLIED>
+<!ATTLIST menuitem action CDATA #IMPLIED>
+<!ATTLIST checkboxmenuitem action CDATA #IMPLIED>
+
+<!ATTLIST panel alignmentX CDATA #IMPLIED>
+<!ATTLIST component alignmentX CDATA #IMPLIED>
+<!ATTLIST button alignmentX CDATA #IMPLIED>
+<!ATTLIST checkbox alignmentX CDATA #IMPLIED>
+<!ATTLIST menuitem alignmentX CDATA #IMPLIED>
+<!ATTLIST checkboxmenuitem alignmentX CDATA #IMPLIED>
+<!ATTLIST label alignmentX CDATA #IMPLIED>
+<!ATTLIST selectablelabel alignmentX CDATA #IMPLIED>
+
+<!ATTLIST panel alignmentY CDATA #IMPLIED>
+<!ATTLIST component alignmentY CDATA #IMPLIED>
+<!ATTLIST button alignmentY CDATA #IMPLIED>
+<!ATTLIST checkbox alignmentY CDATA #IMPLIED>
+<!ATTLIST menuitem alignmentY CDATA #IMPLIED>
+<!ATTLIST checkboxmenuitem alignmentY CDATA #IMPLIED>
+<!ATTLIST label alignmentY CDATA #IMPLIED>
+<!ATTLIST selectablelabel alignmentY CDATA #IMPLIED>
+
+<!ATTLIST component border CDATA #IMPLIED>
+<!ATTLIST button border CDATA #IMPLIED>
+<!ATTLIST checkbox border CDATA #IMPLIED>
+<!ATTLIST menuitem border CDATA #IMPLIED>
+<!ATTLIST checkboxmenuitem border CDATA #IMPLIED>
+<!ATTLIST label border CDATA #IMPLIED>
+<!ATTLIST selectablelabel border CDATA #IMPLIED>
+
+<!ATTLIST component opaque CDATA #IMPLIED>
+<!ATTLIST button opaque CDATA #IMPLIED>
+<!ATTLIST checkbox opaque CDATA #IMPLIED>
+<!ATTLIST menuitem opaque CDATA #IMPLIED>
+<!ATTLIST checkboxmenuitem opaque CDATA #IMPLIED>
+
+<!ATTLIST component background CDATA #IMPLIED>
+<!ATTLIST button background CDATA #IMPLIED>
+<!ATTLIST checkbox background CDATA #IMPLIED>
+<!ATTLIST menuitem background CDATA #IMPLIED>
+<!ATTLIST checkboxmenuitem background CDATA #IMPLIED>
+
+<!ATTLIST component foreground CDATA #IMPLIED>
+<!ATTLIST button foreground CDATA #IMPLIED>
+<!ATTLIST checkbox foreground CDATA #IMPLIED>
+<!ATTLIST menuitem foreground CDATA #IMPLIED>
+<!ATTLIST checkboxmenuitem foreground CDATA #IMPLIED>
+
+<!ATTLIST component preferredsize CDATA #IMPLIED>
+<!ATTLIST button preferredsize CDATA #IMPLIED>
+<!ATTLIST checkbox preferredsize CDATA #IMPLIED>
+<!ATTLIST menuitem preferredsize CDATA #IMPLIED>
+<!ATTLIST checkboxmenuitem preferredsize CDATA #IMPLIED>
+<!ATTLIST scrollpane preferredsize CDATA #IMPLIED>
+<!ATTLIST panel preferredsize CDATA #IMPLIED>
+
+<!ATTLIST selectablelabel editable (true|false) #IMPLIED>
+
+<!ATTLIST menu mnemonic CDATA #IMPLIED>
+<!ATTLIST glue orientation (horizontal|vertical) #IMPLIED>
+<!ATTLIST separator orientation (horizontal|vertical) #IMPLIED>
