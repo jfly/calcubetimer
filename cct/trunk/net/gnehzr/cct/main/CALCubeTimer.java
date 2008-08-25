@@ -226,6 +226,10 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 			return a;
 		}
 
+		public AbstractAction getRawAction(String s){
+			return actionMap.get(s.toLowerCase());
+		}
+
 		private AbstractAction initialize(String s){
 			AbstractAction a = null;
 			if(s.equals("keyboardtiming")){
@@ -1318,11 +1322,12 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private void repaintTimes() {
 		Statistics stats = statsModel.getCurrentStatistics();
 		sendUserstate();
-		actionMap.get("currentaverage0").setEnabled(stats.isValid(AverageType.CURRENT, 0));
-		actionMap.get("bestaverage0").setEnabled(stats.isValid(AverageType.RA, 0));
-		actionMap.get("currentaverage1").setEnabled(stats.isValid(AverageType.CURRENT, 1));
-		actionMap.get("bestaverage1").setEnabled(stats.isValid(AverageType.RA, 1));
-		actionMap.get("sessionaverage").setEnabled(stats.isValid(AverageType.SESSION, 0));
+		AbstractAction a;
+		if((a = actionMap.getRawAction("currentaverage0")) != null) a.setEnabled(stats.isValid(AverageType.CURRENT, 0));
+		if((a = actionMap.getRawAction("bestaverage0")) != null) a.setEnabled(stats.isValid(AverageType.RA, 0));
+		if((a = actionMap.getRawAction("currentaverage1")) != null) a.setEnabled(stats.isValid(AverageType.CURRENT, 1));
+		if((a = actionMap.getRawAction("bestaverage1")) != null) a.setEnabled(stats.isValid(AverageType.RA, 1));
+		if((a = actionMap.getRawAction("sessionaverage")) != null) a.setEnabled(stats.isValid(AverageType.SESSION, 0));
 	}
 
 	static CALCubeTimer cct; //need this instance to be able to easily set the waiting cursor
@@ -1642,21 +1647,30 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				fullscreenPanel.putClientProperty(SubstanceLookAndFeel.WATERMARK_VISIBLE, Boolean.TRUE);
 				fullscreenFrame.add(fullscreenPanel);
 				setFullScreen(isFullscreen);
+
+				repaintTimes();
+				refreshActions();
 			}
 		});
+	}
+
+	private void refreshActions(){
+		boolean stackmatEnabled = Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
+		AbstractAction a;
+		if((a = actionMap.getRawAction("keyboardtiming")) != null) a.putValue(Action.SELECTED_KEY, !stackmatEnabled);
+		if((a = actionMap.getRawAction("togglelessannoyingdisplay")) != null) a.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.LESS_ANNOYING_DISPLAY, false));
+		if((a = actionMap.getRawAction("togglehidescrambles")) != null) a.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false));
+		if((a = actionMap.getRawAction("togglespacebarstartstimer")) != null) a.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false));
+		if((a = actionMap.getRawAction("togglefullscreen")) != null) a.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false));
 	}
 
 	public void configurationChanged() {
 		//we need to notify the security manager ourself, because it may not have any reference to
 		//Configuration for the cctbot to work.
 		security.configurationChanged();
+
+		refreshActions();
 		
-		boolean stackmatEnabled = Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
-		actionMap.get("keyboardtiming").putValue(Action.SELECTED_KEY, !stackmatEnabled);
-		actionMap.get("togglelessannoyingdisplay").putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.LESS_ANNOYING_DISPLAY, false));
-		actionMap.get("togglehidescrambles").putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false));
-		actionMap.get("togglespacebarstartstimer").putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false));
-		actionMap.get("togglefullscreen").putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false));
 		profiles.setModel(new DefaultComboBoxModel(Configuration.getProfiles().toArray()));
 		safeSelectItem(profiles, Configuration.getSelectedProfile());
 		languages.setSelectedItem(Configuration.getDefaultLocale()); //this will force an update of the xml gui
