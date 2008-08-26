@@ -94,6 +94,7 @@
 		<menu mnemonic="o">CCT Options
 			<component type="customGUIMenu"/>
 			<menu mnemonic="k">Keyboard Timer
+				<checkboxmenuitem action="keyboardTiming">Use keyboard timer</checkboxmenuitem>
 				<checkboxmenuitem action="toggleLessAnnoyingDisplay">Use less-annoying status light</checkboxmenuitem>
 				<checkboxmenuitem action="toggleHideScrambles">Hide scrambles when timer not focused</checkboxmenuitem>
 				<checkboxmenuitem action="toggleSpacebarStartsTimer">Only spacebar starts timer</checkboxmenuitem>
