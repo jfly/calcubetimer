@@ -140,7 +140,8 @@ public class StatisticsTableModel extends DraggableJTableModel implements Action
 				stats.setSolveTypes(timesTable.getSelectedRow(), types);
 			}
 		}
-		prevFocusOwner.requestFocusInWindow();
+		if(prevFocusOwner != null)
+			prevFocusOwner.requestFocusInWindow();
 	}
 
 	private JMenuItem edit, discard;
