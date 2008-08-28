@@ -176,7 +176,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 	private JSpinner scrambleLength = null;
 	private DateTimeLabel currentTimeLabel = null;
 	private JComboBox profiles = null;
-	private JComboBox languages = null;
+	private LoudComboBox languages = null;
 	TimerLabel timeLabel = null;
 	//all of the above components belong in this HashMap, so we can find them
 	//when they are referenced in the xml gui (type="blah...blah")
