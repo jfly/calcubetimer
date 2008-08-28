@@ -320,8 +320,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 				a.putValue(Action.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
 			}
-			else if(s.equals("togglelessannoyingdisplay")){
-				a = new LessAnnoyingDisplayAction(cct);
+			else if(s.equals("togglestatuslight")){
+				a = new StatusLightAction(cct);
 				a.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_L);
 			}
 			else if(s.equals("togglehidescrambles")){
@@ -1658,7 +1658,7 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		boolean stackmatEnabled = Configuration.getBoolean(VariableKey.STACKMAT_ENABLED, false);
 		AbstractAction a;
 		if((a = actionMap.getRawAction("keyboardtiming")) != null) a.putValue(Action.SELECTED_KEY, !stackmatEnabled);
-		if((a = actionMap.getRawAction("togglelessannoyingdisplay")) != null) a.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.LESS_ANNOYING_DISPLAY, false));
+		if((a = actionMap.getRawAction("togglestatuslight")) != null) a.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.LESS_ANNOYING_DISPLAY, false));
 		if((a = actionMap.getRawAction("togglehidescrambles")) != null) a.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.HIDE_SCRAMBLES, false));
 		if((a = actionMap.getRawAction("togglespacebarstartstimer")) != null) a.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.SPACEBAR_ONLY, false));
 		if((a = actionMap.getRawAction("togglefullscreen")) != null) a.putValue(Action.SELECTED_KEY, Configuration.getBoolean(VariableKey.FULLSCREEN_TIMING, false));
@@ -1773,8 +1773,8 @@ public class CALCubeTimer extends JFrame implements ActionListener, TableModelLi
 		return s;
 	}
 
-	public void lessAnnoyingDisplayAction(){
-		Configuration.setBoolean(VariableKey.LESS_ANNOYING_DISPLAY, (Boolean)actionMap.get("togglelessannoyingdisplay").getValue(Action.SELECTED_KEY));
+	public void statusLightAction(){
+		Configuration.setBoolean(VariableKey.LESS_ANNOYING_DISPLAY, (Boolean)actionMap.get("togglestatuslight").getValue(Action.SELECTED_KEY));
 		timeLabel.repaint();
 	}
 
@@ -2128,14 +2128,14 @@ class HideScramblesAction extends AbstractAction{
 		cct.hideScramblesAction();
 	}
 }
-class LessAnnoyingDisplayAction extends AbstractAction{
+class StatusLightAction extends AbstractAction{
 	private CALCubeTimer cct;
-	public LessAnnoyingDisplayAction(CALCubeTimer cct){
+	public StatusLightAction(CALCubeTimer cct){
 		this.cct = cct;
 	}
 
 	public void actionPerformed(ActionEvent e){
-		cct.lessAnnoyingDisplayAction();
+		cct.statusLightAction();
 	}
 }
 class RequestScrambleAction extends AbstractAction{

@@ -95,7 +95,7 @@
 			<component type="customGUIMenu"/>
 			<menu mnemonic="k">Keyboard Timer
 				<checkboxmenuitem action="keyboardTiming">Use keyboard timer</checkboxmenuitem>
-				<checkboxmenuitem action="toggleLessAnnoyingDisplay">Use less-annoying status light</checkboxmenuitem>
+				<checkboxmenuitem action="toggleStatusLight">Use status light</checkboxmenuitem>
 				<checkboxmenuitem action="toggleHideScrambles">Hide scrambles when timer not focused</checkboxmenuitem>
 				<checkboxmenuitem action="toggleSpacebarStartsTimer">Only spacebar starts timer</checkboxmenuitem>
 				<checkboxmenuitem action="toggleFullscreenTiming">Fullscreen while timing</checkboxmenuitem>

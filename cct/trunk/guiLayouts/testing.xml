@@ -153,7 +153,7 @@
 			<checkboxmenuitem action="toggleScramblePopup">%%togglescramblepopup%%</checkboxmenuitem>
 			<menu mnemonic="k">%%keyboardtimer%%
 				<checkboxmenuitem action="keyboardTiming">%%usekeyboard%%</checkboxmenuitem>
-				<checkboxmenuitem action="toggleLessAnnoyingDisplay">%%lessannoying%%</checkboxmenuitem>
+				<checkboxmenuitem action="toggleStatusLight">%%statuslight%%</checkboxmenuitem>
 				<checkboxmenuitem action="toggleHideScrambles">%%hidescrambles%%</checkboxmenuitem>
 				<checkboxmenuitem action="toggleSpacebarStartsTimer">%%spacebaronly%%</checkboxmenuitem>
 				<checkboxmenuitem action="toggleFullscreenTiming">%%fullscreentiming%%</checkboxmenuitem>
