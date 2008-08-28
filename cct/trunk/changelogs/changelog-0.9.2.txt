@@ -1,6 +1,6 @@
 Since release:
 +fixed importing scrambles from sunday contest
 +added startidentserver to hopefully deal with irc connection timeouts
-+possible fix to main gui not showing bug
++fix to main gui not showing bug
 +improved cctbot argument parsing
 +add gui option for ident server
