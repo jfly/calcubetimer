@@ -23,7 +23,7 @@ public class PyraminxScramble extends Scramble {
 	private static final String PUZZLE_NAME = "Pyraminx";
 	private static final String[] VARIATIONS = { "Pyraminx" };
 	private static final int[] DEFAULT_LENGTHS = { 25 };
-	private static final int DEFAULT_UNIT_SIZE = 10;
+	private static final int DEFAULT_UNIT_SIZE = 30;
 	private static final Pattern TOKEN_REGEX = Pattern.compile("^([ULRBulrb]'?)(.*)$");
 	
 	private int[][] image;
