@@ -370,15 +370,15 @@ public class MegaminxScramble extends Scramble {
 		double[] angs = { 1.3, 1.7, .1, .5, .9 };
 		if(pointup) for(int i = 0; i < angs.length; i++) angs[i] -= .2;
 		for(int i = 0; i < angs.length; i++) angs[i] *= Math.PI;
-		double[] x = new double[5];
-		double[] y = new double[5];
+		double[] x = new double[angs.length];
+		double[] y = new double[angs.length];
 		for(int i = 0; i < x.length; i++){
 			x[i] = minxRad * Math.cos(angs[i]);
 			y[i] = minxRad * Math.sin(angs[i]);
 		}
 		GeneralPath p = new GeneralPath();
 		p.moveTo(x[0], y[0]);
-		for(int ch = 1; ch < 5; ch++) {
+		for(int ch = 1; ch < x.length; ch++) {
 			p.lineTo(x[ch], y[ch]);
 		}
 		p.closePath();
