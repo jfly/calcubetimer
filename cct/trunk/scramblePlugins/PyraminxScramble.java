@@ -19,7 +19,7 @@ import net.gnehzr.cct.scrambles.Scramble;
 public class PyraminxScramble extends Scramble {
 	private static final String[][] FACE_NAMES_COLORS = 
 	{ { "F", "D", "L", "R" },
-	  { "ff0000", "0000ff", "00ff00", "00ffff" } };
+	  { "ff0000", "0000ff", "00ff00", "ffff00" } };
 	private static final String PUZZLE_NAME = "Pyraminx";
 	private static final String[] VARIATIONS = { "Pyraminx" };
 	private static final int[] DEFAULT_LENGTHS = { 25 };
@@ -85,7 +85,7 @@ public class PyraminxScramble extends Scramble {
 		scramble = "";
 		StringBuilder scram = new StringBuilder();
 		int t = 0;
-		for(int i = 0; i < 4; i++){
+		for(int i = 0; i < 4 && t < length; i++){
 			int dir = random(3);
 			if(dir != 0){
 				t++;
