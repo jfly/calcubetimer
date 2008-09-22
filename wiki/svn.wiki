@@ -13,7 +13,7 @@ If you plan to make changes, use this command to check out the code as yourself 
 
 # Project members authenticate over HTTPS to allow committing changes.
 {{{
-svn checkout https://calcubetimer.googlecode.com/svn/trunk/ calcubetimer --username USERNAME
+svn checkout https://calcubetimer.googlecode.com/svn/cct/trunk/ calcubetimer --username USERNAME
 }}}
 
 When prompted, enter your generated googlecode.com password.
