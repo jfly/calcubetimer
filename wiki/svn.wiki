@@ -1,0 +1,22 @@
+#summary Accessing the source code via SVN
+
+= Introduction =
+
+The source code to CCT is freely available under a BSD license.
+
+
+= Details =
+
+Command-Line Access
+
+If you plan to make changes, use this command to check out the code as yourself using HTTPS:
+
+# Project members authenticate over HTTPS to allow committing changes.
+svn checkout https://calcubetimer.googlecode.com/svn/trunk/ calcubetimer --username USERNAME
+
+When prompted, enter your generated googlecode.com password.
+
+Use this command to anonymously check out the latest project source code:
+
+# Non-members may check out a read-only working copy anonymously over HTTP.
+svn checkout http://calcubetimer.googlecode.com/svn/cct/trunk/ calcubetimer-read-only
