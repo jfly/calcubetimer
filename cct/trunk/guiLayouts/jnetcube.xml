@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE gui SYSTEM "layout.dtd">
+<gui>
+	<panel layout="border">
+		<splitpane drawcontinuous="true" resizeweight=".8" split="horizontal">
+			<panel layout="border">
+				<center>
+					<panel layout="box" orientation="page">
+						<panel layout="box" orientation="horizontal">
+							<panel layout="box" orientation="page">
+								<component type="scrambleChooser"/>
+								<component alignmentX=".5" type="stackmatStatusLabel"/>
+								<panel> <!-- This is to prevent the grid layout from getting squished -->
+									<panel layout="grid" cols="2">
+										<label>Scramble length:</label>
+										<component type="scrambleLength" />
+										<label>Scramble number: </label>
+										<component type="scrambleNumber"/>
+									</panel>
+								</panel>
+								<component type="scrambleAttributes"/>
+							</panel>
+							<panel layout="box" orientation="page" preferredsize="500x100">
+								<component border="Use this algorithm to scramble your cube;000000" type="scrambleArea"/>
+							</panel>
+						</panel>
+						<component type="timerDisplay"/>
+					</panel>
+				</center>
+				<south>
+					<panel layout="box" orientation="page">
+						<panel layout="box" orientation="line">
+							<panel layout="border" border="Session Statistics">
+								<center>
+									<panel layout="box" orientation="page">
+										<label>Recent Time: $$session.time(recent)$$</label>
+										<label>Previous Time: $$session.time(last)$$</label>
+										<label>Progress: $$session.time(progress)$$ seconds</label>
+										<panel preferredsize="10x15"></panel>
+										<label>Cubes Solved: $$session.solvecount(solved)$$</label>
+										<label>Session Average: $$session.average$$ seconds</label>
+									</panel>
+								</center>
+								<line_end>
+									<panel layout="box" orientation="page">
+										<button action="sessionAverage">Detail</button>
+										<button action="addTime">Add Time</button>
+										<button action="reset">Reset</button>
+									</panel>
+								</line_end>
+							</panel>
+							<panel layout="border" border="Rolling Average">
+								<panel layout="box" orientation="page">
+									<label>Current Average: $$ra(0, recent)$$</label>
+									<label>Progress: $$ra(0).progress$$</label>
+									<panel preferredsize="10x15"></panel>
+									<label>Fastest Time: $$ra(0, recent).time(best)$$</label>
+									<label>Slowest Time: $$ra(0, recent).time(worst)$$</label>
+									<label>Standard Deviation: $$ra(0, recent).sd$$</label>
+								</panel>
+							</panel>
+						</panel>
+						<panel border="Best Average" layout="box" orientation="page">
+							<button action="bestAverage0" alignmentX=".99">Details</button>
+							<selectablelabel border=";000000" alignmentX=".99">
+								<![CDATA[<html>Average: $$ra(0, best)$$<br/>Individual Times: $$ra(0, best).list$$</html>]]>
+							</selectablelabel>
+						</panel>
+					</panel>
+				</south>
+			</panel>
+			<panel nominsize="false" layout="border">
+				<tabbedpane>
+					<component name="Times" type="timesList"/>
+					<component name="Sessions" type="sessionsList"/>
+				</tabbedpane>
+			</panel>
+		</splitpane>
+	</panel>
+	<menubar>
+		<menu mnemonic="f">File
+			<menuitem action="bestAverage0">Save Best Average As</menuitem>
+			<menuitem action="sessionAverage">Save Session Average As</menuitem>
+			<separator/>
+			<menuitem action="showConfiguration">Options...</menuitem>
+			<separator/>
+			<menuitem action="exit">Exit</menuitem>
+		</menu>
+		<menu mnemonic="t">Tools
+			<menuitem action="importScrambles">Import Scrambles</menuitem>
+			<menuitem action="exportScrambles">Scramble Generator</menuitem>
+			<checkboxmenuitem action="togglescramblepopup">View Scramble</checkboxmenuitem>
+		</menu>
+		<menu mnemonic="o">CCT Options
+			<component type="customGUIMenu"/>
+			<menu mnemonic="k">Keyboard Timer
+				<checkboxmenuitem action="keyboardTiming">Use keyboard timer</checkboxmenuitem>
+				<checkboxmenuitem action="toggleStatusLight">Use status light</checkboxmenuitem>
+				<checkboxmenuitem action="toggleHideScrambles">Hide scrambles when timer not focused</checkboxmenuitem>
+				<checkboxmenuitem action="toggleSpacebarStartsTimer">Only spacebar starts timer</checkboxmenuitem>
+				<checkboxmenuitem action="toggleFullscreenTiming">Fullscreen while timing</checkboxmenuitem>
+			</menu>
+		</menu>
+		<menu>Network Timer
+			<menuitem action="connectToServer">Connect to server</menuitem>
+		</menu>
+		<menu mnemonic="h">Help
+			<menuitem action="showAbout">About</menuitem>
+		</menu>
+		<glue orientation="horizontal"/>
+		<component type="profilecombobox"/>
+		<button nominsize="true" action="togglefullscreen"/>
+	</menubar>
+</gui>

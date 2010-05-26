@@ -1,0 +1,10 @@
+TODO:
++remember last saved folder
+
+BUGS:
++bug where statistics get saved even when "X" is pressed on duplicate filename (discovered by kconny http://www.speedsolving.com/forum/showthread.php?t=5936&page=7)
++add/editing times in foreign language (fixed by switching to decimal point entirely)
++typing in sunday contest info breaks customization gui
++undo-redo while editing solve (disabled when editing solve)
++U rotation bug in pochmann megaminx fixed
++bug with besttime/worsttime in tying averages

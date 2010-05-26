@@ -1,0 +1,20 @@
+TODO:
++optimal random state 2x2 scrambles
++configurable, optimal 3x3 cross solver
++optimal random state scrambles for pyraminx
++random state 3x3 scrambles
+	+write pruning tables/transition tables to file, 10 seconds is too long
++default xml layout switched to shelley's, given a decent starting size, too
++make current average an outline, rather than a color
++cube Orange should be 255,128,0 instead of 255,200,0
++best average 196,255,255
++best time: 0,128,0
++fix size and right align current avg, best avg buttons. do not use colors! 2px white space between buttons
+-jeff.zip needs minute.mp3 and minutes.mp3
+
+BUGS:
++fix highlighting in timestable
++font bug on mac
++fixed stackmat state label
++Scrambles without view shouldn't have a reset button.
++pyraminx view was all messed up

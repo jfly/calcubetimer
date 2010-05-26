@@ -1,0 +1,54 @@
++Scramble view didn't resize properly when closed then opened
++X (close) button for server connect doesn't actually cancel as it should
++details buttons changed
++nullpointer deleting lots of times with right click
++faq - stackmat value!!
++Me again... I put in edit time for one of my solves and then when I hit enter, the timer started.  Just letting you know... -> shift key should be ignored -> ENTER is now ignored
++defaults to scramble view enabled
++complete documentation of all features
++resizable fix for server scrambles
++config. saves setting of keyboard timer
++keyboard timer in linux <--> stop timer bug if delay not over
++bigcube scramble options (editable jcombobox?)
++scramble length options
++STDEV when DNF and other time
++splits are now properly ignored
++click on cube colors for color selection
++need to test server scrambles again
++ServerScrambleList probably needs to be changed, since there is now an infinite
+number of scrambles (not to mention lengths)
++clients can only request scrambles of the default length
++Configuration rehaul:
+	+properties files for configuration
+	+improved configurationdialog speed by not remaking it everytime
+	+save all options regarding scrambles (size of scramble view, type, length)
+	+staticized!
++bug: choosing importing from file, then pressing cancel discarded current scrambles
++multi-slice gui option
++public static final string CCT_VERSION added to CCT.java
++scramble subscripts for 6x6x6+
++change program to save everything upon exiting, not continuously
++config option: label password field more clearly
++there are bugs with switching types of scramble midway through an average, how should it behave?  I decided to prompt the user, and then throw out the old scrambles
++create a modal dialog box to guify scramble type, length (optional), multislice.
+ This solves these two problems:
+	+options for exporting scrambles (type, length, multislice)
+	+how should importing should do a better job of handling scramble types
++save size and position of both windows
++gui idea - merge timer display, keyboard timer, and stackmat settings thingy?
++request scrambles on server? (/3, /4, /5..?)
++clicking "X" after clicking "email"
++use only spacebar to start option
++BarebonesLauncher removed
++hide scrambles option
++gui options for Keyboard timer layout (dan's request)
++save option for annoying display to config
++make text pretty for 2nd gen timer thingy
++Antialiasing for megaminx scrambles
++scramble length options are now in properties file
++inversion options for seconds, minutes, hundredths
++fullscreen timer?
++sort properties file -> descriptive prefixes
++default scramble length for big-big-cubes
++gui-fy Ryan's inversion options
++prompt user when choosing import scrambles, but already using server scrambles

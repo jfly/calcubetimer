@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<project default="dist">
+	<tstamp>
+		<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
+	</tstamp>
+	
+	<property name="dist" location="dist"/>
+	<property name="cctinclude" location="../../../../"/>
+	<property name="includesource" value="net/gnehzr/cct/stackmatInterpreter/**/*.java, net/gnehzr/notcct/stackapplet/**/*.java"/>
+	<property name="includecomp" value="net/gnehzr/cct/stackmatInterpreter/**/*.class, net/gnehzr/notcct/stackapplet/**/*.class"/>
+	<target name="compile" description="Compilation target">
+		<javac srcdir="${cctinclude}" includes="${includesource}" classpath="plugin.jar" debug="true" debuglevel="lines,vars,source"/>
+	</target>
+	
+	<target name="emptydist" description="Clears ${dist}">
+		<delete quiet="true" includeemptydirs="true">
+			<fileset dir="${dist}" includes="**"/>
+		</delete>
+		<mkdir dir="${dist}"/>
+	</target>
+	
+	<target name="dist" depends="compile, emptydist">
+		<echo>${dist}</echo>
+		<jar jarfile="${dist}/stackapplet.jar">
+			<manifest>
+				<attribute name="Class-path" value="."/>
+				<attribute name="Built-Date" value="${TODAY}"/>
+				<attribute name="Main-Class" value="net.gnehzr.notcct.stackapplet.Stackapplet"/>
+			</manifest>
+			<fileset dir="${cctinclude}" includes="${includecomp}"/>
+		</jar>
+		<signjar jar="${dist}/stackapplet.jar" alias="rubeTimer" storepass="rubeTimer" keystore="rubeTimerCert"/>
+		<echo>Finished building!</echo>
+	</target>
+
+	<target name="clean" description="Clean">
+		<delete>
+			<fileset dir="${cctinclude}" includes="**/*.class"/>
+		</delete>
+		<delete dir="${dist}"/>
+	</target>
+</project>

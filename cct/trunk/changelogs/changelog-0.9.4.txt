@@ -1,0 +1,5 @@
+TODO:
+
+BUGS:
++adding 1, 2, 2, 3, DNF has zero stdev (lucas garron)
++bug with exporting scrambles http://www.speedsolving.com/forum/showthread.php?p=213600

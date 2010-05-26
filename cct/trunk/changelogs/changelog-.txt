@@ -1,0 +1,44 @@
+TODO:
+-Another thing, I hope you can make the strings such as "Optimal Cross" still dynamic, I want to translate it to all Chinese. And "Verbose" for clock as well.
+I tried to modify the .class file but can't make it use Chinese characters(but I succeeded to replace it with an English string with a DIFFERENCE LENGTH), so I need you do that. Many thanks.
+-scramble area size incorrect after changing layout/language/profile
+-return focus after editing time
+-tick-tock speaks time? (darren)
+-global sd
+-global averages of tag
+-date tag on each solve
+	-switch to proper databasing solution
+	
++hid the watermark on cross solutions
++centered scrambles would be nice
++pyraminx scramble view?
++Main window probably doesn't need to be that wide. Maybe if the show scramble/use keyboard checkboxes were moved to the next line where there's a lot of empty space it would be more balanced. 
+-switching to 3x3x3 sometimes breaks gui
+-startup error for shelley and patrick
+	-memory leak for shelley?
+-default frame size is bad for leyan
+
+English and Guest dropdowns shouldn't be part of the menubar
+Green circle is kinda tacky
+?Optimal cross alg doesn't fit in the window. Maybe this could be a tab?
+Does the generator group input field need to be so big?
+Generator group input field should be adjacent to the generator group algorithms.
+Show scramble, Multi-slice, and Wide notation boxes, and cube type dropdown should be more adjacent to the scramble.
+New session, Clear session buttons should be adjacent to the session statistics
+If there are only two tabs, Times and Sessions, they should really take up the entire frame. Don't have empty space to the right of "Sessions". 
+	-Include font for mac users
+	-"Add time" could be either a button at the bottom or just a click in the white space thing.
+	-Multi-slice and Wide notation should not be present for a 3x3 and 2x2
+	
+	-Right click redo solve / get rid of scramble history?
+	-New session should be accessed in the Sessions tab on the right, and not a button.
+	-click button goes to highlight times, right click to get stats
+	
+	?Cubing History should be accessible in a menu and not displayed at all times
+	?Either make the timer display a solid 3D button without text or a flat grey rectangle with text.
+	?5px white space around timer section and times section
+
+BUGS:
+-obscure scramble + stackmat is broken
+-stackmat still doesn't work on *every* computer
+-disable alt-spacebar when timing?

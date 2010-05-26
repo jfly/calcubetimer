@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE gui SYSTEM "layout.dtd">
+<gui>
+	<panel layout="border">
+		<splitpane drawcontinuous="true" resizeweight="1" split="horizontal">
+			<panel layout="border">
+				<center>
+					<panel layout="box" orientation="page">
+						<component type="timerDisplay"/>
+						<component type="scrambleArea"/>
+					</panel>
+				</center>
+				<south>
+					<panel layout="box" orientation="page">
+						<scrollpane verticalpolicy="never" horizontalpolicy="asneeded">
+							<panel alignmentY=".5" layout="flow" hgap="5" vgap="5">
+								<component type="stackmatStatusLabel"/>
+								<component type="scrambleChooser"/>
+								<component type="scrambleNumber"/>
+								<component type="scrambleAttributes"/>
+								<component type="scrambleGenerator"/>
+							</panel>
+						</scrollpane>
+						<panel layout="border">
+							<line_start><button action="submitSundayContest">%%submitsunday%%</button></line_start>
+							<center><panel><checkbox alignmentX=".5" action="keyboardTiming">%%usekeyboard%%</checkbox></panel></center>
+							<line_end>
+								<panel>
+									<button action="newSession">%%newsession%%</button>
+									<button action="reset">%%clearsession%%</button>
+								</panel>
+							</line_end>
+						</panel>
+						<panel layout="box" orientation="line">
+							<panel border="%%seshstats%%" layout="grid" cols="1">
+								<panel layout="box" orientation="line">
+									<label>%%raof%% $$ra(0).size$$</label>
+									<button action="currentAverage0"><![CDATA[<html><font color="$$configuration(Statistics_Color_currentAverage)$$">%%currave%% $$ra(0, recent)$$ $$ra(0).progress|parens$$</font></html>]]></button>
+									<button action="bestAverage0"><![CDATA[<html><font color="$$configuration(Statistics_Color_bestRA)$$">%%bestra%% $$ra(0, best)$$</font></html>]]></button>
+								</panel>
+								<panel layout="box" orientation="line">
+									<label>%%raof%% $$ra(1).size$$</label>
+									<button action="currentAverage1"><![CDATA[<html><font color="$$configuration(Statistics_Color_currentAverage$$">%%currave%% $$ra(1, recent)$$ $$ra(1).progress|parens$$</font></html>]]></button>
+									<button action="bestAverage1"><![CDATA[<html><font color="$$configuration(Statistics_Color_bestRA$$">%%bestra%% $$ra(1, best)$$</font></html>]]></button>
+								</panel>
+								<panel layout="box" orientation="line">
+									<label>$$session.solvecount(solved)$$/$$session.solvecount(attempt)$$ (%%solves%%/%%attempts%%)</label>
+									<button action="sessionAverage"><![CDATA[<html>%%seshave%% $$session.average$$ $$session.average.progress|parens$$</html>]]></button>
+								</panel>
+							</panel>
+							<panel border="%%history%%" layout="box" orientation="page">
+								<panel><label alignmentX=".5">%%bestever%% $$global.time(best)$$</label></panel>
+								<panel><label alignmentX=".5">%%bestraof%% $$ra(0).size$$: $$global.ra(0, best)$$</label></panel>
+								<panel><label alignmentX=".5">$$global.solvecount(solved)$$/$$global.solvecount(attempt)$$ %%globalaverage%% $$global.average$$</label></panel>
+							</panel>
+						</panel>
+					</panel>
+				</south>
+			</panel>
+			<panel nominsize="false" layout="border">
+				<tabbedpane>
+					<component name="%%times%%" type="timesList"/>
+					<component name="%%sessions%%" type="sessionsList"/>
+				</tabbedpane>
+			</panel>
+		</splitpane>
+	</panel>
+	<menubar>
+		<menu mnemonic="f">%%file%%
+			<menuitem action="importScrambles">%%import%%</menuitem>
+			<menuitem action="exportScrambles">%%export%%</menuitem>
+			<separator/>
+			<menuitem action="addTime">%%addtime%%</menuitem>
+			<separator/>
+			<menuitem action="connectToServer">%%connect%%</menuitem>
+			<separator/>
+			<menuitem action="showConfiguration">%%configuration%%</menuitem>
+			<separator/>
+			<menuitem action="exit">%%exit%%</menuitem>
+		</menu>
+		<menu mnemonic="o">%%options%%
+			<menuitem action="undo"/>
+			<menuitem action="redo"/>
+			<separator/>
+			<checkboxmenuitem action="toggleScramblePopup">%%togglescramblepopup%%</checkboxmenuitem>
+			<menu mnemonic="k">%%keyboardtimer%%
+				<checkboxmenuitem action="keyboardTiming">%%usekeyboard%%</checkboxmenuitem>
+				<checkboxmenuitem action="toggleStatusLight">%%statuslight%%</checkboxmenuitem>
+				<checkboxmenuitem action="toggleHideScrambles">%%hidescrambles%%</checkboxmenuitem>
+				<checkboxmenuitem action="toggleSpacebarStartsTimer">%%spacebaronly%%</checkboxmenuitem>
+				<checkboxmenuitem action="toggleFullscreenTiming">%%fullscreentiming%%</checkboxmenuitem>
+			</menu>
+			<component type="customGUIMenu"/>
+		</menu>
+		<glue orientation="horizontal"/>
+		<button nominsize="true" action="undo"/>
+		<button nominsize="true" action="redo"/>
+		<component type="languagecombobox"/>
+		<component type="profilecombobox"/>
+		<glue orientation="horizontal"/>
+		<menu mnemonic="h">%%help%%
+			<menuitem action="showDocumentation">%%documentation%%</menuitem>
+			<menuitem action="showAbout">%%about%%</menuitem>
+		</menu>
+		<button nominsize="true" action="togglefullscreen">+</button>
+	</menubar>
+</gui>

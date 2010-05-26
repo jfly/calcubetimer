@@ -1,0 +1,11 @@
+Changes since 0.9.1:
++fixed importing scrambles from sunday contest
++added startidentserver to hopefully deal with irc connection timeouts
++fix to main gui not showing bug
++improved cctbot argument parsing
++add gui option for ident server
++dynamic strings removed from listener lists when not used anymore
++Fixed bug with table headers in configuration under scramble customization.
++some actions were being initialized when not used
++add keyboard timing to options in gui
++change annoying status stuff to just status light

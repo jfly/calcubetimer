@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE gui SYSTEM "layout.dtd">
+<gui>
+	<panel layout="border">
+			<panel layout="border">
+				<center>
+					<panel layout="box" orientation="page">
+						<component type="timerDisplay"/>
+						<component type="scrambleArea"/>
+					</panel>
+				</center>
+				<south>
+					<panel layout="grid" cols="2">
+					<panel><label>Cubes solved: $$session.solvecount(solved)$$</label></panel>
+					<panel></panel>
+					<panel><button action="sessionAverage">Session</button></panel>
+					<panel><button action="currentAverage0">Current %%raof%% $$ra(0).size$$</button><button action="bestAverage0">Best %%raof%% $$ra(0).size$$</button></panel>
+					</panel>
+				</south>
+			</panel>
+	</panel>
+	<menubar>
+		<menu mnemonic="f">%%file%%
+			<menuitem action="importScrambles">%%import%%</menuitem>
+			<menuitem action="exportScrambles">%%export%%</menuitem>
+			<separator/>
+			<menuitem action="addTime">%%addtime%%</menuitem>
+			<separator/>
+			<menuitem action="connectToServer">%%connect%%</menuitem>
+			<separator/>
+			<menuitem action="showConfiguration">%%configuration%%</menuitem>
+			<separator/>
+			<menuitem action="exit">%%exit%%</menuitem>
+		</menu>
+		<menu mnemonic="o">%%options%%
+			<menuitem action="undo"/>
+			<menuitem action="redo"/>
+			<separator/>
+			<checkboxmenuitem action="toggleScramblePopup">%%togglescramblepopup%%</checkboxmenuitem>
+			<menu mnemonic="k">%%keyboardtimer%%
+				<checkboxmenuitem action="keyboardTiming">%%usekeyboard%%</checkboxmenuitem>
+				<checkboxmenuitem action="toggleStatusLight">%%statuslight%%</checkboxmenuitem>
+				<checkboxmenuitem action="toggleHideScrambles">%%hidescrambles%%</checkboxmenuitem>
+				<checkboxmenuitem action="toggleSpacebarStartsTimer">%%spacebaronly%%</checkboxmenuitem>
+				<checkboxmenuitem action="toggleFullscreenTiming">%%fullscreentiming%%</checkboxmenuitem>
+			</menu>
+			<component type="customGUIMenu"/>
+		</menu>
+		<glue orientation="horizontal"/>
+		<component type="scrambleChooser"/>
+		<component type="profilecombobox"/>
+		<glue orientation="horizontal"/>
+		<button action="newSession">%%newsession%%</button><button action="reset">%%clearsession%%</button>
+		<glue orientation="horizontal"/>
+		<menu mnemonic="h">%%help%%
+			<menuitem action="showDocumentation">%%documentation%%</menuitem>
+			<menuitem action="showAbout">%%about%%</menuitem>
+		</menu>
+		<button nominsize="true" action="togglefullscreen">+</button>
+	</menubar>
+</gui>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE gui SYSTEM "layout.dtd">
+<gui>
+	<panel layout="border">
+		<splitpane drawcontinuous="true" resizeweight="1" split="horizontal">
+			<panel layout="border">
+				<north>
+					<scrollpane verticalpolicy="never" horizontalpolicy="asneeded">
+						<panel layout="box" orientation="page">
+							<panel alignmentY=".5" layout="flow" hgap="5" vgap="5">
+								<component type="stackmatStatusLabel"/>
+								<component type="scrambleChooser"/>
+								<component type="scrambleGenerator"/>
+								<button action="newSession">%%newsession%%</button>
+						 		<button action="reset">%%clearsession%%</button>
+							</panel>
+							<panel>
+								<checkbox alignmentX=".5" action="togglescramblepopup">Show scramble?</checkbox>
+								<checkbox alignmentX=".5" action="keyboardTiming">%%usekeyboard%%</checkbox>
+								<component type="scrambleAttributes"/>
+							</panel>
+						</panel>
+					</scrollpane>
+				</north>
+				<center>
+					<panel layout="box" orientation="page">
+						<component type="timerDisplay"/>
+						<component type="scrambleArea"/>
+					</panel>
+				</center>
+				<south>
+					<panel layout="box" orientation="page">
+
+						<panel layout="box" orientation="line">
+							<panel border="%%seshstats%%" layout="grid" hgap="2" vgap="2" cols="3">
+								<label>%%raof%% $$ra(0).size$$</label>
+								<button action="currentAverage0">%%currave%% $$ra(0, recent)$$ $$ra(0).progress|parens$$</button>
+								<button action="bestAverage0">%%bestra%% $$ra(0, best)$$</button>
+								
+								<label>%%raof%% $$ra(1).size$$</label>
+								<button action="currentAverage1">%%currave%% $$ra(1, recent)$$ $$ra(1).progress|parens$$</button>
+								<button action="bestAverage1">%%bestra%% $$ra(1, best)$$</button>
+
+								<label>Cubes solved: $$session.solvecount(solved)$$/$$session.solvecount(attempt)$$</label>
+								<button action="sessionAverage">%%seshave%% $$session.average$$ $$session.average.progress|parens$$</button>
+							</panel>
+							<panel border="%%history%%" layout="grid" cols="1" vgap="2">
+								<panel><label alignmentX=".5">%%bestever%% $$global.time(best)$$</label></panel>
+								<panel><label alignmentX=".5">%%bestraof%% $$ra(0).size$$: $$global.ra(0, best)$$</label></panel>
+								<panel><label alignmentX=".5">%%bestraof%% $$ra(1).size$$: $$global.ra(1, best)$$</label></panel>
+								<panel><label alignmentX=".5">$$global.solvecount(solved)$$/$$global.solvecount(attempt)$$ %%globalaverage%% $$global.average$$</label></panel>
+							</panel>
+						</panel>
+					</panel>
+				</south>
+			</panel>
+			<panel nominsize="false" layout="border">
+				<tabbedpane>
+					<component name="%%times%%" type="timesList"/>
+					<component name="%%sessions%%" type="sessionsList"/>
+				</tabbedpane>
+			</panel>
+		</splitpane>
+	</panel>
+	<menubar>
+		<menu mnemonic="f">%%file%%
+			<menuitem action="importScrambles">%%import%%</menuitem>
+			<menuitem action="exportScrambles">%%export%%</menuitem>
+			<separator/>
+			<menuitem action="addTime">%%addtime%%</menuitem>
+			<separator/>
+			<menuitem action="connectToServer">%%connect%%</menuitem>
+			<separator/>
+			<menuitem action="showConfiguration">%%configuration%%</menuitem>
+			<separator/>
+			<menuitem action="exit">%%exit%%</menuitem>
+		</menu>
+		<menu mnemonic="o">%%options%%
+			<menuitem action="undo"/>
+			<menuitem action="redo"/>
+			<separator/>
+			<checkboxmenuitem action="toggleScramblePopup">%%togglescramblepopup%%</checkboxmenuitem>
+			<menu mnemonic="k">%%keyboardtimer%%
+				<checkboxmenuitem action="keyboardTiming">%%usekeyboard%%</checkboxmenuitem>
+				<checkboxmenuitem action="toggleStatusLight">%%statuslight%%</checkboxmenuitem>
+				<checkboxmenuitem action="toggleHideScrambles">%%hidescrambles%%</checkboxmenuitem>
+				<checkboxmenuitem action="toggleSpacebarStartsTimer">%%spacebaronly%%</checkboxmenuitem>
+				<checkboxmenuitem action="toggleFullscreenTiming">%%fullscreentiming%%</checkboxmenuitem>
+			</menu>
+			<component type="customGUIMenu"/>
+		</menu>
+		<glue orientation="horizontal"/>
+		<component type="languagecombobox"/>
+		<component type="profilecombobox"/>
+		<glue orientation="horizontal"/>
+		<menu mnemonic="h">%%help%%
+			<menuitem action="showDocumentation">%%documentation%%</menuitem>
+			<menuitem action="showAbout">%%about%%</menuitem>
+		</menu>
+		<button nominsize="true" action="togglefullscreen">+</button>
+	</menubar>
+</gui>
